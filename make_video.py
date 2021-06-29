@@ -6,7 +6,9 @@ if __name__ == "__main__":
     print("usage: arguments are source image folder and target video name something.avi")
     image_folder = sys.argv[1]
     video_name = sys.argv[2]
-    images = [img for img in os.listdir(image_folder) if img.endswith(".png")]
+    dir_contents = os.listdir(image_folder) 
+    dir_contents.sort()    
+    images = [img for img in dir_contents if img.endswith(".png")]
     frame = cv2.imread(os.path.join(image_folder, images[0]))
     height, width, layers = frame.shape
 
