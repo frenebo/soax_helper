@@ -72,7 +72,6 @@ if __name__ == "__main__":
 
         with open(fp, "r") as snake_file:
             snakes = extract_snakes(snake_file,filename)
-            plt.gca().invert_yaxis()
             for snake_name, snake_pts in snakes.items():
 ##                print(snake_pts)
 ##                print(snake_name)
@@ -89,6 +88,8 @@ if __name__ == "__main__":
             # some_snakefile.tif => some_snakefile.jpg
             save_img_filename = "".join(filename.split(".")[:-1]) + ".png"
             save_img_fp = os.path.join(image_dir_name,save_img_filename)
+            # invert y axis
+            plt.axis([0,2304,2304,0])
             plt.savefig(save_img_fp)
             # clear figure so we can do the next plot
             plt.clf()
