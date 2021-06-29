@@ -89,7 +89,10 @@ if __name__ == "__main__":
             save_img_filename = "".join(filename.split(".")[:-1]) + ".png"
             save_img_fp = os.path.join(image_dir_name,save_img_filename)
             # invert y axis
+            ax.set_aspect('equal', adjustable='box')
             plt.axis([0,2304,2304,0])
+            plt.xlabel("x")
+            plt.ylabel("y")
             plt.savefig(save_img_fp)
             # clear figure so we can do the next plot
             plt.clf()
