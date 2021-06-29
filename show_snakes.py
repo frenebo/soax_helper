@@ -82,14 +82,14 @@ if __name__ == "__main__":
                 x,y = snake_pts.T
 ##                print(x.shape)
 ##                print(y.shape)
-                # plt.plot(x,y,'b')
-                plt.plot(x,y)
+                plt.plot(x,y,'b')
+                # plt.plot(x,y)
 
             # some_snakefile.tif => some_snakefile.jpg
             save_img_filename = "".join(filename.split(".")[:-1]) + ".png"
             save_img_fp = os.path.join(image_dir_name,save_img_filename)
             # invert y axis
-            ax.set_aspect('equal', adjustable='box')
+            plt.axes().set_aspect('equal', adjustable='box')
             plt.axis([0,2304,2304,0])
             plt.xlabel("x")
             plt.ylabel("y")
