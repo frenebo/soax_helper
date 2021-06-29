@@ -1,4 +1,4 @@
-import sys
+iimport sys
 import os
 from matplotlib import pyplot as plt
 import numpy as np
@@ -86,7 +86,7 @@ if __name__ == "__main__":
                 plt.plot(x,y,'b')
             
             # some_snakefile.tif => some_snakefile.jpg
-            save_img_filename = filename.split(".")[0] + ".jpg"
+            save_img_filename = filename.split(".")[:-1].join("") + ".png"
             save_img_fp = os.path.join(image_dir_name,save_img_filename)
             plt.savefig(save_img_fp)
             # clear figure so we can do the next plot
