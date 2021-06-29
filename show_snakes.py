@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
         with open(fp, "r") as snake_file:
             snakes = extract_snakes(snake_file,filename)
-
+            plt.gca().invert_yaxis()
             for snake_name, snake_pts in snakes.items():
 ##                print(snake_pts)
 ##                print(snake_name)
