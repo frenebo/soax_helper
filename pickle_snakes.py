@@ -16,10 +16,10 @@ if __name__ == "__main__":
         fp = os.path.join(dir_name,filename)
 
         with open(fp, "r") as snake_file:
-            snakes = extract_snakes(snake_file,filename)
-            
+            snakes = extract_snakes(snake_file)
+
             pickle_filename = "".join(filename.split(".")[:-1]) + ".pickle"
             pickle_fp = os.path.join(pickle_dir,pickle_filename)
-            
+
             with open(pickle_fp, 'wb') as handle:
                 pickle.dump(snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)

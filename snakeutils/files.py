@@ -2,7 +2,7 @@ import sys
 import os
 import numpy as np
 
-def extract_snakes(snake_file,filename):
+def extract_snakes(snake_file):
     # get past starting params
     count = 0
     while count < 30:
@@ -30,7 +30,7 @@ def extract_snakes(snake_file,filename):
         line = lines[line_idx]
         # if reached a new label for snake or reached junction section of file
         if len(line) == 1 or len(line) == 3:
-            snake_dict[snake_name] = snake_points
+            snake_dict[snake_name] = np.array(snake_points)
             snake_name = None
             snake_points = None
 
@@ -46,8 +46,6 @@ def extract_snakes(snake_file,filename):
 
             continue
         else:
-##            print(line)
-##            print(filename)
             x= float(line[2])
             y= float(line[3])
             snake_points.append([x,y])

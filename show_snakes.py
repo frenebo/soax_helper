@@ -16,7 +16,7 @@ if __name__ == "__main__":
         fp = os.path.join(dir_name,filename)
 
         with open(fp, "r") as snake_file:
-            snakes = extract_snakes(snake_file,filename)
+            snakes = extract_snakes(snake_file)
             for snake_name, snake_pts in snakes.items():
 ##                print(snake_pts)
 ##                print(snake_name)
