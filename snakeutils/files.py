@@ -60,8 +60,6 @@ def extract_snakes(snake_file):
         snake = snake_dict[key]
         snake_arr.append(snake)
 
-    print(len(snake_arr))
-
     return snake_arr
 
 

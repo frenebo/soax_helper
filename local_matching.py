@@ -6,18 +6,7 @@ from snakeutils.files import extract_snakes
 from scipy.spatial.distance import cdist
 import math
 
-def local_match_snakes(snakes):
-    # threshold for matching tips is d*e^angle < eta
-    eta = 10
-
-    # we want an array that looks like:
-    # [
-    #    [snake0_startx,snake0_starty],
-    #    [snake0_endx,snake0_endy],
-    #    [snake1_startx,snake1_starty],
-    #    [snake1_endx,snake1_endy],
-    #    etc...
-    # ]
+def get_tip_coords_and_unit_vecs(snakes):
     tip_coords = np.zeros( [len(snakes)*2,2] )
     tip_unit_vectors = np.zeros( [len(snakes)*2,2])
 
@@ -32,8 +21,8 @@ def local_match_snakes(snakes):
         tip_coords[snake_idx*2] = [start_x,start_y]
         tip_coords[snake_idx*2 + 1] = [end_x,end_y]
 
-        start_dx = x[1] - x[0]
-        start_dy = y[1] - y[0]
+        start_dx = x[0] - x[1]
+        start_dy = y[0] - y[1]
         start_norm = np.linalg.norm([start_dx,start_dy])
         start_unit_vec = [start_dx/start_norm,start_dy/start_norm]
 
@@ -45,36 +34,26 @@ def local_match_snakes(snakes):
         tip_unit_vectors[snake_idx*2] = start_unit_vec
         tip_unit_vectors[snake_idx*2 + 1] = end_unit_vec
 
+    return tip_coords,tip_unit_vectors
 
-    # plt.axes().set_aspect('equal', adjustable='box')
-    # plt.axis([0,2304,2304,0])
-    # plt.xlabel("x")
-    # plt.ylabel("y")
-    # start_x,start_y = tip_coords[0]
-    # end_x,end_y = tip_coords[1]
-    # print("Start: {},{}".format(start_x,start_y))
-    # print("End: {},{}".format(end_x,end_y))
-    # plt.plot([start_x,end_x],[start_y,end_y])
-    # x,y = snakes[0].T
-    # plt.plot(x,y)
-    # plt.savefig("endpts")
+def local_match_snakes(snakes):
+    # threshold for matching tips is d*e^angle < eta
+    eta = 10
+    angle_threshold = np.pi/4
 
+    # we want an array that looks like:
+    # [
+    #    [snake0_startx,snake0_starty],
+    #    [snake0_endx,snake0_endy],
+    #    [snake1_startx,snake1_starty],
+    #    [snake1_endx,snake1_endy],
+    #    etc...
+    # ]
 
-    # flattened_ignore_indices = np.unravel_index(same_snake_positions, [2*len(snakes),2*len(snakes)])
-    # test_stuff = np.zeros([2*len(snakes),2*len(snakes)])
-    # test_stuff.put(
-    #     flattened_ignore_indices,
-    #     np.full([len(flattened_ignore_indices)],1),
-    # )
-    # print("Ignore indices:")
-    # print(flattened_ignore_indices.shape)
-    # print(flattened_ignore_indices[:20])
-    # print("Test stuff:")
-    # print(test_stuff[:10,:10])
+    tip_coords,tip_unit_vecs = get_tip_coords_and_unit_vecs(snakes)
 
+    # 2n x 2n matrix of distances from each start and end of a snake to every other start/end
     tip_dists = cdist(tip_coords,tip_coords)
-    print("{} snakes".format(len(snakes)))
-    print(tip_dists.shape)
 
     # index pairs referring to distance between same points, index pairs of start and end of same snake
     for x in range(len(snakes)):
@@ -82,19 +61,84 @@ def local_match_snakes(snakes):
         tip_dists[2*x,2*x+1] = np.Inf
         tip_dists[2*x+1,2*x+1] = np.Inf
         tip_dists[2*x+1,2*x] = np.Inf
-    # same_snake_positions = ([[2*x,2*x] for x in range(len(snakes))] +
-    #                         [[2*x,2*x + 1] for x in range(len(snakes))] +
-    #                         [[2*x + 1,2*x] for x in range(len(snakes))] +
-    #                         [[2*x + 1,2*x + 1] for x in range(len(snakes))])
-    print(tip_dists[:4][:4])
-    print(tip_dists[0][0])
-    print(tip_dists[1][0])
-    print(tip_dists[1][1])
-    print(tip_dists[0][1])
-    print(tip_dists[2][2])
-    print(tip_dists[2][3])
-    print(tip_dists[3][2])
-    print(tip_dists[3][3])
+
+    # Since we look for tips matching with d*e^theta < eta, we can rule out
+    # indices where d >= eta
+    match_candidates = np.transpose((tip_dists < eta).nonzero())
+    print("candidates length")
+    print(match_candidates)
+    print(match_candidates.shape)
+
+    matches = []
+
+    for candidate in match_candidates:
+        tip1_idx = candidate[0]
+        tip2_idx = candidate[1]
+
+        tip1_snake_idx = math.floor(tip1_idx/2)
+        tip1_type = "start" if tip1_idx % 2 == 0 else "end"
+        tip2_snake_idx = math.floor(tip2_idx/2)
+        tip2_type = "start" if tip2_idx % 2 == 0 else "end"
+
+        tip1_unit_vec = tip_unit_vecs[tip1_idx]
+        tip2_unit_vec = tip_unit_vecs[tip2_idx]
+
+        # subract arccos from np.pi because we want tips pointing in opposite
+        # direction to have zero angle
+        angle = np.pi -  np.arccos(np.dot(tip1_unit_vec,tip2_unit_vec))
+        print("tip1: pos ({},{}) direction ({},{}) tip2: pos ({},{}) direction ({},{}) dist: {} angle: {}".format(
+                tip_coords[tip1_idx][0],
+                tip_coords[tip1_idx][1],
+                tip1_unit_vec[0],
+                tip1_unit_vec[1],
+                tip_coords[tip2_idx][0],
+                tip_coords[tip2_idx][1],
+                tip2_unit_vec[0],
+                tip2_unit_vec[1],
+                tip_dists[tip1_idx][tip2_idx],
+                angle
+                ))
+        score = tip_dists[tip1_idx][tip2_idx] * np.exp(angle)
+
+        if score < eta and angle < angle_threshold:
+            matches.append(candidate)
+
+    print("candidates number: {}".format(len(match_candidates)))
+    print("matches number: {}".format(len(matches)))
+
+    seen_tips = []
+
+    for i in range(min(1000,len(matches))):
+        tip1_idx = matches[i][0]
+        tip2_idx = matches[i][1]
+
+        snake1_idx = math.floor(tip1_idx/2)
+        snake2_idx = math.floor(tip2_idx/2)
+
+        tip1_duplicate = tip1_idx in seen_tips
+        tip2_duplicate = tip2_idx in seen_tips
+
+        seen_tips.append(tip1_idx)
+        seen_tips.append(tip2_idx)
+
+        # print(snakes[snake1_idx].shape)
+        snake1x,snake1y = snakes[snake1_idx].T
+        snake2x,snake2y = snakes[snake2_idx].T
+        plt.plot(snake1x,snake1y,linewidth=(0.5 if tip1_duplicate else 0.1))
+        plt.plot(snake2x,snake2y,linewidth=(0.5 if tip2_duplicate else 0.1))
+        print(snake1x,snake1y)
+
+    plt.axes().set_aspect('equal', adjustable='box')
+    plt.axis([0,2304,2304,0])
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.savefig("data/match",dpi=500)
+    plt.clf()
+
+        # print(tip1_snake_idx)
+        # print(tip1_type)
+        # print(tip2_snake_idx)
+        # print(tip2_type)
 
 
 if __name__ == "__main__":
@@ -106,11 +150,7 @@ if __name__ == "__main__":
     snake_filenames = [filename for filename in snake_filenames if filename.endswith(".txt")]
     snake_filenames.sort()
 
-    print(snake_filenames)
-    print("asdfdsadffsdf")
-
     for snake_fn in snake_filenames:
-        print(snake_fn)
         snake_fp = os.path.join(snake_dir,snake_fn)
         with open(snake_fp, "r") as snake_file:
             snakes = extract_snakes(snake_file)
