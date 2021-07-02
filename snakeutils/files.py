@@ -53,7 +53,16 @@ def extract_snakes(snake_file):
             line_idx += 1
             continue
 
-    return snake_dict
+    snake_arr = []
+
+    # turn dict into array of snakes starting at index zero
+    for key in sorted(snake_dict.keys()):
+        snake = snake_dict[key]
+        snake_arr.append(snake)
+
+    print(len(snake_arr))
+
+    return snake_arr
 
 
 

@@ -17,9 +17,7 @@ if __name__ == "__main__":
 
         with open(fp, "r") as snake_file:
             snakes = extract_snakes(snake_file)
-            for snake_name, snake_pts in snakes.items():
-##                print(snake_pts)
-##                print(snake_name)
+            for snake_idx, snake_pts in enumerate(snakes):
                 snake_pts = np.array(snake_pts)
 ##                print(snake_pts.shape)
 ##                for pt in snake_pts:
