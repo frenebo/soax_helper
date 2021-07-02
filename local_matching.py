@@ -106,7 +106,7 @@ def local_match_snakes(snakes):
     print("candidates number: {}".format(len(match_candidates)))
     print("matches number: {}".format(len(matches)))
 
-    seen_tips = []
+    tip_matches = {}
 
     for i in range(min(1000,len(matches))):
         tip1_idx = matches[i][0]
@@ -115,17 +115,35 @@ def local_match_snakes(snakes):
         snake1_idx = math.floor(tip1_idx/2)
         snake2_idx = math.floor(tip2_idx/2)
 
-        tip1_duplicate = tip1_idx in seen_tips
-        tip2_duplicate = tip2_idx in seen_tips
+        match_data = {
+            "snake1": snake1_idx,
+            "snake2": snake2_idx,
+            "tip1type": "start" if tip1_idx % 2 == 0 else "end",
+            "tip2type": "start" if tip2_idx % 2 == 0 else "end",
 
-        seen_tips.append(tip1_idx)
-        seen_tips.append(tip2_idx)
+        }
+
+        if tip1_idx in tip_matches:
+            tip_matches[tip1_idx].append(match_data)
+        else:
+            tip_matches[tip1_idx] = [match_data]
+
+        if tip2_idx in tip_matches:
+            tip_matches[tip2_idx].append(match_data)
+        else:
+            tip_matches[tip2_idx] = [match_data]
+
+        # tip1_duplicate = tip1_idx in tip_matches
+        # tip2_duplicate = tip2_idx in seen_tips
+
+        seen_tips[tip1_idx] = match_data
+        seen_tips[tip2_idx] = match_data
 
         # print(snakes[snake1_idx].shape)
         snake1x,snake1y = snakes[snake1_idx].T
         snake2x,snake2y = snakes[snake2_idx].T
-        plt.plot(snake1x,snake1y,linewidth=(0.5 if tip1_duplicate else 0.1))
-        plt.plot(snake2x,snake2y,linewidth=(0.5 if tip2_duplicate else 0.1))
+        plt.plot(snake1x,snake1y,linewidth=0.1)
+        plt.plot(snake2x,snake2y,linewidth=0.1)
         print(snake1x,snake1y)
 
     plt.axes().set_aspect('equal', adjustable='box')
@@ -135,10 +153,12 @@ def local_match_snakes(snakes):
     plt.savefig("data/match",dpi=500)
     plt.clf()
 
-        # print(tip1_snake_idx)
-        # print(tip1_type)
-        # print(tip2_snake_idx)
-        # print(tip2_type)
+    #the matches between ends that we choose to join together
+    matches_to_join = []
+    # for tip_name in tip_matches:
+    #     best_match =
+
+def best_match(matches):
 
 
 if __name__ == "__main__":
