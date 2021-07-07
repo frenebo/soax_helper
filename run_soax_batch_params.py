@@ -47,7 +47,7 @@ if __name__ == "__main__":
             "batch_soax": args.batch_soax,
             "tif_dir": args.tif_dir,
             "param_fp": param_fp,
-            "params_output_dir", params_output_dir,
+            "params_output_dir": params_output_dir,
         })
 
     print("Creating snake output directories inside {}".format(args.output_dir))
