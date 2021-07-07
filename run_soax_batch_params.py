@@ -8,7 +8,11 @@ import tqdm
 from ctypes import c_int32
 import time
 
-def run_soax(batch_soax,tif_dir,param_fp,output_dir):
+def run_soax(soax_args):
+    batch_soax = soax_args["batch_soax"]
+    tif_dir = soax_args["tif_dir"]
+    param_fp = soax_args["param_fp"]
+    params_output_dir = soax_args["params_output_dir"]
     command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {output_dir}".format(
         batch_soax = batch_soax,
         tif_dir=tif_dir,
@@ -39,11 +43,16 @@ if __name__ == "__main__":
         params_name = params_filename[:-len(".txt")]
         params_output_dir = os.path.join(args.output_dir,params_name)
 
-        soax_args.append( [args.batch_soax,args.tif_dir,param_fp,params_output_dir] )
+        soax_args.append({
+            "batch_soax": args.batch_soax,
+            "tif_dir": args.tif_dir,
+            "param_fp": param_fp,
+            "params_output_dir", params_output_dir,
+        })
 
     print("Creating snake output directories inside {}".format(args.output_dir))
     for soax_arg in soax_args:
-        params_output_dir = soax_arg[3]
+        params_output_dir = soax_arg["params_output_dir"]
         os.mkdir(params_output_dir)
         print("Directory '{}' created".format(params_output_dir))
 
