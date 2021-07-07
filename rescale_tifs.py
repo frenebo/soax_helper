@@ -2,6 +2,8 @@ from snakeutils.files import readable_dir
 import os
 import argparse
 import matplotlib.pyplot as plt
+import tifffile
+import skimage
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
@@ -11,11 +13,26 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    if args.rescale_factor <= 0:
+        raise Exception("Rescale factor must be positive")
+
     tif_files = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
 
     for filename in tif_files:
         fp = os.path.join(args.source_dir,filename)
-        with open(fp, 'rb') as tiff_file:
-            img = plt.imread(tiff_file)
-            print(img.shape)
+
+        img = tifffile.imread(fp)
+
+        dims = img.shape
+        new_dims = []
+        for dim in dims:
+            new_dim = dim * args.rescale_factor
+            if new_dim == 0:
+                raise Exception("Dimension {} in {} rescaled by factor {} becomes zero".format(dim,fp,args.rescale_factor))
+            new_dims.push(new_dim)
+
+        resized_img = skimage.transform.resize(img, new_dims)
+        new_fp = os.path.join(args.target_dir, "resized_" + filename)
+
+        tifffile.imwrite(new_fp, resized_img, planarconfig='CONTIG')
 
