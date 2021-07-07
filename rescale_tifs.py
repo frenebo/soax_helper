@@ -1,6 +1,7 @@
 from snakeutils.files import readable_dir
 import os
 import argparse
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
@@ -10,5 +11,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    for filename in os.listdir(args.source_dir):
-        print(filename)
+    tif_files = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
+
+    for filename in tif_files:
+        fp = os.path.join(args.source_dir,tif_files)
+        with open(fp, 'rb') as tiff_file:
+            img = plt.imread(tiff_file)
+            print(img.shape)
+
