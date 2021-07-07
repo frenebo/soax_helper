@@ -38,10 +38,13 @@ if __name__ == "__main__":
         params_name = params_filename[:-len(".txt")]
         params_output_dir = os.path.join(args.output_dir,params_name)
 
+        soax_args.append( [args.batch_soax,args.tif_dir,param_fp,params_output_dir] )
+
+    print("Creating snake output directories inside {}".format(args.output_dir))
+    for soax_arg in soax_args:
+        params_output_dir = soax_arg[3]
         os.mkdir(params_output_dir)
         print("Directory '{}' created".format(params_output_dir))
-
-        soax_args.append( [args.batch_soax,args.tif_dir,param_fp,params_output_dir] )
 
     counter = mp.Value(c_int32)
     counter_lock = mp.Lock()
