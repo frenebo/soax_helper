@@ -26,6 +26,7 @@ if __name__ == "__main__":
 
         dims = img.shape
         new_dims = []
+
         for dim in dims:
             new_dim = dim * args.rescale_factor
             if new_dim == 0:
