@@ -17,7 +17,7 @@ def run_soax(soax_args):
         batch_soax = batch_soax,
         tif_dir=tif_dir,
         param_fp=param_fp,
-        output_dir=params_output_dir,
+        params_output_dir=params_output_dir,
     )
     subprocess.call(command,shell=True, stdout=subprocess.PIPE)
 
