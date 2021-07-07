@@ -2,6 +2,12 @@ import sys
 import os
 import numpy as np
 
+def readable_dir(dirpath):
+    if not os.path.isdir(dirpath):
+        raise argparse.ArgumentTypeError("{} is not a directory".format(dirpath))
+
+    return dirpath
+
 def extract_snakes(snake_file):
     # get past starting params
     count = 0
