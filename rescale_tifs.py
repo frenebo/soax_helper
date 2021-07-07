@@ -1,5 +1,6 @@
 from snakeutils.files import readable_dir
 import os
+import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
