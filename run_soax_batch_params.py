@@ -17,10 +17,10 @@ def run_soax(batch_soax,tif_dir,param_fp,output_dir):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('batch_soax',description="Path to batch_soax executable")
-    parser.add_argument('tif_dir',type=readable_dir,description='Directory with tif files to run in soax')
-    parser.add_argument('params_dir',type=readabe_dir,description='Directory with soax param text files')
-    parser.add_argument('output_dir',type=readable_dir,description='Directory to put')
+    parser.add_argument('batch_soax',help="Path to batch_soax executable")
+    parser.add_argument('tif_dir',type=readable_dir,help='Directory with tif files to run in soax')
+    parser.add_argument('params_dir',type=readabe_dir,help='Directory with soax param text files')
+    parser.add_argument('output_dir',type=readable_dir,help='Directory to put')
     parser.add_argument('--workers', const=sum, default=5, type=int,
                     help='Number of batch_soax processes to have running at once')
 
