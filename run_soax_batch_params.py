@@ -1,6 +1,7 @@
 import argparse
 from snakeutils.files import readable_dir
 import os
+import multiprocessing as mp
 from multiprocessing.pool import ThreadPool
 import subprocess
 import tqdm
@@ -40,6 +41,9 @@ if __name__ == "__main__":
         print("Directory '{}' created".format(params_output_dir))
 
         soax_args.append( [args.batch_soax,args.tif_dir,param_fp,params_output_dir] )
+
+    counter = mp.Value(c_int32)
+    counter_lock = mp.Lock()
 
     with tqdm.tqdm(total=len(soax_args)) as pbar:
         with ThreadPool(workers_num) as pool:
