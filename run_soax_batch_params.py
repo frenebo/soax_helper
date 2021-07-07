@@ -31,9 +31,15 @@ if __name__ == "__main__":
     workers_num = args.workers
 
     soax_args = []
-    for filename in param_files:
-        param_fp = os.path.join(args.params_dir,filename)
-        soax_args.append( [args.batch_soax,args.tif_dir,param_fp,args.output_dir] )
+    for params_filename in param_files:
+        param_fp = os.path.join(args.params_dir,params_filename)
+        params_name = params_filename[:-len(".txt")]
+        params_output_dir = os.path.join(args.output_dir,params_name)
+
+        os.mkdir(params_output_dir)
+        print("Directory '{}' created".format(params_output_dir))
+
+        soax_args.append( [args.batch_soax,args.tif_dir,param_fp,params_output_dir] )
 
     with tqdm.tqdm(total=len(soax_args)) as pbar:
         with ThreadPool(workers_num) as pool:
