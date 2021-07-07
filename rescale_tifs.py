@@ -3,7 +3,7 @@ import os
 import argparse
 import matplotlib.pyplot as plt
 import tifffile
-import skimage
+from skimage.transform import resize
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
@@ -31,7 +31,7 @@ if __name__ == "__main__":
                 raise Exception("Dimension {} in {} rescaled by factor {} becomes zero".format(dim,fp,args.rescale_factor))
             new_dims.append(new_dim)
 
-        resized_img = skimage.transform.resize(img, new_dims)
+        resized_img = resize(img, new_dims)
         new_fp = os.path.join(args.target_dir, "resized_" + filename)
 
         tifffile.imwrite(new_fp, resized_img, planarconfig='CONTIG')
