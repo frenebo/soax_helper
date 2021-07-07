@@ -14,7 +14,7 @@ def check_range(arg):
         try:
             only_val = decimal.Decimal(split_by_dash[0])
         except decimal.InvalidOperation as err:
-            raise argparse.ArgumentTypeError("Expected {} to be decimal number".format(arg) + str(err))
+            raise argparse.ArgumentTypeError("Expected {} to be decimal number".format(arg) + repr(err))
 
         start = only_val
         stop = only_val
@@ -27,8 +27,9 @@ def check_range(arg):
             stop = decimal.Decimal(split_by_dash[1])
             step = decimal.Decimal(split_by_dash[2])
         except decimal.InvalidOperation as err:
-            raise argparse.ArgumentTypeError("Expected {} to be in form start-stop-step. ".format(arg) + str(err))
+            raise argparse.ArgumentTypeError("Expected {} to be in form start-stop-step. ".format(arg) + repr(err))
 
+    # start of range must be less than or equal to end of range
     if start > stop:
         raise argparse.ArgumentTypeError("Expected start {} to be <= stop {}".format(start,stop))
     if start != stop and step == 0:
@@ -111,8 +112,3 @@ if __name__ == "__main__":
 
             with open(fp,"w") as file:
                 file.write(params_text)
-
-    # print(alphas)
-    # print(betas)
-
-

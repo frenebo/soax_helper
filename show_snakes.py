@@ -19,23 +19,20 @@ if __name__ == "__main__":
             snakes = extract_snakes(snake_file)
             for snake_idx, snake_pts in enumerate(snakes):
                 snake_pts = np.array(snake_pts)
-##                print(snake_pts.shape)
-##                for pt in snake_pts:
-##                    print("({},{})".format(pt[0],pt[1]),end="")
+
                 x,y = snake_pts.T
-##                print(x.shape)
-##                print(y.shape)
+
                 if colorful:
                     plt.plot(x,y)
                 else:
                     plt.plot(x,y,'b')
-                # plt.plot(x,y)
 
             # some_snakefile.tif => some_snakefile.jpg
             save_img_filename = "".join(filename.split(".")[:-1]) + ".png"
             save_img_fp = os.path.join(image_dir_name,save_img_filename)
-            # invert y axis
+
             plt.axes().set_aspect('equal', adjustable='box')
+            # invert y axis
             plt.axis([0,2304,2304,0])
             plt.xlabel("x")
             plt.ylabel("y")
