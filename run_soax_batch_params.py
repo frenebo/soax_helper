@@ -6,6 +6,7 @@ from multiprocessing.pool import ThreadPool
 import subprocess
 import tqdm
 from ctypes import c_int32
+import time
 
 def run_soax(batch_soax,tif_dir,param_fp,output_dir):
     command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {output_dir}".format(
