@@ -29,7 +29,7 @@ if __name__ == "__main__":
             new_dim = dim * args.rescale_factor
             if new_dim == 0:
                 raise Exception("Dimension {} in {} rescaled by factor {} becomes zero".format(dim,fp,args.rescale_factor))
-            new_dims.push(new_dim)
+            new_dims.append(new_dim)
 
         resized_img = skimage.transform.resize(img, new_dims)
         new_fp = os.path.join(args.target_dir, "resized_" + filename)
