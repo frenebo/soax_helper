@@ -14,7 +14,7 @@ if __name__ == "__main__":
     tif_files = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
 
     for filename in tif_files:
-        fp = os.path.join(args.source_dir,tif_files)
+        fp = os.path.join(args.source_dir,filename)
         with open(fp, 'rb') as tiff_file:
             img = plt.imread(tiff_file)
             print(img.shape)
