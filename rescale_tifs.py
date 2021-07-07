@@ -17,6 +17,7 @@ if __name__ == "__main__":
         raise Exception("Rescale factor must be positive")
 
     tif_files = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
+    tif_files.sort()
 
     for filename in tif_files:
         fp = os.path.join(args.source_dir,filename)
