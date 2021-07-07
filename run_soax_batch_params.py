@@ -21,7 +21,7 @@ if __name__ == "__main__":
     parser.add_argument('tif_dir',type=readable_dir,help='Directory with tif files to run in soax')
     parser.add_argument('params_dir',type=readable_dir,help='Directory with soax param text files')
     parser.add_argument('output_dir',type=readable_dir,help='Directory to put')
-    parser.add_argument('--workers', const=sum, default=5, type=int,
+    parser.add_argument('--workers', default=5, type=int,
                     help='Number of batch_soax processes to have running at once')
 
     args = parser.parse_args()
