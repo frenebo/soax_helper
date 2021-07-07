@@ -13,11 +13,11 @@ def run_soax(soax_args):
     tif_dir = soax_args["tif_dir"]
     param_fp = soax_args["param_fp"]
     params_output_dir = soax_args["params_output_dir"]
-    command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {output_dir}".format(
+    command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {params_output_dir}".format(
         batch_soax = batch_soax,
         tif_dir=tif_dir,
         param_fp=param_fp,
-        output_dir=output_dir,
+        output_dir=params_output_dir,
     )
     subprocess.call(command,shell=True, stdout=subprocess.PIPE)
 
