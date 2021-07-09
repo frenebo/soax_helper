@@ -8,7 +8,7 @@ if __name__ == "__main__":
     video_name = sys.argv[2]
     dir_contents = os.listdir(image_folder)
     dir_contents.sort()
-    images = [img for img in dir_contents if img.endswith(".png")]
+    images = [img for img in dir_contents if (img.endswith(".png") or img.endswith(".tif"))]
     frame = cv2.imread(os.path.join(image_folder, images[0]))
     height, width, layers = frame.shape
 
