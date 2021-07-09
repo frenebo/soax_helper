@@ -19,6 +19,7 @@ def run_soax(soax_args):
         param_fp=param_fp,
         params_output_dir=params_output_dir,
     )
+    print("Executing '{}'".format(command))
     subprocess.call(command,shell=True, stdout=subprocess.PIPE)
 
 
