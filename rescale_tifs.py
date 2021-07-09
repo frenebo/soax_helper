@@ -2,8 +2,8 @@ from snakeutils.files import readable_dir
 import os
 import argparse
 import matplotlib.pyplot as plt
-import tifffile
-from skimage.transform import resize
+import imageio
+import cv2
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     for filename in tif_files:
         fp = os.path.join(args.source_dir,filename)
 
-        img = tifffile.imread(fp)
+        img = imageio.imread(fp)
 
         dims = img.shape
         new_dims = []
@@ -33,8 +33,9 @@ if __name__ == "__main__":
                 raise Exception("Dimension {} in {} rescaled by factor {} becomes zero".format(dim,fp,args.rescale_factor))
             new_dims.append(new_dim)
 
-        resized_img = resize(img, new_dims)
+        # cv2's resize keeps the image array in uint8 form
+        resized_img = cv2.resize(img, new_dims)
         new_fp = os.path.join(args.target_dir, "resized_" + filename)
 
-        tifffile.imwrite(new_fp, resized_img, planarconfig='CONTIG')
+        imageio.imwrite(new_fp, resized_img)
 
