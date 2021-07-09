@@ -21,7 +21,7 @@ def run_soax(soax_args):
     )
     print("Executing '{}'".format(command))
     try:
-        subprocess.call(command,shell=True, capture_output=True,check=True)
+        code = subprocess.run(command,shell=True, capture_output=True,check=True).returncode
     except subprocess.CalledProcessError as e:
         print("ERROR: ")
         print("Failed to run {}. stderr:".format(command))
