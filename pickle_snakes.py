@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from snakeutils.files import extract_snakes
 import pickle
-import argparsee
+import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
