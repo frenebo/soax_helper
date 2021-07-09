@@ -20,7 +20,12 @@ def run_soax(soax_args):
         params_output_dir=params_output_dir,
     )
     print("Executing '{}'".format(command))
-    subprocess.call(command,shell=True, stdout=subprocess.PIPE)
+    try:
+        subprocess.call(command,shell=True, capture_output=True,check=True)
+    except subprocess.CalledProcessError as e:
+        print("ERROR: ")
+        print("Failed to run {}. stderr:".format(command))
+        print(e.stderr)
 
 
 if __name__ == "__main__":
