@@ -26,6 +26,8 @@ def run_soax(soax_args):
         print("ERROR: ")
         print("Failed to run {}. stderr:".format(command))
         print(e.stderr)
+        print("stdout:")
+        print(e.stdout)
 
 
 if __name__ == "__main__":
