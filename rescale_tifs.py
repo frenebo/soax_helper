@@ -28,7 +28,7 @@ if __name__ == "__main__":
         new_dims = []
 
         for dim in dims:
-            new_dim = dim * args.rescale_factor
+            new_dim = int(dim * args.rescale_factor)
             if new_dim == 0:
                 raise Exception("Dimension {} in {} rescaled by factor {} becomes zero".format(dim,fp,args.rescale_factor))
             new_dims.append(new_dim)
