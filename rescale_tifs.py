@@ -35,6 +35,9 @@ if __name__ == "__main__":
 
         new_dims = tuple(new_dims)
         # cv2's resize keeps the image array in uint8 form
+        print("Image shape: {}".format(str(img.shape)))
+        print("Image type: {}".format(img.dtype))
+        print("New dims: {}".format(str(new_dims)))
         resized_img = cv2.resize(img, new_dims)
         new_fp = os.path.join(args.target_dir, "resized_" + filename)
 
