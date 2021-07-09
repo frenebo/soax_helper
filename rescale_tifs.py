@@ -38,7 +38,7 @@ if __name__ == "__main__":
         print("Image shape: {}".format(str(img.shape)))
         print("Image type: {}".format(img.dtype))
         print("New dims: {}".format(str(new_dims)))
-        resized_img = cv2.resize(img, new_dims)
+        resized_img = cv2.resize(img, dsize=new_dims)
         new_fp = os.path.join(args.target_dir, "resized_" + filename)
 
         imageio.imwrite(new_fp, resized_img)
