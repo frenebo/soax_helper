@@ -4,12 +4,17 @@ from matplotlib import pyplot as plt
 import numpy as np
 from snakeutils.files import extract_snakes
 import pickle
+import argparsee
 
 if __name__ == "__main__":
-    print("usage: 2 arguments: directory with snake text files, directory to save pickled snakes")
+    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+    parser.add_argument('snakes_dir',help="Directory with snake text files")
+    parser.add_argument('pickle_dir',help="Directory to save pickled snakes")
 
-    dir_name = sys.argv[1]
-    pickle_dir = sys.argv[2]
+    args = parser.parse_args()
+
+    dir_name = args.snakes_dir
+    pickle_dir = args.pickle_dir
     filenames = os.listdir(dir_name)
 
     for filename in filenames:
