@@ -33,6 +33,7 @@ if __name__ == "__main__":
                 raise Exception("Dimension {} in {} rescaled by factor {} becomes zero".format(dim,fp,args.rescale_factor))
             new_dims.append(new_dim)
 
+        new_dims = tuple(new_dims)
         # cv2's resize keeps the image array in uint8 form
         resized_img = cv2.resize(img, new_dims)
         new_fp = os.path.join(args.target_dir, "resized_" + filename)
