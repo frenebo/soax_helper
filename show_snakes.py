@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
             plt.axes().set_aspect('equal', adjustable='box')
             # invert y axis
-            plt.axis([0,2304,2304,0])
+            plt.axis([0,1152,1152,0])
             plt.xlabel("x")
             plt.ylabel("y")
             plt.savefig(save_img_fp)
