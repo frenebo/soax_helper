@@ -34,6 +34,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     tif_paths = args.target
+    print(tif_paths)
 
     for tif_path in tif_paths:
         data = Image.open(tif_path)
