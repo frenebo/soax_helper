@@ -1,4 +1,5 @@
 from snakeutils.files import readable_dir
+from snakeutils.tifimage import save_3d_tif
 import os
 import argparse
 import matplotlib.pyplot as plt
@@ -81,5 +82,8 @@ if __name__ == "__main__":
         new_fp = os.path.join(args.target_dir, new_fn)
         print("  Saving rescaled image as {}".format(new_fp))
 
-        tifffile.imsave(new_fp, resized_img)
+        if img_is_3d:
+            save_3d_tif(new_fp,resized_img)
+        else:
+            tifffile.imsave(new_fp, resized_img)
 
