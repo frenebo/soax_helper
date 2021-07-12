@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
         new_img_arr = np.zeros((pil_img.height,pil_img.width,new_n_frames),dtype=np.array(pil_img).dtype)
 
-        print("Extracting slices {}-{} from depth {} image")
+        print("Extracting slices {}-{} from depth {} image".format(start_slice,end_slice,pil_img.n_frames))
         for frame_idx in range(start_slice,end_slice + 1):
             pil_img.seek(frame_idx)
             new_img_arr[:,:, frame_idx - start_slice] = np.array(pil_img)
