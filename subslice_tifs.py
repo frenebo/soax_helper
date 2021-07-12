@@ -33,5 +33,32 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    start_slice,end_slice = args.slice_range
+    new_n_frames = end_slice - start_slice + 1
+
     for src_tif_fn in os.listdir(args.source_dir):
-        print(src_tif_fn)
+        fp = os.path.join(args.source_dir,src_tif_fn)
+        print("Processing {}".format(fp))
+
+        pil_img = Image.open(fp)
+
+        img_is_3d = getattr(pil_img, "n_frames", 1) != 1
+
+        if not img_is_3d:
+            raise Exception("Cannot slice {}, is not a 3D tif file".format(fp))
+
+        if pil_img.n_frames < end_slice + 1:
+            raise Exception("Can't take slices {}-{}, tif only has {} frames".format(start_slice,end_slice,pil_img.n_frames))
+
+        new_img_arr = np.zeros((pil_img.height,pil_img.width,new_n_frames),dtype=np.array(pil_img).dtype)
+
+        print("Extracting slices {}-{} from depth {} image")
+        for frame_idx in range(start_slice,end_slice + 1):
+            pil_img.seek(frame_idx)
+            new_img_arr[:,:, frame_idx - start_slice] = np.array(pil_img)
+
+        new_tif_fn = "{}-{}sliced_" + src_tif_fn
+        new_fp = os.path.join(args.target_dir, new_tif_fn)
+        print("Saving sliced image as {}".format(new_fp))
+
+        tifffile.imsave(new_fp, new_img_arr)
