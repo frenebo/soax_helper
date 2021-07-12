@@ -3,7 +3,7 @@ import os
 import argparse
 
 def slice_range(arg_str):
-    split_by_dash = arg.split('-')
+    split_by_dash = arg_str.split('-')
 
     if len(split_by_dash) != 2:
         raise argparse.ArgumentTypeError("Argument {} should have start and end slice index separated by one dash. Ex: '10-13'".format(arg_str))
