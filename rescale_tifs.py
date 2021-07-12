@@ -4,6 +4,7 @@ import argparse
 import matplotlib.pyplot as plt
 import imageio
 import cv2
+from PIL import Image
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
@@ -21,6 +22,9 @@ if __name__ == "__main__":
 
     for filename in tif_files:
         fp = os.path.join(args.source_dir,filename)
+
+        if getattr(Image.open(fp), "n_frames", 1) != 1:
+            raise Exception("Cannot rescale 3d TIF {}".format(fp))
 
         img = imageio.imread(fp)
 
