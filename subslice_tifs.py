@@ -33,5 +33,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    for src_tif_fn in args.source_dir:
+    for src_tif_fn in os.listdir(args.source_dir):
         print(src_tif_fn)
