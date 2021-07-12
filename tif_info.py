@@ -8,7 +8,7 @@ def tif_file_or_dir(target_path):
     try:
         dir_path = readable_dir(target_path)
         dir_contents = os.listdir(dir_path)
-        tif_filenames = [filename for filename in dir_conents if filename.endswith(".tif")]
+        tif_filenames = [filename for filename in dir_contents if filename.endswith(".tif")]
         tif_filepaths = [os.path.join(target_path,tif_fn) for tif_fn in tif_filenames]
         return tif_filepaths
 
