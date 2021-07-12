@@ -7,6 +7,7 @@ import cv2
 from PIL import Image
 from scipy.ndimage import zoom
 import tifffile
+import numpy as np
 
 def rescale_multi_dim_arr(arr,rescale_factor):
     if len(arr.shape) > 3:
