@@ -33,13 +33,13 @@ def rescale_multi_dim_arr(arr,rescale_factor):
     new_width = new_dims[1]
 
     if depth is not None:
-        print("Resizing {}x{}, depth {} to {}x{}, depth {}".format(old_width,old_height,depth,new_width,new_height,depth))
+        print("  Resizing {}x{}, depth {} to {}x{}, depth {}".format(old_width,old_height,depth,new_width,new_height,depth))
 
         new_arr = np.zeros((new_height,new_width,depth),dtype=arr.dtype)
         for i in range(depth):
             new_arr[:,:,i] = cv2.resize(arr[i],dsize=(new_width,new_height))
     else:
-        print("Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
+        print("  Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
         new_arr = cv2.resize(arr,dsize=(new_width,new_height))
 
     return new_arr
@@ -67,7 +67,7 @@ if __name__ == "__main__":
         img_is_3d = getattr(pil_img, "n_frames", 1) != 1
 
         if img_is_3d:
-            print("Resizing {} as 3d image since it has n_frames={}".format(fp,pil_img.n_frames))
+            print("Resizing {} by factor {}".format(fp,float(args.rescale_factor)))
             arr = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
             for frame_idx in range(pil_img.n_frames):
                 pil_img.seek(frame_idx)
