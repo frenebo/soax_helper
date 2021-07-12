@@ -60,7 +60,7 @@ if __name__ == "__main__":
         img_is_3d = getattr(pil_img, "n_frames", 1) != 1
 
         if img_is_3d:
-            print("Resizing {} as 3d image since it has n_frames={}".format(pil_img.n_frames))
+            print("Resizing {} as 3d image since it has n_frames={}".format(fp,pil_img.n_frames))
             arr = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
             for frame_idx in range(pil_img.n_frames):
                 pil_img.seek(frame_idx)
