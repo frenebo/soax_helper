@@ -27,14 +27,20 @@ def rescale_multi_dim_arr(arr,rescale_factor):
             raise Exception("Dimension {} in {} rescaled by factor {} becomes zero".format(dim,fp,args.rescale_factor))
         new_dims.append(new_dim)
 
+    old_height = dims[0]
+    old_width = dims[1]
+    new_height = new_dims[0]
+    new_width = new_dims[1]
+
     if depth is not None:
-        print("Resizing {}x{}, depth {} to {}x{}, depth {}".format(dims[0],dims[1],depth,new_dims[0],new_dims[1],depth))
-        new_arr = np.zeros((new_dims[0],new_dims[1],depth),dtype=arr.dtype)
+        print("Resizing {}x{}, depth {} to {}x{}, depth {}".format(old_width,old_height,depth,new_width,new_height,depth))
+
+        new_arr = np.zeros((new_height,new_width,depth),dtype=arr.dtype)
         for i in range(depth):
-            new_arr[:,:,i] = cv2.resize(arr[i],dsize=new_dims)
+            new_arr[:,:,i] = cv2.resize(arr[i],dsize=(new_width,new_height))
     else:
-        print("Resizing {}x{} to {}x{}".format(dims[0],dims[1],new_dims[0],new_dims[1]))
-        new_arr = cv2.resize(arr,dsize=new_dims)
+        print("Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
+        new_arr = cv2.resize(arr,dsize=(new_width,new_height))
 
     return new_arr
 
