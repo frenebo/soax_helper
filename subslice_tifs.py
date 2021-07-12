@@ -60,7 +60,7 @@ if __name__ == "__main__":
             pil_img.seek(frame_idx)
             new_img_arr[:,:, frame_idx - start_slice] = np.array(pil_img)
 
-        new_tif_fn = "{}-{}sliced_" + src_tif_fn
+        new_tif_fn = "{}-{}sliced_".format(start_slice,end_slice) + src_tif_fn
         new_fp = os.path.join(args.target_dir, new_tif_fn)
         print("Saving sliced image as {}".format(new_fp))
 
