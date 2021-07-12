@@ -6,7 +6,7 @@ import math
 import decimal
 
 # Should be of form 'start-stop-step' or 'value'
-def check_range(arg):
+def arg_or_range(arg):
     split_by_dash = arg.split('-')
 
     # If we only have one value for this argument instead of a  range
@@ -81,8 +81,8 @@ def param_form_settings(start,stop,step):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('alpha_range',type=check_range)
-    parser.add_argument('beta_range',type=check_range)
+    parser.add_argument('alpha_range',type=arg_or_range)
+    parser.add_argument('beta_range',type=arg_or_range)
     parser.add_argument('target_dir',type=readable_dir,help='Directory for putting created parameter files')
 
     args = parser.parse_args()

@@ -46,20 +46,21 @@ def rescale_multi_dim_arr(arr,rescale_factor):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('rescale_factor',help="Scale factor, for example 0.5 to make tifs half scale")
+    parser.add_argument('rescale_factor',type=float,help="Scale factor, for example 0.5 to make tifs half scale")
     parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
     parser.add_argument('target_dir',type=readable_dir)
 
     args = parser.parse_args()
 
-    if float(args.rescale_factor) <= 0:
+    if args.rescale_factor <= 0:
         raise Exception("Rescale factor must be positive")
 
     tif_files = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
     tif_files.sort()
 
-    for filename in tif_files:
-        fp = os.path.join(args.source_dir,filename)
+    for src_filename in tif_files:
+        fp = os.path.join(args.source_dir,src_filename)
+        print("Processing {}".format(fp))
 
         pil_img = Image.open(fp)
 
@@ -67,7 +68,6 @@ if __name__ == "__main__":
         img_is_3d = getattr(pil_img, "n_frames", 1) != 1
 
         if img_is_3d:
-            print("Processing {}".format(fp))
             arr = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
             for frame_idx in range(pil_img.n_frames):
                 pil_img.seek(frame_idx)
@@ -75,9 +75,10 @@ if __name__ == "__main__":
         else:
             arr = np.array(pil_img)
 
-        resized_img = rescale_multi_dim_arr(arr,float(args.rescale_factor))
-
-        new_fp = os.path.join(args.target_dir, "resized_{}_".format(args.rescale_factor) + filename)
+        resized_img = rescale_multi_dim_arr(arr,args.rescale_factor)
+        new_fn = "{}resized_".format(args.rescale_factor) + src_filename
+        new_fp = os.path.join(args.target_dir, new_fn)
+        print("  Saving rescaled image as {}".format(new_fp))
 
         tifffile.imsave(new_fp, resized_img)
 
