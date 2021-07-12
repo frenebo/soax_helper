@@ -29,12 +29,12 @@ def readable_dir(dirpath):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Get info from tif file or directory of tif files')
-    parser.add_argument('target',help="TIF file or directory of tif files")
+    parser.add_argument('target',type=tif_file_or_dir,help="TIF file or directory of tif files")
 
     args = parser.parse_args()
 
     tif_paths = args.target
-    print(tif_paths)
+    # print(tif_paths)
 
     for tif_path in tif_paths:
         data = Image.open(tif_path)
