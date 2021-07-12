@@ -74,8 +74,9 @@ if __name__ == "__main__":
                 arr[:,:,frame_idx] = np.array(pil_img)
         else:
             arr = np.array(pil_img)
-
+        print("Orig shape: {}".format(arr.shape))
         resized_img = rescale_multi_dim_arr(arr,args.rescale_factor)
+        print("New shape: {}".format(resize_img.shape))
         new_fn = "{}resized_".format(args.rescale_factor) + src_filename
         new_fp = os.path.join(args.target_dir, new_fn)
         print("  Saving rescaled image as {}".format(new_fp))
