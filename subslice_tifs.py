@@ -2,6 +2,8 @@ from snakeutils.files import readable_dir
 import os
 import argparse
 from PIL import Image
+import numpy as np
+import tifffile
 
 def slice_range(arg_str):
     split_by_dash = arg_str.split('-')
