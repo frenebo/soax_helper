@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
     for tif_path in tif_paths:
         data = Image.open(tif_path)
-        shape = data.shape
+        shape = data.size
         stack_height = data.n_frames
         arr = np.array(data)
         dtype = str(arr.dtype)
