@@ -1,3 +1,4 @@
+import numpy as np
 
 # numpy arr should have (height,width,depth)
 def save_3d_tif(fp,numpy_arr):
