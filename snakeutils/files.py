@@ -33,6 +33,7 @@ def extract_snakes(snake_file):
             snake_name = line[0]
             snake_points = []
         print(line_idx)
+        print(lines[line_idx - 1])
         line = lines[line_idx]
         # if reached a new label for snake or reached junction section of file
         if len(line) == 1 or len(line) == 3:
