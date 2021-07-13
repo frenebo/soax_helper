@@ -16,6 +16,7 @@ if __name__ == "__main__":
     dir_name = args.snakes_dir
     pickle_dir = args.pickle_dir
     filenames = os.listdir(dir_name)
+    filenames.sort()
 
     for filename in filenames:
         fp = os.path.join(dir_name,filename)

@@ -34,22 +34,27 @@ def extract_snakes(snake_file):
             snake_points = []
         # print(line_idx)
         # print(lines[line_idx - 1:])
+        if line_idx >= len(lines):
+            end_of_snakes = True
+
         line = lines[line_idx]
-        # if reached a new label for snake or reached junction section of file
-        if len(line) == 1 or len(line) == 3:
+        #reached junction section
+        if len(line) == 3:
+            end_of_snakes = True
+        else:
+            end_of_snakes = False
+
+        if end_of_snakes:
+            break
+
+        # if reached a new label for snake
+        if len(line) == 1 :
             snake_dict[snake_name] = np.array(snake_points)
             snake_name = None
             snake_points = None
 
-            #reached junction section
-            if len(line) == 3:
-                break
-            #reached end of file
-            if line_idx >= len(lines):
-                break
-            if len(line) == 1:
-                # skip open/closed #1 #0 line
-                line_idx += 1
+            # skip open/closed #1 #0 line
+            line_idx += 1
 
             continue
         # this number of items means s,p,x,y,fg_int,bg_int
