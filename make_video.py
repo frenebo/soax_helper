@@ -32,12 +32,12 @@ if __name__ == "__main__":
 
 
     if args.subdirs:
-        subdir_names = [name for name in os.listdir(image_folder) if os.path.isdir(os.path.join(dir_name,name))]
+        subdir_names = [name for name in os.listdir(image_folder) if os.path.isdir(os.path.join(image_folder,name))]
 
         print("Making videos for image subdirectories {}".format(subdir_names))
 
         for subdir_name in subdir_names:
-            subdir_path = os.path.join(image_folder)
+            subdir_path = os.path.join(image_folder,subdir_name)
             video_path = os.path.join(video_dir,subdir_name + ".avi")
             make_and_write_vid(subdir_path,video_path)
     else:
