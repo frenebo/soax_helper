@@ -51,13 +51,23 @@ def extract_snakes(snake_file):
                 line_idx += 1
 
             continue
-        else:
-            x= float(line[2])
-            y= float(line[3])
+        elif len(line) == 6:
+            x = float(line[2])
+            y = float(line[3])
             snake_points.append([x,y])
 
             line_idx += 1
             continue
+        elif len(line) == 7:
+            x = float(line[2])
+            y = float(line[3])
+            z = float(line[4])
+            snake_points.append([x,y,z]
+
+            line_idx += 1
+            continue
+        else:
+            raise Exception("Found line with {} items - unfamiliar number of line items. line:\n{}".format(len(line),line))
 
     snake_arr = []
 
