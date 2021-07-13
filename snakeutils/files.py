@@ -51,6 +51,7 @@ def extract_snakes(snake_file):
                 line_idx += 1
 
             continue
+        # this number of items means s,p,x,y,fg_int,bg_int
         elif len(line) == 6:
             x = float(line[2])
             y = float(line[3])
@@ -58,11 +59,12 @@ def extract_snakes(snake_file):
 
             line_idx += 1
             continue
+        # this number of items means s,p,x,y,z,fg_int,bg_int
         elif len(line) == 7:
             x = float(line[2])
             y = float(line[3])
             z = float(line[4])
-            snake_points.append([x,y,z]
+            snake_points.append([x,y,z])
 
             line_idx += 1
             continue
