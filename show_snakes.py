@@ -2,8 +2,8 @@ import sys
 import os
 from matplotlib import pyplot as plt
 import numpy as np
-from snakeutils.files import extract_snakes
-from snakeutils.files import readable_dir
+from snakeutils.files import extract_snakes, readable_dir
+import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
