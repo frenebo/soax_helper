@@ -1,6 +1,8 @@
 import cv2
 import sys
 import os
+import argparse
+from snakeutils.files import readable_dir
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
