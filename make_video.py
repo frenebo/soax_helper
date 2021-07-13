@@ -31,7 +31,7 @@ if __name__ == "__main__":
     video_dir = args.video_dir
 
     if args.subdirs:
-        subdir_names = [name for name in os.listdir(dir_name) if os.path.isdir(os.path.join(dir_name,name))]
+        subdir_names = [name for name in os.listdir(image_folder) if os.path.isdir(os.path.join(dir_name,name))]
 
         print("Making videos for image subdirectories {}".format(subdir_names))
 
