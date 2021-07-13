@@ -5,9 +5,11 @@ import argparse
 from snakeutils.files import readable_dir
 
 def make_and_write_vid(image_folder,video_path):
+    print(image_folder)
     dir_contents = os.listdir(image_folder)
     dir_contents.sort()
     images = [img for img in dir_contents if (img.endswith(".png") or img.endswith(".tif"))]
+    print(images)
     frame = cv2.imread(os.path.join(image_folder, images[0]))
     height, width, layers = frame.shape
 
