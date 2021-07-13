@@ -21,6 +21,7 @@ if __name__ == "__main__":
         fp = os.path.join(dir_name,filename)
 
         with open(fp, "r") as snake_file:
+            print(fp)
             snakes = extract_snakes(snake_file)
 
             pickle_filename = "".join(filename.split(".")[:-1]) + ".pickle"
