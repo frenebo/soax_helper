@@ -28,7 +28,7 @@ if __name__ == "__main__":
             for snake_idx, snake_pts in enumerate(snakes):
                 snake_pts = np.array(snake_pts)
 
-                x,y = snake_pts.T
+                x,y = snake_pts.T[:2]
 
                 if colorful:
                     plt.plot(x,y)
