@@ -18,7 +18,7 @@ def arg_or_range(arg):
 
         start = only_val
         stop = only_val
-        step = 0
+        step = decimal.Decimal(0)
     else:
         if len(split_by_dash) != 3:
             raise argparse.ArgumentTypeError("Expected {} to be in form start-stop-step".format(arg))
