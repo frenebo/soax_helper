@@ -44,6 +44,7 @@ if __name__ == "__main__":
     param_files.sort()
 
     workers_num = args.workers
+    print("WORKERS: {}".format(workers_num))
 
     soax_args = []
     for params_filename in param_files:
