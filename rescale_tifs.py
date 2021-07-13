@@ -38,8 +38,7 @@ def rescale_multi_dim_arr(arr,rescale_factor):
 
         new_arr = np.zeros((new_height,new_width,depth),dtype=arr.dtype)
         for i in range(depth):
-            print("source shaep:{}".format(arr[i].shape))
-            new_arr[:,:,i] = cv2.resize(arr[i],dsize=(new_width,new_height))
+            new_arr[:,:,i] = cv2.resize(arr[:,:,i],dsize=(new_width,new_height))
     else:
         print("  Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
         new_arr = cv2.resize(arr,dsize=(new_width,new_height))
