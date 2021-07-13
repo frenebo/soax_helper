@@ -3,13 +3,21 @@ import os
 from matplotlib import pyplot as plt
 import numpy as np
 from snakeutils.files import extract_snakes
+from snakeutils.files import readable_dir
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+    parser.add_argument('snake_dir',type=readable_dir,help="Source directory where snake text files are")
+    parser.add_argument('image_dir',type=readable_dir,help="Target directory to save graphed snakes")
+    parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
+
+    args = parser.parse_args()
     print("usage: 2 arguments: directory with snake text files, directory to save images")
 
-    dir_name = sys.argv[1]
-    image_dir_name = sys.argv[2]
-    colorful = len(sys.argv) > 3 and sys.argv[3] == "colorful"
+    dir_name = args.snake_dir
+    image_dir_name = args.image_dir
+    colorful = args.c
+
     filenames = os.listdir(dir_name)
 
     for filename in filenames:
