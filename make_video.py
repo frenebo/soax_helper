@@ -30,6 +30,7 @@ if __name__ == "__main__":
     image_folder = args.image_dir
     video_dir = args.video_dir
 
+
     if args.subdirs:
         subdir_names = [name for name in os.listdir(image_folder) if os.path.isdir(os.path.join(dir_name,name))]
 
