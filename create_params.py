@@ -52,11 +52,6 @@ def create_range(start,stop,step):
     return vals
 
 def param_form_settings(start,stop,step):
-    print(start)
-
-    print(stop)
-    print(step)
-
     start_exp = start.as_tuple().exponent
     stop_exp = stop.as_tuple().exponent
     step_exp = step.as_tuple().exponent
