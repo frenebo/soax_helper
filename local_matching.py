@@ -158,7 +158,7 @@ def local_match_snakes(snakes):
     # for tip_name in tip_matches:
     #     best_match =
 
-def best_match(matches):
+# def best_match(matches):
 
 
 if __name__ == "__main__":
