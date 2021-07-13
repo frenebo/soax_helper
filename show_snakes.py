@@ -12,7 +12,6 @@ if __name__ == "__main__":
     parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
 
     args = parser.parse_args()
-    print("usage: 2 arguments: directory with snake text files, directory to save images")
 
     dir_name = args.snake_dir
     image_dir_name = args.image_dir
