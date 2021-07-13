@@ -7,6 +7,8 @@ import argparse
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+    parser.add_argument('width',type=int,help="Width dimension of frame")
+    parser.add_argument('height',type=int,help="Width dimension of frame")
     parser.add_argument('snake_dir',type=readable_dir,help="Source directory where snake text files are")
     parser.add_argument('image_dir',type=readable_dir,help="Target directory to save graphed snakes")
     parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
@@ -40,7 +42,7 @@ if __name__ == "__main__":
 
             plt.axes().set_aspect('equal', adjustable='box')
             # invert y axis
-            plt.axis([0,1152,1152,0])
+            plt.axis([0,args.width,args.height,0])
             plt.xlabel("x")
             plt.ylabel("y")
             plt.savefig(save_img_fp)
