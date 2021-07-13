@@ -16,7 +16,7 @@ if __name__ == "__main__":
 
     dir_name = args.snake_dir
     image_dir_name = args.image_dir
-    colorful = args.c
+    colorful = args.colorful
 
     filenames = os.listdir(dir_name)
 
