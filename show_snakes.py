@@ -24,7 +24,7 @@ def make_snake_images_and_save(dir_name,image_dir_name,image_width,image_height,
 
             # some_snakefile.tif => some_snakefile.jpg
             save_img_filename = "".join(filename.split(".")[:-1]) + ".png"
-            save_img_fp = os.path.join(image_dir,save_img_filename)
+            save_img_fp = os.path.join(image_dir_name,save_img_filename)
 
             plt.axes().set_aspect('equal', adjustable='box')
             # invert y axis
