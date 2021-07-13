@@ -45,7 +45,8 @@ def create_range(start,stop,step):
     vals = []
     current_val = start
     while True:
-        print(current_val)
+        print("start: {} stop: {} step: {} current: {}".format(start,stop,step,current_val))
+
         vals.append(current_val)
         current_val += step
         if current_val > stop:
