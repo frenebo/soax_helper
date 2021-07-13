@@ -36,15 +36,17 @@ def extract_snakes(snake_file):
         # print(lines[line_idx - 1:])
         if line_idx >= len(lines):
             end_of_snakes = True
-
-        line = lines[line_idx]
-        #reached junction section
-        if len(line) == 3:
-            end_of_snakes = True
         else:
-            end_of_snakes = False
+            line = lines[line_idx]
+            #reached junction section
+            if len(line) == 3:
+                end_of_snakes = True
+            else:
+                end_of_snakes = False
 
         if end_of_snakes:
+            # save last snake and break loop
+            snake_dict[snake_name] = np.array(snake_points)
             break
 
         # if reached a new label for snake
