@@ -21,7 +21,7 @@ if __name__ == "__main__":
         if getattr(pil_img, "n_frames", 1) == 1:
             raise Exception("TIF {} is already 2D".format(fp))
 
-        arr = np.zeros((pil_img.height,pil_img.width,new_n_frames),dtype=np.array(pil_img).dtype)
+        arr = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
 
         for frame_idx in range(pil_img.n_frames):
             pil_img.seek(frame_idx)
