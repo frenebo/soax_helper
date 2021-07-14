@@ -3,6 +3,7 @@ import argparse
 from PIL import Image
 import numpy as np
 import tifffile
+import os
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Maximum Intensity Projection to flatten 3D tifs to 2D tifs')
