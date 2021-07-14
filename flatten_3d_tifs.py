@@ -26,12 +26,12 @@ if __name__ == "__main__":
             pil_img.seek(frame_idx)
             new_img_arr[:,:, frame_idx] = np.array(pil_img)
         # Maximum intensity projection
-        2d_arr = np.max(arr,axis=2)
+        arr_2d = np.max(arr,axis=2)
 
         new_tif_fn = "2d_" + src_tif_fn
         new_fp = os.path.join(args.target_dir, new_tif_fn)
         print("  Saving flattened tif as {}".format(new_fp))
 
-        tifffile.imsave(new_fp,2d_arr)
+        tifffile.imsave(new_fp,arr_2d)
 
 

@@ -47,6 +47,7 @@ def create_range(start,stop,step):
     while True:
         vals.append(current_val)
         current_val += step
+        print("start{} stop{} step{} current{}".format(start,stop,step,current_val))
         if current_val >= stop:
             break
     return vals
@@ -75,35 +76,52 @@ def param_form_settings(start,stop,step):
 
 
 if __name__ == "__main__":
+    default_alpha = decimal.Decimal("0.01")
+    default_beta = decimal.Decimal("0.1")
+    default_min_foreground = decimal.Decimal("0")
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('alpha_range',type=arg_or_range)
-    parser.add_argument('beta_range',type=arg_or_range)
+    parser.add_argument('--alpha',
+                        type=arg_or_range,
+                        default={"start":default_alpha,"stop":default_alpha,"step":decimal.Decimal(0)})
+    parser.add_argument('--beta',
+                        type=arg_or_range,
+                        default={"start":default_beta,"stop":default_beta,"step":decimal.Decimal(0)})
+    parser.add_argument('--min_foreground',
+                        type=arg_or_range,
+                        default={"start":default_min_foreground,"stop":default_min_foreground,"step":decimal.Decimal(0)})
     parser.add_argument('target_dir',type=readable_dir,help='Directory for putting created parameter files')
 
+
     args = parser.parse_args()
-    alphas = create_range(**args.alpha_range)
-    betas = create_range(**args.beta_range)
+    alphas = create_range(**args.alpha)
+    betas = create_range(**args.beta)
+    min_foregrounds = create_range(**args.min_foreground)
 
-    alpha_form_settings = param_form_settings(**args.alpha_range)
-    beta_form_settings = param_form_settings(**args.beta_range)
+    alpha_form_settings = param_form_settings(**args.alpha)
+    beta_form_settings = param_form_settings(**args.beta)
+    min_foreground_settings = param_form_settings(**args.min_foreground)
 
-    filename_template = "params_a{{alpha:0{}.{}f}}_b{{beta:0{}.{}f}}.txt".format(
+    filename_template = "params_a{{alpha:0{}.{}f}}_b{{beta:0{}.{}f}}_mf{{min_foreground:0{}.{}f}}.txt".format(
         alpha_form_settings["str_length"],
         alpha_form_settings["decimal_places"],
         beta_form_settings["str_length"],
         beta_form_settings["decimal_places"],
+        min_foreground_settings["str_length"],
+        min_foreground_settings["decimal_places"]
     )
     print(filename_template)
 
     for alpha in alphas:
         for beta in betas:
-            params_filename = filename_template.format(alpha=alpha,beta=beta)
-            fp = os.path.join(args.target_dir, params_filename)
+            for min_foreground in min_foregrounds:
+                params_filename = filename_template.format(alpha=alpha,beta=beta,min_foreground=min_foreground)
+                fp = os.path.join(args.target_dir, params_filename)
 
-            params_text = create_params(
-                alpha=alpha,
-                beta=beta,
-            )
+                params_text = create_params(
+                    alpha=alpha,
+                    beta=beta,
+                    min_foreground=min_foreground
+                )
 
-            with open(fp,"w") as file:
-                file.write(params_text)
+                with open(fp,"w") as file:
+                    file.write(params_text)
