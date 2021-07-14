@@ -21,13 +21,13 @@ if __name__ == "__main__":
         if getattr(pil_img, "n_frames", 1) == 1:
             raise Exception("TIF {} is already 2D".format(fp))
 
-        arr = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
+        arr_3d = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
 
         for frame_idx in range(pil_img.n_frames):
             pil_img.seek(frame_idx)
-            new_img_arr[:,:, frame_idx] = np.array(pil_img)
+            arr_3d[:,:, frame_idx] = np.array(pil_img)
         # Maximum intensity projection
-        arr_2d = np.max(arr,axis=2)
+        arr_2d = np.max(arr_3d,axis=2)
 
         new_tif_fn = "2d_" + src_tif_fn
         new_fp = os.path.join(args.target_dir, new_tif_fn)
