@@ -67,9 +67,9 @@ def local_match_snakes(snakes):
     # Since we look for tips matching with d*e^theta < eta, we can rule out
     # indices where d >= eta
     match_candidates = np.transpose((tip_dists < eta).nonzero())
-    print("candidates length")
-    print(match_candidates)
-    print(match_candidates.shape)
+    # print("candidates length")
+    # print(match_candidates)
+    # print(match_candidates.shape)
 
     matches = []
 
