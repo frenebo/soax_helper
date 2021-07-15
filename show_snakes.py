@@ -7,8 +7,10 @@ import argparse
 
 def make_snake_images_and_save(dir_name,image_dir_name,image_width,image_height,colorful):
     filenames = os.listdir(dir_name)
-    for filename in filenames:
-        fp = os.path.join(dir_name,filename)
+    snake_filenames = [filename for filename in filenames if filename.endswith(".txt")]
+    snake_filenames.sort()
+    for snake_filename in snake_filenames:
+        fp = os.path.join(dir_name,snake_filename)
 
         with open(fp, "r") as snake_file:
             print("Showing snakes for {}".format(fp))
@@ -24,7 +26,7 @@ def make_snake_images_and_save(dir_name,image_dir_name,image_width,image_height,
                     plt.plot(x,y,'b')
 
             # some_snakefile.tif => some_snakefile.jpg
-            save_img_filename = "".join(filename.split(".")[:-1]) + ".png"
+            save_img_filename = "".join(snake_filename.split(".")[:-1]) + ".png"
             save_img_fp = os.path.join(image_dir_name,save_img_filename)
 
             plt.axes().set_aspect('equal', adjustable='box')

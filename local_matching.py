@@ -12,10 +12,11 @@ def get_tip_coords_and_unit_vecs(snakes):
     tip_unit_vectors = np.zeros( [len(snakes)*2,2])
 
     for snake_idx,snake in enumerate(snakes):
-        x,y=snake.T
+        x,y=snake.T[:2]
 
         start_x = x[0]
         start_y = y[0]
+
         end_x = x[-1]
         end_y = y[-1]
 
@@ -158,9 +159,6 @@ def local_match_snakes(snakes):
     matches_to_join = []
     # for tip_name in tip_matches:
     #     best_match =
-
-# def best_match(matches):
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
