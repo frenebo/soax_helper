@@ -138,8 +138,8 @@ def local_match_snakes(snakes):
         # tip1_duplicate = tip1_idx in tip_matches
         # tip2_duplicate = tip2_idx in seen_tips
 
-        seen_tips[tip1_idx] = match_data
-        seen_tips[tip2_idx] = match_data
+        # seen_tips[tip1_idx] = match_data
+        # seen_tips[tip2_idx] = match_data
 
         # print(snakes[snake1_idx].shape)
         snake1x,snake1y = snakes[snake1_idx].T
