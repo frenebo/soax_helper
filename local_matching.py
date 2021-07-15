@@ -146,7 +146,7 @@ def local_match_snakes(snakes):
         snake2x,snake2y = snakes[snake2_idx].T
         plt.plot(snake1x,snake1y,linewidth=0.1)
         plt.plot(snake2x,snake2y,linewidth=0.1)
-        print(snake1x,snake1y)
+        # print(snake1x,snake1y)
 
     plt.axes().set_aspect('equal', adjustable='box')
     plt.axis([0,2304,2304,0])
