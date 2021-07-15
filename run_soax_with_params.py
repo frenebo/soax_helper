@@ -15,9 +15,8 @@ def run_soax(soax_args):
     params_output_dir = soax_args["params_output_dir"]
     error_dir = soax_args["error_dir"]
 
-    if error_dir is not None:
-        error_fp = os.path.join(error_dir,params_output_dir + ".txt")
-        error_file =  open(error_fp,"w")
+    error_fp = os.path.join(error_dir,params_output_dir + ".txt")
+    error_file =  open(error_fp,"w")
 
     command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {params_output_dir}".format(
         batch_soax = batch_soax,
@@ -28,10 +27,7 @@ def run_soax(soax_args):
 
     print("Executing '{}'".format(command))
     try:
-        if error_dir is not None:
-            code = subprocess.run(command,shell=True,stderr=error_file,check=True).returncode
-        else:
-            code = subprocess.run(command,shell=True,check=True).returncode
+        code = subprocess.run(command,shell=True,stderr=error_file,check=True).returncode
     except subprocess.CalledProcessError as e:
         print("ERROR: ")
         print("Failed to run {}. return code {}. stderr:".format(e.returncode, command))
@@ -46,7 +42,7 @@ if __name__ == "__main__":
     parser.add_argument('tif_dir',type=readable_dir,help='Directory with tif files to run in soax')
     parser.add_argument('params_dir',type=readable_dir,help='Directory with soax param text files')
     parser.add_argument('output_dir',type=readable_dir,help='Directory to put')
-    parser.add_argument('--error_dir',default=None,type=readable_dir,help='Directory to write error messages')
+    parser.add_argument('error_dir', type=readable_dir,help='Directory to write error messages')
     parser.add_argument('--workers', default=5, type=int, help='Number of batch_soax processes to have running at once')
 
     args = parser.parse_args()
@@ -61,19 +57,22 @@ if __name__ == "__main__":
         param_fp = os.path.join(args.params_dir,params_filename)
         params_name = params_filename[:-len(".txt")]
         params_output_dir = os.path.join(args.output_dir,params_name)
+        error_subdir = os.path.join(args.error_dir,params_name)
 
         soax_args.append({
             "batch_soax": args.batch_soax,
             "tif_dir": args.tif_dir,
             "param_fp": param_fp,
             "params_output_dir": params_output_dir,
-            "error_dir":args.error_dir,
+            "error_dir":error_subdir,
         })
 
     print("Creating snake output directories inside {}".format(args.output_dir))
     for soax_arg in soax_args:
         params_output_dir = soax_arg["params_output_dir"]
+        error_subdir = soax_arg["error_dir"]
         os.mkdir(params_output_dir)
+        os.mkdir(error_subdir)
         print("Directory '{}' created".format(params_output_dir))
 
     counter = mp.Value(c_int32)
