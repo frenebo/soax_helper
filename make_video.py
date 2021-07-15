@@ -17,7 +17,7 @@ def make_and_write_vid(image_folder,video_path):
     frame = cv2.imread(os.path.join(image_folder, images[0]))
     height, width, layers = frame.shape
 
-    video = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'MP4V'), 10, (width,height))
+    video = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'mp4v'), 10, (width,height))
 
     for image in images:
         video.write(cv2.imread(os.path.join(image_folder, image)))
