@@ -34,10 +34,10 @@ def run_soax(soax_args):
         code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
     except subprocess.CalledProcessError as e:
         print("ERROR: ")
-        print("Failed to run {}. return code {}. stderr:".format(e.returncode, command))
-        print(e.stderr)
-        # print("stdout:")
-        # print(e.stdout)
+        print("Failed to run {}. return code {}".format(e.returncode, command))
+        # print(e.stderr)
+        # # print("stdout:")
+        # # print(e.stdout)
 
 
 if __name__ == "__main__":
