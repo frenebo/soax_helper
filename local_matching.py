@@ -110,7 +110,7 @@ def local_match_snakes(snakes):
 
     tip_matches = {}
 
-    for i in range(min(1000,len(matches))):
+    for i in range(len(matches)):
         tip1_idx = matches[i][0]
         tip2_idx = matches[i][1]
 
@@ -122,7 +122,6 @@ def local_match_snakes(snakes):
             "snake2": snake2_idx,
             "tip1type": "start" if tip1_idx % 2 == 0 else "end",
             "tip2type": "start" if tip2_idx % 2 == 0 else "end",
-
         }
 
         if tip1_idx in tip_matches:
@@ -156,6 +155,7 @@ def local_match_snakes(snakes):
     # plt.clf()
 
     print("{} tip matches".format(len(tip_matches)))
+    print(tip_matches)
     #the matches between ends that we choose to join together
     matches_to_join = []
     # for tip_name in tip_matches:
