@@ -38,6 +38,13 @@ def get_tip_coords_and_unit_vecs(snakes):
 
     return tip_coords,tip_unit_vectors
 
+# The distance at coordinates x,y is the same distance at coordinates y,x, so we might as well
+# set all the values along the diagonal and below it to infinity. Distances along diagonal
+# are just distances from one point to itself, so they should be zero
+def redundant_tip_dists_as_infinity(tip_dists):
+    infinity_except_below_diag = np.ones(tip_dists.shape)*np.Inf
+    return tip_dists + infinity_except_below_diag
+
 def local_match_snakes(snakes):
     # threshold for matching tips is d*e^angle < eta
     eta = 10
@@ -51,11 +58,11 @@ def local_match_snakes(snakes):
     #    [snake1_endx,snake1_endy],
     #    etc...
     # ]
-
     tip_coords,tip_unit_vecs = get_tip_coords_and_unit_vecs(snakes)
 
     # 2n x 2n matrix of distances from each start and end of a snake to every other start/end
     tip_dists = cdist(tip_coords,tip_coords)
+    tip_dists = redundant_dists_as_infinity(tip_dists)
 
     # index pairs referring to distance between same points, index pairs of start and end of same snake
     for x in range(len(snakes)):
@@ -67,9 +74,6 @@ def local_match_snakes(snakes):
     # Since we look for tips matching with d*e^theta < eta, we can rule out
     # indices where d >= eta
     match_candidates = np.transpose((tip_dists < eta).nonzero())
-    # print("candidates length")
-    # print(match_candidates)
-    # print(match_candidates.shape)
 
     matches = []
 
