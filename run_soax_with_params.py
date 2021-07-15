@@ -16,8 +16,11 @@ def run_soax(soax_args):
     params_output_dir = soax_args["params_output_dir"]
     error_dir = soax_args["error_dir"]
 
-    error_fp = os.path.join(error_dir,params_name + ".txt")
+    error_fp = os.path.join(error_dir,"error_" + params_name + ".txt")
     error_file =  open(error_fp,"w")
+
+    stdout_fp = os.path.join(error_dir,"stdout_" + params_name + ".txt")
+    stdout_file =  open(error_fp,"w")
 
     command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {params_output_dir}".format(
         batch_soax = batch_soax,
@@ -28,7 +31,7 @@ def run_soax(soax_args):
 
     print("Executing '{}'".format(command))
     try:
-        code = subprocess.run(command,shell=True,stderr=error_file,check=True).returncode
+        code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
     except subprocess.CalledProcessError as e:
         print("ERROR: ")
         print("Failed to run {}. return code {}. stderr:".format(e.returncode, command))
