@@ -148,12 +148,12 @@ def local_match_snakes(snakes):
         plt.plot(snake2x,snake2y,linewidth=0.1)
         # print(snake1x,snake1y)
 
-    plt.axes().set_aspect('equal', adjustable='box')
-    plt.axis([0,2304,2304,0])
-    plt.xlabel("x")
-    plt.ylabel("y")
-    plt.savefig("data/match",dpi=500)
-    plt.clf()
+    # plt.axes().set_aspect('equal', adjustable='box')
+    # plt.axis([0,2304,2304,0])
+    # plt.xlabel("x")
+    # plt.ylabel("y")
+    # # plt.savefig("data/match",dpi=500)
+    # plt.clf()
 
     print("{} tip matches".format(len(tip_matches)))
     #the matches between ends that we choose to join together
