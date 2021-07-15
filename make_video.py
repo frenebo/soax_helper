@@ -44,8 +44,8 @@ if __name__ == "__main__":
 
         for subdir_name in subdir_names:
             subdir_path = os.path.join(image_folder,subdir_name)
-            video_path = os.path.join(video_dir,subdir_name + ".avi")
+            video_path = os.path.join(video_dir,subdir_name + ".mp4")
             make_and_write_vid(subdir_path,video_path)
     else:
-        video_path = os.path.join(video_dir, "results.avi")
+        video_path = os.path.join(video_dir, "results.mp4")
         make_and_write_vid(image_folder,video_path)
