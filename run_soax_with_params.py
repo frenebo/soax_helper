@@ -8,11 +8,12 @@ import tqdm
 from ctypes import c_int32
 import time
 
-def run_soax(soax_args,error_dir=None):
+def run_soax(soax_args):
     batch_soax = soax_args["batch_soax"]
     tif_dir = soax_args["tif_dir"]
     param_fp = soax_args["param_fp"]
     params_output_dir = soax_args["params_output_dir"]
+    error_dir = soax_args["error_dir"]
 
     if error_dir is not None:
         error_fp = os.path.join(error_dir,params_output_dir + ".txt")
@@ -66,6 +67,7 @@ if __name__ == "__main__":
             "tif_dir": args.tif_dir,
             "param_fp": param_fp,
             "params_output_dir": params_output_dir,
+            "error_dir":args.error_dir,
         })
 
     print("Creating snake output directories inside {}".format(args.output_dir))
@@ -79,7 +81,7 @@ if __name__ == "__main__":
 
     with tqdm.tqdm(total=len(soax_args)) as pbar:
         with ThreadPool(workers_num) as pool:
-            future = pool.map_async(run_soax, soax_args,args.error_dir)
+            future = pool.map_async(run_soax, soax_args)
             while not future.ready():
                 if counter.value != 0:
                     with counter_lock:
