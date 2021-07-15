@@ -2,9 +2,10 @@ import numpy as np
 from matplotlib import pyplot as plt
 import sys
 import os
-from snakeutils.files import extract_snakes
+from snakeutils.files import readable_dir, extract_snakes
 from scipy.spatial.distance import cdist
 import math
+import argparse
 
 def get_tip_coords_and_unit_vecs(snakes):
     tip_coords = np.zeros( [len(snakes)*2,2] )
@@ -162,10 +163,12 @@ def local_match_snakes(snakes):
 
 
 if __name__ == "__main__":
-    print("arguments: directory of 2D snakes")
-    if len(sys.argv) < 2:
-        raise Exception("Missing argument")
-    snake_dir = sys.argv[1]
+    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+    parser.add_argument('snake_dir',type=readable_dir,help="Directory with snake files")
+
+    args = parser.parse_args()
+
+    snake_dir = args.snake_dir
     snake_filenames = os.listdir(snake_dir)
     snake_filenames = [filename for filename in snake_filenames if filename.endswith(".txt")]
     snake_filenames.sort()
