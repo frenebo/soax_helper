@@ -33,6 +33,7 @@ def extract_snakes(snake_file):
 
             snake_name = line[0]
             snake_points = []
+
         # print(line_idx)
         # print(lines[line_idx - 1:])
         if line_idx >= len(lines):
@@ -58,6 +59,10 @@ def extract_snakes(snake_file):
 
             # skip open/closed #1 #0 line
             line_idx += 1
+
+            # if this is the end of the snakes file now
+            if line_idx >= len(lines):
+                break
 
             continue
         # this number of items means s,p,x,y,fg_int,bg_int
