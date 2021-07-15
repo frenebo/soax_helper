@@ -11,6 +11,7 @@ def make_snake_images_and_save(dir_name,image_dir_name,image_width,image_height,
         fp = os.path.join(dir_name,filename)
 
         with open(fp, "r") as snake_file:
+            print("Showing snakes for {}".format(fp))
             snakes = extract_snakes(snake_file)
             for snake_idx, snake_pts in enumerate(snakes):
                 snake_pts = np.array(snake_pts)
