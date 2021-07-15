@@ -14,13 +14,13 @@ def run_soax(soax_args):
     params_name = soax_args["params_name"]
     param_fp = soax_args["param_fp"]
     params_output_dir = soax_args["params_output_dir"]
-    error_dir = soax_args["error_dir"]
+    logging_dir = soax_args["logging_dir"]
 
-    error_fp = os.path.join(error_dir,"error_" + params_name + ".txt")
+    error_fp = os.path.join(logging_dir,"error_" + params_name + ".txt")
     error_file =  open(error_fp,"w")
 
-    stdout_fp = os.path.join(error_dir,"stdout_" + params_name + ".txt")
-    stdout_file =  open(error_fp,"w")
+    stdout_fp = os.path.join(logging_dir,"stdout_" + params_name + ".txt")
+    stdout_file =  open(stdout_fp,"w")
 
     command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {params_output_dir}".format(
         batch_soax = batch_soax,
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     parser.add_argument('tif_dir',type=readable_dir,help='Directory with tif files to run in soax')
     parser.add_argument('params_dir',type=readable_dir,help='Directory with soax param text files')
     parser.add_argument('output_dir',type=readable_dir,help='Directory to put')
-    parser.add_argument('error_dir', type=readable_dir,help='Directory to write error messages')
+    parser.add_argument('logging_dir', type=readable_dir,help='Directory to write error messages')
     parser.add_argument('--workers', default=5, type=int, help='Number of batch_soax processes to have running at once')
 
     args = parser.parse_args()
@@ -68,7 +68,7 @@ if __name__ == "__main__":
             "param_fp": param_fp,
             "params_name": params_name,
             "params_output_dir": params_output_dir,
-            "error_dir":args.error_dir,
+            "logging_dir":args.logging_dir,
         })
 
     print("Creating snake output directories inside {}".format(args.output_dir))
