@@ -11,11 +11,12 @@ import time
 def run_soax(soax_args):
     batch_soax = soax_args["batch_soax"]
     tif_dir = soax_args["tif_dir"]
+    params_name = soax_args["params_name"]
     param_fp = soax_args["param_fp"]
     params_output_dir = soax_args["params_output_dir"]
     error_dir = soax_args["error_dir"]
 
-    error_fp = os.path.join(error_dir,params_output_dir + ".txt")
+    error_fp = os.path.join(error_dir,params_name + ".txt")
     error_file =  open(error_fp,"w")
 
     command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {params_output_dir}".format(
@@ -57,14 +58,14 @@ if __name__ == "__main__":
         param_fp = os.path.join(args.params_dir,params_filename)
         params_name = params_filename[:-len(".txt")]
         params_output_dir = os.path.join(args.output_dir,params_name)
-        error_subdir = os.path.join(args.error_dir,params_name)
 
         soax_args.append({
             "batch_soax": args.batch_soax,
             "tif_dir": args.tif_dir,
             "param_fp": param_fp,
+            "params_name": params_name,
             "params_output_dir": params_output_dir,
-            "error_dir":error_subdir,
+            "error_dir":error_dir,
         })
 
     print("Creating snake output directories inside {}".format(args.output_dir))
@@ -72,7 +73,6 @@ if __name__ == "__main__":
         params_output_dir = soax_arg["params_output_dir"]
         error_subdir = soax_arg["error_dir"]
         os.mkdir(params_output_dir)
-        os.mkdir(error_subdir)
         print("Directory '{}' created".format(params_output_dir))
 
     counter = mp.Value(c_int32)
