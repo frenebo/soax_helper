@@ -79,6 +79,7 @@ if __name__ == "__main__":
     default_alpha = decimal.Decimal("0.01")
     default_beta = decimal.Decimal("0.1")
     default_min_foreground = decimal.Decimal("0")
+    default_ridge_threshold = decimal.Decimal("0.01")
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
     parser.add_argument('--alpha',
                         type=arg_or_range,
@@ -89,6 +90,9 @@ if __name__ == "__main__":
     parser.add_argument('--min_foreground',
                         type=arg_or_range,
                         default={"start":default_min_foreground,"stop":default_min_foreground,"step":decimal.Decimal(0)})
+    parser.add_argument('--ridge_threshold',
+                        type=arg_or_range,
+                        default={"start":default_ridge_threshold,"stop":default_ridge_threshold,"step":decimal.Decimal(0)})
     parser.add_argument('target_dir',type=readable_dir,help='Directory for putting created parameter files')
 
 
@@ -96,32 +100,44 @@ if __name__ == "__main__":
     alphas = create_range(**args.alpha)
     betas = create_range(**args.beta)
     min_foregrounds = create_range(**args.min_foreground)
+    ridge_thresholds = create_range(**args.ridge_threshold)
 
     alpha_form_settings = param_form_settings(**args.alpha)
     beta_form_settings = param_form_settings(**args.beta)
     min_foreground_settings = param_form_settings(**args.min_foreground)
+    ridge_threshold_settings = param_form_settings(**args.ridge_threshold)
 
-    filename_template = "params_a{{alpha:0{}.{}f}}_b{{beta:0{}.{}f}}_mf{{min_foreground:0{}.{}f}}.txt".format(
+    filename_template = "params_a{{alpha:0{}.{}f}}_b{{beta:0{}.{}f}}_mf{{min_foreground:0{}.{}f}}_rt{{ridge_threshold:0{}.{}f}}.txt".format(
         alpha_form_settings["str_length"],
         alpha_form_settings["decimal_places"],
         beta_form_settings["str_length"],
         beta_form_settings["decimal_places"],
         min_foreground_settings["str_length"],
-        min_foreground_settings["decimal_places"]
+        min_foreground_settings["decimal_places"],
+        ridge_threshold_settings["str_length"],
+        ridge_threshold_settings["decimal_places"],
     )
     print(filename_template)
 
-    for alpha in alphas:
-        for beta in betas:
-            for min_foreground in min_foregrounds:
-                params_filename = filename_template.format(alpha=alpha,beta=beta,min_foreground=min_foreground)
-                fp = os.path.join(args.target_dir, params_filename)
+    # all possible combinations of these parameters
+    param_combinations = itertools.product(alphas,betas,min_foregrounds,ridge_thresholds)
 
-                params_text = create_params(
-                    alpha=alpha,
-                    beta=beta,
-                    min_foreground=min_foreground
-                )
+    for alpha,beta,min_foreground,ridge_threshold in param_combinations:
+        params_filename = filename_template.format(
+            alpha=alpha,
+            beta=beta,
+            min_foreground=min_foreground,
+            ridge_threshold=ridge_threshold,
+        )
 
-                with open(fp,"w") as file:
-                    file.write(params_text)
+        fp = os.path.join(args.target_dir, params_filename)
+
+        params_text = create_params(
+            alpha=alpha,
+            beta=beta,
+            min_foreground=min_foreground,
+            ridge_threshold=ridge_threshold,
+        )
+
+        with open(fp,"w") as file:
+            file.write(params_text)

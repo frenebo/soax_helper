@@ -1,8 +1,8 @@
 
-def create_params(alpha=0.01,beta=0.1,gamma=2,min_foreground=10):
+def create_params(alpha=0.01,beta=0.1,gamma=2,min_foreground=10,ridge_threshold=0.01):
     params = """intensity-scaling	0
 gaussian-std	0
-ridge-threshold	0.01
+ridge-threshold	{ridge_threshold}
 maximum-foreground	65535
 minimum-foreground	{min_foreground}
 init-z	true
@@ -30,5 +30,6 @@ damp-z	false""".format(
         alpha=alpha,
         beta=beta,
         gamma=gamma,
+        ridge_threshold=ridge_threshold,
         )
     return params
