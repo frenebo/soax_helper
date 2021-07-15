@@ -4,6 +4,7 @@ from snakeutils.files import readable_dir
 import os
 import math
 import decimal
+import itertools
 
 # Should be of form 'start-stop-step' or 'value'
 def arg_or_range(arg):
