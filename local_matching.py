@@ -155,6 +155,7 @@ def local_match_snakes(snakes):
     plt.savefig("data/match",dpi=500)
     plt.clf()
 
+    print("{} tip matches".format(len(tip_matches)))
     #the matches between ends that we choose to join together
     matches_to_join = []
     # for tip_name in tip_matches:
