@@ -50,6 +50,7 @@ def create_range(start,stop,step):
         current_val += step
 
         if current_val >= stop:
+            vals.append(current_val)
             break
     return vals
 
