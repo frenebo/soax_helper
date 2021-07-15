@@ -8,20 +8,29 @@ import tqdm
 from ctypes import c_int32
 import time
 
-def run_soax(soax_args):
+def run_soax(soax_args,error_dir):
     batch_soax = soax_args["batch_soax"]
     tif_dir = soax_args["tif_dir"]
     param_fp = soax_args["param_fp"]
     params_output_dir = soax_args["params_output_dir"]
+
+    if error_dir is not None:
+        error_fp = os.path.join(error_dir,params_output_dir + ".txt")
+        error_file =  open(error_fp,"w")
+
     command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {params_output_dir}".format(
         batch_soax = batch_soax,
         tif_dir=tif_dir,
         param_fp=param_fp,
         params_output_dir=params_output_dir,
     )
+
     print("Executing '{}'".format(command))
     try:
-        code = subprocess.run(command,shell=True, capture_output=True,check=True).returncode
+        if error_dir is not None:
+            code = subprocess.run(command,shell=True,stderr=error_file,check=True).returncode
+        else:
+            code = subprocess.run(command,shell=True,check=True).returncode
     except subprocess.CalledProcessError as e:
         print("ERROR: ")
         print("Failed to run {}. return code {}. stderr:".format(e.returncode, command))
@@ -36,6 +45,7 @@ if __name__ == "__main__":
     parser.add_argument('tif_dir',type=readable_dir,help='Directory with tif files to run in soax')
     parser.add_argument('params_dir',type=readable_dir,help='Directory with soax param text files')
     parser.add_argument('output_dir',type=readable_dir,help='Directory to put')
+    parser.add_argument('--error_dir',default=None,type=readable_dir,help='Directory to write error messages')
     parser.add_argument('--workers', default=5, type=int, help='Number of batch_soax processes to have running at once')
 
     args = parser.parse_args()
