@@ -65,13 +65,12 @@ if __name__ == "__main__":
             "param_fp": param_fp,
             "params_name": params_name,
             "params_output_dir": params_output_dir,
-            "error_dir":error_dir,
+            "error_dir":args.error_dir,
         })
 
     print("Creating snake output directories inside {}".format(args.output_dir))
     for soax_arg in soax_args:
         params_output_dir = soax_arg["params_output_dir"]
-        error_subdir = soax_arg["error_dir"]
         os.mkdir(params_output_dir)
         print("Directory '{}' created".format(params_output_dir))
 
