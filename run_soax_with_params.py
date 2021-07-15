@@ -8,7 +8,7 @@ import tqdm
 from ctypes import c_int32
 import time
 
-def run_soax(soax_args,error_dir):
+def run_soax(soax_args,error_dir=None):
     batch_soax = soax_args["batch_soax"]
     tif_dir = soax_args["tif_dir"]
     param_fp = soax_args["param_fp"]
@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
     with tqdm.tqdm(total=len(soax_args)) as pbar:
         with ThreadPool(workers_num) as pool:
-            future = pool.map_async(run_soax, soax_args)
+            future = pool.map_async(run_soax, soax_args,args.error_dir)
             while not future.ready():
                 if counter.value != 0:
                     with counter_lock:
