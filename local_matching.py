@@ -45,6 +45,20 @@ def redundant_tip_dists_as_infinity(tip_dists):
     infinity_except_below_diag = np.ones(tip_dists.shape)*np.Inf
     return tip_dists + infinity_except_below_diag
 
+# We want the distances between the start and end tips of the same snake to be zero
+def distances_between_same_snake_tips_as_infinity(tip_dists):
+    # make copy so we don't change the original array
+    tip_dists = np.array(tip_dists)
+
+    # index pairs referring to distance between same points, index pairs of start and end of same snake
+    for x in range(len(snakes)):
+        tip_dists[2*x,2*x] = np.Inf
+        tip_dists[2*x,2*x+1] = np.Inf
+        tip_dists[2*x+1,2*x+1] = np.Inf
+        tip_dists[2*x+1,2*x] = np.Inf
+
+    return tip_dists
+
 def local_match_snakes(snakes):
     # threshold for matching tips is d*e^angle < eta
     eta = 10
@@ -63,16 +77,9 @@ def local_match_snakes(snakes):
     # 2n x 2n matrix of distances from each start and end of a snake to every other start/end
     tip_dists = cdist(tip_coords,tip_coords)
     tip_dists = redundant_dists_as_infinity(tip_dists)
+    tip_dists = distances_between_same_snake_tips_as_infinity(tip_dists)
 
-    # index pairs referring to distance between same points, index pairs of start and end of same snake
-    for x in range(len(snakes)):
-        tip_dists[2*x,2*x] = np.Inf
-        tip_dists[2*x,2*x+1] = np.Inf
-        tip_dists[2*x+1,2*x+1] = np.Inf
-        tip_dists[2*x+1,2*x] = np.Inf
-
-    # Since we look for tips matching with d*e^theta < eta, we can rule out
-    # indices where d >= eta
+    # We look for tip pairs whose distances are less than eta
     match_candidates = np.transpose((tip_dists < eta).nonzero())
 
     matches = []
