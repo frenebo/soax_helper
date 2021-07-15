@@ -22,7 +22,7 @@ def make_and_write_vid(image_folder,video_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
     parser.add_argument('image_dir',type=readable_dir,help="Source directory to find graphed snakes")
-    parser.add_argument('video_dir',help="Directory to save video(s)")
+    parser.add_argument('video_dir',type=readable_dir,help="Directory to save video(s)")
     parser.add_argument('--subdirs', default=False, action='store_true',help='If we should make snakes for subdirectories in snake_dir and output in subdirectories in image_dir')
 
     args = parser.parse_args()
