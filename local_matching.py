@@ -142,8 +142,8 @@ def local_match_snakes(snakes):
         # seen_tips[tip2_idx] = match_data
 
         # print(snakes[snake1_idx].shape)
-        snake1x,snake1y = snakes[snake1_idx].T
-        snake2x,snake2y = snakes[snake2_idx].T
+        snake1x,snake1y = snakes[snake1_idx].T[:2]
+        snake2x,snake2y = snakes[snake2_idx].T[:2]
         plt.plot(snake1x,snake1y,linewidth=0.1)
         plt.plot(snake2x,snake2y,linewidth=0.1)
         # print(snake1x,snake1y)
