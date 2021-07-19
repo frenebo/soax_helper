@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 
 def section_tif(tif_filepath,sectioned_dir,section_max_size):
-    print("Processing {}".fomat(tif_filepath))
+    print("Processing {}".format(tif_filepath))
 
     pil_img = Image.open(tif_filepath)
 
