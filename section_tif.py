@@ -22,7 +22,7 @@ def section_tif(tif_filepath,sectioned_dir,section_max_size):
     img_arr = np.zeros((height,width,depth),dtype=np.array(pil_img).dtype)
     for i in range(pil_img.n_frames):
         pil_img.seek(i)
-        img_arr[:,:,i] = np.array(img_arr)
+        img_arr[:,:,i] = np.array(pil_img)
 
     # Ceil because we want to have slices on the smaller size if width/height/depth is not
     # exactly divisible by section_size
