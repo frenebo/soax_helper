@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if section_max_size <= 0:
+    if args.section_max_size <= 0:
         raise Exception("Section max size must be positive. Invalid value {}".format(args.section_size))
 
     source_tifs = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
