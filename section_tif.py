@@ -83,7 +83,7 @@ if __name__ == "__main__":
         tif_fp = os.path.join(args.source_dir,tif_fn)
 
         # remove .tif from file name
-        image_name_extensionless = tif_fp[:-4]
+        image_name_extensionless = tif_fn[:-4]
 
         sectioned_dir = os.path.join(args.target_dir, "sectioned_" + image_name_extensionless)
 
