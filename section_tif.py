@@ -19,38 +19,49 @@ def section_tif(tif_filepath,sectioned_dir,section_max_size):
     height = pil_img.height
     depth = pil_img.n_frames
 
-    img_arr = np.zeros((height,width,depth,dtype=np.array(pil_img).dtype))
+    img_arr = np.zeros((height,width,depth),dtype=np.array(pil_img).dtype)
     for i in range(pil_img.n_frams):
         pil_img.seek(i)
         img_arr[:,:,i] = np.array(img_arr)
 
     # Ceil because we want to have slices on the smaller size if width/height/depth is not
     # exactly divisible by section_size
-    width_slices = math.ceil(width / section_max_size)
     height_slices = math.ceil(height / section_max_size)
+    width_slices = math.ceil(width / section_max_size)
     depth_slices = math.ceil(depth / section_max_size)
 
-    section_width = math.floor(width / width_slices)
     section_height = math.floor(height / height_slices)
+    section_width = math.floor(width / width_slices)
     section_depth = math.floor(depth / depth_slices)
 
-    width_boundaries = [i*section_width for i in range(width_slices)] + [width]
     height_boundaries = [i*section_height for i in range(height_slices)] + [height]
+    width_boundaries = [i*section_width for i in range(width_slices)] + [width]
     depth_boundaries = [i*section_depth for i in range(depth_slices)] + [depth]
 
 
     for width_idx in range(width_slices):
         for height_idx in range(height_slices):
             for depth_idx in range(depth_slices):
+                height_lower = height_boundaries[height_idx]
+                height_upper = height_boundaries[height_idx + 1]
+                width_lower = width_boundaries[width_idx]
+                width_upper = width_boundaries[width_idx + 1]
+                depth_lower = depth_boundaries[depth_idx]
+                depth_upper = depth_boundaries[depth_idx + 1]
                 section_arr = img_arr[
-                    width_boundaries[width_idx]:width_boundaries[width_idx + 1],
-                    height_boundaries[height_idx]:height_boundaries[height_idx + 1],
-                    depth_boundaries[depth_idx]:depth_boundaries[depth_idx + 1],
+                    height_lower:height_upper,
+                    width_lower:width_upper,
+                    depth_lower:depth_upper,
                 ]
-                section_filepath = os.path.join(
-                    sectioned_dir,
-                    "sec_{}_{}_{}".format(height_idx,width_idx,depth_idx),
+                section_filename = "sec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}".format(
+                    height_lower=height_lower,
+                    height_upper=height_upper,
+                    width_lower=width_lower,
+                    width_upper=width_upper,
+                    depth_lower=depth_lower,
+                    depth_upper=depth_upper,
                 )
+                section_filepath = os.path.join(sectioned_dir,section_filename)
 
                 save_3d_tif(section_filepath,section_arr)
 
