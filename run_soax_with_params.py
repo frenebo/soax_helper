@@ -36,6 +36,21 @@ def run_soax(soax_args):
         print("ERROR: ")
         print("Failed to run {}. return code {}".format(command,e.returncode))
 
+def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_dir,loggin_dir):
+    param_fp = os.path.join(params_dir,params_filename)
+    params_name = params_filename[:-len(".txt")]
+    params_output_dir = os.path.join(output_dir,params_name)
+
+    return {
+        "batch_soax": batch_soax,
+        "tif_dir": tif_dir,
+        "param_fp": param_fp,
+        "params_name": params_name,
+        "params_output_dir": params_output_dir,
+        "logging_dir":logging_dir,
+    }
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
     parser.add_argument('batch_soax',help="Path to batch_soax executable")
@@ -43,6 +58,7 @@ if __name__ == "__main__":
     parser.add_argument('params_dir',type=readable_dir,help='Directory with soax param text files')
     parser.add_argument('output_dir',type=readable_dir,help='Directory to put')
     parser.add_argument('logging_dir', type=readable_dir,help='Directory to write error messages')
+    parser.add_argument('--subdirs', default=False, action='store_true',help='If tif_dir has subdirectories of image')
     parser.add_argument('--workers', default=5, type=int, help='Number of batch_soax processes to have running at once')
 
     args = parser.parse_args()
@@ -53,19 +69,38 @@ if __name__ == "__main__":
     print("WORKERS: {}".format(workers_num))
 
     soax_args = []
-    for params_filename in param_files:
-        param_fp = os.path.join(args.params_dir,params_filename)
-        params_name = params_filename[:-len(".txt")]
-        params_output_dir = os.path.join(args.output_dir,params_name)
 
-        soax_args.append({
-            "batch_soax": args.batch_soax,
-            "tif_dir": args.tif_dir,
-            "param_fp": param_fp,
-            "params_name": params_name,
-            "params_output_dir": params_output_dir,
-            "logging_dir":args.logging_dir,
-        })
+    if args.subdirs:
+        tif_dir_contents = os.listdir(args.tif_dir)
+        subdir_names = [name for name in tif_dir_contents if os.path.isdir(os.path.join(args.tif_dir,name))]
+
+        for params_filename in param_files:
+            for subdir_name in subdir_names:
+                subdir_path = os.path.join(args.tif_dir,subdir_name)
+                output_subdir_path = os.path.join(args.output_dir,subdir_name)
+                if os.path.exists(output_subdir_path):
+                    raise Exception("Target dir {} already exists".format(output_subdir_path))
+                os.mkdir(output_subdir_path)
+
+                soax_args.append(generate_run_soax_args(
+                    args.params_dir,
+                    params_filename,
+                    output_subdir_path,
+                    args.batch_soax,
+                    subdir_path,
+                    args.logging_dir,
+                ))
+
+
+    for params_filename in param_files:
+        soax_args.append(generate_run_soax_args(
+            args.params_dir,
+            params_filename,
+            args.output_dir,
+            args.batch_soax,
+            args.tif_dir,
+            args.logging_dir
+        ))
 
     print("Creating snake output directories inside {}".format(args.output_dir))
     for soax_arg in soax_args:
