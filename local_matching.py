@@ -60,8 +60,8 @@ def distances_between_same_snake_tips_as_infinity(tip_dists):
     return tip_dists
 
 def local_match_snakes(snakes):
-    # threshold for matching tips is d*e^angle < eta
-    eta = 10
+    #
+    distance_threshold = 10
     angle_threshold = np.pi/4
 
     # we want an array that looks like:
@@ -80,7 +80,9 @@ def local_match_snakes(snakes):
     tip_dists = distances_between_same_snake_tips_as_infinity(tip_dists)
 
     # We look for tip pairs whose distances are less than eta
-    match_candidates = np.transpose((tip_dists < eta).nonzero())
+    match_candidates = np.transpose((tip_dists < distance_threshold).nonzero())
+
+
 
     matches = []
 
@@ -133,6 +135,7 @@ def local_match_snakes(snakes):
             "snake2": snake2_idx,
             "tip1type": "start" if tip1_idx % 2 == 0 else "end",
             "tip2type": "start" if tip2_idx % 2 == 0 else "end",
+            "dist": tip_dists[tip1_idx][tip2_idx]
         }
 
         if tip1_idx in tip_matches:
@@ -145,32 +148,16 @@ def local_match_snakes(snakes):
         else:
             tip_matches[tip2_idx] = [match_data]
 
-        # tip1_duplicate = tip1_idx in tip_matches
-        # tip2_duplicate = tip2_idx in seen_tips
-
-        # seen_tips[tip1_idx] = match_data
-        # seen_tips[tip2_idx] = match_data
-
-        # print(snakes[snake1_idx].shape)
         snake1x,snake1y = snakes[snake1_idx].T[:2]
         snake2x,snake2y = snakes[snake2_idx].T[:2]
         plt.plot(snake1x,snake1y,linewidth=0.1)
         plt.plot(snake2x,snake2y,linewidth=0.1)
-        # print(snake1x,snake1y)
-
-    # plt.axes().set_aspect('equal', adjustable='box')
-    # plt.axis([0,2304,2304,0])
-    # plt.xlabel("x")
-    # plt.ylabel("y")
-    # # plt.savefig("data/match",dpi=500)
-    # plt.clf()
 
     print("{} tip matches".format(len(tip_matches)))
     print(tip_matches)
-    #the matches between ends that we choose to join together
-    matches_to_join = []
-    # for tip_name in tip_matches:
-    #     best_match =
+
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')

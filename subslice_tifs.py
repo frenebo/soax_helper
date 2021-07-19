@@ -28,7 +28,6 @@ def slice_range(arg_str):
     return start,end
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
     parser.add_argument('slice_range',type=slice_range,help="Range of TIF slices to keep. Ex 10-20 to keep slices 10-20, inclusive")
@@ -40,7 +39,9 @@ if __name__ == "__main__":
     start_slice,end_slice = args.slice_range
     new_n_frames = end_slice - start_slice + 1
 
-    for src_tif_fn in os.listdir(args.source_dir):
+    source_tifs = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
+
+    for src_tif_fn in souce_tifs:
         fp = os.path.join(args.source_dir,src_tif_fn)
         print("Processing {}".format(fp))
 
