@@ -78,6 +78,7 @@ if __name__ == "__main__":
         raise Exception("Section max size must be positive. Invalid value {}".format(args.section_size))
 
     source_tifs = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
+    source_tifs.sort()
 
     for tif_fn in source_tifs:
         tif_fp = os.path.join(args.source_dir,tif_fn)
