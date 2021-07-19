@@ -9,7 +9,7 @@ from PIL import Image
 def section_tif(tif_filepath,sectioned_dir,section_max_size):
     print("Processing {}".fomat(tif_filepath))
 
-    pil_img = Image.open(fp)
+    pil_img = Image.open(tif_filepath)
 
     # If TIF is not 3D
     if getattr(pil_img, "n_frames", 1) == 1:
@@ -83,7 +83,7 @@ if __name__ == "__main__":
         tif_fp = os.path.join(args.source_dir,tif_fn)
 
         # remove .tif from file name
-        image_name_extensionless = fp[:-4]
+        image_name_extensionless = tif_fp[:-4]
 
         sectioned_dir = os.path.join(args.target_dir, "sectioned_" + image_name_extensionless)
 
