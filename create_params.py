@@ -58,9 +58,6 @@ def param_form_settings(start,stop,step):
     start_exp = start.as_tuple().exponent
     stop_exp = stop.as_tuple().exponent
     step_exp = step.as_tuple().exponent
-    print(start_exp)
-    print(stop_exp)
-    print(step_exp)
 
     decimal_places = - min(start_exp,stop_exp,step_exp)
     if decimal_places < 0:
@@ -119,7 +116,7 @@ if __name__ == "__main__":
         ridge_threshold_settings["str_length"],
         ridge_threshold_settings["decimal_places"],
     )
-    print(filename_template)
+    print("Using param filename template {}".format(filename_template))
 
     # all possible combinations of these parameters
     param_combinations = itertools.product(alphas,betas,min_foregrounds,ridge_thresholds)
