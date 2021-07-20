@@ -64,6 +64,7 @@ def section_tif(tif_filepath,sectioned_dir,section_max_size):
                 section_filepath = os.path.join(sectioned_dir,section_filename)
 
                 save_3d_tif(section_filepath,section_arr)
+    print("  Saved {} sections of file".format(width_slices*height_slices*depth_slices))
 
 
 if __name__ == "__main__":
