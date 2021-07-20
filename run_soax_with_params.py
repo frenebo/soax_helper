@@ -36,7 +36,7 @@ def run_soax(soax_args):
         print("ERROR: ")
         print("Failed to run {}. return code {}".format(command,e.returncode))
 
-def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_dir,loggin_dir):
+def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_dir,logging_dir):
     param_fp = os.path.join(params_dir,params_filename)
     params_name = params_filename[:-len(".txt")]
     params_output_dir = os.path.join(output_dir,params_name)
