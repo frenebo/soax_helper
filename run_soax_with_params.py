@@ -102,14 +102,14 @@ if __name__ == "__main__":
     # so we only need to run soax once with each param on the same directory
     else:
         for params_filename in param_files:
-        soax_args.append(generate_run_soax_args(
-            args.params_dir,
-            params_filename,
-            args.output_dir,
-            args.batch_soax,
-            args.tif_dir,
-            args.logging_dir
-        ))
+            soax_args.append(generate_run_soax_args(
+                args.params_dir,
+                params_filename,
+                args.output_dir,
+                args.batch_soax,
+                args.tif_dir,
+                args.logging_dir
+            ))
 
     print("Creating snake output directories inside {}".format(args.output_dir))
     for soax_arg in soax_args:
