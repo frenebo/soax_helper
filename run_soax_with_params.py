@@ -79,6 +79,7 @@ if __name__ == "__main__":
     if args.subdirs:
         tif_dir_contents = os.listdir(args.tif_dir)
         subdir_names = [name for name in tif_dir_contents if os.path.isdir(os.path.join(args.tif_dir,name))]
+        subdir_names.sort()
 
         for subdir_name in subdir_names:
             subdir_path = os.path.join(args.tif_dir,subdir_name)
