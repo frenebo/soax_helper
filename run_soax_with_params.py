@@ -89,7 +89,6 @@ if __name__ == "__main__":
             os.mkdir(output_subdir_path)
 
             for params_filename in param_files:
-
                 soax_args.append(generate_run_soax_args(
                     args.params_dir,
                     params_filename,
