@@ -70,6 +70,12 @@ if __name__ == "__main__":
 
     soax_args = []
 
+    # If recursive subdirs, we have
+    # args.tif_dir -> subdir0 -> tif,tif,tif,tif
+    #                 subdir1 -> tif,tif,tif,tif,
+    #                    ........
+    #                 subdir123 -> tif,tif,tif,tif,
+    # So we need to run soax on each subdir with parameter
     if args.subdirs:
         tif_dir_contents = os.listdir(args.tif_dir)
         subdir_names = [name for name in tif_dir_contents if os.path.isdir(os.path.join(args.tif_dir,name))]
@@ -91,9 +97,11 @@ if __name__ == "__main__":
                     subdir_path,
                     args.logging_dir,
                 ))
-
-
-    for params_filename in param_files:
+    # If no subdirs, we have
+    # args.tif_dir -> tif,tif,tif,tif
+    # so we only need to run soax once with each param on the same directory
+    else:
+        for params_filename in param_files:
         soax_args.append(generate_run_soax_args(
             args.params_dir,
             params_filename,
