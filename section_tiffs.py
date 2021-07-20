@@ -53,7 +53,7 @@ def section_tif(tif_filepath,sectioned_dir,section_max_size):
                     width_lower:width_upper,
                     depth_lower:depth_upper,
                 ]
-                section_filename = "sec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}".format(
+                section_filename = "sec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}.tif".format(
                     height_lower=height_lower,
                     height_upper=height_upper,
                     width_lower=width_lower,
