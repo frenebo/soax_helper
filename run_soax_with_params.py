@@ -84,6 +84,8 @@ if __name__ == "__main__":
         for subdir_name in subdir_names:
             subdir_path = os.path.join(args.tif_dir,subdir_name)
             output_subdir_path = os.path.join(args.output_dir,subdir_name)
+            sublogging_dir = os.path.join(args.logging_dir,subdir_name)
+            os.mkdir(sublogging_dir)
             if os.path.exists(output_subdir_path):
                 raise Exception("Target dir {} already exists".format(output_subdir_path))
             os.mkdir(output_subdir_path)
@@ -95,7 +97,7 @@ if __name__ == "__main__":
                     output_subdir_path,
                     args.batch_soax,
                     subdir_path,
-                    args.logging_dir,
+                    sublogging_dir,
                 ))
     # If no subdirs, we have
     # args.tif_dir -> tif,tif,tif,tif
