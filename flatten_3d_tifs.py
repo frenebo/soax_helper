@@ -12,7 +12,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    for src_tif_fn in os.listdir(args.source_dir):
+    tif_names = [name for name in os.listdir(args.source_dir) if name.endswith(".tif")]
+    tif_names.sort()
+
+    for src_tif_fn in tif_names:
         fp = os.path.join(args.source_dir,src_tif_fn)
         print("Processing {}".format(fp))
         pil_img = Image.open(fp)
