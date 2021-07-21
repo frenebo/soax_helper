@@ -50,7 +50,7 @@ if __name__ == "__main__":
         # float_arr = image_arr.astype(np.float64)
         new_arr = image_arr* scale_factor
 
-        # new_arr = new_arr.astype(image_arr.dtype)
+        new_arr = new_arr.astype(image_arr.dtype)
         new_arr[over_max_places] = new_max
 
         print("New min:  {}".format(new_arr.min()))
