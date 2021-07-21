@@ -35,10 +35,11 @@ if __name__ == "__main__":
         first_tif_arr = np.array(first_tif_img)
 
     max_cutoff = np.percentile(first_tif_arr,args.cutoff_percent)
+    min_cutoff = np.percentile(first_tif_arr, 100 - args.cutoff_percent)
 
     print("Rescaling range to max val {}".format(max_cutoff))
     new_max = np.iinfo(first_tif_arr.dtype).max
-    scale_factor = float(new_max)/float(max_cutoff)
+    scale_factor = float(new_max)/float(max_cutoff - min_cutoff)
 
     print("Data type {} with max value {}".format(first_tif_arr.dtype, new_max))
 
@@ -50,7 +51,7 @@ if __name__ == "__main__":
         over_max_places = image_arr >= max_cutoff
 
         # float_arr = image_arr.astype(np.float64)
-        new_arr = image_arr* scale_factor
+        new_arr = (image_arr - min_cutoff)* scale_factor
 
         new_arr = new_arr.astype(image_arr.dtype)
         new_arr[over_max_places] = new_max
