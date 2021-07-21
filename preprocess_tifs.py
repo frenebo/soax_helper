@@ -27,6 +27,7 @@ if __name__ == "__main__":
 
     # if just one frame
     if images_are_3d:
+        print("Opening and saving images as 3D")
         first_tiff_arr = tif_img_3d_to_arr(first_tif_img)
     else:
         first_tif_arr = np.array(first_tif_img)
