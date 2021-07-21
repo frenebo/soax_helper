@@ -7,6 +7,14 @@ import subprocess
 import tqdm
 from ctypes import c_int32
 import time
+from colorama import init, Fore, Back,Style
+init()
+
+# print(Fore.RED + 'some red text')
+# print(Back.GREEN + 'and with a green background')
+# #print(Style.DIM + 'and in dim text')
+# print(Style.RESET_ALL)
+# print('back to normal now')
 
 def run_soax(soax_args):
     batch_soax = soax_args["batch_soax"]
@@ -31,11 +39,14 @@ def run_soax(soax_args):
         print("Executing '{}'".format(command))
         try:
             code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
+            print(Fore.GREEN + "Completed {}".format(command))
+            print(Style.RESET_ALL)
         except subprocess.CalledProcessError as e:
+            print(Fore.RED)
             print("ERROR: ")
             print("Failed to run {}. return code {}".format(command,e.returncode))
+            print(Style.RESET_ALL)
 
-    print("Finished {}".format(command))
 
 def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_dir,logging_dir):
     param_fp = os.path.join(params_dir,params_filename)

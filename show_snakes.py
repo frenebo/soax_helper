@@ -84,7 +84,7 @@ if __name__ == "__main__":
     if args.subsubdirs:
         subs = [name for name in os.listdir(dir_name) if os.path.isdir(os.path.join(dir_name,name))]
         for sub in subs:
-            subsubs = [name for name in os.listdir(path.join(dir_name,sub)) if os.path.isdir(os.path.join(dir_name,sub,name))]
+            subsubs = [name for name in os.listdir(os.path.join(dir_name,sub)) if os.path.isdir(os.path.join(dir_name,sub,name))]
             image_subdir_path = os.path.join(image_dir,sub)
             os.mkdir(image_subdir_path)
             for subsub in subs:
