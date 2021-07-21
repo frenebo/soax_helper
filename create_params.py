@@ -47,6 +47,8 @@ def create_range(start,stop,step):
     current_val = start
     while True:
         vals.append(current_val)
+        if current_val > stop:
+            break
         current_val += step
 
         if current_val >= stop:
