@@ -46,9 +46,10 @@ if __name__ == "__main__":
         image_arr = np.array(Image.open(tif_fp))
         over_max_places = image_arr >= max_cutoff
         under_min_places = image_arr <= min_cutoff
-        float_arr = image_arr.astype(np.float64)
-        new_arr = new_min + (new_max - new_min) * ((float_arr - min_cutoff) / (max_cutoff - min_cutoff))
-        new_arr = new_arr.astype(image_arr.dtype)
+        # float_arr = image_arr.astype(np.float64)
+        scale_factor = (float_arr - min_cutoff)/(max_cutoff - min_cutoff)
+        new_arr = new_min + (new_max - new_min) * scale_factor
+        # new_arr = new_arr.astype(image_arr.dtype)
         new_arr[over_max_places] = new_max
         new_arr[under_min_places] = new_min
 
