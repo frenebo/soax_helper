@@ -43,6 +43,8 @@ def run_soax(soax_args):
         except subprocess.CalledProcessError as e:
             print(Fore.RED + "ERROR: ")
             print("Failed to run {}. return code {}".format(command,e.returncode))
+            print("STDERR saved in {}".format(error_fp))
+            print("STDOUT saved in {}".format(stdout_fp))
             print(Style.RESET_ALL)
 
 
