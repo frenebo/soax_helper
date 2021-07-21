@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     max_cutoff = np.percentile(first_tif_arr,99.5)
 
-    print("Rescaling range to min val {} and max val {}".format(min_cutoff,max_cutoff))
+    print("Rescaling range to max val {}".format(max_cutoff))
     new_max = np.iinfo(first_tif_arr.dtype).max
     scale_factor = float(new_max)/float(max_cutoff)
 
