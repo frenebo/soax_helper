@@ -17,24 +17,23 @@ def run_soax(soax_args):
     logging_dir = soax_args["logging_dir"]
 
     error_fp = os.path.join(logging_dir,"error_" + params_name + ".txt")
-    error_file =  open(error_fp,"w")
 
     stdout_fp = os.path.join(logging_dir,"stdout_" + params_name + ".txt")
-    stdout_file =  open(stdout_fp,"w")
 
-    command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {params_output_dir}".format(
-        batch_soax = batch_soax,
-        tif_dir=tif_dir,
-        param_fp=param_fp,
-        params_output_dir=params_output_dir,
-    )
+    with open(error_fp,"w") as error_file, open(stdout_fp,"w") as stdout_file:
+        command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {params_output_dir}".format(
+            batch_soax = batch_soax,
+            tif_dir=tif_dir,
+            param_fp=param_fp,
+            params_output_dir=params_output_dir,
+        )
 
-    print("Executing '{}'".format(command))
-    try:
-        code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
-    except subprocess.CalledProcessError as e:
-        print("ERROR: ")
-        print("Failed to run {}. return code {}".format(command,e.returncode))
+        print("Executing '{}'".format(command))
+        try:
+            code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
+        except subprocess.CalledProcessError as e:
+            print("ERROR: ")
+            print("Failed to run {}. return code {}".format(command,e.returncode))
 
     print("Finished {}".format(command))
 
