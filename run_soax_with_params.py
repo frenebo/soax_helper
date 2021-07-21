@@ -119,19 +119,7 @@ if __name__ == "__main__":
         os.mkdir(params_output_dir)
         print("Directory '{}' created".format(params_output_dir))
 
-    counter = mp.Value(c_int32)
-    counter_lock = mp.Lock()
-
-    with tqdm.tqdm(total=len(soax_args)) as pbar:
-        with ThreadPool(workers_num) as pool:
-            future = pool.map_async(run_soax, soax_args)
-            while not future.ready():
-                if counter.value != 0:
-                    with counter_lock:
-                        increment = counter.value
-                        counter.value = 0
-                    pbar.update(n=increment)
-                time.sleep(1)
-            result = future.get()
+    with ThreadPool(workers_num) as pool:
+        future = pool.map(run_soax, soax_args)
 
 
