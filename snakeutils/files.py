@@ -26,8 +26,10 @@ def extract_snakes(snake_file):
     while True:
         # if snake name is none, last iteration just finished a snake
         if snake_name is None:
-            print(lines[line_idx - 1:line_idx + 1])
-            print(line_idx)
+            # nothing left in file
+            if line_idx >= len(lines):
+                break
+
             line = lines[line_idx]
             #reached junction point section
             if len(line) == 3:
