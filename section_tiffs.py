@@ -1,7 +1,7 @@
 import argparse
 import math
 from snakeutils.files import readable_dir
-from snakeutils.tifimage import save_3d_tif
+from snakeutils.tifimage import save_3d_tif, tif_img_3d_to_arr
 import os
 import numpy as np
 from PIL import Image
@@ -19,10 +19,7 @@ def section_tif(tif_filepath,sectioned_dir,section_max_size):
     height = pil_img.height
     depth = pil_img.n_frames
 
-    img_arr = np.zeros((height,width,depth),dtype=np.array(pil_img).dtype)
-    for i in range(pil_img.n_frames):
-        pil_img.seek(i)
-        img_arr[:,:,i] = np.array(pil_img)
+    img_arr = tif_img_3d_to_arr(pil_img)
 
     # Ceil because we want to have slices on the smaller size if width/height/depth is not
     # exactly divisible by section_size

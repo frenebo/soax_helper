@@ -1,5 +1,5 @@
 from snakeutils.files import readable_dir
-from snakeutils.tifimage import save_3d_tif
+from snakeutils.tifimage import save_3d_tif, tif_img_3d_to_arr
 import os
 import argparse
 import matplotlib.pyplot as plt
@@ -69,10 +69,7 @@ if __name__ == "__main__":
         img_is_3d = getattr(pil_img, "n_frames", 1) != 1
 
         if img_is_3d:
-            arr = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
-            for frame_idx in range(pil_img.n_frames):
-                pil_img.seek(frame_idx)
-                arr[:,:,frame_idx] = np.array(pil_img)
+            arr = tif_img_3d_to_arr(pil_img)
         else:
             arr = np.array(pil_img)
         print("Orig shape: {}".format(arr.shape))
