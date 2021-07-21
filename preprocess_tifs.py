@@ -53,7 +53,7 @@ if __name__ == "__main__":
         new_arr[over_max_places] = new_max
 
         print("New min:  {}".format(new_arr.min()))
-        prin("New max: {}".format(new_arr.max()))
+        print("New max: {}".format(new_arr.max()))
 
 
         if images_are_3d:
