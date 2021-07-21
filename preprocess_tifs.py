@@ -13,6 +13,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Normalizes tif (useful if TIF image is too dark)')
     parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
     parser.add_argument('target_dir',type=readable_dir,help="Directory to save secitoned tifs")
+    default_percentile = 95.5
+    parser.add_argument('--cutoff_percent',type=float,default=default_percentile,help="Pixel brightness percentile to set image max to. Default {}".format(default_percentile))
 
     args = parser.parse_args()
 
@@ -32,7 +34,7 @@ if __name__ == "__main__":
     else:
         first_tif_arr = np.array(first_tif_img)
 
-    max_cutoff = np.percentile(first_tif_arr,99.5)
+    max_cutoff = np.percentile(first_tif_arr,args.cutoff_percent)
 
     print("Rescaling range to max val {}".format(max_cutoff))
     new_max = np.iinfo(first_tif_arr.dtype).max
