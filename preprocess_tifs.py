@@ -56,7 +56,7 @@ if __name__ == "__main__":
 
         new_arr = new_arr.astype(image_arr.dtype)
         new_arr[over_max_places] = new_max
-        new_arr[under_min_places] = new_min
+        new_arr[under_min_places] = 0
 
         print("New min:  {}".format(new_arr.min()))
         print("New max: {}".format(new_arr.max()))
