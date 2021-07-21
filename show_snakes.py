@@ -105,6 +105,6 @@ if __name__ == "__main__":
         snake_dirs.append(dir_name)
         image_dirs.append(image_dir)
 
-    for i in len(snake_dirs):
+    for i in range(len(snake_dirs)):
         print("Making snakes for {}, saving in {}".format(snake_dirs[i],image_dirs[i]))
         make_snake_images_and_save(snake_dirs[i],image_dirs[i],args.colorful,args.width,args.height)
