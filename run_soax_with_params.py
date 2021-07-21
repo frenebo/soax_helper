@@ -36,7 +36,7 @@ def run_soax(soax_args):
         print("ERROR: ")
         print("Failed to run {}. return code {}".format(command,e.returncode))
 
-    print("Finished!")
+    print("Finished {}".format(command))
 
 def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_dir,logging_dir):
     param_fp = os.path.join(params_dir,params_filename)
@@ -122,6 +122,8 @@ if __name__ == "__main__":
         print("Directory '{}' created".format(params_output_dir))
 
     with ThreadPool(workers_num) as pool:
+        print("Making future")
         future = pool.map(run_soax, soax_args)
+        print("Future finished")
 
 
