@@ -49,9 +49,12 @@ if __name__ == "__main__":
         # float_arr = image_arr.astype(np.float64)
         scale_factor = float(new_max)/float((max_cutoff - min_cutoff))
         new_arr = (image_arr - min_cutoff) * scale_factor
+
         # new_arr = new_arr.astype(image_arr.dtype)
         new_arr[over_max_places] = new_max
         new_arr[under_min_places] = 0
+        print("New min:  {}".format(new_arr.min()))
+        prin("New max: {}".format(new_arr.max()))
 
 
         if images_are_3d:
