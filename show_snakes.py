@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from snakeutils.files import extract_snakes, readable_dir
 import argparse
+from PIL import Image
 
 def infer_height_width(filename):
     # Expecting "sec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}.tif"
@@ -24,17 +25,30 @@ def infer_height_width(filename):
     except:
         return None,None
 
-def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None,image_height=None):
-    filenames = os.listdir(dir_name)
-    snake_filenames = [filename for filename in filenames if filename.endswith(".txt")]
+def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None,image_height=None,background_img_dir=None):
+    snake_filenames = [filename for filename in os.listdir(dir_name) if filename.endswith(".txt")]
     snake_filenames.sort()
-    for snake_filename in snake_filenames:
+
+    if background_img_dir is not None:
+        background_image_filenames = [filename for filename in os.listdir() if (filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".tif"))]
+        background_image_filenames.sort()
+        print("Found background images: ")
+        pint(background_image_filenames.join(", "))
+
+    for img_idx, snake_filename in enumerate(snake_filenames):
         fp = os.path.join(dir_name,snake_filename)
 
+        if background_img_dir is not None and img_idx < len(background_image_filenames):
+            background_img = Image.open(background_image_filenames[img_idx])
+            plt.imshow(background_img)
+
         if image_width is None or image_height is None:
-            image_height,image_width = infer_height_width(snake_filename)
-            if image_width is None:
-                raise Exception("Provide --width and --height of images, could not determine from filename {}".format(snake_filename))
+            if background_img is not None
+                image_width, image_height = background_img.size
+            else:
+                image_height,image_width = infer_height_width(snake_filename)
+                if image_width is None:
+                    raise Exception("Provide --width and --height of images, could not determine from filename {}".format(snake_filename))
 
         with open(fp, "r") as snake_file:
             print("Showing snakes for {}".format(fp))
@@ -47,7 +61,10 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
                 if colorful:
                     plt.plot(x,y)
                 else:
-                    plt.plot(x,y,'b')
+                    if background_img is None:
+                        plt.plot(x,y,'b')
+                    else:
+                        plt.plot(x,y,'y')
 
             # some_snakefile.tif => some_snakefile.jpg
             save_img_filename = "".join(snake_filename.split(".")[:-1]) + ".png"
@@ -62,7 +79,6 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
             # clear figure so we can do the next plot
             plt.clf()
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
     parser.add_argument('snake_dir',type=readable_dir,help="Source directory where snake text files are")
@@ -72,8 +88,12 @@ if __name__ == "__main__":
     parser.add_argument('--subdirs', default=False, action='store_true',help='If we should make snakes for subdirectories in snake_dir and output in subdirectories in image_dir')
     parser.add_argument('--subsubdirs', default=False, action='store_true',help='If subdirectories in snake_dir are two levels deep')
     parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
+    parser.add_argument('--background_img_dir', default=None,type=readable_dir,help="Directory with images to use as backgrounds for TIFs")
 
     args = parser.parse_args()
+
+    if (args.background_img_dir is not None) and (args.subdirs or args.subsubdirs):
+        raise Exception("Background images not supported with subdirs")
 
     dir_name = args.snake_dir
     image_dir = args.image_dir
@@ -104,8 +124,10 @@ if __name__ == "__main__":
     else:
         snake_dirs.append(dir_name)
         image_dirs.append(image_dir)
-    print(snake_dirs)
+
     snake_dirs.sort()
+    print("Making images from snake files in {}".format(snake_dirs.join(", ")))
+
     for i in range(len(snake_dirs)):
         print("Making snakes for {}, saving in {}".format(snake_dirs[i],image_dirs[i]))
-        make_snake_images_and_save(snake_dirs[i],image_dirs[i],args.colorful,args.width,args.height)
+        make_snake_images_and_save(snake_dirs[i],image_dirs[i],args.colorful,args.width,args.height,args.background_img_dir)
