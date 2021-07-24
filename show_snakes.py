@@ -5,6 +5,7 @@ import numpy as np
 from snakeutils.files import extract_snakes, readable_dir
 import argparse
 from PIL import Image
+from colorama import init, Fore, Back,Style
 
 def infer_height_width(filename):
     # Expecting "sec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}.tif"
@@ -79,6 +80,7 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
             plt.xlabel("x")
             plt.ylabel("y")
             plt.savefig(save_img_fp)
+            print(Fore.GREEN + "  Saved image to {}".format(save_img_fp) + Style.RESET_ALL)
             # clear figure so we can do the next plot
             plt.clf()
 
