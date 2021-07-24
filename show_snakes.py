@@ -38,6 +38,7 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
 
     for img_idx, snake_filename in enumerate(snake_filenames):
         fp = os.path.join(dir_name,snake_filename)
+        print("Showing snakes for {}".format(fp))
 
         if background_img_dir is not None and img_idx < len(background_image_filenames):
             background_img_fp = os.path.join(background_img_dir,background_image_filenames[img_idx])
@@ -56,7 +57,6 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
                     raise Exception("Provide --width and --height of images, could not determine from filename {}".format(snake_filename))
 
         with open(fp, "r") as snake_file:
-            print("Showing snakes for {}".format(fp))
             snakes = extract_snakes(snake_file)
             for snake_idx, snake_pts in enumerate(snakes):
                 snake_pts = np.array(snake_pts)
