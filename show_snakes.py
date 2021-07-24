@@ -30,7 +30,7 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
     snake_filenames.sort()
 
     if background_img_dir is not None:
-        background_image_filenames = [filename for filename in os.listdir() if (filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".tif"))]
+        background_image_filenames = [filename for filename in os.listdir(background_img_dir) if (filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".tif"))]
         background_image_filenames.sort()
         print("Found background images: ")
         print(", ".join(background_image_filenames))
@@ -43,7 +43,7 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
             plt.imshow(background_img)
 
         if image_width is None or image_height is None:
-            if background_img is not None:
+            if background_img_dir is not None and background_img is not None:
                 image_width, image_height = background_img.size
             else:
                 image_height,image_width = infer_height_width(snake_filename)
