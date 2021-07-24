@@ -41,9 +41,11 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
         if background_img_dir is not None and img_idx < len(background_image_filenames):
             background_img = Image.open(background_image_filenames[img_idx])
             plt.imshow(background_img)
+        else:
+            background_img = None
 
         if image_width is None or image_height is None:
-            if background_img_dir is not None and background_img is not None:
+            if background_img is not None:
                 image_width, image_height = background_img.size
             else:
                 image_height,image_width = infer_height_width(snake_filename)
