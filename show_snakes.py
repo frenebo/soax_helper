@@ -33,7 +33,7 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
         background_image_filenames = [filename for filename in os.listdir() if (filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".tif"))]
         background_image_filenames.sort()
         print("Found background images: ")
-        pint(background_image_filenames.join(", "))
+        print(", ".join(background_image_filenames))
 
     for img_idx, snake_filename in enumerate(snake_filenames):
         fp = os.path.join(dir_name,snake_filename)
@@ -126,7 +126,7 @@ if __name__ == "__main__":
         image_dirs.append(image_dir)
 
     snake_dirs.sort()
-    print("Making images from snake files in {}".format(snake_dirs.join(", ")))
+    print("Making images from snake files in {}".format(", ".join(snake_dirs)))
 
     for i in range(len(snake_dirs)):
         print("Making snakes for {}, saving in {}".format(snake_dirs[i],image_dirs[i]))
