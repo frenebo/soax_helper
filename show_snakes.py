@@ -92,8 +92,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if (args.background_img_dir is not None) and (args.subdirs or args.subsubdirs):
-        raise Exception("Background images not supported with subdirs")
+    if (args.background_img_dir is not None) and args.subsubdirs:
+        raise Exception("Background images not supported with subsubdirs")
 
     dir_name = args.snake_dir
     image_dir = args.image_dir
