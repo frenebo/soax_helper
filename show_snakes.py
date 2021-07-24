@@ -41,6 +41,7 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
 
         if background_img_dir is not None and img_idx < len(background_image_filenames):
             background_img_fp = os.path.join(background_img_dir,background_image_filenames[img_idx])
+            print(Fore.YELOW + "  Using background image {}".format(background_img_fp) + Style.RESET_ALL)
             background_img = Image.open(background_img_fp)
             plt.imshow(background_img)
         else:
