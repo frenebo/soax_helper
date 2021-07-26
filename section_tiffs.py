@@ -5,6 +5,7 @@ from snakeutils.tifimage import save_3d_tif, tif_img_3d_to_arr
 import os
 import numpy as np
 from PIL import Image
+import tifffile
 
 def section_tif(tif_filepath,sectioned_dir,section_max_size):
     print("Processing {}".format(tif_filepath))
