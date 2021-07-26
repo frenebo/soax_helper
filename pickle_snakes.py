@@ -2,7 +2,7 @@ import sys
 import os
 from matplotlib import pyplot as plt
 import numpy as np
-from snakeutils.files import extract_snakes
+from snakeutils.files import extract_snakes, run_fast_scandir
 import pickle
 import argparse
 
@@ -15,18 +15,34 @@ if __name__ == "__main__":
 
     dir_name = args.snakes_dir
     pickle_dir = args.pickle_dir
-    filenames = os.listdir(dir_name)
-    filenames.sort()
 
-    for filename in filenames:
-        fp = os.path.join(dir_name,filename)
+    text_filepaths = run_fast_scandir(dir_name,[".txt"])
 
-        with open(fp, "r") as snake_file:
-            print(fp)
+    for text_fp in text_filepaths:
+        relative_fp = os.path.relpath(text_fp,dir_name)
+
+        with open(text_fp, 'r') as snake_file:
             snakes = extract_snakes(snake_file)
 
-            pickle_filename = "".join(filename.split(".")[:-1]) + ".pickle"
-            pickle_fp = os.path.join(pickle_dir,pickle_filename)
+        # remove .txt and add .pickle
+        pickle_relative_fp = relative_fp[:-4] + ".pickle"
+        pickle_fp = os.path.join(pickle_dir,pickle_relative_fp)
 
-            with open(pickle_fp, 'wb') as handle:
-                pickle.dump(snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        with open(pickle_fp, 'wb') as handle:
+            pickle.dump(snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    # filenames = os.listdir(dir_name)
+    # filenames.sort()
+
+    # for filename in filenames:
+    #     fp = os.path.join(dir_name,filename)
+
+    #     with open(fp, "r") as snake_file:
+    #         print(fp)
+    #         snakes = extract_snakes(snake_file)
+
+    #         pickle_filename = "".join(filename.split(".")[:-1]) + ".pickle"
+    #         pickle_fp = os.path.join(pickle_dir,pickle_filename)
+
+    #         with open(pickle_fp, 'wb') as handle:
+    #             pickle.dump(snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)
