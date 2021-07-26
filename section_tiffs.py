@@ -12,9 +12,6 @@ def section_tif(tif_filepath,sectioned_dir,section_max_size):
     pil_img = Image.open(tif_filepath)
 
     tif_is_3d = getattr(pil_img, "n_frames", 1) != 1
-    # If TIF is not 3D
-    if not tif_is_3d:
-        raise Exception("TIF {} is not 3D tif".format(tif_filepath))
 
     width = pil_img.width
     height = pil_img.height
