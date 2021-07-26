@@ -16,9 +16,9 @@ if __name__ == "__main__":
     dir_name = args.snakes_dir
     pickle_dir = args.pickle_dir
 
-    text_filepaths = run_fast_scandir(dir_name,[".txt"])
+    subfolders, text_filepaths = run_fast_scandir(dir_name,[".txt"])
 
-    for text_fp in text_filepaths:
+    for text_fp in text_filepaths[1]:
         relative_fp = os.path.relpath(text_fp,dir_name)
 
         with open(text_fp, 'r') as snake_file:
