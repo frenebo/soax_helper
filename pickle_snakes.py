@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     subfolders, text_filepaths = run_fast_scandir(dir_name,[".txt"])
 
-    for text_fp in text_filepaths[1]:
+    for text_fp in text_filepaths:
         relative_fp = os.path.relpath(text_fp,dir_name)
 
         with open(text_fp, 'r') as snake_file:
