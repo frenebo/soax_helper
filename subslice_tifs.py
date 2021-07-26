@@ -66,7 +66,4 @@ if __name__ == "__main__":
         new_fp = os.path.join(args.target_dir, new_tif_fn)
         print("Saving sliced image as {}".format(new_fp))
 
-        if img_is_3d:
-            save_3d_tif(new_fp, new_img_arr)
-        else:
-            tifffile.imsave(new_fp,new_img_arr)
+        save_3d_tif(new_fp, new_img_arr)
