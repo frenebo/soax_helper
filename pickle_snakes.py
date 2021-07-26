@@ -5,6 +5,7 @@ import numpy as np
 from snakeutils.files import extract_snakes, run_fast_scandir
 import pickle
 import argparse
+from colorama import init, Fore, Back,Style
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
@@ -22,6 +23,7 @@ if __name__ == "__main__":
         relative_fp = os.path.relpath(text_fp,dir_name)
         relative_dir = os.path.dirname(relative_fp)
 
+        print("Loading snakes from {}".format(text_fp))
         with open(text_fp, 'r') as snake_file:
             snakes = extract_snakes(snake_file)
 
@@ -32,9 +34,10 @@ if __name__ == "__main__":
 
         if not os.path.exists(new_pickle_dir):
             os.makedirs(new_pickle_dir)
-
+        print(Fore.YELLOW + "  Saving snake pickle in {}".format(pickle_fp) + Style.RESET_ALL)
         with open(pickle_fp, 'wb') as handle:
             pickle.dump(snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
 
     # filenames = os.listdir(dir_name)
     # filenames.sort()

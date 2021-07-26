@@ -19,6 +19,7 @@ def run_fast_scandir(dir, ext):    # dir: str, ext: list
             if os.path.splitext(f.name)[1].lower() in ext:
                 files.append(f.path)
 
+
     for dir in list(subfolders):
         sf, f = run_fast_scandir(dir, ext)
         subfolders.extend(sf)
