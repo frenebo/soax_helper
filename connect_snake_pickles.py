@@ -24,7 +24,7 @@ def get_section_bounds(filenames, img_is_3d):
         height_bounds,width_bounds = section_info.split("_")
 
     sec_height_lower,sec_height_upper = height_bounds.split("-")
-    sec_width_lower,sec_width_upper = width_bounds.split("-")[
+    sec_width_lower,sec_width_upper = width_bounds.split("-")
     if img_is_3d:
         sec_depth_lower,sec_depth_upper = depth_bounds.split("-")
 
