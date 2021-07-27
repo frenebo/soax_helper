@@ -26,7 +26,7 @@ def infer_height_width(filename):
     except:
         return None,None
 
-def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None,image_height=None,background_img_dir=None):
+def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,image_width=None,image_height=None,background_img_dir=None):
     snake_filenames = [filename for filename in os.listdir(dir_name) if (filename.endswith(".txt") or ffilename.endswith(".pickle"))]
     snake_filenames.sort()
 
@@ -91,29 +91,23 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
             # clear figure so we can do the next plot
             plt.clf()
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('snake_dir',type=readable_dir,help="Source directory where snake text files are")
-    parser.add_argument('image_dir',type=readable_dir,help="Target directory to save graphed snakes")
-    parser.add_argument('--width',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
-    parser.add_argument('--height',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
-    parser.add_argument('--subdirs', default=False, action='store_true',help='If we should make snakes for subdirectories in snake_dir and output in subdirectories in image_dir')
-    parser.add_argument('--subsubdirs', default=False, action='store_true',help='If subdirectories in snake_dir are two levels deep')
-    parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
-    parser.add_argument('--background_img_dir', default=None,type=readable_dir,help="Directory with images to use as backgrounds for TIFs")
-
-    args = parser.parse_args()
-
-    if (args.background_img_dir is not None) and args.subsubdirs:
+def make_snake_images(
+    dir_name,
+    image_dir,
+    width,
+    height,
+    use_subdirs,
+    use_subsubdirs,
+    colorful,
+    background_img_dir,
+    ):
+    if (background_img_dir is not None) and use_subsubdirs:
         raise Exception("Background images not supported with subsubdirs")
-
-    dir_name = args.snake_dir
-    image_dir = args.image_dir
 
     snake_dirs = []
     image_dirs = []
 
-    if args.subsubdirs:
+    if use_subsubdirs:
         subs = [name for name in os.listdir(dir_name) if os.path.isdir(os.path.join(dir_name,name))]
         for sub in subs:
             subsubs = [name for name in os.listdir(os.path.join(dir_name,sub)) if os.path.isdir(os.path.join(dir_name,sub,name))]
@@ -125,7 +119,7 @@ if __name__ == "__main__":
                 os.mkdir(image_subsubdir_path)
                 snake_dirs.append(snake_subsubdir_path)
                 image_dirs.append(image_subsubdir_path)
-    elif args.subdirs:
+    elif use_subdirs:
         subs = [name for name in os.listdir(dir_name) if os.path.isdir(os.path.join(dir_name,name))]
         for sub in subs:
             snake_subdir_path = os.path.join(dir_name,sub)
@@ -142,4 +136,36 @@ if __name__ == "__main__":
 
     for i in range(len(snake_dirs)):
         print("Making snakes for {}, saving in {}".format(snake_dirs[i],image_dirs[i]))
-        make_snake_images_and_save(snake_dirs[i],image_dirs[i],args.colorful,args.width,args.height,args.background_img_dir)
+        save_images_for_dir_snakes(
+            snake_dirs[i],
+            image_dirs[i],
+            colorful,
+            width,
+            height,
+            background_img_dir,
+        )
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+    parser.add_argument('snake_dir',type=readable_dir,help="Source directory where snake text files are")
+    parser.add_argument('image_dir',type=readable_dir,help="Target directory to save graphed snakes")
+    parser.add_argument('--width',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
+    parser.add_argument('--height',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
+    parser.add_argument('--subdirs', default=False, action='store_true',help='If we should make snakes for subdirectories in snake_dir and output in subdirectories in image_dir')
+    parser.add_argument('--subsubdirs', default=False, action='store_true',help='If subdirectories in snake_dir are two levels deep')
+    parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
+    parser.add_argument('--background_img_dir', default=None,type=readable_dir,help="Directory with images to use as backgrounds for TIFs")
+
+    args = parser.parse_args()
+
+    make_snake_images(
+        args.snake_dir,
+        args.image_dir,
+        args.width,
+        args.height,
+        args.subdirs,
+        args.subsubdirs,
+        args.colorful,
+        args.background_img_dir,
+    )

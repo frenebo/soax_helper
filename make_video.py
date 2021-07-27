@@ -4,7 +4,7 @@ import os
 import argparse
 from snakeutils.files import readable_dir
 
-def make_and_write_vid(image_folder,video_path):
+def write_vid_for_dir_images(image_folder,video_path):
     if not video_path.endswith(".mp4"):
         raise Exception("Save video path {} should end with .mp4".format(video_path))
     dir_contents = os.listdir(image_folder)
@@ -26,6 +26,21 @@ def make_and_write_vid(image_folder,video_path):
     cv2.destroyAllWindows()
     video.release()
 
+def make_video(image_folder,video_dir,use_subdirs):
+    if use_subdirs:
+        subdir_names = [name for name in os.listdir(image_folder) if os.path.isdir(os.path.join(image_folder,name))]
+
+        print("Making videos for image subdirectories {}".format(subdir_names))
+
+        for subdir_name in subdir_names:
+            subdir_path = os.path.join(image_folder,subdir_name)
+            video_path = os.path.join(video_dir,subdir_name + ".mp4")
+            write_vid_for_dir_images(subdir_path,video_path)
+    else:
+        video_path = os.path.join(video_dir, "results.mp4")
+        write_vid_for_dir_images(image_folder,video_path)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
     parser.add_argument('image_dir',type=readable_dir,help="Source directory to find graphed snakes")
@@ -34,19 +49,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    image_folder = args.image_dir
-    video_dir = args.video_dir
-
-
-    if args.subdirs:
-        subdir_names = [name for name in os.listdir(image_folder) if os.path.isdir(os.path.join(image_folder,name))]
-
-        print("Making videos for image subdirectories {}".format(subdir_names))
-
-        for subdir_name in subdir_names:
-            subdir_path = os.path.join(image_folder,subdir_name)
-            video_path = os.path.join(video_dir,subdir_name + ".mp4")
-            make_and_write_vid(subdir_path,video_path)
-    else:
-        video_path = os.path.join(video_dir, "results.mp4")
-        make_and_write_vid(image_folder,video_path)
+    make_video(args.image_di,args.video_dir,args.subdirs)

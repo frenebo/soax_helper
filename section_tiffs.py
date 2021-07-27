@@ -98,6 +98,30 @@ def section_tif(tif_filepath,sectioned_dir,section_max_size):
         section_num,
         sectioned_dir))
 
+def section_tiffs(section_max_size,source_dir,target_dir):
+
+    if section_max_size <= 0:
+        raise Exception("Section max size must be positive. Invalid value {}".format(section_size))
+
+    source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
+    source_tifs.sort()
+
+    for tif_fn in source_tifs:
+        tif_fp = os.path.join(source_dir,tif_fn)
+
+        # remove .tif from file name
+        image_name_extensionless = tif_fn[:-4]
+
+        sectioned_dir = os.path.join(target_dir, "sectioned_" + image_name_extensionless)
+
+        if os.path.exists(sectioned_dir):
+            raise Exception("Directory {} already exists".format(sectioned_dir))
+
+        os.mkdir(sectioned_dir)
+
+        section_tif(tif_fp,sectioned_dir,section_max_size)
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
@@ -107,23 +131,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if args.section_max_size <= 0:
-        raise Exception("Section max size must be positive. Invalid value {}".format(args.section_size))
-
-    source_tifs = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
-    source_tifs.sort()
-
-    for tif_fn in source_tifs:
-        tif_fp = os.path.join(args.source_dir,tif_fn)
-
-        # remove .tif from file name
-        image_name_extensionless = tif_fn[:-4]
-
-        sectioned_dir = os.path.join(args.target_dir, "sectioned_" + image_name_extensionless)
-
-        if os.path.exists(sectioned_dir):
-            raise Exception("Directory {} already exists".format(sectioned_dir))
-
-        os.mkdir(sectioned_dir)
-
-        section_tif(tif_fp,sectioned_dir,args.section_max_size)
+    section_tiffs(
+        args.section_max_size,
+        args.source_dir,
+        args.target_dir,
+    )

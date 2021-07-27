@@ -62,6 +62,75 @@ def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_
         "logging_dir":logging_dir,
     }
 
+def run_soax_with_params(
+    batch_soax,
+    tif_dir,
+    params_dir,
+    output_dir,
+    logging_dir,
+    use_subdirs,
+    workers_num):
+    param_files = [filename for filename in os.listdir(params_dir) if filename.endswith(".txt")]
+    param_files.sort()
+
+    print("WORKERS: {}".format(workers_num))
+
+    soax_args = []
+
+    # If recursive subdirs, we have
+    # {tif_dir} -> subdir0 -> tif,tif,tif,tif
+    #                 subdir1 -> tif,tif,tif,tif,
+    #                    ........
+    #                 subdir123 -> tif,tif,tif,tif,
+    # So we need to run soax on each subdir with parameter
+    if use_subdirs:
+        tif_dir_contents = os.listdir(tif_dir)
+        subdir_names = [name for name in tif_dir_contents if os.path.isdir(os.path.join(tif_dir,name))]
+        subdir_names.sort()
+
+        for subdir_name in subdir_names:
+            subdir_path = os.path.join(tif_dir,subdir_name)
+            output_subdir_path = os.path.join(output_dir,subdir_name)
+            sublogging_dir = os.path.join(logging_dir,subdir_name)
+            os.mkdir(sublogging_dir)
+            if os.path.exists(output_subdir_path):
+                raise Exception("Target dir {} already exists".format(output_subdir_path))
+            os.mkdir(output_subdir_path)
+
+            for params_filename in param_files:
+                soax_args.append(generate_run_soax_args(
+                    params_dir,
+                    params_filename,
+                    output_subdir_path,
+                    batch_soax,
+                    subdir_path,
+                    sublogging_dir,
+                ))
+    # If no subdirs, we have
+    # {tif_dir} -> tif,tif,tif,tif
+    # so we only need to run soax once with each param on the same directory
+    else:
+        for params_filename in param_files:
+            soax_args.append(generate_run_soax_args(
+                params_dir,
+                params_filename,
+                output_dir,
+                batch_soax,
+                tif_dir,
+                logging_dir
+            ))
+
+    print("Creating snake output directories inside {}".format(output_dir))
+    for soax_arg in soax_args:
+        params_output_dir = soax_arg["params_output_dir"]
+        os.mkdir(params_output_dir)
+        print("Directory '{}' created".format(params_output_dir))
+
+    with ThreadPool(workers_num) as pool:
+        print("Making future")
+        future = pool.map(run_soax, soax_args)
+        print("Future finished")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
@@ -74,66 +143,14 @@ if __name__ == "__main__":
     parser.add_argument('--workers', default=5, type=int, help='Number of batch_soax processes to have running at once')
 
     args = parser.parse_args()
-    param_files = [filename for filename in os.listdir(args.params_dir) if filename.endswith(".txt")]
-    param_files.sort()
 
-    workers_num = args.workers
-    print("WORKERS: {}".format(workers_num))
-
-    soax_args = []
-
-    # If recursive subdirs, we have
-    # args.tif_dir -> subdir0 -> tif,tif,tif,tif
-    #                 subdir1 -> tif,tif,tif,tif,
-    #                    ........
-    #                 subdir123 -> tif,tif,tif,tif,
-    # So we need to run soax on each subdir with parameter
-    if args.subdirs:
-        tif_dir_contents = os.listdir(args.tif_dir)
-        subdir_names = [name for name in tif_dir_contents if os.path.isdir(os.path.join(args.tif_dir,name))]
-        subdir_names.sort()
-
-        for subdir_name in subdir_names:
-            subdir_path = os.path.join(args.tif_dir,subdir_name)
-            output_subdir_path = os.path.join(args.output_dir,subdir_name)
-            sublogging_dir = os.path.join(args.logging_dir,subdir_name)
-            os.mkdir(sublogging_dir)
-            if os.path.exists(output_subdir_path):
-                raise Exception("Target dir {} already exists".format(output_subdir_path))
-            os.mkdir(output_subdir_path)
-
-            for params_filename in param_files:
-                soax_args.append(generate_run_soax_args(
-                    args.params_dir,
-                    params_filename,
-                    output_subdir_path,
-                    args.batch_soax,
-                    subdir_path,
-                    sublogging_dir,
-                ))
-    # If no subdirs, we have
-    # args.tif_dir -> tif,tif,tif,tif
-    # so we only need to run soax once with each param on the same directory
-    else:
-        for params_filename in param_files:
-            soax_args.append(generate_run_soax_args(
-                args.params_dir,
-                params_filename,
-                args.output_dir,
-                args.batch_soax,
-                args.tif_dir,
-                args.logging_dir
-            ))
-
-    print("Creating snake output directories inside {}".format(args.output_dir))
-    for soax_arg in soax_args:
-        params_output_dir = soax_arg["params_output_dir"]
-        os.mkdir(params_output_dir)
-        print("Directory '{}' created".format(params_output_dir))
-
-    with ThreadPool(workers_num) as pool:
-        print("Making future")
-        future = pool.map(run_soax, soax_args)
-        print("Future finished")
-
+    run_soax_with_params(
+        args.batch_soax,
+        args.tif_dir,
+        args.params_dir,
+        args.output_dir,
+        args.logging_dir,
+        args.subdirs,
+        args.workers_num,
+    )
 
