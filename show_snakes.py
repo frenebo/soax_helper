@@ -27,7 +27,7 @@ def infer_height_width(filename):
         return None,None
 
 def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None,image_height=None,background_img_dir=None):
-    snake_filenames = [filename for filename in os.listdir(dir_name) if filename.endswith(".txt")]
+    snake_filenames = [filename for filename in os.listdir(dir_name) if (filename.endswith(".txt") or ffilename.endswith(".pickle"))]
     snake_filenames.sort()
 
     if background_img_dir is not None:
@@ -55,21 +55,27 @@ def make_snake_images_and_save(dir_name,image_dir_name,colorful,image_width=None
                 image_height,image_width = infer_height_width(snake_filename)
                 if image_width is None:
                     raise Exception("Provide --width and --height of images, could not determine from filename {}".format(snake_filename))
+        if fp.endswith(".txt"):
+            with open(fp, "r") as snake_file:
+                snakes = extract_snakes(snake_file)
+        elif fp.endswith(".pickle"):
+            with open(fp, "r") as snake_file:
+                snakes = pickle.load(snake_file)
+        else:
+            raise Exception("Unsupported extension with file {}".format(fp))
 
-        with open(fp, "r") as snake_file:
-            snakes = extract_snakes(snake_file)
-            for snake_idx, snake_pts in enumerate(snakes):
-                snake_pts = np.array(snake_pts)
+        for snake_idx, snake_pts in enumerate(snakes):
+            snake_pts = np.array(snake_pts)
 
-                x,y = snake_pts.T[:2]
+            x,y = snake_pts.T[:2]
 
-                if colorful:
-                    plt.plot(x,y)
+            if colorful:
+                plt.plot(x,y)
+            else:
+                if background_img is None:
+                    plt.plot(x,y,'b')
                 else:
-                    if background_img is None:
-                        plt.plot(x,y,'b')
-                    else:
-                        plt.plot(x,y,'y')
+                    plt.plot(x,y,'y')
 
             # some_snakefile.tif => some_snakefile.jpg
             save_img_filename = "".join(snake_filename.split(".")[:-1]) + ".png"
