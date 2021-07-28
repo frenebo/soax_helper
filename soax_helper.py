@@ -13,8 +13,12 @@ class WorkingDirectorySetupForm(npyscreen.Form):
         self.field_snake_files_dir = self.add(npyscreen.TitleFilename, name="Snake files dir")
         self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="SOAX logging dir")
         self.field_snake_images_dir = self.add(npyscreen.TitleFilename, name="Snake images dir")
+        self.create_if_not_present = self.add(npyscreen.TitleSelectOne, name="Create dirs if not present", values=["yes", "no"],value=[1],scroll_exit=True)
 
     def afterEditing(self):
+        # option zero is "yes"
+        should_make_dirs = self.create_if_not_present.value[0] == 0
+
         check_dir_fields = [
             self.field_raw_src_tiff_dir,
             self.field_preprocessed_tiff_dir,
@@ -23,6 +27,7 @@ class WorkingDirectorySetupForm(npyscreen.Form):
             self.field_soax_log_dir,
             self.field_snake_images_dir,
         ]
+
         for dir_field in check_dir_fields:
             if dir_field.value == "":
                 npyscreen.notify_confirm("'{}' is a required field".format(dir_field.name),editw=1)
@@ -32,8 +37,12 @@ class WorkingDirectorySetupForm(npyscreen.Form):
                     npyscreen.notify_confirm("'{}' exists but is not a directory".format(dir_field.value),editw=1)
                     return
                 else:
-                    npyscreen.notify_confirm("'{}' does not exist".format(dir_field.value),editw=1)
-                    return
+                    if should_make_dirs:
+                        os.makedirs(dir_field.value)
+                    else:
+                        # if self.
+                        npyscreen.notify_confirm("'{}' does not exist".format(dir_field.value),editw=1)
+                        return
 
         self.parentApp.workingDirSetupDone(
             self.field_raw_src_tiff_dir.value,
@@ -46,16 +55,46 @@ class WorkingDirectorySetupForm(npyscreen.Form):
 
 class PreprocessSetupForm(npyscreen.Form):
     def create(self):
-        pass
+        self.add(npyscreen.FixedText,
+            value="Min and max cutoff percent are brightness level percentiles at which to rescale the TIFF brightness scale" +
+            " 0 and max values to. 1 and 99 min and max would find the brightness that only 1%% of tiff pixels in the first TIF in the directory are dimmer than," +
+            " and the brightness that 99%% of tiff pixels are dimmer than, then change every tif in the directory to rescale the brightness." +
+            " All pixels dimmer than the lower threshold are set to total black, all pixels brighter than the upper threshold are set to pure white, and pixel brightnesses in between are " +
+            " set to the rescale value between total black and total white")
+
+        self.field_min_cutoff_percent = self.add(npyscreen.TitleFilename, value="95.5", name="min cutoff percent")
+        self.field_max_cutoff_percent = self.add(npyscreen.TitleFilename, value="0.1", name="max cutoff percent")
 
     def afterEditing(self):
-        self.parentApp.preprocessSetupDone()
-        pass
+        check_percentage_fields = [
+            self.field_min_cutoff_percent,
+            self.field_max_cutoff_percent,
+        ]
+        for field in check_percentage_fields:
+            if field.value == "":
+                npyscreen.notify_confirm("'{}' is a required field".format(field.name),editw=1)
+                return
+            try:
+                float(field.value)
+            except ValueError:
+                npyscreen.notify_confirm("'{}' value '{}' is not a number".format(field.name,field.value),editw=1)
+                return
+            perc = float(field.value)
+            if perc < 0 or perc > 100:
+                npyscreen.notify_confirm("Invalid '{}' value '{}': should be between 0 and 100".format(field.name,str(perc)),editw=1)
+                return
+
+        self.parentApp.preprocessSetupDone(
+            float(self.field_min_cutoff_percent.value),
+            float(self.field_max_cutoff_percent.value),
+        )
 
 class ParamsForm(npyscreen.Form):
     def create(self):
-        self.instructions = self.add(npyscreen.FixedText,
-            value="Either enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)")
+        self.add(npyscreen.FixedText,
+            value="Enter SOAX run parameters to try.\n" +
+            "Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)\n" +
+            "If ranges are given, soax will be run multiple times, trying all combinations of parameter values")
         self.field_alpha           = self.add(npyscreen.TitleText, name="alpha", value="0.01")
         self.field_beta            = self.add(npyscreen.TitleText, name="beta", value="0.1")
         self.field_min_foreground  = self.add(npyscreen.TitleText, name="min_foreground", value="10")
