@@ -160,7 +160,7 @@ class PreprocessForm(npyscreen.Form):
         self.logger = PagerLogger(pager)
 
 
-        preprocess_thread = threading.Thread(target=do_preprocess,args=(self.logger,,self.done,))
+        preprocess_thread = threading.Thread(target=do_preprocess,args=(self.logger,self.done,))
 
     def done(self):
         self.parentApp.preprocessDone()
