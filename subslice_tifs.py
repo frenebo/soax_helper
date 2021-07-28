@@ -44,10 +44,10 @@ def subslice_tifs(slice_range,source_dir,target_dir,logger=PrintLogger):
         img_is_3d = getattr(pil_img, "n_frames", 1) != 1
 
         if not img_is_3d:
-            raise Exception("Cannot slice {}, is not a 3D tif file".format(fp))
+            logger.FAIL("Cannot slice {}, is not a 3D tif file".format(fp))
 
         if pil_img.n_frames < end_slice + 1:
-            raise Exception("Can't take slices {}-{}, tif only has {} frames".format(start_slice,end_slice,pil_img.n_frames))
+            logger.FAIL("Can't take slices {}-{}, tif only has {} frames".format(start_slice,end_slice,pil_img.n_frames))
 
         new_img_arr = np.zeros((pil_img.height,pil_img.width,new_n_frames),dtype=np.array(pil_img).dtype)
 

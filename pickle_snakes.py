@@ -16,7 +16,10 @@ def pickle_snakes(dir_name,pickles_dir,logger=PrintLogger):
 
         logger.log("Loading snakes from {}".format(text_fp))
         with open(text_fp, 'r') as snake_file:
-            snakes = extract_snakes(snake_file)
+            try:
+                snakes = extract_snakes(snake_file)
+            except Exception as e:
+                logger.FAIL(repr(e))
 
         # remove .txt and add .pickle
         pickle_relative_fp = relative_fp[:-4] + ".pickle"
@@ -26,10 +29,10 @@ def pickle_snakes(dir_name,pickles_dir,logger=PrintLogger):
         if not os.path.exists(new_pickle_dir):
             os.makedirs(new_pickle_dir)
             logger.log("  Created directory {}".format(new_pickle_dir))
-        logger.log("  Saving snake pickle in {}".format(pickle_fp), Colors.YELLOW)
+
+        logger.log("  Saving snake pickle in {}".format(pickle_fp))
         with open(pickle_fp, 'wb') as handle:
             pickle.dump(snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
 
 
 if __name__ == "__main__":

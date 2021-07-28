@@ -33,12 +33,12 @@ def run_soax(soax_args):
         logger.log("Executing '{}'".format(command))
         try:
             code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
-            logger.log("Completed {}".format(command), Colors.GREEN)
+            logger.success("Completed {}".format(command))
         except subprocess.CalledProcessError as e:
-            logger.log("ERROR: ", Colors.RED)
-            logger.log("Failed to run {}. return code {}".format(command,e.returncode), Colors.RED)
-            logger.log("STDERR saved in {}".format(error_fp), Colors.RED)
-            logger.log("STDOUT saved in {}".format(stdout_fp), Colors.RED)
+            logger.error("ERROR: ")
+            logger.error("Failed to run {}. return code {}".format(command,e.returncode))
+            logger.error("STDERR saved in {}".format(error_fp))
+            logger.error("STDOUT saved in {}".format(stdout_fp))
 
 
 def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_dir,logging_dir,logger):
@@ -89,7 +89,8 @@ def run_soax_with_params(
             sublogging_dir = os.path.join(logging_dir,subdir_name)
             os.mkdir(sublogging_dir)
             if os.path.exists(output_subdir_path):
-                raise Exception("Target dir {} already exists".format(output_subdir_path))
+                logger.FAIL("Target dir {} already exists".format(output_subdir_path))
+
             os.mkdir(output_subdir_path)
 
             for params_filename in param_files:

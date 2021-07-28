@@ -4,15 +4,16 @@ from preprocess_tiffs import preprocess_tiffs
 import npyscreen
 import argparse
 import os
+from snakeutils.logger import PagerLogger, PagerFailError
 
 class WorkingDirectorySetupForm(npyscreen.Form):
     def create(self):
         self.field_raw_src_tiff_dir = self.add(npyscreen.TitleFilename, name="Raw TIFF source dir")
-        self.field_preprocessed_tiff_dir = self.add(npyscreen.TitleFilename, name="Preprocessed TIFF dir")
-        self.field_param_files_dir = self.add(npyscreen.TitleFilename, name="Param files save dir")
-        self.field_snake_files_dir = self.add(npyscreen.TitleFilename, name="Snake files dir")
-        self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="SOAX logging dir")
-        self.field_snake_images_dir = self.add(npyscreen.TitleFilename, name="Snake images dir")
+        self.field_preprocessed_tiff_dir = self.add(npyscreen.TitleFilename, name="Preprocessed TIFF dir", value="./PreprocessedTIFFs")
+        self.field_param_files_dir = self.add(npyscreen.TitleFilename, name="Param files save dir", value="./Params")
+        self.field_snake_files_dir = self.add(npyscreen.TitleFilename, name="Snake files dir", value="./Snakes")
+        self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="SOAX logging dir", value="./SoaxLogs")
+        self.field_snake_images_dir = self.add(npyscreen.TitleFilename, name="Snake images dir", value="./SnakeImages")
         self.create_if_not_present = self.add(npyscreen.TitleSelectOne, name="Create dirs if not present", values=["yes", "no"],value=[1],scroll_exit=True)
 
     def afterEditing(self):
@@ -55,15 +56,19 @@ class WorkingDirectorySetupForm(npyscreen.Form):
 
 class PreprocessSetupForm(npyscreen.Form):
     def create(self):
-        self.add(npyscreen.FixedText,
-            value="Min and max cutoff percent are brightness level percentiles at which to rescale the TIFF brightness scale" +
-            " 0 and max values to. 1 and 99 min and max would find the brightness that only 1%% of tiff pixels in the first TIF in the directory are dimmer than," +
-            " and the brightness that 99%% of tiff pixels are dimmer than, then change every tif in the directory to rescale the brightness." +
-            " All pixels dimmer than the lower threshold are set to total black, all pixels brighter than the upper threshold are set to pure white, and pixel brightnesses in between are " +
-            " set to the rescale value between total black and total white")
-
         self.field_min_cutoff_percent = self.add(npyscreen.TitleFilename, value="95.5", name="min cutoff percent")
         self.field_max_cutoff_percent = self.add(npyscreen.TitleFilename, value="0.1", name="max cutoff percent")
+
+        npyscreen.notify_confirm(
+            "Min and max cutoff percent are brightness level percentiles to use to rescale the TIFF image brightnesses " +
+            "min=1 and max=99 would find the brightness that only 1% of tiff pixels in the first TIF in the directory are dimmer than, " +
+            "and the brightness that 99% of tiff pixels are dimmer than. The 1% brightness is the lower threshold, and 99% brightness is the upper threhold. " +
+            "All pixels dimmer than the lower threshold are set to total black, all pixels brighter than the upper threshold are set to pure white, " +
+            "and pixel brightnesses in between are rescaled to a new value between total black and total white",
+            wide=True,
+            editw=1,
+        )
+
 
     def afterEditing(self):
         check_percentage_fields = [
@@ -92,9 +97,11 @@ class PreprocessSetupForm(npyscreen.Form):
 class ParamsForm(npyscreen.Form):
     def create(self):
         self.add(npyscreen.FixedText,
-            value="Enter SOAX run parameters to try.\n" +
-            "Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)\n" +
-            "If ranges are given, soax will be run multiple times, trying all combinations of parameter values")
+            value="Enter SOAX run parameters to try.")
+        self.add(npyscreen.FixedText,
+            value="Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)")
+        self.add(npyscreen.FixedText,
+            value="If ranges are given, soax will be run multiple times, trying all combinations of parameter values")
         self.field_alpha           = self.add(npyscreen.TitleText, name="alpha", value="0.01")
         self.field_beta            = self.add(npyscreen.TitleText, name="beta", value="0.1")
         self.field_min_foreground  = self.add(npyscreen.TitleText, name="min_foreground", value="10")
@@ -129,12 +136,24 @@ class PreprocessForm(npyscreen.Form):
     def create(self):
         preprocess_settings = self.parentApp.getPreprocessSettings()
 
-        preprocess_tiffs(
-            preprocess_settings["source_dir"],
-            preprocess_settings["target_dir"],
-            preprocess_settings["max_cutoff_percent"],
-            preprocess_settings["min_cutoff_percent"],
-        )
+        pager = self.add(npyscreen.Pager, name="Preprocess Progress")
+        logger = PagerLogger(pager)
+
+        try:
+            preprocess_tiffs(
+                preprocess_settings["source_dir"],
+                preprocess_settings["target_dir"],
+                preprocess_settings["max_cutoff_percent"],
+                preprocess_settings["min_cutoff_percent"],
+                logger=logger,
+            )
+        except PagerFailError as e:
+            err_string = repr(e)
+            npyscreen.notify_confirm("Fatal Failure: " + err_string,editw=1,wide=True)
+            exit()
+
+        if len(logger.error_lines) > 0:
+            npyscreen.notify_confirm("Encountered errors: " + ",".join(logger.error_lines), editw=1,wide=True)
 
         self.parentApp.preprocessDone()
         pass
@@ -187,8 +206,26 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
         self.min_foreground = min_foreground
         self.ridge_threshold = ridge_threshold
 
-        self.addForm('PREPROCESS', PreprocessForm, name="Preprocessing Images")
-        self.setNextForm('PREPROCESS')
+        self.beginRunningSteps()
+
+    def beginRunningSteps(self):
+        execute_steps = [
+            ["PREPROCESS", PreprocessForm, "Preprocess Images"],
+        ]
+
+        do_execute = npyscreen.notify_ok_cancel(
+            "Execute following steps?: {}".format(",".join([step[2] for step in execute_steps])),
+            editw=1
+        )
+
+        if not do_execute:
+            exit()
+
+        for step_code,step_form,step_name in execute_steps:
+            self.addForm(step_code,step_form,name=step_name)
+            self.setNextForm(step_code)
+        # self.addForm('PREPROCESS', PreprocessForm, name="Preprocessing Images")
+        # self.setNextForm('PREPROCESS')
 
     def getPreprocessSettings(self):
         return self.preprocessSettings

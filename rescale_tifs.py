@@ -13,7 +13,8 @@ from snakeutils.logger import PrintLogger
 
 def rescale_multi_dim_arr(arr,rescale_factor,logger):
     if len(arr.shape) > 3:
-        raise Exception("Can't resize array with more than three dimensions")
+        logger.FAIL("Can't resize array with more than three dimensions")
+
     if len(arr.shape) == 3:
         depth = arr.shape[2]
     else:
@@ -26,7 +27,7 @@ def rescale_multi_dim_arr(arr,rescale_factor,logger):
     for dim in dims:
         new_dim = int(dim * rescale_factor)
         if new_dim == 0:
-            raise Exception("Dimension {} in {} rescaled by factor {} becomes zero".format(dim,fp,args.rescale_factor))
+            logger.FAIL("Dimension {} in {} rescaled by factor {} becomes zero".format(dim,fp,args.rescale_factor))
         new_dims.append(new_dim)
 
     old_height = dims[0]

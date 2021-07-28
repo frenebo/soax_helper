@@ -43,17 +43,17 @@ def connect_snake_pickles(source_dir,target_dir,logger=PrintLogger):
         snake_pickles.sort()
 
         if len(snake_pickles) == 0:
-            logger.log(" No .pickle files found in {}, aborting this directoy".format(subdir_path), Colors.RED)
+            logger.error(" No .pickle files found in {}, aborting this directoy".format(subdir_path))
 
         img_is_3d = get_is_3d_from_filename(snake_pickles[0])
         if img_is_3d is None:
-            logger.log( " Expected pickle name '{}' to start '3Dsec' or '2Dsec'. Could not determine image dimensionality, aborting directory '{}'".format(snake_pickles[0],subdir_path), Colors.RED)
+            logger.error( " Expected pickle name '{}' to start '3Dsec' or '2Dsec'. Could not determine image dimensionality, aborting directory '{}'".format(snake_pickles[0],subdir_path))
             continue
 
         dims_dont_match = False
         for section_fn in snake_pickles:
             if get_is_3d_from_filename(section_fn) != img_is_3d:
-                logger.log(" Dimension in name '{}' does not match '{}', aborting this directory".format(section_fn,snake_pickles[0]), Colors.RED)
+                logger.error(" Dimension in name '{}' does not match '{}', aborting this directory".format(section_fn,snake_pickles[0]))
                 dims_dont_match = True
                 continue
 

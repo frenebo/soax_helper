@@ -27,7 +27,6 @@ def run_fast_scandir(dir, ext):    # dir: str, ext: list
 
     return subfolders, files
 
-
 def extract_snakes(snake_file):
     # get past starting params
     count = 0
@@ -114,6 +113,3 @@ def extract_snakes(snake_file):
         snake_arr.append(snake)
 
     return snake_arr
-
-
-

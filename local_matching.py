@@ -162,7 +162,12 @@ if __name__ == "__main__":
     for snake_fn in snake_filenames:
         snake_fp = os.path.join(snake_dir,snake_fn)
         with open(snake_fp, "r") as snake_file:
-            snakes = extract_snakes(snake_file)
+            try:
+                snakes = extract_snakes(snake_file)
+            except:
+                print("Could not extract snakes")
+                raise
+
             local_match_snakes(snakes)
-        raise Exception("finished first, stopping now")
+
 

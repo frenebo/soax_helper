@@ -42,7 +42,7 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
 
         if background_img_dir is not None and img_idx < len(background_image_filenames):
             background_img_fp = os.path.join(background_img_dir,background_image_filenames[img_idx])
-            logger.log("  Using background image {}".format(background_img_fp), Colors.YELLOW)
+            logger.log("  Using background image {}".format(background_img_fp))
             background_img = Image.open(background_img_fp)
             plt.imshow(background_img)
         else:
@@ -54,15 +54,20 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
             else:
                 image_height,image_width = infer_height_width(snake_filename)
                 if image_width is None:
-                    raise Exception("Provide --width and --height of images, could not determine from filename {}".format(snake_filename))
+                    logger.error("Must provide width and height of images, could not determine from filename {}".format(snake_filename))
+                    return
         if fp.endswith(".txt"):
             with open(fp, "r") as snake_file:
-                snakes = extract_snakes(snake_file)
+                try:
+                    snakes = extract_snakes(snake_file)
+                except Exception as e:
+                    logger.FAIL(repr(e))
         elif fp.endswith(".pickle"):
             with open(fp, "r") as snake_file:
                 snakes = pickle.load(snake_file)
         else:
-            raise Exception("Unsupported extension with file {}".format(fp))
+            logger.error("Unsupported extension with file {}".format(fp))
+            return
 
         for snake_idx, snake_pts in enumerate(snakes):
             snake_pts = np.array(snake_pts)
@@ -87,7 +92,7 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
             plt.xlabel("x")
             plt.ylabel("y")
             plt.savefig(save_img_fp)
-            logger.log("  Saved image to {}".format(save_img_fp), Colors.GREEN)
+            logger.success("  Saved image to {}".format(save_img_fp))
             # clear figure so we can do the next plot
             plt.clf()
 
@@ -103,7 +108,7 @@ def make_snake_images(
     logger=PrintLogger,
     ):
     if (background_img_dir is not None) and use_subsubdirs:
-        raise Exception("Background images not supported with subsubdirs")
+        logger.FAIL("Background images not supported with subsubdirs")
 
     snake_dirs = []
     image_dirs = []

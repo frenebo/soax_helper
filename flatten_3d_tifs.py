@@ -18,7 +18,8 @@ def flatten_3d_tifs(source_dir,target_dir,logger=PrintLogger):
 
         # if just one frame
         if getattr(pil_img, "n_frames", 1) == 1:
-            raise Exception("TIF {} is already 2D".format(fp))
+            logger.error("Cannot flatten, TIF {} is already 2D".format(fp))
+            return
 
         arr_3d = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
 
@@ -30,10 +31,9 @@ def flatten_3d_tifs(source_dir,target_dir,logger=PrintLogger):
 
         new_tif_fn = "2d_" + src_tif_fn
         new_fp = os.path.join(target_dir, new_tif_fn)
-        logger.log("  Saving flattened tif as {}".format(new_fp), Colors.GREEN)
+        logger.success("  Saving flattened tif as {}".format(new_fp))
 
         tifffile.imsave(new_fp,arr_2d)
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Maximum Intensity Projection to flatten 3D tifs to 2D tifs')

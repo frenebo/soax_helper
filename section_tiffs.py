@@ -100,9 +100,8 @@ def section_tiff(tif_filepath,sectioned_dir,section_max_size,logger):
         sectioned_dir))
 
 def section_tiffs(section_max_size,source_dir,target_dir,logger=PrintLogger):
-
     if section_max_size <= 0:
-        raise Exception("Section max size must be positive. Invalid value {}".format(section_size))
+        logger.FAIL("Section max size must be positive. Invalid value {}".format(section_size))
 
     source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
     source_tifs.sort()
@@ -116,7 +115,7 @@ def section_tiffs(section_max_size,source_dir,target_dir,logger=PrintLogger):
         sectioned_dir = os.path.join(target_dir, "sectioned_" + image_name_extensionless)
 
         if os.path.exists(sectioned_dir):
-            raise Exception("Directory {} already exists".format(sectioned_dir))
+            logger.FAIL("Directory {} already exists".format(sectioned_dir))
 
         os.mkdir(sectioned_dir)
 

@@ -14,7 +14,8 @@ def preprocess_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent
     source_tifs.sort()
 
     if len(source_tifs) == 0:
-        raise Exception("No .tif files found in {}".format(source_dir))
+        logger.error("No .tif files found in {}".format(source_dir))
+        return
 
     first_tif_img = Image.open(os.path.join(source_dir, source_tifs[0]))
     images_are_3d = getattr(first_tif_img, "n_frames", 1) > 1

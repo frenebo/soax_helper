@@ -1,24 +1,53 @@
 from colorama import Fore, Style
+import threading
 
 class Colors:
     RED = "red"
     YELLOW = "yellow"
     GREEN = "green"
 
-def get_colorama_fore_color(color):
-    if color == Colors.RED:
-        return Fore.RED
-    elif color == Colors.YELLOW:
-        return Fore.YELLOW
-    elif color == Colors.GREEN:
-        return Fore.Green
-    else:
-        raise ValueError("Unsupported colorama color {}".format(color))
+class PagerFailError(Exception):
+    pass
+
+class PagerLogger:
+    def __init__(self, pager):
+        self.pager = pager
+        self.lock = threading.Lock()
+
+        self.error_lines = []
+        self.fail_lines = []
+
+    def log(self,text):
+        with self.lock:
+            self.pager.values.append(text)
+            self.pager.update()
+
+    def error(self,text):
+        with self.lock:
+            self.error_lines.append(text)
+            self.pager.values.append(text)
+            self.pager.update()
+
+    def FAIL(self,text):
+        with self.lock:
+            self.pager.values.append(text)
+            self.pager.update()
+
+            raise PagerFailError(text)
 
 class PrintLogger:
     @staticmethod
-    def log(text, color=None):
-        if color is not None:
-            print(get_colorama_fore_color(color) + text + Style.RESET_ALL)
-        else:
-            print(text)
+    def log(text):
+        print(text)
+
+    @staticmethod
+    def success(text):
+        print(Fore.GREEN + text + Style.RESET_ALL)
+
+    @staticmethod
+    def error(text):
+        print(Fore.RED + text + Style.RESET_ALL)
+
+    @staticmethod
+    def FAIL(text):
+        raise Exception(text)
