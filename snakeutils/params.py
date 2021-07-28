@@ -1,5 +1,5 @@
 
-def create_params(alpha=0.01,beta=0.1,gamma=2,min_foreground=10,ridge_threshold=0.01):
+def create_params(alpha,beta,gamma,min_foreground,ridge_threshold):
     params = """intensity-scaling	0
 gaussian-std	0
 ridge-threshold	{ridge_threshold}

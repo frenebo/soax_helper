@@ -6,8 +6,7 @@ import math
 import decimal
 import itertools
 
-# Should be of form 'start-stop-step' or 'value'
-def arg_or_range(arg):
+def error_string_or_parse_arg_or_range(arg):
     split_by_dash = arg.split('-')
 
     # If we only have one value for this argument instead of a  range
@@ -15,32 +14,40 @@ def arg_or_range(arg):
         try:
             only_val = decimal.Decimal(split_by_dash[0])
         except decimal.InvalidOperation as err:
-            raise argparse.ArgumentTypeError("Expected {} to be decimal number".format(arg) + repr(err))
+            return "Expected {} to be decimal number".format(arg) + repr(err)
 
         start = only_val
         stop = only_val
         step = decimal.Decimal(0)
     else:
         if len(split_by_dash) != 3:
-            raise argparse.ArgumentTypeError("Expected {} to be in form start-stop-step".format(arg))
+            return "Expected {} to be in form start-stop-step".format(arg)
         try:
             start = decimal.Decimal(split_by_dash[0])
             stop = decimal.Decimal(split_by_dash[1])
             step = decimal.Decimal(split_by_dash[2])
         except decimal.InvalidOperation as err:
-            raise argparse.ArgumentTypeError("Expected {} to be in form start-stop-step. ".format(arg) + repr(err))
+            return "Expected {} to be in form start-stop-step. ".format(arg) + repr(err)
 
     # start of range must be less than or equal to end of range
     if start > stop:
-        raise argparse.ArgumentTypeError("Expected start {} to be <= stop {}".format(start,stop))
+        return "Expected start {} to be <= stop {}".format(start,stop)
     if start != stop and step == 0:
-        raise argparse.ArgumentTypeError("Step cannot be zero")
+        return "Step cannot be zero"
     if start < 0:
-        raise argparse.ArgumentTypeError("Start value cannot be negative")
+        return "Start value cannot be negative"
     if stop < 0:
-        raise argparse.ArgumentTypeError("Stop value cannot be negative")
+        return "Stop value cannot be negative"
 
     return {"start":start,"stop":stop,"step":step}
+
+# Should be of form 'start-stop-step' or 'value'
+def arg_or_range(arg):
+    err_str_or_val = error_string_or_parse_arg_or_range(arg)
+    if isinstance(err_str_or_val, str):
+        raise argparse.ArgumentTypeError(err_str_or_val)
+    else:
+        return err_str_or_val
 
 def create_range(start,stop,step):
     vals = []
@@ -75,38 +82,22 @@ def param_form_settings(start,stop,step):
 
     return {"decimal_places":decimal_places,"str_length": str_length}
 
+def create_params(
+    target_dir,
+    alpha_start_stop_step,
+    beta_start_stop_step,
+    min_foreground_start_stop_step,
+    ridge_threshold_start_stop_step,
+    ):
+    alphas = create_range(**alpha_start_stop_step)
+    betas = create_range(**beta_start_stop_step)
+    min_foregrounds = create_range(**min_foreground_start_stop_step)
+    ridge_thresholds = create_range(**ridge_threshold_start_stop_step)
 
-if __name__ == "__main__":
-    default_alpha = decimal.Decimal("0.01")
-    default_beta = decimal.Decimal("0.1")
-    default_min_foreground = decimal.Decimal("0")
-    default_ridge_threshold = decimal.Decimal("0.01")
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('--alpha',
-                        type=arg_or_range,
-                        default={"start":default_alpha,"stop":default_alpha,"step":decimal.Decimal(0)})
-    parser.add_argument('--beta',
-                        type=arg_or_range,
-                        default={"start":default_beta,"stop":default_beta,"step":decimal.Decimal(0)})
-    parser.add_argument('--min_foreground',
-                        type=arg_or_range,
-                        default={"start":default_min_foreground,"stop":default_min_foreground,"step":decimal.Decimal(0)})
-    parser.add_argument('--ridge_threshold',
-                        type=arg_or_range,
-                        default={"start":default_ridge_threshold,"stop":default_ridge_threshold,"step":decimal.Decimal(0)})
-    parser.add_argument('target_dir',type=readable_dir,help='Directory for putting created parameter files')
-
-
-    args = parser.parse_args()
-    alphas = create_range(**args.alpha)
-    betas = create_range(**args.beta)
-    min_foregrounds = create_range(**args.min_foreground)
-    ridge_thresholds = create_range(**args.ridge_threshold)
-
-    alpha_form_settings = param_form_settings(**args.alpha)
-    beta_form_settings = param_form_settings(**args.beta)
-    min_foreground_settings = param_form_settings(**args.min_foreground)
-    ridge_threshold_settings = param_form_settings(**args.ridge_threshold)
+    alpha_form_settings = param_form_settings(**alpha_start_stop_step)
+    beta_form_settings = param_form_settings(**beta_start_stop_step)
+    min_foreground_settings = param_form_settings(**min_foreground_start_stop_step)
+    ridge_threshold_settings = param_form_settings(**ridge_threshold_start_stop_step)
 
     filename_template = "params_a{{alpha:0{}.{}f}}_b{{beta:0{}.{}f}}_mf{{min_foreground:0{}.{}f}}_rt{{ridge_threshold:0{}.{}f}}.txt".format(
         alpha_form_settings["str_length"],
@@ -131,7 +122,7 @@ if __name__ == "__main__":
             ridge_threshold=ridge_threshold,
         )
 
-        fp = os.path.join(args.target_dir, params_filename)
+        fp = os.path.join(target_dir, params_filename)
 
         params_text = create_params(
             alpha=alpha,
@@ -142,3 +133,35 @@ if __name__ == "__main__":
 
         with open(fp,"w") as file:
             file.write(params_text)
+
+
+if __name__ == "__main__":
+    default_alpha = decimal.Decimal("0.01")
+    default_beta = decimal.Decimal("0.1")
+    default_min_foreground = decimal.Decimal("0")
+    default_ridge_threshold = decimal.Decimal("0.01")
+    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+    parser.add_argument('target_dir',type=readable_dir,help='Directory for putting created parameter files')
+    parser.add_argument('--alpha',
+                        type=arg_or_range,
+                        default={"start":default_alpha,"stop":default_alpha,"step":decimal.Decimal(0)})
+    parser.add_argument('--beta',
+                        type=arg_or_range,
+                        default={"start":default_beta,"stop":default_beta,"step":decimal.Decimal(0)})
+    parser.add_argument('--min_foreground',
+                        type=arg_or_range,
+                        default={"start":default_min_foreground,"stop":default_min_foreground,"step":decimal.Decimal(0)})
+    parser.add_argument('--ridge_threshold',
+                        type=arg_or_range,
+                        default={"start":default_ridge_threshold,"stop":default_ridge_threshold,"step":decimal.Decimal(0)})
+
+
+    args = parser.parse_args()
+
+    args.target_dir(
+        args.target_dir,
+        args.alpha,
+        args.beta,
+        args.min_foreground,
+        args.ridge_threshold,
+    )
