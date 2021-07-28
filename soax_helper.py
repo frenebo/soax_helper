@@ -8,17 +8,16 @@ import os
 class WorkingDirectorySetupForm(npyscreen.Form):
     def create(self):
         self.field_raw_src_tiff_dir = self.add(npyscreen.TitleFilename, name="Raw TIFF source dir")
-        self.field_param_files_dir  = self.add(npyscreen.TitleFilename, name="Param files save dir")
-        self.field_snake_files_dir  = self.add(npyscreen.TitleFilename, name="Snake files dir")
-        self.field_soax_log_dir     = self.add(npyscreen.TitleFilename, name="SOAX logging dir")
+        self.field_preprocessed_tiff_dir = self.add(npyscreen.TitleFilename, name="Preprocessed TIFF dir")
+        self.field_param_files_dir = self.add(npyscreen.TitleFilename, name="Param files save dir")
+        self.field_snake_files_dir = self.add(npyscreen.TitleFilename, name="Snake files dir")
+        self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="SOAX logging dir")
         self.field_snake_images_dir = self.add(npyscreen.TitleFilename, name="Snake images dir")
-        # self.myName        = self.add(npyscreen.TitleText, name='Name')
-        # self.myDepartment = self.add(npyscreen.TitleSelectOne, scroll_exit=True, max_height=3, name='Department', values = ['Department 1', 'Department 2', 'Department 3'])
-        # self.myDate        = self.add(npyscreen.TitleDateCombo, name='Date Employed')
 
     def afterEditing(self):
         check_dir_fields = [
             self.field_raw_src_tiff_dir,
+            self.field_preprocessed_tiff_dir,
             self.field_param_files_dir,
             self.field_snake_files_dir,
             self.field_soax_log_dir,
@@ -38,6 +37,7 @@ class WorkingDirectorySetupForm(npyscreen.Form):
 
         self.parentApp.workingDirSetupDone(
             self.field_raw_src_tiff_dir.value,
+            self.field_preprocessed_tiff_dir.value,
             self.field_param_files_dir.value,
             self.field_snake_files_dir.value,
             self.field_soax_log_dir.value,
@@ -103,36 +103,38 @@ class PreprocessForm(npyscreen.Form):
 class SoaxHelperApp(npyscreen.NPSAppManaged):
     def onStart(self):
         self.addForm('MAIN', WorkingDirectorySetupForm, name='Select Working Directories')
-        self.addForm('PREPROCESS_SETUP', PreprocessSetupForm, name='Preprocessing Setup')
-        self.addForm('PARAM_SETUP', ParamsForm, name="Params Setup")
-        self.addForm('PREPROCESS', PreprocessForm, name="Preprocessing Images")
+
 
     def workingDirSetupDone(self,
         raw_src_tiff_dir,
+        preprocessed_tiff_dir,
         param_files_dir,
         snake_files_dir,
         soax_log_dir,
         snake_images_dir,
         ):
-        self.raw_src_tiff_dir = raw_src_tiff_dir
-        self.param_files_dir = param_files_dir
-        self.snake_files_dir = snake_files_dir
-        self.soax_log_dir = soax_log_dir
-        self.snake_images_dir = snake_images_dir
+        self.workingDirSettings = {
+            "raw_src_tiff_dir": raw_src_tiff_dir,
+            "preprocessed_tiff_dir": preprocessed_tiff_dir,
+            "param_files_dir": param_files_dir,
+            "snake_files_dir": snake_files_dir,
+            "soax_log_dir": soax_log_dir,
+            "snake_images_dir": snake_images_dir,
+        }
+        self.addForm('PREPROCESS_SETUP', PreprocessSetupForm, name='Preprocessing Setup')
         self.setNextForm('PREPROCESS_SETUP')
 
     def preprocessSetupDone(self,
-        source_dir,
-        target_dir,
         max_cutoff_percent,
         min_cutoff_percent,
         ):
         self.preprocessSettings = {
-            "source_dir": source_dir,
-            "target_dir": target_dir,
+            "source_dir": self.workingDirSettings["raw_src_tiff_dir"],
+            "target_dir": self.workingDirSettings["preprocessed_tiff_dir"],
             "max_cutoff_percent": max_cutoff_percent,
             "min_cutoff_percent": min_cutoff_percent,
         }
+        self.addForm('PARAM_SETUP', ParamsForm, name="Params Setup")
         self.setNextForm('PARAM_SETUP')
 
     def paramsSetupDone(self,
@@ -146,6 +148,7 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
         self.min_foreground = min_foreground
         self.ridge_threshold = ridge_threshold
 
+        self.addForm('PREPROCESS', PreprocessForm, name="Preprocessing Images")
         self.setNextForm('PREPROCESS')
 
     def getPreprocessSettings(self):
