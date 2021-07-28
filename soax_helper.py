@@ -5,6 +5,7 @@ import npyscreen
 import argparse
 import os
 from snakeutils.logger import PagerLogger, PagerFailError
+import threading
 
 class WorkingDirectorySetupForm(npyscreen.Form):
     def create(self):
@@ -15,6 +16,7 @@ class WorkingDirectorySetupForm(npyscreen.Form):
         self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="SOAX logging dir", value="./SoaxLogs")
         self.field_snake_images_dir = self.add(npyscreen.TitleFilename, name="Snake images dir", value="./SnakeImages")
         self.create_if_not_present = self.add(npyscreen.TitleSelectOne, name="Create dirs if not present", values=["yes", "no"],value=[1],scroll_exit=True)
+
 
     def afterEditing(self):
         # option zero is "yes"
@@ -132,31 +134,37 @@ class ParamsForm(npyscreen.Form):
             error_string_or_parse_arg_or_range(self.field_ridge_threshold.value),
         )
 
+def do_preprocess(logger, on_finish):
+    try:
+        preprocess_tiffs(
+            preprocess_settings["source_dir"],
+            preprocess_settings["target_dir"],
+            preprocess_settings["max_cutoff_percent"],
+            preprocess_settings["min_cutoff_percent"],
+            logger=logger,
+        )
+    except PagerFailError as e:
+        err_string = repr(e)
+        npyscreen.notify_confirm("Fatal Failure: " + err_string,editw=1,wide=True)
+        exit()
+
+    if len(logger.error_lines) > 0:
+        npyscreen.notify_confirm("Encountered errors: " + ",".join(logger.error_lines), editw=1,wide=True)
+
+    on_finish()
+
 class PreprocessForm(npyscreen.Form):
     def create(self):
         preprocess_settings = self.parentApp.getPreprocessSettings()
 
         pager = self.add(npyscreen.Pager, name="Preprocess Progress")
-        logger = PagerLogger(pager)
+        self.logger = PagerLogger(pager)
 
-        try:
-            preprocess_tiffs(
-                preprocess_settings["source_dir"],
-                preprocess_settings["target_dir"],
-                preprocess_settings["max_cutoff_percent"],
-                preprocess_settings["min_cutoff_percent"],
-                logger=logger,
-            )
-        except PagerFailError as e:
-            err_string = repr(e)
-            npyscreen.notify_confirm("Fatal Failure: " + err_string,editw=1,wide=True)
-            exit()
 
-        if len(logger.error_lines) > 0:
-            npyscreen.notify_confirm("Encountered errors: " + ",".join(logger.error_lines), editw=1,wide=True)
+        preprocess_thread = threading.Thread(target=do_preprocess,args=(self.logger,,self.done,))
 
+    def done(self):
         self.parentApp.preprocessDone()
-        pass
 
 class SoaxHelperApp(npyscreen.NPSAppManaged):
     def onStart(self):
@@ -232,6 +240,7 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
 
     def preprocessDone(self):
         self.setNextForm(None)
+        exit()
 
 if __name__ == "__main__":
     app = SoaxHelperApp()
