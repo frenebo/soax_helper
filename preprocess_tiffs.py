@@ -7,8 +7,9 @@ import os
 import numpy as np
 from PIL import Image
 import tifffile
+from snakeutils.logger import PrintLogger
 
-def preprocess_tifs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent):
+def preprocess_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent,logger=PrintLogger):
     source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
     source_tifs.sort()
 
@@ -20,7 +21,7 @@ def preprocess_tifs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent)
 
     # if just one frame
     if images_are_3d:
-        print("Opening and saving images as 3D")
+        logger.log("Opening and saving images as 3D")
         first_tiff_arr = tif_img_3d_to_arr(first_tif_img)
     else:
         first_tif_arr = np.array(first_tif_img)
@@ -28,11 +29,11 @@ def preprocess_tifs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent)
     max_cutoff = np.percentile(first_tif_arr,max_cutoff_percent)
     min_cutoff = np.percentile(first_tif_arr,min_cutoff_percent)
 
-    print("Rescaling range to max val {}".format(max_cutoff))
+    logger.log("Rescaling range to max val {}".format(max_cutoff))
     new_max = np.iinfo(first_tif_arr.dtype).max
     scale_factor = float(new_max)/float(max_cutoff - min_cutoff)
 
-    print("Data type {} with max value {}".format(first_tif_arr.dtype, new_max))
+    logger.log("Data type {} with max value {}".format(first_tif_arr.dtype, new_max))
 
     for tif_fn in source_tifs:
         tif_fp = os.path.join(source_dir,tif_fn)
@@ -49,16 +50,14 @@ def preprocess_tifs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent)
         new_arr[over_max_places] = new_max
         new_arr[under_min_places] = 0
 
-        print("New min:  {}".format(new_arr.min()))
-        print("New max: {}".format(new_arr.max()))
-
+        logger.log("New min:  {}".format(new_arr.min()))
+        logger.log("New max: {}".format(new_arr.max()))
 
         if images_are_3d:
             save_3d_tif(preprocessed_fp,new_arr)
         else:
             tifffile.imsave(preprocessed_fp,new_arr)
-        print("Saved preprocessed pic as {}".format(preprocessed_fp))
-
+        logger.log("Saved preprocessed pic as {}".format(preprocessed_fp))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Normalizes tif (useful if TIF image is too dark)')
@@ -71,7 +70,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    preprocess_tifs(
+    preprocess_tiffs(
         args.source_dir,
         args.target_dir,
         args.max_cutoff_percent,

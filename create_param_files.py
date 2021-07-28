@@ -1,6 +1,7 @@
 import argparse
 from snakeutils.params import create_params
 from snakeutils.files import readable_dir
+from snakeutils.logger import PrintLogger
 import os
 import math
 import decimal
@@ -78,8 +79,6 @@ def param_form_settings(start,stop,step):
     else:
         str_length = stop_digits_before_decimal_pt
 
-    # print("Start:{} Stop:{} Step:{} decimals:{} strlength: {}")
-
     return {"decimal_places":decimal_places,"str_length": str_length}
 
 def create_params(
@@ -88,6 +87,7 @@ def create_params(
     beta_start_stop_step,
     min_foreground_start_stop_step,
     ridge_threshold_start_stop_step,
+    logger=PrintLogger
     ):
     alphas = create_range(**alpha_start_stop_step)
     betas = create_range(**beta_start_stop_step)
@@ -109,7 +109,7 @@ def create_params(
         ridge_threshold_settings["str_length"],
         ridge_threshold_settings["decimal_places"],
     )
-    print("Using param filename template {}".format(filename_template))
+    logger.log("Using param filename template {}".format(filename_template))
 
     # all possible combinations of these parameters
     param_combinations = itertools.product(alphas,betas,min_foregrounds,ridge_thresholds)

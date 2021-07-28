@@ -5,7 +5,7 @@ import numpy as np
 from snakeutils.files import extract_snakes, readable_dir
 import argparse
 from PIL import Image
-from colorama import init, Fore, Back,Style
+from snakeutils.logger import PrintLogger, Colors
 
 def infer_height_width(filename):
     # Expecting "sec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}.tif"
@@ -26,23 +26,23 @@ def infer_height_width(filename):
     except:
         return None,None
 
-def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,image_width=None,image_height=None,background_img_dir=None):
+def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_width=None,image_height=None,background_img_dir=None):
     snake_filenames = [filename for filename in os.listdir(dir_name) if (filename.endswith(".txt") or ffilename.endswith(".pickle"))]
     snake_filenames.sort()
 
     if background_img_dir is not None:
         background_image_filenames = [filename for filename in os.listdir(background_img_dir) if (filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".tif"))]
         background_image_filenames.sort()
-        print("Found background images: ")
-        print(", ".join(background_image_filenames))
+        logger.log("Found background images: ")
+        logger.log(", ".join(background_image_filenames))
 
     for img_idx, snake_filename in enumerate(snake_filenames):
         fp = os.path.join(dir_name,snake_filename)
-        print("Showing snakes for {}".format(fp))
+        logger.log("Showing snakes for {}".format(fp))
 
         if background_img_dir is not None and img_idx < len(background_image_filenames):
             background_img_fp = os.path.join(background_img_dir,background_image_filenames[img_idx])
-            print(Fore.YELLOW + "  Using background image {}".format(background_img_fp) + Style.RESET_ALL)
+            logger.log("  Using background image {}".format(background_img_fp), Colors.YELLOW)
             background_img = Image.open(background_img_fp)
             plt.imshow(background_img)
         else:
@@ -87,7 +87,7 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,image_width=None
             plt.xlabel("x")
             plt.ylabel("y")
             plt.savefig(save_img_fp)
-            print(Fore.GREEN + "  Saved image to {}".format(save_img_fp) + Style.RESET_ALL)
+            logger.log("  Saved image to {}".format(save_img_fp), Colors.GREEN)
             # clear figure so we can do the next plot
             plt.clf()
 
@@ -100,6 +100,7 @@ def make_snake_images(
     use_subsubdirs,
     colorful,
     background_img_dir,
+    logger=PrintLogger,
     ):
     if (background_img_dir is not None) and use_subsubdirs:
         raise Exception("Background images not supported with subsubdirs")
@@ -132,10 +133,10 @@ def make_snake_images(
         image_dirs.append(image_dir)
 
     snake_dirs.sort()
-    print("Making images from snake files in {}".format(", ".join(snake_dirs)))
+    logger.log("Making images from snake files in {}".format(", ".join(snake_dirs)))
 
     for i in range(len(snake_dirs)):
-        print("Making snakes for {}, saving in {}".format(snake_dirs[i],image_dirs[i]))
+        logger.log("Making snakes for {}, saving in {}".format(snake_dirs[i],image_dirs[i]))
         save_images_for_dir_snakes(
             snake_dirs[i],
             image_dirs[i],
@@ -143,6 +144,7 @@ def make_snake_images(
             width,
             height,
             background_img_dir,
+            logger,
         )
 
 

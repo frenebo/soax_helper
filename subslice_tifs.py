@@ -5,6 +5,7 @@ import argparse
 from PIL import Image
 import numpy as np
 import tifffile
+from snakeutils.logger import PrintLogger
 
 def slice_range(arg_str):
     split_by_dash = arg_str.split('-')
@@ -27,23 +28,16 @@ def slice_range(arg_str):
 
     return start,end
 
+def subslice_tifs(slice_range,source_dir,target_dir,logger=PrintLogger):
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('slice_range',type=slice_range,help="Range of TIF slices to keep. Ex 10-20 to keep slices 10-20, inclusive")
-    parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
-    parser.add_argument('target_dir',type=readable_dir,help="Directory to save subslice tifs")
-
-    args = parser.parse_args()
-
-    start_slice,end_slice = args.slice_range
+    start_slice,end_slice = slice_range
     new_n_frames = end_slice - start_slice + 1
 
-    source_tifs = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
+    source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
 
     for src_tif_fn in souce_tifs:
-        fp = os.path.join(args.source_dir,src_tif_fn)
-        print("Processing {}".format(fp))
+        fp = os.path.join(source_dir,src_tif_fn)
+        logger.log("Processing {}".format(fp))
 
         pil_img = Image.open(fp)
 
@@ -57,13 +51,23 @@ if __name__ == "__main__":
 
         new_img_arr = np.zeros((pil_img.height,pil_img.width,new_n_frames),dtype=np.array(pil_img).dtype)
 
-        print("Extracting slices {}-{} from depth {} image".format(start_slice,end_slice,pil_img.n_frames))
+        logger.log("Extracting slices {}-{} from depth {} image".format(start_slice,end_slice,pil_img.n_frames))
         for frame_idx in range(start_slice,end_slice + 1):
             pil_img.seek(frame_idx)
             new_img_arr[:,:, frame_idx - start_slice] = np.array(pil_img)
 
         new_tif_fn = "{}-{}sliced_".format(start_slice,end_slice) + src_tif_fn
-        new_fp = os.path.join(args.target_dir, new_tif_fn)
-        print("Saving sliced image as {}".format(new_fp))
+        new_fp = os.path.join(target_dir, new_tif_fn)
+        logger.log("Saving sliced image as {}".format(new_fp))
 
         save_3d_tif(new_fp, new_img_arr)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+    parser.add_argument('slice_range',type=slice_range,help="Range of TIF slices to keep. Ex 10-20 to keep slices 10-20, inclusive")
+    parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
+    parser.add_argument('target_dir',type=readable_dir,help="Directory to save subslice tifs")
+
+    args = parser.parse_args()
+
+    subslice_tifs(args.slice_range,args.source_dir,target_dir)

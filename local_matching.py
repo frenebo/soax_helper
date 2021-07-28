@@ -101,18 +101,7 @@ def local_match_snakes(snakes):
         # subract arccos from np.pi because we want tips pointing in opposite
         # direction to have zero angle
         angle = np.pi -  np.arccos(np.dot(tip1_unit_vec,tip2_unit_vec))
-        # print("tip1: pos ({},{}) direction ({},{}) tip2: pos ({},{}) direction ({},{}) dist: {} angle: {}".format(
-        #         tip_coords[tip1_idx][0],
-        #         tip_coords[tip1_idx][1],
-        #         tip1_unit_vec[0],
-        #         tip1_unit_vec[1],
-        #         tip_coords[tip2_idx][0],
-        #         tip_coords[tip2_idx][1],
-        #         tip2_unit_vec[0],
-        #         tip2_unit_vec[1],
-        #         tip_dists[tip1_idx][tip2_idx],
-        #         angle
-        #         ))
+
         score = tip_dists[tip1_idx][tip2_idx] * np.exp(angle)
 
         if score < eta and angle < angle_threshold:

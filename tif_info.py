@@ -3,6 +3,7 @@ from snakeutils.files import readable_dir
 import os
 from PIL import Image
 import numpy as np
+from snakeutils.logger import PrintLogger
 
 def tif_file_or_dir(target_path):
     try:
@@ -27,15 +28,7 @@ def readable_dir(dirpath):
 
     return dirpath
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Get info from tif file or directory of tif files')
-    parser.add_argument('target',type=tif_file_or_dir,help="TIF file or directory of tif files")
-
-    args = parser.parse_args()
-
-    tif_paths = args.target
-    # print(tif_paths)
-
+def tif_info(tif_paths,logger=PrintLogger):
     for tif_path in tif_paths:
         data = Image.open(tif_path)
         shape = data.size
@@ -43,5 +36,12 @@ if __name__ == "__main__":
         arr = np.array(data)
         dtype = str(arr.dtype)
 
-        print("{}:".format(tif_path))
-        print(" shape: {}, stack frames: {}, dtype: {}".format(shape,stack_height,dtype))
+        logger.log("{}:".format(tif_path))
+        logger.log(" shape: {}, stack frames: {}, dtype: {}".format(shape,stack_height,dtype))
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Get info from tif file or directory of tif files')
+    parser.add_argument('target',type=tif_file_or_dir,help="TIF file or directory of tif files")
+
+    args = parser.parse_args()
+

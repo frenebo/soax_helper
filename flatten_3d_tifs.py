@@ -4,20 +4,16 @@ from PIL import Image
 import numpy as np
 import tifffile
 import os
+from snakeutils.logger import PrintLogger, Colors
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Maximum Intensity Projection to flatten 3D tifs to 2D tifs')
-    parser.add_argument('source_dir',type=readable_dir,help="Directory where source 3Dtif files are")
-    parser.add_argument('target_dir',type=readable_dir,help="Directory to save 2D flat tifs")
+def flatten_3d_tifs(source_dir,target_dir,logger=PrintLogger):
 
-    args = parser.parse_args()
-
-    tif_names = [name for name in os.listdir(args.source_dir) if name.endswith(".tif")]
+    tif_names = [name for name in os.listdir(source_dir) if name.endswith(".tif")]
     tif_names.sort()
 
     for src_tif_fn in tif_names:
-        fp = os.path.join(args.source_dir,src_tif_fn)
-        print("Processing {}".format(fp))
+        fp = os.path.join(source_dir,src_tif_fn)
+        logger.log("Processing {}".format(fp))
         pil_img = Image.open(fp)
 
         # if just one frame
@@ -33,9 +29,17 @@ if __name__ == "__main__":
         arr_2d = np.max(arr_3d,axis=2)
 
         new_tif_fn = "2d_" + src_tif_fn
-        new_fp = os.path.join(args.target_dir, new_tif_fn)
-        print("  Saving flattened tif as {}".format(new_fp))
+        new_fp = os.path.join(target_dir, new_tif_fn)
+        logger.log("  Saving flattened tif as {}".format(new_fp), Colors.GREEN)
 
         tifffile.imsave(new_fp,arr_2d)
 
 
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Maximum Intensity Projection to flatten 3D tifs to 2D tifs')
+    parser.add_argument('source_dir',type=readable_dir,help="Directory where source 3Dtif files are")
+    parser.add_argument('target_dir',type=readable_dir,help="Directory to save 2D flat tifs")
+
+    args = parser.parse_args()
+
+    flatten_3d_tifs(args.source_dir,args.target_dir)

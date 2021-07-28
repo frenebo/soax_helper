@@ -7,14 +7,7 @@ import subprocess
 import tqdm
 from ctypes import c_int32
 import time
-from colorama import init, Fore, Back,Style
-init()
-
-# print(Fore.RED + 'some red text')
-# print(Back.GREEN + 'and with a green background')
-# #print(Style.DIM + 'and in dim text')
-# print(Style.RESET_ALL)
-# print('back to normal now')
+from snakeutils.logger import PrintLogger, Colors
 
 def run_soax(soax_args):
     batch_soax = soax_args["batch_soax"]
@@ -23,6 +16,7 @@ def run_soax(soax_args):
     param_fp = soax_args["param_fp"]
     params_output_dir = soax_args["params_output_dir"]
     logging_dir = soax_args["logging_dir"]
+    logger = soax_args["logger"]
 
     error_fp = os.path.join(logging_dir,"error_" + params_name + ".txt")
 
@@ -36,19 +30,18 @@ def run_soax(soax_args):
             params_output_dir=params_output_dir,
         )
 
-        print("Executing '{}'".format(command))
+        logger.log("Executing '{}'".format(command))
         try:
             code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
-            print(Fore.GREEN + "Completed {}".format(command) + Style.RESET_ALL)
+            logger.log("Completed {}".format(command), Colors.GREEN)
         except subprocess.CalledProcessError as e:
-            print(Fore.RED + "ERROR: ")
-            print("Failed to run {}. return code {}".format(command,e.returncode))
-            print("STDERR saved in {}".format(error_fp))
-            print("STDOUT saved in {}".format(stdout_fp))
-            print(Style.RESET_ALL)
+            logger.log("ERROR: ", Colors.RED)
+            logger.log("Failed to run {}. return code {}".format(command,e.returncode), Colors.RED)
+            logger.log("STDERR saved in {}".format(error_fp), Colors.RED)
+            logger.log("STDOUT saved in {}".format(stdout_fp), Colors.RED)
 
 
-def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_dir,logging_dir):
+def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_dir,logging_dir,logger):
     param_fp = os.path.join(params_dir,params_filename)
     params_name = params_filename[:-len(".txt")]
     params_output_dir = os.path.join(output_dir,params_name)
@@ -60,6 +53,7 @@ def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_
         "params_name": params_name,
         "params_output_dir": params_output_dir,
         "logging_dir":logging_dir,
+        "logger": logger,
     }
 
 def run_soax_with_params(
@@ -69,11 +63,12 @@ def run_soax_with_params(
     output_dir,
     logging_dir,
     use_subdirs,
-    workers_num):
+    workers_num,
+    logger=PrintLogger):
     param_files = [filename for filename in os.listdir(params_dir) if filename.endswith(".txt")]
     param_files.sort()
 
-    print("WORKERS: {}".format(workers_num))
+    logger.log("WORKERS: {}".format(workers_num))
 
     soax_args = []
 
@@ -105,6 +100,7 @@ def run_soax_with_params(
                     batch_soax,
                     subdir_path,
                     sublogging_dir,
+                    logger,
                 ))
     # If no subdirs, we have
     # {tif_dir} -> tif,tif,tif,tif
@@ -120,16 +116,16 @@ def run_soax_with_params(
                 logging_dir
             ))
 
-    print("Creating snake output directories inside {}".format(output_dir))
+    logger.log("Creating snake output directories inside {}".format(output_dir))
     for soax_arg in soax_args:
         params_output_dir = soax_arg["params_output_dir"]
         os.mkdir(params_output_dir)
-        print("Directory '{}' created".format(params_output_dir))
+        logger.log("Directory '{}' created".format(params_output_dir))
 
     with ThreadPool(workers_num) as pool:
-        print("Making future")
+        logger.log("Making future")
         future = pool.map(run_soax, soax_args)
-        print("Future finished")
+        logger.log("Future finished")
 
 
 if __name__ == "__main__":

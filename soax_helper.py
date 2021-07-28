@@ -1,10 +1,11 @@
 from snakeutils.files import readable_dir
 from create_param_files import error_string_or_parse_arg_or_range
+from preprocess_tiffs import preprocess_tiffs
 import npyscreen
 import argparse
 import os
 
-class SoaxSetupForm(npyscreen.Form):
+class WorkingDirectorySetupForm(npyscreen.Form):
     def create(self):
         self.field_raw_src_tiff_dir = self.add(npyscreen.TitleFilename, name="Raw TIFF source dir")
         self.field_param_files_dir  = self.add(npyscreen.TitleFilename, name="Param files save dir")
@@ -35,13 +36,21 @@ class SoaxSetupForm(npyscreen.Form):
                     npyscreen.notify_confirm("'{}' does not exist".format(dir_field.value),editw=1)
                     return
 
-        self.parentApp.soaxSetupDone(
+        self.parentApp.workingDirSetupDone(
             self.field_raw_src_tiff_dir.value,
             self.field_param_files_dir.value,
             self.field_snake_files_dir.value,
             self.field_soax_log_dir.value,
             self.field_snake_images_dir.value,
         )
+
+class PreprocessSetupForm(npyscreen.Form):
+    def create(self):
+        pass
+
+    def afterEditing(self):
+        self.parentApp.preprocessSetupDone()
+        pass
 
 class ParamsForm(npyscreen.Form):
     def create(self):
@@ -70,14 +79,35 @@ class ParamsForm(npyscreen.Form):
                 return
 
 
-        self.parentApp.paramsSetupDone()
+        self.parentApp.paramsSetupDone(
+            error_string_or_parse_arg_or_range(self.field_alpha.value),
+            error_string_or_parse_arg_or_range(self.field_beta.value),
+            error_string_or_parse_arg_or_range(self.field_min_foreground.value),
+            error_string_or_parse_arg_or_range(self.field_ridge_threshold.value),
+        )
+
+class PreprocessForm(npyscreen.Form):
+    def create(self):
+        preprocess_settings = self.parentApp.getPreprocessSettings()
+
+        preprocess_tiffs(
+            preprocess_settings["source_dir"],
+            preprocess_settings["target_dir"],
+            preprocess_settings["max_cutoff_percent"],
+            preprocess_settings["min_cutoff_percent"],
+        )
+
+        self.parentApp.preprocessDone()
+        pass
 
 class SoaxHelperApp(npyscreen.NPSAppManaged):
     def onStart(self):
-        self.addForm('MAIN', SoaxSetupForm, name='Setup Form')
-        self.addForm('PARAMS', ParamsForm, name="Params Setup")
+        self.addForm('MAIN', WorkingDirectorySetupForm, name='Select Working Directories')
+        self.addForm('PREPROCESS_SETUP', PreprocessSetupForm, name='Preprocessing Setup')
+        self.addForm('PARAM_SETUP', ParamsForm, name="Params Setup")
+        self.addForm('PREPROCESS', PreprocessForm, name="Preprocessing Images")
 
-    def soaxSetupDone(self,
+    def workingDirSetupDone(self,
         raw_src_tiff_dir,
         param_files_dir,
         snake_files_dir,
@@ -89,11 +119,40 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
         self.snake_files_dir = snake_files_dir
         self.soax_log_dir = soax_log_dir
         self.snake_images_dir = snake_images_dir
-        self.setNextForm('PARAMS')
+        self.setNextForm('PREPROCESS_SETUP')
 
-    def paramsSetupDone(self):
+    def preprocessSetupDone(self,
+        source_dir,
+        target_dir,
+        max_cutoff_percent,
+        min_cutoff_percent,
+        ):
+        self.preprocessSettings = {
+            "source_dir": source_dir,
+            "target_dir": target_dir,
+            "max_cutoff_percent": max_cutoff_percent,
+            "min_cutoff_percent": min_cutoff_percent,
+        }
+        self.setNextForm('PARAM_SETUP')
+
+    def paramsSetupDone(self,
+        alpha,
+        beta,
+        min_foreground,
+        ridge_threshold,
+        ):
+        self.alpha = alpha
+        self.beta = beta
+        self.min_foreground = min_foreground
+        self.ridge_threshold = ridge_threshold
+
+        self.setNextForm('PREPROCESS')
+
+    def getPreprocessSettings(self):
+        return self.preprocessSettings
+
+    def preprocessDone(self):
         self.setNextForm(None)
-
 
 if __name__ == "__main__":
     app = SoaxHelperApp()

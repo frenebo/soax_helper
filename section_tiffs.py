@@ -6,9 +6,10 @@ import os
 import numpy as np
 from PIL import Image
 import tifffile
+from snakeutils.logger import PrintLogger
 
-def section_tif(tif_filepath,sectioned_dir,section_max_size):
-    print("Processing {}".format(tif_filepath))
+def section_tiff(tif_filepath,sectioned_dir,section_max_size,logger):
+    logger.log("Processing {}".format(tif_filepath))
 
     pil_img = Image.open(tif_filepath)
 
@@ -93,12 +94,12 @@ def section_tif(tif_filepath,sectioned_dir,section_max_size):
     else:
         section_num = width_slices*height_slices
 
-    print("  Split {} into {} sections in {}".format(
+    logger.log("  Split {} into {} sections in {}".format(
         tif_filepath,
         section_num,
         sectioned_dir))
 
-def section_tiffs(section_max_size,source_dir,target_dir):
+def section_tiffs(section_max_size,source_dir,target_dir,logger=PrintLogger):
 
     if section_max_size <= 0:
         raise Exception("Section max size must be positive. Invalid value {}".format(section_size))
@@ -119,9 +120,7 @@ def section_tiffs(section_max_size,source_dir,target_dir):
 
         os.mkdir(sectioned_dir)
 
-        section_tif(tif_fp,sectioned_dir,section_max_size)
-
-
+        section_tiff(tif_fp,sectioned_dir,section_max_size,logger)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')

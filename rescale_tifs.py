@@ -9,8 +9,9 @@ from PIL import Image
 from scipy.ndimage import zoom
 import tifffile
 import numpy as np
+from snakeutils.logger import PrintLogger
 
-def rescale_multi_dim_arr(arr,rescale_factor):
+def rescale_multi_dim_arr(arr,rescale_factor,logger):
     if len(arr.shape) > 3:
         raise Exception("Can't resize array with more than three dimensions")
     if len(arr.shape) == 3:
@@ -34,16 +35,45 @@ def rescale_multi_dim_arr(arr,rescale_factor):
     new_width = new_dims[1]
 
     if depth is not None:
-        print("  Resizing {}x{}, depth {} to {}x{}, depth {}".format(old_width,old_height,depth,new_width,new_height,depth))
+        logger.log("  Resizing {}x{}, depth {} to {}x{}, depth {}".format(old_width,old_height,depth,new_width,new_height,depth))
 
         new_arr = np.zeros((new_height,new_width,depth),dtype=arr.dtype)
         for i in range(depth):
             new_arr[:,:,i] = cv2.resize(arr[:,:,i],dsize=(new_width,new_height))
     else:
-        print("  Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
+        logger.log("  Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
         new_arr = cv2.resize(arr,dsize=(new_width,new_height))
 
     return new_arr
+
+def rescale_tiffs(rescale_factor,source_dir,target_dir,logger=PrintLogger):
+    tif_files = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
+    tif_files.sort()
+
+    for src_filename in tif_files:
+        fp = os.path.join(source_dir,src_filename)
+        logger.log("Processing {}".format(fp))
+
+        pil_img = Image.open(fp)
+
+        # 3D tif images have attribute n_frames with non-zero value
+        img_is_3d = getattr(pil_img, "n_frames", 1) != 1
+
+        if img_is_3d:
+            arr = tif_img_3d_to_arr(pil_img)
+        else:
+            arr = np.array(pil_img)
+        logger.log("Orig shape: {}".format(arr.shape))
+        resized_img = rescale_multi_dim_arr(arr,rescale_factor,logger)
+        logger.log("New shape: {}".format(resized_img.shape))
+        new_fn = "{}resized_".format(rescale_factor) + src_filename
+        new_fp = os.path.join(target_dir, new_fn)
+        logger.log("  Saving rescaled image as {}".format(new_fp))
+
+        if img_is_3d:
+            save_3d_tif(new_fp,resized_img)
+        else:
+            tifffile.imsave(new_fp, resized_img)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
@@ -56,31 +86,4 @@ if __name__ == "__main__":
     if args.rescale_factor <= 0:
         raise Exception("Rescale factor must be positive")
 
-    tif_files = [filename for filename in os.listdir(args.source_dir) if filename.endswith(".tif")]
-    tif_files.sort()
-
-    for src_filename in tif_files:
-        fp = os.path.join(args.source_dir,src_filename)
-        print("Processing {}".format(fp))
-
-        pil_img = Image.open(fp)
-
-        # 3D tif images have attribute n_frames with non-zero value
-        img_is_3d = getattr(pil_img, "n_frames", 1) != 1
-
-        if img_is_3d:
-            arr = tif_img_3d_to_arr(pil_img)
-        else:
-            arr = np.array(pil_img)
-        print("Orig shape: {}".format(arr.shape))
-        resized_img = rescale_multi_dim_arr(arr,args.rescale_factor)
-        print("New shape: {}".format(resized_img.shape))
-        new_fn = "{}resized_".format(args.rescale_factor) + src_filename
-        new_fp = os.path.join(args.target_dir, new_fn)
-        print("  Saving rescaled image as {}".format(new_fp))
-
-        if img_is_3d:
-            save_3d_tif(new_fp,resized_img)
-        else:
-            tifffile.imsave(new_fp, resized_img)
-
+    rescale_tiffs(args.rescale_factor, args.source_dir, args.target_dir)

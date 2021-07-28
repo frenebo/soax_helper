@@ -3,20 +3,21 @@ import sys
 import os
 import argparse
 from snakeutils.files import readable_dir
+from snakeutils.logger import PrintLogger, Colors
 
-def write_vid_for_dir_images(image_folder,video_path):
+def write_vid_for_dir_images(image_folder,video_path,logger):
     if not video_path.endswith(".mp4"):
         raise Exception("Save video path {} should end with .mp4".format(video_path))
     dir_contents = os.listdir(image_folder)
     dir_contents.sort()
     images = [img for img in dir_contents if (img.endswith(".png") or img.endswith(".tif"))]
     if len(images) == 0:
-        print("No images found in {}".format(image_folder))
+        logger.log("No images found in {}".format(image_folder), Colors.RED)
         return
 
     frame = cv2.imread(os.path.join(image_folder, images[0]))
     height, width, layers = frame.shape
-    print(frame.dtype)
+    logger.log("dtype: ".format(str(frame.dtype)))
 
     video = cv2.VideoWriter(video_path, cv2.VideoWriter_fourcc(*'mp4v'), 10, (width,height))
 
@@ -26,19 +27,19 @@ def write_vid_for_dir_images(image_folder,video_path):
     cv2.destroyAllWindows()
     video.release()
 
-def make_video(image_folder,video_dir,use_subdirs):
+def make_video(image_folder,video_dir,use_subdirs,logger=PrintLogger):
     if use_subdirs:
         subdir_names = [name for name in os.listdir(image_folder) if os.path.isdir(os.path.join(image_folder,name))]
 
-        print("Making videos for image subdirectories {}".format(subdir_names))
+        logger.log("Making videos for image subdirectories {}".format(subdir_names))
 
         for subdir_name in subdir_names:
             subdir_path = os.path.join(image_folder,subdir_name)
             video_path = os.path.join(video_dir,subdir_name + ".mp4")
-            write_vid_for_dir_images(subdir_path,video_path)
+            write_vid_for_dir_images(subdir_path,video_path,logger)
     else:
         video_path = os.path.join(video_dir, "results.mp4")
-        write_vid_for_dir_images(image_folder,video_path)
+        write_vid_for_dir_images(image_folder,video_path,logger)
 
 
 if __name__ == "__main__":

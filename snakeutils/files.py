@@ -57,8 +57,6 @@ def extract_snakes(snake_file):
             snake_name = line[0]
             snake_points = []
 
-        # print(line_idx)
-        # print(lines[line_idx - 1:])
         if line_idx >= len(lines):
             end_of_snakes = True
         else:

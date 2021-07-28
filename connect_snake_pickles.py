@@ -1,7 +1,7 @@
 import argparse
 import os
-import pickle
-from colorama import init, Fore, Back,Style
+import pickl
+from snakeutils.logger import PrintLogger,Colors
 from snakeutils.files import readable_dir
 
 def get_is_3d_from_filename(fn):
@@ -33,35 +33,27 @@ def get_section_bounds(filenames, img_is_3d):
     else:
         return sec_height_lower,sec_height_upper,sec_width_lower,sec_width_upper
 
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('source_dir',type=readable_dir,help="Directory with snake pickles")
-    parser.add_argument('target_dir',type=readable_dir,help="Directory to save pickled snakes")
-
-    args = parser.parse_args()
-
-    source_subdirs = [name for name in os.listdir(args.source_dir) if os.path.isdir(os.path.join(args.source_dir,name))]
+def connect_snake_pickles(source_dir,target_dir,logger=PrintLogger):
+    source_subdirs = [name for name in os.listdir(source_dir) if os.path.isdir(os.path.join(source_dir,name))]
     source_subdirs.sort()
 
     for source_subdir in source_subdirs:
-        subdir_path = os.path.join(args.source_dir,source_subdir)
+        subdir_path = os.path.join(source_dir,source_subdir)
         snake_pickles = [name for name in os.listdir(subdir_path) if name.endswith(".pickle")]
         snake_pickles.sort()
 
         if len(snake_pickles) == 0:
-            print(Fore.RED + " No .pickle files found in {}, aborting this directoy".format(subdir_path) + Style.RESET_ALL)
-            continue
+            logger.log(" No .pickle files found in {}, aborting this directoy".format(subdir_path), Colors.RED)
 
         img_is_3d = get_is_3d_from_filename(snake_pickles[0])
         if img_is_3d is None:
-            print(Fore.RED + " Expected pickle name '{}' to start '3Dsec' or '2Dsec'. Could not determine image dimensionality, aborting directory '{}'".format(snake_pickles[0],subdir_path) + Style.RESET_ALL)
+            logger.log( " Expected pickle name '{}' to start '3Dsec' or '2Dsec'. Could not determine image dimensionality, aborting directory '{}'".format(snake_pickles[0],subdir_path), Colors.RED)
             continue
 
         dims_dont_match = False
         for section_fn in snake_pickles:
             if get_is_3d_from_filename(section_fn) != img_is_3d:
-                print(Fore.RED + " Dimension in name '{}' does not match '{}', aborting this directory".format(section_fn,snake_pickles[0]))
+                logger.log(" Dimension in name '{}' does not match '{}', aborting this directory".format(section_fn,snake_pickles[0]), Colors.RED)
                 dims_dont_match = True
                 continue
 
@@ -98,6 +90,15 @@ if __name__ == "__main__":
                 new_snake_name = str(sec_idx) + "_" + snake_name
                 shifted_snakes[new_snake_name] = shifted_snake_pts
 
-        new_pickle_path = os.path.join(args.target_dir,source_subdir + ".pickle")
+        new_pickle_path = os.path.join(target_dir,source_subdir + ".pickle")
         with open(new_pickle_path,'wb') as handle:
             pickle.dump(shifted_snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+    parser.add_argument('source_dir',type=readable_dir,help="Directory with snake pickles")
+    parser.add_argument('target_dir',type=readable_dir,help="Directory to save pickled snakes")
+
+    args = parser.parse_args()
+
+    connect_snake_pickles(args.source_dir,args.target_dir)

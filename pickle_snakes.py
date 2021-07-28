@@ -5,25 +5,16 @@ import numpy as np
 from snakeutils.files import extract_snakes, run_fast_scandir
 import pickle
 import argparse
-from colorama import init, Fore, Back,Style
+from snakeutils.logger import PrintLogger, Colors
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('snakes_dir',help="Directory with snake text files")
-    parser.add_argument('pickles_dir',help="Directory to save pickled snakes")
-
-    args = parser.parse_args()
-
-    dir_name = args.snakes_dir
-    pickles_dir = args.pickles_dir
-
+def pickle_snakes(dir_name,pickles_dir,logger=PrintLogger):
     subfolders, text_filepaths = run_fast_scandir(dir_name,[".txt"])
 
     for text_fp in text_filepaths:
         relative_fp = os.path.relpath(text_fp,dir_name)
         relative_dir = os.path.dirname(relative_fp)
 
-        print("Loading snakes from {}".format(text_fp))
+        logger.log("Loading snakes from {}".format(text_fp))
         with open(text_fp, 'r') as snake_file:
             snakes = extract_snakes(snake_file)
 
@@ -34,23 +25,16 @@ if __name__ == "__main__":
 
         if not os.path.exists(new_pickle_dir):
             os.makedirs(new_pickle_dir)
-        print(Fore.YELLOW + "  Saving snake pickle in {}".format(pickle_fp) + Style.RESET_ALL)
+            logger.log("  Created directory {}".format(new_pickle_dir))
+        logger.log("  Saving snake pickle in {}".format(pickle_fp), Colors.YELLOW)
         with open(pickle_fp, 'wb') as handle:
             pickle.dump(snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-    # filenames = os.listdir(dir_name)
-    # filenames.sort()
 
-    # for filename in filenames:
-    #     fp = os.path.join(dir_name,filename)
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+    parser.add_argument('snakes_dir',help="Directory with snake text files")
+    parser.add_argument('pickles_dir',help="Directory to save pickled snakes")
 
-    #     with open(fp, "r") as snake_file:
-    #         print(fp)
-    #         snakes = extract_snakes(snake_file)
-
-    #         pickle_filename = "".join(filename.split(".")[:-1]) + ".pickle"
-    #         pickle_fp = os.path.join(pickle_dir,pickle_filename)
-
-    #         with open(pickle_fp, 'wb') as handle:
-    #             pickle.dump(snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    args = parser.parse_args()
