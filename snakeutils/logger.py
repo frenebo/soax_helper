@@ -11,7 +11,7 @@ def get_colorama_fore_color(color):
     elif color == Colors.YELLOW:
         return Fore.YELLOW
     elif color == Colors.GREEN:
-        return Fore.Green:
+        return Fore.Green
     else:
         raise ValueError("Unsupported colorama color {}".format(color))
 
