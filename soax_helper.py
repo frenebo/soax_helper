@@ -150,6 +150,7 @@ def do_preprocess(logger, on_finish):
 
     if len(logger.error_lines) > 0:
         npyscreen.notify_confirm("Encountered errors: " + ",".join(logger.error_lines), editw=1,wide=True)
+
     on_finish()
 
 class PreprocessForm(npyscreen.Form):
@@ -158,12 +159,20 @@ class PreprocessForm(npyscreen.Form):
 
         pager = self.add(npyscreen.Pager, name="Preprocess Progress")
         self.logger = PagerLogger(pager)
+        self.done = False
+
+        preprocess_thread = threading.Thread(target=do_preprocess,args=(self.logger,self.finish,))
 
 
-        preprocess_thread = threading.Thread(target=do_preprocess,args=(self.logger,self.done,))
+    def afterEditing(self):
+        if not self.done:
+            npyscreen.notify_confirm("Not done preprocessing images",editw=1)
+            return
+        else:
+            self.parentApp.preprocessDone()
 
-    def done(self):
-        self.parentApp.preprocessDone()
+    def finish(self):
+        self.done = True
 
 class SoaxHelperApp(npyscreen.NPSAppManaged):
     def onStart(self):
@@ -238,8 +247,9 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
         return self.preprocessSettings
 
     def preprocessDone(self):
+        # npyscr
         self.setNextForm(None)
-        exit()
+        # exit()
 
 if __name__ == "__main__":
     app = SoaxHelperApp()
