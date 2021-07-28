@@ -150,7 +150,6 @@ def do_preprocess(logger, on_finish):
 
     if len(logger.error_lines) > 0:
         npyscreen.notify_confirm("Encountered errors: " + ",".join(logger.error_lines), editw=1,wide=True)
-
     on_finish()
 
 class PreprocessForm(npyscreen.Form):
