@@ -1,36 +1,105 @@
 from snakeutils.files import readable_dir
 from create_param_files import error_string_or_parse_arg_or_range
 from preprocess_tiffs import preprocess_tiffs
+from section_tiffs import section_tiffs
+from create_param_files import create_param_files
+from run_soax_with_params import run_soax_with_params
 import npyscreen
 import argparse
 import os
-from snakeutils.logger import PagerLogger, PagerFailError
+from snakeutils.logger import RecordLogger
+
+class StepsSetupForm(npyscreen.Form):
+    def configure(self):
+        self.select_steps = self.add(
+            npyscreen.TitleMultiSelect,
+            max_height =-2,
+            value = [2,3,5,6],
+            name="Pick steps (spacebar to toggle)",
+            values = [
+                "Preprocess Raw TIFFs",
+                "Section TIFFs before running SOAX",
+                "Create Parameter Files",
+                "Run SOAX",
+                "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
+                "Make images of snakes",
+                "Make videos from snake images",
+            ],
+            scroll_exit=True,
+        )
+
+    def afterEditing(self):
+        do_preprocess              = 0 in self.select_steps.value
+        do_section                 = 1 in self.select_steps.value
+        do_create_params           = 2 in self.select_steps.value
+        do_run_soax                = 3 in self.select_steps.value
+        do_join_sectioned_snakes   = 4 in self.select_steps.value
+        do_make_snake_images       = 5 in self.select_steps.value
+        do_make_videos_from_images = 6 in self.select_steps.value
+
+        self.parentApp.stagesSelected(
+            do_preprocess,
+            do_section,
+            do_create_params,
+            do_run_soax,
+            do_join_sectioned_snakes,
+            do_make_snake_images,
+            do_make_videos_from_images,
+        )
 
 class WorkingDirectorySetupForm(npyscreen.Form):
-    def create(self):
-        self.field_raw_src_tiff_dir = self.add(npyscreen.TitleFilename, name="Raw TIFF source dir")
-        self.field_preprocessed_tiff_dir = self.add(npyscreen.TitleFilename, name="Preprocessed TIFF dir", value="./PreprocessedTIFFs")
-        self.field_param_files_dir = self.add(npyscreen.TitleFilename, name="Param files save dir", value="./Params")
-        self.field_snake_files_dir = self.add(npyscreen.TitleFilename, name="Snake files dir", value="./Snakes")
-        self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="SOAX logging dir", value="./SoaxLogs")
-        self.field_snake_images_dir = self.add(npyscreen.TitleFilename, name="Snake images dir", value="./SnakeImages")
-        self.create_if_not_present = self.add(npyscreen.TitleSelectOne, name="Create dirs if not present", values=["yes", "no"],value=[1],scroll_exit=True)
+    def configure(self,
+        do_preprocess,
+        do_section,
+        do_create_params,
+        do_run_soax,
+        do_join_sectioned_snakes,
+        do_make_snake_images,
+        do_make_videos_from_images,
+        ):
+        self.do_preprocess = do_preprocess
+        self.do_section = do_section
+        self.do_create_params = do_create_params
+        self.do_run_soax = do_run_soax
+        self.do_join_sectioned_snakes = do_join_sectioned_snakes
+        self.do_make_snake_images = do_make_snake_images
+        self.do_make_videos_from_images = do_make_videos_from_images
 
+        self.check_dir_fields = []
+        if self.do_preprocess or self.do_section or self.do_run_soax:
+            self.field_raw_src_tiff_dir = self.add(npyscreen.TitleFilename, name="Original TIFF source dir")
+            self.check_dir_fields.append(self.field_raw_src_tiff_dir)
+        if self.do_preprocess:
+            self.field_preprocessed_tiff_dir = self.add(npyscreen.TitleFilename, name="Preprocessed TIFF dir", value="./PreprocessedTIFFs")
+            self.check_dir_fields.append(self.field_preprocessed_tiff_dir)
+        if self.do_section:
+            self.field_sectioned_tiff_dir = self.add(npyscreen.TitleFilename, name="Sectioned TIFF dir", value="./SectionedTIFFs")
+            self.check_dir_fields.append(self.field_sectioned_tiff_dir)
+        if self.do_create_params or self.do_run_soax:
+            self.field_param_files_dir = self.add(npyscreen.TitleFilename, name="Param files dir", value="./Params")
+            self.check_dir_fields.append(self.field_param_files_dir)
+        if self.do_run_soax or self.do_join_sectioned_snakes or self.do_make_snake_images:
+            self.field_snake_files_dir = self.add(npyscreen.TitleFilename, name="Snake files dir", value="./Snakes")
+            self.check_dir_fields.append(self.field_snake_files_dir)
+        if self.do_run_soax:
+            self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="SOAX logging dir", value="./SoaxLogs")
+            self.check_dir_fields.append(self.field_soax_log_dir)
+        if self.do_make_snake_images or self.do_make_videos_from_images:
+            self.field_snake_images_dir = self.add(npyscreen.TitleFilename, name="Snake images dir", value="./SnakeImages")
+            self.check_dir_fields.append(self.field_snake_images_dir)
+
+        self.create_if_not_present = self.add(
+            npyscreen.TitleSelectOne,
+            name="Create dirs if not present",
+            values=["yes", "no"],
+            value=[1],
+            scroll_exit=True)
 
     def afterEditing(self):
         # option zero is "yes"
-        should_make_dirs = self.create_if_not_present.value[0] == 0
+        should_make_dirs = 0 in self.create_if_not_present.value
 
-        check_dir_fields = [
-            self.field_raw_src_tiff_dir,
-            self.field_preprocessed_tiff_dir,
-            self.field_param_files_dir,
-            self.field_snake_files_dir,
-            self.field_soax_log_dir,
-            self.field_snake_images_dir,
-        ]
-
-        for dir_field in check_dir_fields:
+        for dir_field in self.check_dir_fields:
             if dir_field.value == "":
                 npyscreen.notify_confirm("'{}' is a required field".format(dir_field.name),editw=1)
                 return
@@ -48,15 +117,16 @@ class WorkingDirectorySetupForm(npyscreen.Form):
 
         self.parentApp.workingDirSetupDone(
             self.field_raw_src_tiff_dir.value,
-            self.field_preprocessed_tiff_dir.value,
             self.field_param_files_dir.value,
             self.field_snake_files_dir.value,
             self.field_soax_log_dir.value,
             self.field_snake_images_dir.value,
+            (self.field_preprocessed_tiff_dir.value if self.do_preprocess else None),
+            (self.field_sectioned_tiff_dir.value if self.do_section else None),
         )
 
 class PreprocessSetupForm(npyscreen.Form):
-    def create(self):
+    def configure(self):
         self.field_min_cutoff_percent = self.add(npyscreen.TitleFilename, value="95.5", name="min cutoff percent")
         self.field_max_cutoff_percent = self.add(npyscreen.TitleFilename, value="0.1", name="max cutoff percent")
 
@@ -95,8 +165,8 @@ class PreprocessSetupForm(npyscreen.Form):
             float(self.field_max_cutoff_percent.value),
         )
 
-class ParamsForm(npyscreen.Form):
-    def create(self):
+class ParamsSetupForm(npyscreen.Form):
+    def configure(self):
         self.add(npyscreen.FixedText,
             value="Enter SOAX run parameters to try.")
         self.add(npyscreen.FixedText,
@@ -125,7 +195,6 @@ class ParamsForm(npyscreen.Form):
                 npyscreen.notify_confirm("Error parsing {}: {}".format(field.name, err_str_or_val),editw=1)
                 return
 
-
         self.parentApp.paramsSetupDone(
             error_string_or_parse_arg_or_range(self.field_alpha.value),
             error_string_or_parse_arg_or_range(self.field_beta.value),
@@ -133,58 +202,155 @@ class ParamsForm(npyscreen.Form):
             error_string_or_parse_arg_or_range(self.field_ridge_threshold.value),
         )
 
-
-class PreprocessForm(npyscreen.Form):
-    def create(self):
-        preprocess_settings = self.parentApp.getPreprocessSettings()
-
-        pager = self.add(npyscreen.Pager, name="Preprocess Progress")
-        logger = PagerLogger(pager)
-
-        try:
-            preprocess_tiffs(
-                preprocess_settings["source_dir"],
-                preprocess_settings["target_dir"],
-                preprocess_settings["max_cutoff_percent"],
-                preprocess_settings["min_cutoff_percent"],
-                logger=logger,
-            )
-        except PagerFailError as e:
-            err_string = repr(e)
-            npyscreen.notify_confirm("Fatal Failure: " + err_string,editw=1,wide=True)
-
-        if len(logger.error_lines) > 0:
-            npyscreen.notify_confirm("Encountered errors: " + ",".join(logger.error_lines), editw=1,wide=True)
+class SectioningSetupForm(npyscreen.Form):
+    def configure(self):
+        self.add(npyscreen.FixedText, value="Enter maximum side length (pixels) of an image section")
+        self.section_max_size = self.add(npyscreen.TitleText, name="section max size", value='200')
 
     def afterEditing(self):
-        if not self.done:
-            npyscreen.notify_confirm("Not done preprocessing images",editw=1)
+        required_pos_int_fields = [
+            self.section_max_size
+        ]
+        for field in required_pos_int_fields:
+            if field.value == "":
+                npyscreen.notify_confirm("'{}' is a required field".format(field.name),editw=1)
+                return
+            try:
+                int(field.value)
+            except ValueError as e:
+                npyscreen.notify_confirm("Cannot parse '{}' value '{}' as integer".format(field.name,field.value),editw=1)
+                return
+            if int(field.value) <= 0:
+                npyscreen.notify_confirm("Field '{}' has invalid value '{}': must be positive integer".format(field.name, field.value),editw=1)
+                return
+        self.parentApp.sectioningSetupDone(
+            int(self.section_max_size.value),
+        )
+
+class SoaxRunSetupForm(npyscreen.Form):
+    def configure(self, source_sectioned):
+        self.field_soax_executable_path = self.add(npyscreen.TitleFilename, name="batch soax executable", value="/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax/batch_soax")
+        self.field_worker_number = self.add(npyscreen.TitleFilename, name="Workers count (number of batch_soax instances to run at once)", value="5")
+
+        self.use_subdirs = self.add(
+            npyscreen.TitleSelectOne,
+            name="Expect source images to be in subdirectories (should be true if images are sectioned)",
+            values=["yes", "no"],
+            value=([0] if source_sectioned else [1]),
+            scroll_exit=True)
+
+    def afterEditing(self):
+        use_subdirs = 0 in self.use_subdirs.value
+
+        if self.field_soax_executable_path.value == "":
+            npyscreen.notify_confirm(
+                "'{}' is a required field".format(self.field_soax_executable_path.name),
+                editw=1,
+            )
             return
-        else:
-            self.parentApp.preprocessDone()
+        if not os.path.exists(self.field_soax_executable_path.value):
+            npyscreen.notify_confirm("'{}' does not exist".format(self.field_soax_executable_path.value),editw=1)
+            return
+        if os.path.isdir(self.field_soax_executable_path.value):
+            npyscreen.notify_confirm(
+                "'{}' is a directory, should be executable file".format(self.field_soax_executable_path.value),
+                editw=1,
+            )
+            return
+
+        if self.field_worker_number.value == "":
+            npyscreen.notify_confirm(
+                "{} is a required field".format(self.field_worker_number.name),
+                editw=1,
+            )
+            return
+        try:
+            int(self.field_worker_number.value)
+        except ValueError as e:
+            npyscreen.notify_confirm(
+                "Cannot parse '{}' value '{}' as integer".format(self.field_worker_number.name, self.field_worker_number.value),
+                editw=1,
+            )
+            return
+        if int(self.field_worker_number.value) <= 0:
+            npyscreen.notify_confirm(
+                "Value of '{}' must be greater or equal to one".format(self.field_worker_number.name),
+                editw=1,
+            )
+            return
+
+        self.parentApp.soaxRunSetupDone(
+            self.field_soax_executable_path.value,
+            int(self.field_worker_number.value),
+            use_subdirs,
+        )
 
 class SoaxHelperApp(npyscreen.NPSAppManaged):
     def onStart(self):
-        self.addForm('MAIN', WorkingDirectorySetupForm, name='Select Working Directories')
+        self.addForm('MAIN', StepsSetupForm, name='Select Steps')
+        self.getForm('MAIN').configure()
 
+    def stagesSelected(self,
+        do_preprocess,
+        do_section,
+        do_create_params,
+        do_run_soax,
+        do_join_sectioned_snakes,
+        do_make_snake_images,
+        do_make_videos_from_images,
+        ):
+        self.do_preprocess = do_preprocess
+        self.do_section = do_section
+        self.do_create_params = do_create_params
+        self.do_run_soax = do_run_soax
+        self.do_join_sectioned_snakes = do_join_sectioned_snakes
+        self.do_make_snake_images = do_make_snake_images
+        self.do_make_videos_from_images = do_make_videos_from_images
+
+        self.startWorkingDirectorySetup()
+
+    def startWorkingDirectorySetup(self):
+        self.addForm('WORKING_DIRECTORY_SETUP', WorkingDirectorySetupForm, name='Select Working Directories')
+        self.getForm('WORKING_DIRECTORY_SETUP').configure(
+            do_preprocess=self.do_preprocess,
+            do_section=self.do_section,
+            do_create_params=self.do_create_params,
+            do_run_soax=self.do_run_soax,
+            do_join_sectioned_snakes=self.do_join_sectioned_snakes,
+            do_make_snake_images=self.do_make_snake_images,
+            do_make_videos_from_images=self.do_make_videos_from_images,
+        )
+        self.setNextForm('WORKING_DIRECTORY_SETUP')
 
     def workingDirSetupDone(self,
         raw_src_tiff_dir,
-        preprocessed_tiff_dir,
         param_files_dir,
         snake_files_dir,
         soax_log_dir,
         snake_images_dir,
+        preprocessed_tiff_dir, # may be None
+        sectioned_tiff_dir, # may be None
         ):
         self.workingDirSettings = {
             "raw_src_tiff_dir": raw_src_tiff_dir,
-            "preprocessed_tiff_dir": preprocessed_tiff_dir,
             "param_files_dir": param_files_dir,
             "snake_files_dir": snake_files_dir,
             "soax_log_dir": soax_log_dir,
             "snake_images_dir": snake_images_dir,
+            "preprocessed_tiff_dir": preprocessed_tiff_dir,
+            "sectioned_tiff_dir": sectioned_tiff_dir,
         }
+
+        if self.do_preprocess:
+            self.startPreprocessSetup()
+        elif self.do_section:
+            self.startSectioningSetup()
+        else:
+            self.startParamSetup()
+
+    def startPreprocessSetup(self):
         self.addForm('PREPROCESS_SETUP', PreprocessSetupForm, name='Preprocessing Setup')
+        self.getForm('PREPROCESS_SETUP').configure()
         self.setNextForm('PREPROCESS_SETUP')
 
     def preprocessSetupDone(self,
@@ -192,12 +358,29 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
         min_cutoff_percent,
         ):
         self.preprocessSettings = {
-            "source_dir": self.workingDirSettings["raw_src_tiff_dir"],
-            "target_dir": self.workingDirSettings["preprocessed_tiff_dir"],
             "max_cutoff_percent": max_cutoff_percent,
             "min_cutoff_percent": min_cutoff_percent,
         }
-        self.addForm('PARAM_SETUP', ParamsForm, name="Params Setup")
+
+        if self.do_section:
+            self.startSectioningSetup()
+        else:
+            self.startParamSetup()
+
+    def startSectioningSetup(self):
+        self.addForm('SECTIONING_SETUP', SectioningSetupForm, name='Sectioning Setup')
+        self.getForm('SECTIONING_SETUP').configure()
+        self.setNextForm('SECTIONING_SETUP')
+
+    def sectioningSetupDone(self, section_max_size):
+        self.sectioningSettings = {
+            "section_max_size": section_max_size
+        }
+        self.startParamSetup()
+
+    def startParamSetup(self):
+        self.addForm('PARAM_SETUP', ParamsSetupForm, name="SOAX Params Setup")
+        self.getForm('PARAM_SETUP').configure()
         self.setNextForm('PARAM_SETUP')
 
     def paramsSetupDone(self,
@@ -206,40 +389,91 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
         min_foreground,
         ridge_threshold,
         ):
-        self.alpha = alpha
-        self.beta = beta
-        self.min_foreground = min_foreground
-        self.ridge_threshold = ridge_threshold
+        self.paramsSettings = {
+            "alpha": alpha,
+            "beta": beta,
+            "min_foreground": min_foreground,
+            "ridge_threshold": ridge_threshold,
+        }
+        self.startSoaxRunSetup()
 
-        self.beginRunningSteps()
+    def startSoaxRunSetup(self):
+        self.addForm('SOAX_RUN_SETUP', SoaxRunSetupForm, name="SOAX Run Setup")
+        self.getForm('SOAX_RUN_SETUP').configure()
+        self.setNextForm('SOAX_RUN_SETUP')
 
-    def beginRunningSteps(self):
-        execute_steps = [
-            ["PREPROCESS", PreprocessForm, "Preprocess Images"],
-        ]
-
-        do_execute = npyscreen.notify_ok_cancel(
-            "Execute following steps?: {}".format(",".join([step[2] for step in execute_steps])),
-            editw=1
-        )
-
-        if not do_execute:
-            exit()
-
-        for step_code,step_form,step_name in execute_steps:
-            self.addForm(step_code,step_form,name=step_name)
-            self.setNextForm(step_code)
-        # self.addForm('PREPROCESS', PreprocessForm, name="Preprocessing Images")
-        # self.setNextForm('PREPROCESS')
-
-    def getPreprocessSettings(self):
-        return self.preprocessSettings
-
-    def preprocessDone(self):
-        # npyscr
+    def soaxRunSetupDone(self, batch_soax_path, workers_num):
+        self.soaxRunSettings = {
+            "batch_soax_path": batch_soax_path,
+            "workers_num": workers_num,
+        }
         self.setNextForm(None)
-        # exit()
 
 if __name__ == "__main__":
     app = SoaxHelperApp()
     app.run()
+
+    if app.do_preprocess:
+        preprocess_logger = RecordLogger()
+
+        preprocess_source_dir = app.workingDirSettings["raw_src_tiff_dir"]
+        preprocess_target_dir = app.workingDirSettings["preprocessed_tiff_dir"]
+
+        try:
+            preprocess_tiffs(
+                preprocess_source_dir,
+                preprocess_target_dir,
+                app.preprocess_settings["max_cutoff_percent"],
+                app.preprocess_settings["min_cutoff_percent"],
+                logger=preprocess_logger,
+            )
+        except Exception as e:
+            raise
+
+    if app.do_section:
+        sectioning_logger = RecordLogger()
+
+        if app.do_preprocess:
+            sectioning_source_dir = app.workingDirSettings["preprocessed_tiff_dir"]
+        else:
+            sectioning_source_dir = app.workingDirSettings["raw_src_tiff_dir"]
+        sectioning_target_dir = app.workingSettings["sectioned_tiff_dir"]
+
+        section_tiffs(
+            app.sectioningSettings["section_max_size"],
+            sectioning_source_dir,
+            sectioning_target_dir,
+            logger=sectioning_logger,
+        )
+
+    create_params_logger = RecordLogger()
+    create_param_files(
+        app.workingDirSettings["param_files_dir"],
+        app.paramsSettings["alpha"],
+        app.paramsSettings["beta"],
+        app.paramsSettings["min_foreground"],
+        app.paramsSettings["ridge_threshold"],
+        logger=PrintLogger
+    )
+
+    if app.do_section:
+        soax_source_dir = app.workingSettings["sectioned_tiff_dir"]
+    elif app.do_preprocess:
+        soax_source_dir = app.workingSettings["preprocessed_tiff_dir"]
+    else:
+        soax_source_dir = app.workingDirSettings["raw_src_tiff_dir"]
+
+    # if each image is split into section tiffs inside a new subdirectory, we use subdirs
+    soax_use_subdirs = app.do_section
+
+    soax_logger = RecordLogger()
+    run_soax_with_params(
+        app.soaxRunSettings["batch_soax_path"],
+        soax_source_dir,
+        app.workingDirSettings["param_files_dir"],
+        app.workingDirSettings["snake_files_dir"],
+        app.workingDirSettings["soax_log_dir"],
+        soax_use_subdirs,
+        app.soaxRunSettings["workers_num"],
+        logger=soax_logger)
+

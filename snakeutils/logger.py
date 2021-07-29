@@ -9,31 +9,24 @@ class Colors:
 class PagerFailError(Exception):
     pass
 
-class PagerLogger:
-    def __init__(self, pager):
-        self.pager = pager
-        self.lock = threading.Lock()
-
-        self.error_lines = []
-        self.fail_lines = []
+class RecordLogger:
+    def __init__(self):
+        self.errors = []
+        self.fails = []
 
     def log(self,text):
-        with self.lock:
-            self.pager.values.append(text)
-            self.pager.update()
+        PrinLogger.log(text)
+
+    def success(self,text):
+        PrintLogger.success(text)
 
     def error(self,text):
-        with self.lock:
-            self.error_lines.append(text)
-            self.pager.values.append(text)
-            self.pager.update()
+        self.errors.append(text)
+        PrintLogger.error(text)
 
     def FAIL(self,text):
-        with self.lock:
-            self.pager.values.append(text)
-            self.pager.update()
-
-            raise PagerFailError(text)
+        self.fails.append(text)
+        PrintLogger.FAIL(text)
 
 class PrintLogger:
     @staticmethod

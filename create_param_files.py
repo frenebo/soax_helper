@@ -81,7 +81,7 @@ def param_form_settings(start,stop,step):
 
     return {"decimal_places":decimal_places,"str_length": str_length}
 
-def create_params(
+def create_param_files(
     target_dir,
     alpha_start_stop_step,
     beta_start_stop_step,
@@ -158,7 +158,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    args.target_dir(
+    create_param_files(
         args.target_dir,
         args.alpha,
         args.beta,
