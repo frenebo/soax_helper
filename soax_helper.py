@@ -399,7 +399,7 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
 
     def startSoaxRunSetup(self):
         self.addForm('SOAX_RUN_SETUP', SoaxRunSetupForm, name="SOAX Run Setup")
-        self.getForm('SOAX_RUN_SETUP').configure()
+        self.getForm('SOAX_RUN_SETUP').configure(self.do_section)
         self.setNextForm('SOAX_RUN_SETUP')
 
     def soaxRunSetupDone(self, batch_soax_path, workers_num):
