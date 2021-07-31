@@ -162,12 +162,6 @@ class PreprocessSetupForm(npyscreen.Form):
             value=preprocess_settings["source_image_dir"])
         self.field_target_dir = self.add(npyscreen.TitleFilename, name="Target TIFF dir",
             value=preprocess_settings["target_image_dir"])
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
 
         self.field_min_cutoff_percent = self.add(
             npyscreen.TitleFilename,
@@ -177,6 +171,12 @@ class PreprocessSetupForm(npyscreen.Form):
             npyscreen.TitleFilename,
             value=preprocess_settings["max_cutoff_percent"],
             name="max cutoff percent")
+        self.create_if_not_present = self.add(
+            npyscreen.TitleSelectOne,
+            name="Create dirs if not present",
+            values=["yes", "no"],
+            value=[1],
+            scroll_exit=True)
 
         npyscreen.notify_confirm(
             "Min and max cutoff percent are brightness level percentiles to use to rescale the TIFF image brightnesses " +
