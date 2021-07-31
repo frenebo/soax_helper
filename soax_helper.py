@@ -142,16 +142,16 @@ class PreprocessSetupForm(npyscreen.Form):
             field_str = field_strings[field_name]
 
             if field_str == "":
-                raise ParseException("'{}' is a required field".format(field.name))
+                raise ParseException("'{}' is a required field".format(field_name))
             try:
-                perc = float(field.value)
+                perc = float(field_str)
             except ValueError:
-                raise ParseException("'{}' value '{}' is not a number".format(field.name,field.value))
+                raise ParseException("'{}' value '{}' is not a number".format(field_name,field_str))
 
-            perc = float(field.value)
+            perc = float(fiel_stre)
 
             if perc < 0 or perc > 100:
-                raise ParseException("Invalid '{}' value '{}': should be between 0 and 100".format(field.name,str(perc)))
+                raise ParseException("Invalid '{}' value '{}': should be between 0 and 100".format(field_name,str(perc)))
 
             parsed_fields[field_name] = perc
 
