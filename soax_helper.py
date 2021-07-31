@@ -390,7 +390,7 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
 
     def startPreprocessSetup(self):
         self.addForm('PREPROCESS_SETUP', PreprocessSetupForm, name='Preprocessing Setup')
-        self.getForm('PREPROCESS_SETUP').configure()
+        self.getForm('PREPROCESS_SETUP').configure(self.preprocessSettings)
         self.setNextForm('PREPROCESS_SETUP')
 
     def preprocessSetupDone(self, preprocessSettings):
