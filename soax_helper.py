@@ -213,9 +213,7 @@ class SectioningSetupForm(npyscreen.Form):
             npyscreen.notify_confirm(str(e),editw=1)
             return
 
-        self.parentApp.sectioningSetupDone(
-            int(self.section_max_size.value),
-        )
+        self.parentApp.sectioningSetupDone(self.getFieldStrings())
 
 class ParamsSetupForm(npyscreen.Form):
     @staticmethod
