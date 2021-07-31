@@ -399,15 +399,15 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
             "max_cutoff_percent": "95.5",
             "min_cutoff_percent": "0.1",
             "source_tiff_dir": "",
-            "target_tiff_dir": "",
+            "target_tiff_dir": "./PreprocessedTIFFs",
         }
         self.sectioning_settings = {
             "source_tiff_dir": "",
-            "target_sectioned_tiff_dir": "",
+            "target_sectioned_tiff_dir": "./SectionedTIFFs",
             "section_max_size": "200",
         }
         self.params_settings = {
-            "params_save_dir",
+            "params_save_dir": "./Params",
             "alpha": "0.01",
             "beta": "0.1",
             "min_foreground": "10"
@@ -418,10 +418,10 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
             "use_subdirs": "no",
             "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax/batch_soax",
             "source_tiff_dir": "",
-            "target_snakes_dir": "",
+            "target_snakes_dir": "./Snakes",
             "param_files_dir": "",
             "snake_files_dir": "",
-            "soax_log_dir": "",
+            "soax_log_dir": "./SoaxLogs",
         }
         self.joinSectionedSnakesSettings = None
         self.snakeImagesSettings = None
