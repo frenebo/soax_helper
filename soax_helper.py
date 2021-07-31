@@ -148,7 +148,7 @@ class PreprocessSetupForm(npyscreen.Form):
             except ValueError:
                 raise ParseException("'{}' value '{}' is not a number".format(field_name,field_str))
 
-            perc = float(fiel_stre)
+            perc = float(field_str)
 
             if perc < 0 or perc > 100:
                 raise ParseException("Invalid '{}' value '{}': should be between 0 and 100".format(field_name,str(perc)))
