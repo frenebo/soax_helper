@@ -199,7 +199,7 @@ class SectioningSetupForm(npyscreen.Form):
     def getFieldStrings(self):
         return {
             "source_tiff_dir": self.field_source_dir.value,
-            "target_sectioned_tiff_dir": self.field_sectioned_target_dir,
+            "target_sectioned_tiff_dir": self.field_sectioned_target_dir.value,
             "section_max_size": self.field_section_max_size.value,
         }
 
