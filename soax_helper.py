@@ -159,7 +159,7 @@ class SectioningSetupForm(npyscreen.Form):
 
         for field_name in pos_int_fields:
             field_str = field_strings[field_name]
-            if field.value == "":
+            if field_str == "":
                 raise ParseException("'{}' is a required field".format(field_name))
             try:
                 field_val = int(field_str)
