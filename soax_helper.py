@@ -9,6 +9,10 @@ import argparse
 import os
 from snakeutils.logger import RecordLogger
 
+# For parsing setting strings
+class ParseException(Exception):
+    pass
+
 # For fields that ask for a directory
 def check_dir_field(field_name, dir_string, make_dir_if_not_present):
     if dir_string == "":
