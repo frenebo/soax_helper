@@ -166,19 +166,19 @@ class PreprocessSetupForm(npyscreen.Form):
         return parsed_fields
 
     def configure(self, preprocess_settings):
-        self.field_source_dir = self.add(npyscreen.TitleFilename, name="Source TIFF dir",
+        self.field_source_dir = self.add(npyscreen.TitleFilename, name="source_image_dir",
             value=preprocess_settings["source_image_dir"])
-        self.field_target_dir = self.add(npyscreen.TitleFilename, name="Target TIFF dir",
+        self.field_target_dir = self.add(npyscreen.TitleFilename, name="target_image_dir",
             value=preprocess_settings["target_image_dir"])
 
         self.field_min_cutoff_percent = self.add(
             npyscreen.TitleFilename,
             value=preprocess_settings["min_cutoff_percent"],
-            name="min cutoff percent")
+            name="min_cutoff_percent")
         self.field_max_cutoff_percent = self.add(
             npyscreen.TitleFilename,
             value=preprocess_settings["max_cutoff_percent"],
-            name="max cutoff percent")
+            name="max_cutoff_percent")
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
             name="Create dirs if not present",
@@ -206,77 +206,160 @@ class PreprocessSetupForm(npyscreen.Form):
 
     def afterEditing(self):
         # option zero is "yes"
-        should_make_dirs = 0 in self.create_if_not_present.value
+        make_dirs_if_not_present = 0 in self.create_if_not_present.value
 
         try:
-            self.parseSettings(self.getFieldStrings(), should_make_dirs)
+            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
         except ParseException as e:
             npyscreen.notify_confirm(str(e),editw=1)
             return
 
         self.parentApp.preprocessSetupDone(self.getFieldStrings())
 
+class SectioningSetupForm(npyscreen.Form):
+    @staticmethod
+    def parseSettings(field_strings, make_dirs_if_not_present):
+        pos_int_fields = ["section_max_size"]
+        dir_fields = ["source_image_dir","target_sectioned_image_dir"]
+        parsed_fields = {}
+
+        for field_name in pos_int_fields:
+            field_str = field_strings[field_name]
+            if field.value == ""
+                raise ParseException("'{}' is a required field".format(field_name))
+            try:
+                field_val = int(field_str)
+            except ValueError as e:
+                raise ParseException("Cannot parse '{}' value '{}' as integer".format(field_name,field_str))
+            if field_val <= 0:
+                raise ParseException("Field '{}' has invalid value '{}': must be positive integer".format(field_name, field_str))
+
+        for field_name in dir_fields:
+            field_str = field_strings[field_name]
+            err = check_dir_field(field_name, field_str, make_dirs_if_not_present)
+            if err is not None:
+                raise ParseException(err)
+
+            parsed_fields[field_name] = field_str
+
+        return parsed_fields
+
+    def configure(self, sectioning_settings):
+        self.field_source_dir = self.add(npyscreen.TitleFilename, name="source_image_dir",
+            value=preprocess_settings["source_image_dir"])
+        self.field_sectioned_target_dir = self.add(npyscreen.TitleFilename, name="target_sectioned_image_dir",
+            value=preprocess_settings["target_sectioned_image_dir"])
+
+        self.add(npyscreen.FixedText, value="Enter maximum side length (pixels) of an image section")
+
+        self.field_section_max_size = self.add(npyscreen.TitleText, name="section max size",
+            value=sectioning_settings["section_max_size"])
+
+        self.create_if_not_present = self.add(
+            npyscreen.TitleSelectOne,
+            name="Create dirs if not present",
+            values=["yes", "no"],
+            value=[1],
+            scroll_exit=True)
+
+    def getFieldStrings(self):
+        return {
+            "source_image_dir": self.field_source_dir.value,
+            "target_sectioned_image_dir": self.field_sectioned_target_dir,
+            "section_max_size": self.field_section_max_size.value,
+        }
+
+    def afterEditing(self):
+        # option zero is "yes"
+        make_dirs_if_not_present = 0 in self.create_if_not_present.value
+
+        try:
+            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
+        except ParseException as e:
+            npyscreen.notify_confirm(str(e),editw=1)
+            return
+
+        self.parentApp.sectioningSetupDone(
+            int(self.section_max_size.value),
+        )
+
 class ParamsSetupForm(npyscreen.Form):
-    def configure(self):
+    @staticmethod
+    def parseSettings(field_strings, make_dirs_if_not_present=False):
+        parsed_fields = {}
+        arg_or_range_fields = ["alpha", "beta", "min_foreground", "ridge_threshold"]
+        dir_fields = ["source_image_dir", "target_image_dir"]
+
+        for field_name in arg_or_range_fields:
+            field_str = field_strings[field_name]
+
+            if field_str == "":
+                raise ParseException("'{}' is a required field")
+
+            err_str_or_val = error_string_or_parse_arg_or_range(field_str)
+            if isinstance(err_str_or_val, str):
+                raise ParseException("Error parsing {}: {}".format(field_name, err_str_or_val))
+            else:
+                parsed_fields[field_name] = err_str_or_val
+
+        for field_name in dir_fields:
+            field_str = field_strings[field_name]
+            err = check_dir_field(field_name, field_str, make_dirs_if_not_present)
+            if err is not None:
+                raise ParseException(err)
+
+            parsed_fields[field_name] = field_str
+
+        return parsed_fields
+
+    def configure(self, params_settings):
         self.add(npyscreen.FixedText,
             value="Enter SOAX run parameters to try.")
         self.add(npyscreen.FixedText,
             value="Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)")
         self.add(npyscreen.FixedText,
             value="If ranges are given, soax will be run multiple times, trying all combinations of parameter values")
-        self.field_alpha           = self.add(npyscreen.TitleText, name="alpha", value="0.01")
-        self.field_beta            = self.add(npyscreen.TitleText, name="beta", value="0.1")
-        self.field_min_foreground  = self.add(npyscreen.TitleText, name="min_foreground", value="10")
-        self.field_ridge_threshold = self.add(npyscreen.TitleText, name="ridge_threshold", value="0.01")
+
+        self.field_source_dir = self.add(npyscreen.TitleFilename, name="Source TIFF dir",
+            value=preprocess_settings["source_image_dir"])
+        self.field_target_dir = self.add(npyscreen.TitleFilename, name="Target TIFF dir",
+            value=preprocess_settings["target_image_dir"])
+
+        self.field_alpha           = self.add(npyscreen.TitleText, name="alpha",
+            value=params_settings["alpha"])
+        self.field_beta            = self.add(npyscreen.TitleText, name="beta",
+            value=params_settings["beta"])
+        self.field_min_foreground  = self.add(npyscreen.TitleText, name="min_foreground",
+            value=params_settings["min_foreground"])
+        self.field_ridge_threshold = self.add(npyscreen.TitleText, name="ridge_threshold",
+            value=params_settings["ridge_threshold"])
+
+        self.create_if_not_present = self.add(
+            npyscreen.TitleSelectOne,
+            name="Create dirs if not present",
+            values=["yes", "no"],
+            value=[1],
+            scroll_exit=True)
+
+    def getFieldStrings(self):
+        return {
+            "alpha": self.field_alpha.value,
+            "beta": self.field_beta.value,
+            "min_foreground": self.field_min_foreground.value,
+            "ridge_threshold": self.field_ridge_threshold.value,
+        }
 
     def afterEditing(self):
-        check_arg_or_range_fields = [
-            self.field_alpha,
-            self.field_beta,
-            self.field_min_foreground,
-            self.field_ridge_threshold,
-        ]
-        for field in check_arg_or_range_fields:
-            if field.value == "":
-                npyscreen.notify_confirm("'{}' is a required field".format(field.name),editw=1)
-                return
+        # option zero is "yes"
+        make_dirs_if_not_present = 0 in self.create_if_not_present.value
 
-            err_str_or_val = error_string_or_parse_arg_or_range(field.value)
-            if isinstance(err_str_or_val, str):
-                npyscreen.notify_confirm("Error parsing {}: {}".format(field.name, err_str_or_val),editw=1)
-                return
+        try:
+            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
+        except ParseException as e:
+            npyscreen.notify_confirm(str(e),editw=1)
+            return
 
-        self.parentApp.paramsSetupDone(
-            error_string_or_parse_arg_or_range(self.field_alpha.value),
-            error_string_or_parse_arg_or_range(self.field_beta.value),
-            error_string_or_parse_arg_or_range(self.field_min_foreground.value),
-            error_string_or_parse_arg_or_range(self.field_ridge_threshold.value),
-        )
-
-class SectioningSetupForm(npyscreen.Form):
-    def configure(self):
-        self.add(npyscreen.FixedText, value="Enter maximum side length (pixels) of an image section")
-        self.section_max_size = self.add(npyscreen.TitleText, name="section max size", value='200')
-
-    def afterEditing(self):
-        required_pos_int_fields = [
-            self.section_max_size
-        ]
-        for field in required_pos_int_fields:
-            if field.value == "":
-                npyscreen.notify_confirm("'{}' is a required field".format(field.name),editw=1)
-                return
-            try:
-                int(field.value)
-            except ValueError as e:
-                npyscreen.notify_confirm("Cannot parse '{}' value '{}' as integer".format(field.name,field.value),editw=1)
-                return
-            if int(field.value) <= 0:
-                npyscreen.notify_confirm("Field '{}' has invalid value '{}': must be positive integer".format(field.name, field.value),editw=1)
-                return
-        self.parentApp.sectioningSetupDone(
-            int(self.section_max_size.value),
-        )
+        self.parentApp.paramsSetupDone(self.getFieldStrings())
 
 class SoaxRunSetupForm(npyscreen.Form):
     def configure(self, source_sectioned):
@@ -338,15 +421,24 @@ class SoaxRunSetupForm(npyscreen.Form):
 
 class SoaxHelperApp(npyscreen.NPSAppManaged):
     def onStart(self):
-        self.preprocessSettings = {
+        self.preprocess_settings = {
             "max_cutoff_percent": "95.5",
             "min_cutoff_percent": "0.1",
             "source_image_dir": "",
             "target_image_dir": "",
         }
-        self.sectioningSettings = None
-        self.paramsSettings = None
-        self.soaxRunSettings = None
+        self.sectioning_settings = {
+            "source_image_dir": "",
+            "target_sectioned_image_dir": "",
+            "section_max_size": "200",
+        }
+        self.params_settings = {
+            "alpha": "0.01",
+            "beta": "0.1",
+            "min_foreground": "10"
+            "ridge_threshold": "0.01",
+        }
+        self.soax_run_settings = None
         self.joinSectionedSnakesSettings = None
         self.snakeImagesSettings = None
         self.videoSettings = None
@@ -398,41 +490,30 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
 
     def startPreprocessSetup(self):
         self.addForm('PREPROCESS_SETUP', PreprocessSetupForm, name='Preprocessing Setup')
-        self.getForm('PREPROCESS_SETUP').configure(self.preprocessSettings)
+        self.getForm('PREPROCESS_SETUP').configure(self.preprocess_settings)
         self.setNextForm('PREPROCESS_SETUP')
 
-    def preprocessSetupDone(self, preprocessSettings):
-        self.preprocessSettings = preprocessSettings
+    def preprocessSetupDone(self, preprocess_settings):
+        self.preprocess_settings = preprocess_settings
+        self.sectioning_settings["source_image_dir"] = preprocess_settings["target_image_dir"]
         self.goToNextMenu()
 
     def startSectioningSetup(self):
         self.addForm('SECTIONING_SETUP', SectioningSetupForm, name='Sectioning Setup')
-        self.getForm('SECTIONING_SETUP').configure()
+        self.getForm('SECTIONING_SETUP').configure(self.sectioning_settings)
         self.setNextForm('SECTIONING_SETUP')
 
-    def sectioningSetupDone(self, section_max_size):
-        self.sectioningSettings = {
-            "section_max_size": section_max_size
-        }
+    def sectioningSetupDone(self, sectioning_settings):
+        self.sectioning_settings = sectioning_settings
         self.goToNextMenu()
 
     def startParamSetup(self):
         self.addForm('PARAM_SETUP', ParamsSetupForm, name="SOAX Params Setup")
-        self.getForm('PARAM_SETUP').configure()
+        self.getForm('PARAM_SETUP').configure(self.params_settings)
         self.setNextForm('PARAM_SETUP')
 
-    def paramsSetupDone(self,
-        alpha,
-        beta,
-        min_foreground,
-        ridge_threshold,
-        ):
-        self.paramsSettings = {
-            "alpha": alpha,
-            "beta": beta,
-            "min_foreground": min_foreground,
-            "ridge_threshold": ridge_threshold,
-        }
+    def paramsSetupDone(self, params_settings):
+        self.params_settings = params_settings
         self.goToNextMenu()
 
     def startSoaxRunSetup(self):
@@ -441,7 +522,7 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
         self.setNextForm('SOAX_RUN_SETUP')
 
     def soaxRunSetupDone(self, batch_soax_path, workers_num):
-        self.soaxRunSettings = {
+        self.soax_run_settings = {
             "batch_soax_path": batch_soax_path,
             "workers_num": workers_num,
         }
@@ -472,33 +553,25 @@ if __name__ == "__main__":
     if app.do_preprocess:
         preprocess_logger = RecordLogger()
 
-        preprocess_source_dir = app.workingDirSettings["raw_src_tiff_dir"]
-        preprocess_target_dir = app.workingDirSettings["preprocessed_tiff_dir"]
+        parsed_preprocess_settings = PreprocessSetupForm.parseSettings(app.preprocess_settings)
 
-        try:
-            preprocess_tiffs(
-                preprocess_source_dir,
-                preprocess_target_dir,
-                app.preprocess_settings["max_cutoff_percent"],
-                app.preprocess_settings["min_cutoff_percent"],
-                logger=preprocess_logger,
-            )
-        except Exception as e:
-            raise
+        preprocess_tiffs(
+            parsed_preprocess_settings["source_image_dir"],
+            parsed_preprocess_settings["target_image_dir"],
+            parsed_preprocess_settings["max_cutoff_percent"],
+            parsed_preprocess_settings["min_cutoff_percent"],
+            logger=preprocess_logger,
+        )
 
     if app.do_section:
         sectioning_logger = RecordLogger()
 
-        if app.do_preprocess:
-            sectioning_source_dir = app.workingDirSettings["preprocessed_tiff_dir"]
-        else:
-            sectioning_source_dir = app.workingDirSettings["raw_src_tiff_dir"]
-        sectioning_target_dir = app.workingSettings["sectioned_tiff_dir"]
+        parsed_sectioning_settings = SectioningSetupForm.parseSettings(app.sectioning_settings)
 
         section_tiffs(
-            app.sectioningSettings["section_max_size"],
-            sectioning_source_dir,
-            sectioning_target_dir,
+            parsed_sectioning_settings["section_max_size"],
+            parsed_sectioning_settings["source_image_dir"],
+            parsed_sectioning_settings["target_sectioned_image_dir"],
             logger=sectioning_logger,
         )
 
@@ -506,10 +579,10 @@ if __name__ == "__main__":
         create_params_logger = RecordLogger()
         create_param_files(
             app.workingDirSettings["param_files_dir"],
-            app.paramsSettings["alpha"],
-            app.paramsSettings["beta"],
-            app.paramsSettings["min_foreground"],
-            app.paramsSettings["ridge_threshold"],
+            app.params_settings["alpha"],
+            app.params_settings["beta"],
+            app.params_settings["min_foreground"],
+            app.params_settings["ridge_threshold"],
             logger=PrintLogger
         )
 
@@ -526,12 +599,12 @@ if __name__ == "__main__":
 
         soax_logger = RecordLogger()
         run_soax_with_params(
-            app.soaxRunSettings["batch_soax_path"],
+            app.soax_run_settings["batch_soax_path"],
             soax_source_dir,
             app.workingDirSettings["param_files_dir"],
             app.workingDirSettings["snake_files_dir"],
             app.workingDirSettings["soax_log_dir"],
             soax_use_subdirs,
-            app.soaxRunSettings["workers_num"],
+            app.soax_run_settings["workers_num"],
             logger=soax_logger)
 
