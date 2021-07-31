@@ -193,9 +193,6 @@ class PreprocessSetupForm(npyscreen.Form):
         )
 
     def getFieldStrings(self):
-        # option zero is "yes"
-        should_make_dirs = 0 in self.create_if_not_present.value
-
         return {
             "max_cutoff_percent": self.field_min_cutoff_percent.value,
             "min_cutoff_percent": self.field_min_cutoff_percent.value,
@@ -204,6 +201,9 @@ class PreprocessSetupForm(npyscreen.Form):
         }
 
     def afterEditing(self):
+        # option zero is "yes"
+        should_make_dirs = 0 in self.create_if_not_present.value
+
         try:
             self.parseSettings(self.getFieldStrings(), should_make_dirs)
         except ParseException as e:
