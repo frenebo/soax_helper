@@ -430,6 +430,7 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
         self.addForm('MAIN', StepsSetupForm, name='Select Steps')
         self.getForm('MAIN').configure()
 
+
     def stagesSelected(self,
         do_preprocess,
         do_section,
