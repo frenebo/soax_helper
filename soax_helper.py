@@ -410,7 +410,7 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
             "params_save_dir": "./Params",
             "alpha": "0.01",
             "beta": "0.1",
-            "min_foreground": "10"
+            "min_foreground": "10",
             "ridge_threshold": "0.01",
         }
         self.soax_run_settings = {
