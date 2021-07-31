@@ -139,7 +139,7 @@ class PreprocessSetupForm(npyscreen.Form):
         parsed_fields = {}
 
         for field_name in percentage_fields:
-            field_str = field_strings[percentage_fields]
+            field_str = field_strings[field_name]
 
             if field_str == "":
                 raise ParseException("'{}' is a required field".format(field.name))
@@ -158,6 +158,10 @@ class PreprocessSetupForm(npyscreen.Form):
         for field_name in dir_fields:
             field_str = field_strings[field_name]
             err = check_dir_field(field_name, field_str, make_dirs_if_not_present)
+            if err is not None:
+                raise ParseException(err)
+
+            parsed_fields[field_name] = field_str
 
         return parsed_fields
 
