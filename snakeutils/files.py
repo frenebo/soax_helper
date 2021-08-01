@@ -3,6 +3,27 @@ import os
 import numpy as np
 import argparse
 
+def get_folders_and_files_at_subdir_depth(source_dir_path, depth, extension):
+    contents = os.listdir(source_dir_path)
+    contents.sort()
+    if depth == 0:
+        files = [name for name in contents if os.isfile(os.path.join(source_dir_path,name))]
+        with_extension = [filename for filename in files if filename.endswith(extension)]
+        folders_and_files = [(source_dir_path, name) for filename in with_extension]
+
+        return folders_and_files
+    # recursive find folders aand files at depth
+    else:
+        subdirs = [name for name in contents if os.isdir(os.path.join(source_dir_path,name))]
+        folders_and_files = []
+        for subdir_name in subdirs:
+            sub_folders_and_files = get_folders_and_files_at_subdir_depth(
+                os.path.join(source_dir_path,subdir_name),
+                depth - 1,
+                extension)
+            folders_and_files.extend(sub_folders_and_files)
+        return folders_and_files
+
 def readable_dir(dirpath):
     if not os.path.isdir(dirpath):
         raise argparse.ArgumentTypeError("{} is not a directory".format(dirpath))

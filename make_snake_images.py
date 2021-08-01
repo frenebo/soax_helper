@@ -108,7 +108,7 @@ def make_snake_images(
     logger=PrintLogger,
     ):
     if (background_img_dir is not None) and use_subsubdirs:
-        logger.FAIL("Background images not supported with subsubdirs")
+        logger.FAIL("Background images not supported with depth > 1")
 
     snake_dirs = []
     image_dirs = []
