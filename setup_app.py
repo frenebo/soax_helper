@@ -404,9 +404,6 @@ class SnakesToJsonSetupForm(npyscreen.Form):
             check_dir_field(field_name, field_str, make_dirs_if_not_present)
             parsed_fields[field_name] = field_str
 
-        # Use subdirs
-        parsed_fields["use_subdirs"] = (field_strings["use_subdirs"] == "yes")
-
         return parsed_fields
 
     def configure(self, snakes_to_json_settings):
