@@ -393,11 +393,12 @@ class SnakesToJsonSetupForm(npyscreen.Form):
         pos_int_fields = ["subdir_depth"]
         dir_fields = ["source_snakes_dir", "target_json_dir"]
 
+        parsed_fields = {}
+
         for field_name in pos_int_fields:
             field_str = field_strings[field_name]
             parsed_fields[field_name] = parse_pos_int(field_name, field_str)
 
-        parsed_fields = {}
         for field_name in dir_fields:
             field_str = field_strings[field_name]
             check_dir_field(field_name, field_str, make_dirs_if_not_present)

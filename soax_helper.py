@@ -58,7 +58,7 @@ if __name__ == "__main__":
             parsed_soax_run_settings["batch_soax_path"],
             parsed_soax_run_settings["source_tiff_dir"],
             parsed_soax_run_settings["param_files_dir"],
-            parsed_soax_run_settings["snake_files_dir"],
+            parsed_soax_run_settings["target_snakes_dir"],
             parsed_soax_run_settings["soax_log_dir"],
             parsed_soax_run_settings["use_subdirs"],
             parsed_soax_run_settings["workers"],
