@@ -159,7 +159,7 @@ class PreprocessSetupForm(npyscreen.Form):
 
 class SectioningSetupForm(npyscreen.Form):
     @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present):
+    def parseSettings(field_strings, make_dirs_if_not_present=False):
         pos_int_fields = ["section_max_size"]
         dir_fields = ["source_tiff_dir","target_sectioned_tiff_dir"]
         parsed_fields = {}
