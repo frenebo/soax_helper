@@ -139,7 +139,7 @@ class PreprocessSetupForm(npyscreen.Form):
 
     def getFieldStrings(self):
         return {
-            "max_cutoff_percent": self.field_min_cutoff_percent.value,
+            "max_cutoff_percent": self.field_max_cutoff_percent.value,
             "min_cutoff_percent": self.field_min_cutoff_percent.value,
             "source_tiff_dir": self.field_source_tiff_dir.value,
             "target_tiff_dir": self.field_target_tiff_dir.value,
