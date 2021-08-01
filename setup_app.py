@@ -338,7 +338,7 @@ class SoaxRunSetupForm(npyscreen.Form):
             value=soax_run_settings["source_tiff_dir"])
         self.field_target_snakes = self.add(npyscreen.TitleFilename, name="target_snakes_dir",
             value=soax_run_settings["target_snakes_dir"])
-        self.field_param_files_dir = self.add(npyscree.TitleFilename, name="param_files_dir",
+        self.field_param_files_dir = self.add(npyscreen.TitleFilename, name="param_files_dir",
             value=soax_run_settings["param_files_dir"])
         self.field_snake_files_dir = self.add(npyscree.TitleFilename, name="snake_files_dir",
             value=soax_run_settings["snake_files_dir"])
