@@ -709,6 +709,7 @@ class SoaxHelperApp(npyscreen.NPSAppManaged):
 
         self.menu_functions = []
         if self.do_preprocess:
+            raise Exception("DOING GIGT")
             self.menu_functions.append(self.startPreprocessSetup)
         if self.do_section:
             self.menu_functions.append(self.startSectioningSetup)
