@@ -50,7 +50,6 @@ if __name__ == "__main__":
 
         parsed_param_settings = ParamsSetupForm.parseSettings(app.params_settings)
         create_param_files(
-            app.workingDirSettings["param_files_dir"],
             parsed_params_settings["params_save_dir"],
             parsed_params_settings["alpha"],
             parsed_params_settings["beta"],
