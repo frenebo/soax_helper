@@ -55,7 +55,7 @@ if __name__ == "__main__":
             parsed_params_settings["beta"],
             parsed_params_settings["min_foreground"],
             parsed_params_settings["ridge_threshold"],
-            logger=PrintLogger
+            logger=create_params_logger,
         )
 
     if app.do_run_soax:
