@@ -61,7 +61,7 @@ if __name__ == "__main__":
     if app.do_run_soax:
         soax_logger = RecordLogger()
 
-        parsed_soax_settings = SoaxRunSetupForm.parseSettings(app.soax_run_settings)
+        parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(app.soax_run_settings)
 
         run_soax_with_params(
             parsed_soax_run_settings["batch_soax_path"],
