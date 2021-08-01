@@ -518,7 +518,7 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
     def configure(self, make_snake_images_settings):
         self.add(npyscreen.FixedText,
             value="Make videos from images in directories")
-        self.field_source_jpeg_dir = self.add(npyscreen.TitleFilename, name="source_jpeg_dir",
+        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
             value=make_snake_images_settings["source_json_dir"])
         self.field_target_mp4_dir = self.add(npyscreen.TitleFilename, name="target_mp4_dir",
             value=make_snake_images_settings["target_jpeg_dir"])
