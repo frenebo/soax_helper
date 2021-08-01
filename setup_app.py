@@ -524,7 +524,7 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
             value=make_snake_images_settings["target_jpeg_dir"])
 
         self.field_subdir_depth = self.add(npyscreen.TitleText, name="subdir_depth",
-            value=snakes_to_json_settings["subdir_depth"])
+            value=make_snake_images_settings["subdir_depth"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
