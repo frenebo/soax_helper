@@ -247,7 +247,7 @@ class ParamsSetupForm(npyscreen.Form):
             value="If ranges are given, soax will be run multiple times, trying all combinations of parameter values")
 
         self.field_params_save_dir = self.add(npyscreen.TitleFilename, name="params_save_dir",
-            value=preprocess_settings["params_save_dir"])
+            value=params_settings["params_save_dir"])
 
         self.field_alpha           = self.add(npyscreen.TitleText, name="alpha",
             value=params_settings["alpha"])
