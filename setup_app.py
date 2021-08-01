@@ -576,6 +576,7 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
 
         self.use_subdirs = self.add(
             npyscreen.TitleSelectOne,
+            max_height=3,
             name="Expect snake images to be in subdirectories (should be true unless using a directory of SOAX output from a single parameter file)",
             values=["yes", "no"],
             value=([0] if make_snake_videos_settings["use_subdirs"] == "yes" else [1]),
@@ -583,6 +584,7 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
+            max_height=3,
             name="Create dirs if not present",
             values=["yes", "no"],
             value=[1],
