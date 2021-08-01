@@ -340,9 +340,9 @@ class SoaxRunSetupForm(npyscreen.Form):
             value=soax_run_settings["target_snakes_dir"])
         self.field_param_files_dir = self.add(npyscreen.TitleFilename, name="param_files_dir",
             value=soax_run_settings["param_files_dir"])
-        self.field_snake_files_dir = self.add(npyscree.TitleFilename, name="snake_files_dir",
+        self.field_snake_files_dir = self.add(npyscreen.TitleFilename, name="snake_files_dir",
             value=soax_run_settings["snake_files_dir"])
-        self.field_soax_log_dir = self.add(npyscree.TitleFilename, name="soax_log_dir",
+        self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="soax_log_dir",
             value=soax_run_settings["soax_log_dir"])
         self.field_soax_executable_path = self.add(npyscreen.TitleFilename, name="batch_soax_path",
             value=soax_run_settings["batch_soax_path"])
