@@ -351,7 +351,7 @@ class SoaxRunSetupForm(npyscreen.Form):
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
-            max_height =2,
+            max_height = 3,
             name="Create dirs if not present",
             values=["yes", "no"],
             value=[1],
@@ -359,7 +359,7 @@ class SoaxRunSetupForm(npyscreen.Form):
 
         self.use_subdirs = self.add(
             npyscreen.TitleSelectOne,
-            max_height =2,
+            max_height = 3,
             name="Expect source images to be in subdirectories (should be true if images are sectioned)",
             values=["yes", "no"],
             value=([0] if soax_run_settings["use_subdirs"] == "yes" else [1]),
