@@ -14,7 +14,7 @@ def get_folders_and_files_at_subdir_depth(source_dir_path, depth, extension):
         return folders_and_files
     # recursive find folders aand files at depth
     else:
-        subdirs = [name for name in contents if os.isdir(os.path.join(source_dir_path,name))]
+        subdirs = [name for name in contents if os.path.isdir(os.path.join(source_dir_path,name))]
         folders_and_files = []
         for subdir_name in subdirs:
             sub_folders_and_files = get_folders_and_files_at_subdir_depth(
