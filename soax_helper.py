@@ -4,7 +4,17 @@ from section_tiffs import section_tiffs
 from create_param_files import create_param_files
 from run_soax_with_params import run_soax_with_params
 from snakeutils.logger import RecordLogger
-from setup_app import SoaxSetupApp
+from setup_app import (
+    SoaxSetupApp,
+    PreprocessSetupForm,
+    SectioningSetupForm,
+    ParamsSetupForm,
+    SoaxRunSetupForm,
+    SnakesToJsonSetupForm,
+    JoinSectionedSnakesSetupForm,
+    MakeSnakeImagesSetupForm,
+    MakeSnakeVideosSetupForm,
+)
 
 if __name__ == "__main__":
     app = SoaxSetupApp()
