@@ -4,6 +4,7 @@ from section_tiffs import section_tiffs
 from create_param_files import create_param_files
 from run_soax_with_params import run_soax_with_params
 from snakeutils.logger import RecordLogger
+from convert_snakes_to_json import convert_snakes_to_json
 from setup_app import (
     SoaxSetupApp,
     PreprocessSetupForm,
