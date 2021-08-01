@@ -7,7 +7,7 @@ def get_folders_and_files_at_subdir_depth(source_dir_path, depth, extension):
     contents = os.listdir(source_dir_path)
     contents.sort()
     if depth == 0:
-        files = [name for name in contents if os.isfile(os.path.join(source_dir_path,name))]
+        files = [name for name in contents if os.path.isfile(os.path.join(source_dir_path,name))]
         with_extension = [filename for filename in files if filename.endswith(extension)]
         folders_and_files = [(source_dir_path, name) for filename in with_extension]
 
