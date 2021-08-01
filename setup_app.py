@@ -496,9 +496,15 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
 class MakeSnakeImagesSetupForm(npyscreen.Form):
     @staticmethod
     def parseSettings(field_strings, make_dirs_if_not_present=False):
+        pos_int_fields = ["subdir_depth"]
         dir_fields = ["source_json_dir", "target_jpeg_dir"]
 
         parsed_fields = {}
+
+        for field_name in pos_int_fields:
+            field_str = field_strings[field_name]
+            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
+
         for field_name in dir_fields:
             field_str = field_strings[field_name]
             check_dir_field(field_name, field_str, make_dirs_if_not_present)
@@ -517,12 +523,8 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
         self.field_target_mp4_dir = self.add(npyscreen.TitleFilename, name="target_mp4_dir",
             value=make_snake_images_settings["target_jpeg_dir"])
 
-        self.use_subdirs = self.add(
-            npyscreen.TitleSelectOne,
-            name="Expect json snakes to be in subdirectories (should be true unless using a directory of SOAX output from a single parameter file)",
-            values=["yes", "no"],
-            value=([0] if make_snake_images_settings["use_subdirs"] == "yes" else [1]),
-            scroll_exit=True)
+        self.field_subdir_depth = self.add(npyscreen.TitleText, name="subdir_depth",
+            value=snakes_to_json_settings["subdir_depth"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
@@ -535,7 +537,7 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
         return {
             "source_json_dir": self.field_source_json_dir.value,
             "target_jpeg_dir": self.field_target_mp4_dir.value,
-            "use_subdirs": "yes" if (0 in self.use_subdirs.value) else "no",
+            "subdir_depth": self.field_subdir_depth.value,
         }
 
     def afterEditing(self):
@@ -648,6 +650,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_snake_images_settings = {
             "source_json_dir": "",
             "target_jpeg_dir": "./SnakeImages",
+            "subdir_depth": "1",
         }
         self.make_snake_videos_settings = {
             "source_jpeg_dir": "",
@@ -724,6 +727,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.sectioning_settings = sectioning_settings
         self.soax_run_settings["source_tiff_dir"] = sectioning_settings["target_sectioned_tiff_dir"]
         self.soax_run_settings["use_subdirs"] = "yes"
+        self.snakes_to_json_settings["subdir_depth"] = "2"
         self.goToNextMenu()
 
     def startParamSetup(self):
