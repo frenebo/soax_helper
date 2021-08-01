@@ -592,7 +592,7 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
 
     def getFieldStrings(self):
         return {
-            "source_jpeg_dir": self.field_source_json_dir.value,
+            "source_jpeg_dir": self.field_source_jpeg_dir.value,
             "target_mp4_dir": self.field_target_mp4_dir.value,
             "use_subdirs": "yes" if (0 in self.use_subdirs.value) else "no",
         }
