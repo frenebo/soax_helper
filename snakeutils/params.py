@@ -29,7 +29,6 @@ damp-z	false""".format(
         min_foreground=min_foreground,
         alpha=alpha,
         beta=beta,
-        gamma=gamma,
         ridge_threshold=ridge_threshold,
         )
     return params
