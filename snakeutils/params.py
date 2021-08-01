@@ -1,5 +1,5 @@
 
-def create_params(alpha,beta,gamma,min_foreground,ridge_threshold):
+def create_params(alpha,beta,min_foreground,ridge_threshold):
     params = """intensity-scaling	0
 gaussian-std	0
 ridge-threshold	{ridge_threshold}
@@ -13,7 +13,7 @@ change-threshold	0.1
 check-period	100
 alpha	{alpha}
 beta	{beta}
-gamma	{gamma}
+gamma	2
 external-factor	1
 stretch-factor	0.2
 number-of-background-radial-sectors	8
