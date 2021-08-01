@@ -14,7 +14,7 @@ def convert_snakes_to_json(source_snakes_dir, target_json_dir, subdir_depth=0, l
             if os.path.exists(target_folder_path):
                 raise Exception("Cannot produce output, {} is not a directory".format(target_folder_path))
             else:
-                os.mkdir(target_folder_path)
+                os.makedirs(target_folder_path)
         snakes_fp = os.path.join(folder_path,snake_filename)
         logger.log("Reading snakes from {}".format(snakes_fp))
 

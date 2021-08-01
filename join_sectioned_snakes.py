@@ -3,4 +3,4 @@ import os
 import json
 from snakeutils.logger import PrintLogger
 
-def join_sectioned_snakes(source_json_dir)
+# def join_sectioned_snakes(source_json_dir)

@@ -48,7 +48,7 @@ if __name__ == "__main__":
     if app.do_create_params:
         create_params_logger = RecordLogger()
 
-        parsed_param_settings = ParamsSetupForm.parseSettings(app.params_settings)
+        parsed_params_settings = ParamsSetupForm.parseSettings(app.params_settings)
         create_param_files(
             parsed_params_settings["params_save_dir"],
             parsed_params_settings["alpha"],
