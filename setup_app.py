@@ -35,8 +35,6 @@ def parse_pos_int(field_name, field_str):
 
 class StepsSetupForm(npyscreen.Form):
     def configure(self):
-        self.add(npyscreen.FixedText,
-            value="Note: select Join Sectioned Snakes if input images to soax are sectioned")
         self.select_steps = self.add(
             npyscreen.TitleMultiSelect,
             max_height =-2,
@@ -47,8 +45,8 @@ class StepsSetupForm(npyscreen.Form):
                 "Section TIFFs before running SOAX",
                 "Create Parameter Files",
                 "Run SOAX",
-                "Convert Snake files to JSON"
-                "Join Sectioned Snakes together",
+                "Convert Snake files to JSON",
+                "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
                 "Make images of snakes",
                 "Make videos from snake images",
             ],
