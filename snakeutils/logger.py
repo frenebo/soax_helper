@@ -15,7 +15,7 @@ class RecordLogger:
         self.fails = []
 
     def log(self,text):
-        PrinLogger.log(text)
+        PrintLogger.log(text)
 
     def success(self,text):
         PrintLogger.success(text)
