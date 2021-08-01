@@ -293,7 +293,6 @@ class SoaxRunSetupForm(npyscreen.Form):
             "source_tiff_dir",
             "target_snakes_dir",
             "param_files_dir",
-            "snake_files_dir",
             "soax_log_dir",
         ]
 
@@ -339,9 +338,7 @@ class SoaxRunSetupForm(npyscreen.Form):
         self.field_target_snakes = self.add(npyscreen.TitleFilename, name="target_snakes_dir",
             value=soax_run_settings["target_snakes_dir"])
         self.field_param_files_dir = self.add(npyscreen.TitleFilename, name="param_files_dir",
-            value=soax_run_settings["param_files_dir"])
-        self.field_snake_files_dir = self.add(npyscreen.TitleFilename, name="snake_files_dir",
-            value=soax_run_settings["snake_files_dir"])
+            value=soax_run_settings["param_files_dir"]
         self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="soax_log_dir",
             value=soax_run_settings["soax_log_dir"])
         self.field_soax_executable_path = self.add(npyscreen.TitleFilename, name="batch_soax_path",
@@ -372,7 +369,6 @@ class SoaxRunSetupForm(npyscreen.Form):
             "source_tiff_dir": self.field_source_dir.value,
             "target_snakes_dir": self.field_target_snakes.value,
             "param_files_dir": self.field_param_files_dir.value,
-            "snake_files_dir": self.field_snake_files_dir.value,
             "soax_log_dir": self.field_soax_log_dir.value,
 
             "batch_soax_path": self.field_soax_executable_path.value,
@@ -640,7 +636,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_tiff_dir": "",
             "target_snakes_dir": "./Snakes",
             "param_files_dir": "",
-            "snake_files_dir": "",
             "soax_log_dir": "./SoaxLogs",
         }
         self.snakes_to_json_settings = {
@@ -750,6 +745,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def soaxRunSetupDone(self, soax_run_settings):
         self.soax_run_settings = soax_run_settings
+        self.snakes_to_json_settings["source_snakes_dir"] = soax_run_settings["target_snakes_dir"]
         self.goToNextMenu()
 
     def startSnakesToJsonSetup(self):
