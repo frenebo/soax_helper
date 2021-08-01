@@ -467,7 +467,7 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
         self.add(npyscreen.FixedText,
             value="to form JSON files with all the snakes from original images")
 
-        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="sourcce_json_dir",
+        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
             value=join_sectioned_snakes_settings["source_json_dir"])
         self.field_target_json_dir = self.add(npyscreen.TitleFilename, name="target_json_dir",
             value=join_sectioned_snakes_settings["target_json_dir"])

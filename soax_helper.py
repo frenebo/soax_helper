@@ -4,7 +4,7 @@ from section_tiffs import section_tiffs
 from create_param_files import create_param_files
 from run_soax_with_params import run_soax_with_params
 from snakeutils.logger import RecordLogger
-from setup_app import SoaxSetupApp()
+from setup_app import SoaxSetupApp
 
 if __name__ == "__main__":
     app = SoaxSetupApp()
@@ -74,10 +74,13 @@ if __name__ == "__main__":
             parsed_snakes_to_json_settings["subdir_depth"],
             logger=snakes_to_json_logger
         )
+
     if app.do_join_sectioned_snakes:
         join_sectioned_snakes_logger = Record
         pass
+
     if app.do_make_snake_images:
         pass
+
     if app.do_make_videos_from_images:
         pass
