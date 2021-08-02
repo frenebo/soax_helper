@@ -1,6 +1,5 @@
 import sys
 import os
-import numpy as np
 import argparse
 
 def get_folders_and_files_at_subdir_depth(source_dir_path, depth, extension):
@@ -89,12 +88,12 @@ def extract_snakes(snake_file):
 
         if end_of_snakes:
             # save last snake and break loop
-            snake_dict[snake_name] = np.array(snake_points)
+            snake_dict[snake_name] = snake_points
             break
 
         # if reached a new label for snake
         if len(line) == 1 :
-            snake_dict[snake_name] = np.array(snake_points)
+            snake_dict[snake_name] = snake_points
             snake_name = None
             snake_points = None
 
