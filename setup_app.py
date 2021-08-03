@@ -756,7 +756,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         #If source tiff dir doesn't have anything at this depth, we won't do anything here
         if len(image_locations_info) == 0:
-            raise Exception("{}, {}".format(tiff_dir, str(img_depth)))
+            return
+            # raise Exception("{}, {}".format(tiff_dir, str(img_depth)))
         first_img_dir = image_locations_info[0][0]
         first_img_name = image_locations_info[0][1]
         first_img_fp = os.path.join(first_img_dir, first_img_name)
@@ -781,6 +782,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.preprocess_settings = preprocess_settings
         self.sectioning_settings["source_tiff_dir"] = preprocess_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = preprocess_settings["target_tiff_dir"]
+        if self.make_snake_images_settings["width"] == "":
+            self.auto_set_width_height_images_settings(
+                sectioning_settings["source_tiff_dir"],
+                0,
+            )
         self.goToNextMenu()
 
     def startSectioningSetup(self):
@@ -794,10 +800,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_settings["use_subdirs"] = "yes"
         self.snakes_to_json_settings["subdir_depth"] = "2"
         self.join_sectioned_snakes_settings["source_jsons_depth"] = "3"
-        self.auto_set_width_height_images_settings(
-            sectioning_settings["source_tiff_dir"],
-            0,
-        )
+        if self.make_snake_images_settings["width"] == "":
+            self.auto_set_width_height_images_settings(
+                sectioning_settings["source_tiff_dir"],
+                0,
+            )
         self.goToNextMenu()
 
     def startParamSetup(self):
@@ -820,7 +827,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.snakes_to_json_settings["source_snakes_dir"] = soax_run_settings["target_snakes_dir"]
 
         # Only want to do this if we know soax is getting the original shaped images
-        if not self.do_section and not soax_run_settings["use_subdirs"]:
+        if self.make_snake_images_settings["width"] == "" and not soax_run_settings["use_subdirs"]:
             # Set width and height for make images step
             img_depth = 0
             self.auto_set_width_height_images_settings(
