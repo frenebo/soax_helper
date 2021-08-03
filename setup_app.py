@@ -1,6 +1,8 @@
 from create_param_files import error_string_or_parse_arg_or_range, create_param_files
 import npyscreen
 import os
+from tiff_info import get_single_tiff_info
+from snakeutils.files import find_files_or_folders_at_depth
 
 # For parsing setting strings
 class ParseException(Exception):
@@ -78,7 +80,7 @@ class PreprocessSetupForm(npyscreen.Form):
     @staticmethod
     def parseSettings(field_strings, make_dirs_if_not_present=False):
         percentage_fields = ["min_cutoff_percent", "max_cutoff_percent"]
-        dir_fields = ["source_tiff_dir","target_tiff_dir"]
+        dir_fields = ["source_tiff_dir", "target_tiff_dir"]
         parsed_fields = {}
 
         for field_name in percentage_fields:
@@ -505,7 +507,7 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
 class MakeSnakeImagesSetupForm(npyscreen.Form):
     @staticmethod
     def parseSettings(field_strings, make_dirs_if_not_present=False):
-        pos_int_fields = ["subdir_depth"]
+        pos_int_fields = ["subdir_depth", "height", "width"]
         dir_fields = ["source_json_dir", "target_jpeg_dir"]
 
         parsed_fields = {}
@@ -519,6 +521,8 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
             check_dir_field(field_name, field_str, make_dirs_if_not_present)
             parsed_fields[field_name] = field_str
 
+        # Use subdirs
+        parsed_fields["use_colors"] = (field_strings["use_colors"] == "yes")
 
         return parsed_fields
 
@@ -533,6 +537,19 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
         self.field_subdir_depth = self.add(npyscreen.TitleText, name="subdir_depth",
             value=make_snake_images_settings["subdir_depth"])
 
+        self.field_height = self.add(npyscreen.TitleText, name="subdir_depth",
+            value=make_snake_images_settings["height"])
+        self.field_width = self.add(npyscreen.TitleText, name="subdir_depth",
+            value=make_snake_images_settings["width"])
+
+        self.field_use_colors = self.add(
+            npyscreen.TitleSelectOne,
+            max_height = 3,
+            name="Graph snakes with different colors",
+            values=["yes", "no"],
+            value=([0] if make_snake_images_settings["use_colors"] == "yes" else [1]),
+            scroll_exit=True)
+
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
             name="Create dirs if not present",
@@ -544,7 +561,10 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
         return {
             "source_json_dir": self.field_source_json_dir.value,
             "target_jpeg_dir": self.field_target_mp4_dir.value,
+            "height": self.field_height.value,
+            "width": selff.field_height.height,
             "subdir_depth": self.field_subdir_depth.value,
+            "use_colors": "yes" if (0 in self.create_if_not_present) else "no",
         }
 
     def afterEditing(self):
@@ -663,7 +683,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_snake_images_settings = {
             "source_json_dir": "",
             "target_jpeg_dir": "./SnakeImages",
+            "width": "",
+            "height": "",
             "subdir_depth": "1",
+            "use_colors": "no",
         }
         self.make_snake_videos_settings = {
             "source_jpeg_dir": "",
@@ -713,6 +736,20 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.goToNextMenu()
 
+    def auto_set_width_height_images_settings(tiff_dir, img_depth):
+        image_locations_info = find_files_or_folders_at_depth(tiff_dir, img_depth, file_extension=".tiff")
+
+        #If source tiff dir doesn't have anything at this depth, we won't do anything here
+        if len(image_locations_info) == 0:
+            return
+        first_img_dir = image_locations_info[0][0]
+        first_img_name = image_locations_info[0][1]
+        first_img_fp = os.path.join(first_img_dir, first_img_name)
+        shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
+        width, height = shape
+        self.make_snake_images_settings["width"] = str(width)
+        self.make_snake_images_settings["height"] = str(height)
+
     def goToNextMenu(self):
         if len(self.menu_functions) == 0:
             self.setNextForm(None)
@@ -742,6 +779,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_settings["use_subdirs"] = "yes"
         self.snakes_to_json_settings["subdir_depth"] = "2"
         self.join_sectioned_snakes_settings["source_jsons_depth"] = "3"
+        self.auto_set_width_height_images_settings(
+            sectioning_settings["source_tiff_dir"],
+            0,
+        )
         self.goToNextMenu()
 
     def startParamSetup(self):
@@ -762,6 +803,16 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def soaxRunSetupDone(self, soax_run_settings):
         self.soax_run_settings = soax_run_settings
         self.snakes_to_json_settings["source_snakes_dir"] = soax_run_settings["target_snakes_dir"]
+
+        # Only want to do this if we know soax is getting the original shaped images
+        if not self.do_section and not soax_run_settings["use_subdirs"]:
+            # Set width and height for make images step
+            img_depth = 0
+            self.auto_set_width_height_images_settings(
+                soax_run_settings["source_tiff_dir"],
+                img_depth)
+        # source_image_locations =
+        # shape, stack_height, dtype =
         self.goToNextMenu()
 
     def startSnakesToJsonSetup(self):

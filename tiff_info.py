@@ -28,15 +28,19 @@ def readable_dir(dirpath):
 
     return dirpath
 
-def tiff_info(tif_paths,logger=PrintLogger):
-    for tif_path in tif_paths:
-        data = Image.open(tif_path)
-        shape = data.size
-        stack_height = data.n_frames
-        arr = np.array(data)
-        dtype = str(arr.dtype)
+def get_single_tiff_info(tiff_path):
+    data = Image.open(tiff_path)
+    shape = data.size
+    stack_height = data.n_frames
+    arr = np.array(data)
+    dtype = str(arr.dtype)
 
-        logger.log("{}:".format(tif_path))
+    return shape, stack_height, dtype
+
+def tiff_info(tiff_paths,logger=PrintLogger):
+    for tiff_path in tiff_paths:
+        shape, stack_height, dtype = get_single_tiff_info(tiff_path)
+        logger.log("{}:".format(tiff_path))
         logger.log(" shape: {}, stack frames: {}, dtype: {}".format(shape,stack_height,dtype))
 
 if __name__ == "__main__":
