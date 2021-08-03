@@ -14,7 +14,7 @@ def run_soax(soax_args):
     tif_dir = soax_args["tif_dir"]
     params_name = soax_args["params_name"]
     param_fp = soax_args["param_fp"]
-    params_output_dir = soax_args["params_output_dir"]
+    snakes_output_dir = soax_args["snakes_output_dir"]
     logging_dir = soax_args["logging_dir"]
     logger = soax_args["logger"]
 
@@ -23,11 +23,11 @@ def run_soax(soax_args):
     stdout_fp = os.path.join(logging_dir,"stdout_" + params_name + ".txt")
 
     with open(error_fp,"w") as error_file, open(stdout_fp,"w") as stdout_file:
-        command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {params_output_dir}".format(
+        command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {snakes_output_dir}".format(
             batch_soax = batch_soax,
             tif_dir=tif_dir,
             param_fp=param_fp,
-            params_output_dir=params_output_dir,
+            snakes_output_dir=snakes_output_dir,
         )
 
         logger.log("Executing '{}'".format(command))
@@ -39,22 +39,6 @@ def run_soax(soax_args):
             logger.error("Failed to run {}. return code {}".format(command,e.returncode))
             logger.error("STDERR saved in {}".format(error_fp))
             logger.error("STDOUT saved in {}".format(stdout_fp))
-
-
-def generate_run_soax_args(params_dir,params_filename,output_dir,batch_soax,tif_dir,logging_dir,logger):
-    param_fp = os.path.join(params_dir,params_filename)
-    params_name = params_filename[:-len(".txt")]
-    params_output_dir = os.path.join(output_dir,params_name)
-
-    return {
-        "batch_soax": batch_soax,
-        "tif_dir": tif_dir,
-        "param_fp": param_fp,
-        "params_name": params_name,
-        "params_output_dir": params_output_dir,
-        "logging_dir":logging_dir,
-        "logger": logger,
-    }
 
 def run_soax_with_params(
     batch_soax,
@@ -85,43 +69,52 @@ def run_soax_with_params(
 
         for params_filename in param_files:
             for subdir_name in subdir_names:
+                param_fp = os.path.join(params_dir,params_filename)
+                params_name = params_filename[:-len(".txt")]
                 subdir_path = os.path.join(tif_dir,subdir_name)
-                output_subdir_path = os.path.join(output_dir,subdir_name)
+                snakes_output_dir = os.path.join(output_dir, params_name, subdir_name)
                 sublogging_dir = os.path.join(logging_dir,subdir_name)
-                os.mkdir(sublogging_dir)
-                if os.path.exists(output_subdir_path):
-                    logger.FAIL("Target dir {} already exists".format(output_subdir_path))
+                if not os.path.isdir(sublogging_dir):
+                    if os.path.exists(sublogging_dir):
+                        logger.FAIL("Logging dir {} exists but is not directory. cannot log".format(sublogging_dir))
+                    else:
+                        os.makedirs(sublogging_dir)
+                if not os.path.isdir(snakes_output_dir):
+                    if os.path.exists(snakes_output_dir):
+                        logger.FAIL("Snakes dir {} exists but is not a directory. Cannot output snakes here".format(snakes_output_dir))
+                    else:
+                        os.makedirs(snakes_output_dir)
 
-                os.mkdir(output_subdir_path)
-
-                soax_args.append(generate_run_soax_args(
-                    params_dir,
-                    params_filename,
-                    output_subdir_path,
-                    batch_soax,
-                    subdir_path,
-                    sublogging_dir,
-                    logger,
-                ))
+                soax_args.append({
+                    "batch_soax": batch_soax,
+                    "tif_dir": tif_dir,
+                    "param_fp": param_fp,
+                    "params_name": params_name,
+                    "snakes_output_dir": snakes_output_dir,
+                    "logging_dir":sublogging_dir,
+                    "logger": logger,
+                })
     # If no subdirs, we have
     # {tif_dir} -> tif,tif,tif,tif
     # so we only need to run soax once with each param on the same directory
     else:
         for params_filename in param_files:
-            soax_args.append(generate_run_soax_args(
-                params_dir,
-                params_filename,
-                output_dir,
-                batch_soax,
-                tif_dir,
-                logging_dir
-            ))
+            param_fp = os.path.join(params_dir,params_filename)
+            params_name = params_filename[:-len(".txt")]
+            soxa_args.append({
+                "batch_soax": batch_soax,
+                "tif_dir": tif_dir,
+                "param_fp": param_fp,
+                "params_name": params_name,
+                "snakes_output_dir": output_dir,
+                "logging_dir": logging_dir,
+                "logger": logger,
+            })
 
-    logger.log("Creating snake output directories inside {}".format(output_dir))
-    for soax_arg in soax_args:
-        params_output_dir = soax_arg["params_output_dir"]
-        os.mkdir(params_output_dir)
-        logger.log("Directory '{}' created".format(params_output_dir))
+    # logger.log("Creating snake output directories inside {}".format(output_dir))
+    # for soax_arg in soax_args:
+    #     params_output_dir = soax_arg["params_output_dir"]
+    #     logger.log("Directory '{}' created".format(params_output_dir))
 
     with ThreadPool(workers_num) as pool:
         logger.log("Making future")
