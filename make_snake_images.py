@@ -116,7 +116,9 @@ def make_snake_images(
         # snake_dirs = []
         for parent_dir, snake_dir_name in snake_folder_info:
             snake_dir_path = os.path.join(parent_dir, snake_dir_name)
+            print("snake dir name: {}".format(snake_dir_path))
             snake_folder_relative_path = os.path.relpath(dir_name, snake_dir_path)
+            print("  relative to {}: {}".format(dir_name, snake_folder_relative_path))
             image_dir_path = os.path.join(image_dir, snake_folder_relative_path)
 
             if not os.path.isdir(image_dir_path):
