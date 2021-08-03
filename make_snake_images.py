@@ -77,19 +77,19 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
                 else:
                     plt.plot(x,y,'y')
 
-            # some_snakefile.tif => some_snakefile.jpg
-            save_img_filename = "".join(snake_filename.split(".")[:-1]) + ".png"
-            save_img_fp = os.path.join(image_dir_name,save_img_filename)
+        # some_snakefile.tif => some_snakefile.jpg
+        save_img_filename = "".join(snake_filename.split(".")[:-1]) + ".png"
+        save_img_fp = os.path.join(image_dir_name,save_img_filename)
 
-            plt.axes().set_aspect('equal', adjustable='box')
-            # invert y axis
-            plt.axis([0,image_width,image_height,0])
-            plt.xlabel("x")
-            plt.ylabel("y")
-            plt.savefig(save_img_fp)
-            logger.success("  Saved image to {}".format(save_img_fp))
-            # clear figure so we can do the next plot
-            plt.clf()
+        plt.axes().set_aspect('equal', adjustable='box')
+        # invert y axis
+        plt.axis([0,image_width,image_height,0])
+        plt.xlabel("x")
+        plt.ylabel("y")
+        plt.savefig(save_img_fp)
+        logger.success("  Saved image to {}".format(save_img_fp))
+        # clear figure so we can do the next plot
+        plt.clf()
 
 def make_snake_images(
     dir_name,
