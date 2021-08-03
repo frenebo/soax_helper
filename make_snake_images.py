@@ -102,13 +102,13 @@ def make_snake_images(
     logger=PrintLogger,
     ):
     raise Exception(
-        "dir_name={}"
-        "image_dir={}"
-        "width={}"
-        "height={}"
-        "snakes_subdir_depth={}"
-        "colorful={}"
-        "background_img_dir={}"
+        "dir_name={}   "
+        "image_dir={}   "
+        "width={}   "
+        "height={}   "
+        "snakes_subdir_depth={}   "
+        "colorful={}   "
+        "background_img_dir={}   "
         .format(
             dir_name,
             image_dir,
