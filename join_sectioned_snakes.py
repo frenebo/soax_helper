@@ -1,4 +1,4 @@
-from snakeutils.files import find_files_or_folders_at_depth
+from snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
 import os
 import json
 from snakeutils.logger import PrintLogger
@@ -6,8 +6,8 @@ from snakeutils.logger import PrintLogger
 # Given image slice dimensions, finds the highest width height (and depth if 3D) indices in names
 # and retuns the width height and depth the orig image must have had
 def get_section_bounds(fn, img_is_3d):
-    # remove "xDsec_" and ".pickle"
-    section_info = fn[6:-7]
+    # remove "xDsec_" and ".json"
+    section_info = fn[6:-5]
 
     if img_is_3d:
         height_bounds,width_bounds,depth_bounds = section_info.split("_")
@@ -87,8 +87,8 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
         target_json_fp = os.path.join(target_dir_path, source_folder_name + ".json")
 
         source_folder_path = os.path.join(containing_folder, source_folder_name)
-        source_files = [name for name in os.listdir(source_folder_path) if os.path.isfile(os.path.join(source_folder_info, name))]
-        source_jsons = [fn for fn in source_files]
+        source_files = [name for name in os.listdir(source_folder_path) if os.path.isfile(os.path.join(source_folder_path, name))]
+        source_jsons = [fn for fn in source_files if has_one_of_extensions(fn,[".json"])]
         source_jsons.sort()
 
         if len(source_jsons) == 0:
