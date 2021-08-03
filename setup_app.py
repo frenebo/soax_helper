@@ -574,12 +574,15 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
             value=make_snake_videos_settings["source_jpeg_dir"])
         self.field_target_mp4_dir = self.add(npyscreen.TitleFilename, name="target_mp4_dir",
             value=make_snake_videos_settings["target_mp4_dir"])
-
+        self.add(npyscreen.FixedText,
+            value="Expect snake images to be in subdirs should be true unless")
+        self.add(npyscreen.FixedText,
+            value="using a directory of SOAX output from a single parameter file")
         self.use_subdirs = self.add(
             npyscreen.TitleSelectOne,
             max_height=3,
             max_width=60,
-            name="Expect snake images to be in subdirs (should be true unless using a directory of SOAX output from a single parameter file)",
+            name="Expect snake images to be in subdirs",
             values=["yes", "no"],
             value=([0] if make_snake_videos_settings["use_subdirs"] == "yes" else [1]),
             scroll_exit=True)
