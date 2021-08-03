@@ -47,7 +47,7 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
 
         for snake in section_snakes:
             shifted_snake = []
-            for snake_pat in snake:
+            for snake_part in snake:
                 orig_pos = snake_part["pos"]
                 if are_3d:
                     shifted_pos = [
