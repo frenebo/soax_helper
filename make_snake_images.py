@@ -112,7 +112,7 @@ def make_snake_images(
         snake_dirs = []
         image_dirs = []
         snake_dirs_depth = snakes_subdir_depth - 1
-        snake_folder_info = find_files_or_folders_at_depth(dir_name, snake_dirs, file_extension=".json")
+        snake_folder_info = find_files_or_folders_at_depth(dir_name, snake_dirs_depth, file_extension=".json")
         # snake_dirs = []
         for parent_dir, snake_dir_name in snake_folder_info:
             snake_dir_path = os.path.join(parent_dir, snake_dir_name)
