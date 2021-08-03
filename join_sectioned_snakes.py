@@ -46,24 +46,27 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
             sec_height_lower,sec_height_upper,sec_width_lower,sec_width_upper = sec_bounds
 
         for snake in section_snakes:
-            orig_pos = snake["pos"]
-            if are_3d:
-                shifted_pos = [
-                    orig_pos[0] + sec_height_lower,
-                    orig_pos[1] + sec_width_lower,
-                    orig_pos[2] + sec_depth_lower,
-                ]
-            else:
-                shifted_pos = [
-                    orig_pos[0] + sec_height_lower,
-                    orig_pos[1] + sec_width_lower
-                ]
+            shifted_snake = []
+            for snake_pat in snake:
+                orig_pos = snake_part["pos"]
+                if are_3d:
+                    shifted_pos = [
+                        orig_pos[0] + sec_height_lower,
+                        orig_pos[1] + sec_width_lower,
+                        orig_pos[2] + sec_depth_lower,
+                    ]
+                else:
+                    shifted_pos = [
+                        orig_pos[0] + sec_height_lower,
+                        orig_pos[1] + sec_width_lower
+                    ]
 
-            shifted_snakes.append({
-                "pos": shifted_pos,
-                "fg": snake["fg"],
-                "bg": snake["bg"],
-            })
+                shifted_snake.append({
+                    "pos": shifted_pos,
+                    "fg": snake["fg"],
+                    "bg": snake["bg"],
+                })
+            shifted_snakes.append(shifted_snake)
 
     with open(target_json_fp, "w") as f:
         json.dump(shifted_snakes, f)
