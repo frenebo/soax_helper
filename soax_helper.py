@@ -8,6 +8,7 @@ from run_soax_with_params import run_soax_with_params
 from snakeutils.logger import RecordLogger
 from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
+from make_snake_images import make_snake_images
 from setup_app import (
     SoaxSetupApp,
     PreprocessSetupForm,
@@ -113,16 +114,6 @@ if __name__ == "__main__":
         all_loggers["MAKE SNAKE IMAGES"] = make_snake_images_logger
 
         parsed_make_snake_images_settings = MakeSnakeImagesSetupForm.parseSettings(app.make_snake_images_settings)
-
-        # parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-        # parser.add_argument('snake_dir',type=readable_dir,help="Source directory where snake text files are")
-        # parser.add_argument('image_dir',type=readable_dir,help="Target directory to save graphed snakes")
-        # parser.add_argument('--width',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
-        # parser.add_argument('--height',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
-        # parser.add_argument('--subdirs', default=False, action='store_true',help='If we should make snakes for subdirectories in snake_dir and output in subdirectories in image_dir')
-        # parser.add_argument('--subsubdirs', default=False, action='store_true',help='If subdirectories in snake_dir are two levels deep')
-        # parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
-        # parser.add_argument('--background_img_dir', default=None,type=readable_dir,help="Directory with images to use as backgrounds for TIFs")
 
         make_snake_images(
             parsed_make_snake_images_settings["source_json_dir"],
