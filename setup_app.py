@@ -756,7 +756,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         #If source tiff dir doesn't have anything at this depth, we won't do anything here
         if len(image_locations_info) == 0:
-            return
+            # return
             raise Exception("{}, {}".format(tiff_dir, str(img_depth)))
         first_img_dir = image_locations_info[0][0]
         first_img_name = image_locations_info[0][1]
