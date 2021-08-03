@@ -68,12 +68,14 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
     with open(target_json_fp, "w") as f:
         json.dump(shifted_snakes, f)
 
-def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth=1,logger=PrintLogger):
+def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,logger=PrintLogger):
     if source_jsons_depth < 1:
         raise Exception("Cannot join sectioned snakes if subdir depth is less than 1. Need a subdirectory full of sectioned snake jsons to produce one joined snake json in the target dir.")
     # The folders containing the source json files to be joined are one level less deep
     section_folder_depth = source_jsons_depth - 1
     source_folder_info = find_files_or_folders_at_depth(source_json_dir, section_folder_depth, folders_not_files=True)
+    info_strs = "    ".join(["({},{})".format(fol,fol2) for fol, fol2 in source_folder_info])
+    raise Exception(info_strs)
     for containing_folder, source_folder_name in source_folder_info:
 
         relative_dir_path = os.path.relpath(containing_folder, source_json_dir)
