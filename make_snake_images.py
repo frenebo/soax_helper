@@ -101,6 +101,24 @@ def make_snake_images(
     background_img_dir,
     logger=PrintLogger,
     ):
+    raise Exception(
+        "dir_name={}"
+        "image_dir={}"
+        "width={}"
+        "height={}"
+        "snakes_subdir_depth={}"
+        "colorful={}"
+        "background_img_dir={}"
+        .format(
+            dir_name,
+            image_dir,
+            width,
+            height,
+            snakes_subdir_depth,
+            colorful,
+            background_img_dir,
+        )
+    )
     if (background_img_dir is not None) and use_subsubdirs:
         logger.FAIL("Background images not supported with depth > 1")
 
@@ -130,7 +148,7 @@ def make_snake_images(
             image_dirs.append(image_dir_path)
 
     snake_dirs.sort()
-    logger.log("Making images from snake files in {}".format(", ".join(snake_dirs)))
+    logger.log("Making images from snake files in :{}".format(", ".join(snake_dirs)))
 
     for i in range(len(snake_dirs)):
         logger.log("Making snakes for {}, saving in {}".format(snake_dirs[i],image_dirs[i]))
