@@ -83,17 +83,17 @@ def run_soax_with_params(
         subdir_names = [name for name in tif_dir_contents if os.path.isdir(os.path.join(tif_dir,name))]
         subdir_names.sort()
 
-        for subdir_name in subdir_names:
-            subdir_path = os.path.join(tif_dir,subdir_name)
-            output_subdir_path = os.path.join(output_dir,subdir_name)
-            sublogging_dir = os.path.join(logging_dir,subdir_name)
-            os.mkdir(sublogging_dir)
-            if os.path.exists(output_subdir_path):
-                logger.FAIL("Target dir {} already exists".format(output_subdir_path))
+        for params_filename in param_files:
+            for subdir_name in subdir_names:
+                subdir_path = os.path.join(tif_dir,subdir_name)
+                output_subdir_path = os.path.join(output_dir,subdir_name)
+                sublogging_dir = os.path.join(logging_dir,subdir_name)
+                os.mkdir(sublogging_dir)
+                if os.path.exists(output_subdir_path):
+                    logger.FAIL("Target dir {} already exists".format(output_subdir_path))
 
-            os.mkdir(output_subdir_path)
+                os.mkdir(output_subdir_path)
 
-            for params_filename in param_files:
                 soax_args.append(generate_run_soax_args(
                     params_dir,
                     params_filename,
