@@ -20,9 +20,21 @@ def get_section_bounds(fn, img_is_3d):
         sec_depth_lower,sec_depth_upper = depth_bounds.split("-")
 
     if img_is_3d:
-        return sec_height_lower,sec_height_upper,sec_width_lower,sec_width_upper,sec_depth_lower,sec_depth_upper
+        return (
+            int(sec_height_lower),
+            int(sec_height_upper),
+            int(sec_width_lower),
+            int(sec_width_upper),
+            int(sec_depth_lower),
+            int(sec_depth_upper),
+        )
     else:
-        return sec_height_lower,sec_height_upper,sec_width_lower,sec_width_upper
+        return (
+            int(sec_height_lower),
+            int(sec_height_upper),
+            int(sec_width_lower),
+            int(sec_width_upper),
+        )
 
 def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logger):
     new_snakes = []
