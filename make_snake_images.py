@@ -101,9 +101,6 @@ def make_snake_images(
     background_img_dir,
     logger=PrintLogger,
     ):
-    if (background_img_dir is not None) and use_subsubdirs:
-        logger.FAIL("Background images not supported with depth > 1")
-
     if snake_files_depth == 0:
         snake_dirs = [dir_name]
         image_dirs = [image_dir]
@@ -154,8 +151,6 @@ if __name__ == "__main__":
     parser.add_argument('--width',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
     parser.add_argument('--height',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
     parser.add_argument('--snake_files_depth',default=0,type=int,help="Subdir depth at which to find snake images in snake_dir")
-    # parser.add_argument('--subdirs', default=False, action='store_true',help='If we should make snakes for subdirectories in snake_dir and output in subdirectories in image_dir')
-    # parser.add_argument('--subsubdirs', default=False, action='store_true',help='If subdirectories in snake_dir are two levels deep')
     parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
     parser.add_argument('--background_img_dir', default=None,type=readable_dir,help="Directory with images to use as backgrounds for TIFs")
 
