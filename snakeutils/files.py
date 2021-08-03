@@ -19,14 +19,20 @@ def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, 
     contents.sort()
 
     if depth == 0:
+        filenames = []
+        dirnames = []
+        for name in contents:
+            if os.path.isdir(os.path.join(source_dir_path, name)):
+                dirnames.append(name)
+            elif os.path.isfile(os.path.join(source_dir_path, name)):
+                filenames.append(name)
+
         if folders_not_files:
-            dirnames = [name for name in  contents if os.path.isdir(os.path.join(source_dir_path, name))]
             folders_and_folders = [(source_dir_path, foldername) for foldername in dirnames]
             return folders_and_folders
         else:
-            files = [name for name in contents if os.path.isfile(os.path.join(source_dir_path,name))]
-            with_extension = [filename for filename in files if has_one_of_extensions(filename,file_extensions)]
-            folders_and_files = [(source_dir_path, filename) for filename in with_extension]
+            with_extension = [fn for fn in filenames if has_one_of_extensions(fn,file_extensions)]
+            folders_and_files = [(source_dir_path, fn) for fn in with_extension]
             return folders_and_files
     # recursive find folders aand files at depth
     else:

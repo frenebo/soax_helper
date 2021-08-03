@@ -801,7 +801,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_settings["source_tiff_dir"] = sectioning_settings["target_sectioned_tiff_dir"]
         self.soax_run_settings["use_subdirs"] = "yes"
         self.snakes_to_json_settings["subdir_depth"] = "2"
-        self.join_sectioned_snakes_settings["source_jsons_depth"] = "3"
+        self.join_sectioned_snakes_settings["source_jsons_depth"] = "2"
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
                 self.sectioning_settings["source_tiff_dir"],
