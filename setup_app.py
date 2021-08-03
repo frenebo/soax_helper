@@ -486,7 +486,7 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
     def getFieldStrings(self):
         return {
             "source_json_dir": self.field_source_json_dir.value,
-            "target_json_dir": self.field_target_json_dir.value
+            "target_json_dir": self.field_target_json_dir.value,
             "source_jsons_depth": self.field_source_jsons_depth.value,
         }
 
