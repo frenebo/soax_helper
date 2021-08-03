@@ -60,8 +60,8 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
                 image_width, image_height = background_img.size
             else:
                 logger.error("Must provide width and height of images")
-
-        snakes = json.load(snakes_json_fp)
+        with open(snakes_json_fp, "r") as f:
+            snakes = json.load(f)
 
         for snake_idx, snake_pts in enumerate(snakes):
             snake_positions = [snake_part["pos"] for snake_part in snake_pts]
