@@ -95,4 +95,4 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
             logger.error("No JSON files found to join in {}".format(source_folder_path))
             continue
 
-        join_snake_files_and_save(source_folder_path, source_jsons, target_json_fp)
+        join_snake_files_and_save(source_folder_path, source_jsons, target_json_fp, logger)
