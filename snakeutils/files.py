@@ -2,13 +2,19 @@ import sys
 import os
 import argparse
 
-def get_folders_and_files_at_subdir_depth(source_dir_path, depth, extension):
+def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, folders_not_files=False):
+    if file_extension is None and not folders_not_files:
+        raise Exception("If looking for a file, must ")
     contents = os.listdir(source_dir_path)
     contents.sort()
     if depth == 0:
-        files = [name for name in contents if os.path.isfile(os.path.join(source_dir_path,name))]
-        with_extension = [filename for filename in files if filename.endswith(extension)]
-        folders_and_files = [(source_dir_path, filename) for filename in with_extension]
+        if folders_not_files:
+            dirnames = [name for name in  contents if os.path.isdir(os.path.join(source_dir_path, name))]
+            folders_and_folders = [(source_dir_path, foldername) for foldername in dirnames]
+        else:
+            files = [name for name in contents if os.path.isfile(os.path.join(source_dir_path,name))]
+            with_extension = [filename for filename in files if filename.lower().endswith(file_extension.lower())]
+            folders_and_files = [(source_dir_path, filename) for filename in with_extension]
 
         return folders_and_files
     # recursive find folders aand files at depth
@@ -16,10 +22,11 @@ def get_folders_and_files_at_subdir_depth(source_dir_path, depth, extension):
         subdirs = [name for name in contents if os.path.isdir(os.path.join(source_dir_path,name))]
         folders_and_files = []
         for subdir_name in subdirs:
-            sub_folders_and_files = get_folders_and_files_at_subdir_depth(
+            sub_folders_and_files = find_files_or_folders_at_depth(
                 os.path.join(source_dir_path,subdir_name),
                 depth - 1,
-                extension)
+                file_extension,
+                folders_not_files)
             folders_and_files.extend(sub_folders_and_files)
         return folders_and_files
 

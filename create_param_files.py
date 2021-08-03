@@ -155,7 +155,6 @@ if __name__ == "__main__":
                         type=arg_or_range,
                         default={"start":default_ridge_threshold,"stop":default_ridge_threshold,"step":decimal.Decimal(0)})
 
-
     args = parser.parse_args()
 
     create_param_files(

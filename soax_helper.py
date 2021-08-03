@@ -5,6 +5,7 @@ from create_param_files import create_param_files
 from run_soax_with_params import run_soax_with_params
 from snakeutils.logger import RecordLogger
 from convert_snakes_to_json import convert_snakes_to_json
+from join_sectioned_snakes import join_sectioned_snakes
 from setup_app import (
     SoaxSetupApp,
     PreprocessSetupForm,
@@ -21,8 +22,11 @@ if __name__ == "__main__":
     app = SoaxSetupApp()
     app.run()
 
+    all_loggers = []
+
     if app.do_preprocess:
         preprocess_logger = RecordLogger()
+        all_loggers.append(preprocess_logger)
 
         parsed_preprocess_settings = PreprocessSetupForm.parseSettings(app.preprocess_settings)
 
@@ -36,6 +40,7 @@ if __name__ == "__main__":
 
     if app.do_section:
         sectioning_logger = RecordLogger()
+        all_loggers.append(sectioning_logger)
 
         parsed_sectioning_settings = SectioningSetupForm.parseSettings(app.sectioning_settings)
 
@@ -48,6 +53,7 @@ if __name__ == "__main__":
 
     if app.do_create_params:
         create_params_logger = RecordLogger()
+        all_loggers.append(create_params_logger)
 
         parsed_params_settings = ParamsSetupForm.parseSettings(app.params_settings)
         create_param_files(
@@ -61,6 +67,7 @@ if __name__ == "__main__":
 
     if app.do_run_soax:
         soax_logger = RecordLogger()
+        all_loggers.append(soax_logger)
 
         parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(app.soax_run_settings)
 
@@ -76,6 +83,8 @@ if __name__ == "__main__":
 
     if app.do_snakes_to_json:
         snakes_to_json_logger = RecordLogger()
+        all_loggers.append(snakes_to_json_logger)
+
         parsed_snakes_to_json_settings = SnakesToJsonSetupForm.parseSettings(app.snakes_to_json_settings)
 
         convert_snakes_to_json(
@@ -86,11 +95,13 @@ if __name__ == "__main__":
         )
 
     if app.do_join_sectioned_snakes:
-        join_sectioned_snakes_logger = Record
-        pass
+        join_sectioned_snakes_logger = RecordLogger()
+        all_loggers.append(join_sectioned_snakes_logger)
 
     if app.do_make_snake_images:
-        pass
+        make_snake_images_logger = RecordLogger()
+        all_loggers.append(make_snake_images_logger)
 
     if app.do_make_videos_from_images:
-        pass
+        make_videos_from_images = RecordLogger()
+        all_loggers.append(make_videos_from_images)
