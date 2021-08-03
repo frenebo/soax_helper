@@ -447,6 +447,7 @@ class SnakesToJsonSetupForm(npyscreen.Form):
 class JoinSectionedSnakesSetupForm(npyscreen.Form):
     @staticmethod
     def parseSettings(field_strings, make_dirs_if_not_present=False):
+        pos_int_fields = ["source_jsons_depth"]
         dir_fields = ["source_json_dir", "target_json_dir"]
 
         parsed_fields = {}
@@ -454,6 +455,10 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
             field_str = field_strings[field_name]
             check_dir_field(field_name, field_str, make_dirs_if_not_present)
             parsed_fields[field_name] = field_str
+
+        for field_name in pos_int_fields:
+            field_str = field_strings[field_name]
+            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
 
         return parsed_fields
 
@@ -468,6 +473,9 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
         self.field_target_json_dir = self.add(npyscreen.TitleFilename, name="target_json_dir",
             value=join_sectioned_snakes_settings["target_json_dir"])
 
+        self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
+            value=join_sectioned_snakes_settings["source_jsons_depth"])
+
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
             name="Create dirs if not present",
@@ -479,6 +487,7 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
         return {
             "source_json_dir": self.field_source_json_dir.value,
             "target_json_dir": self.field_target_json_dir.value
+            "source_jsons_depth": self.field_source_jsons_depth.value,
         }
 
     def afterEditing(self):
@@ -649,6 +658,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.join_sectioned_snakes_settings = {
             "source_json_dir": "",
             "target_json_dir": "./JoinedJsonSnakes",
+            "source_jsons_depth": "2",
         }
         self.make_snake_images_settings = {
             "source_json_dir": "",
@@ -731,6 +741,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_settings["source_tiff_dir"] = sectioning_settings["target_sectioned_tiff_dir"]
         self.soax_run_settings["use_subdirs"] = "yes"
         self.snakes_to_json_settings["subdir_depth"] = "2"
+        self.join_sectioned_snakes_settings["source_jsons_depth"] = "3"
         self.goToNextMenu()
 
     def startParamSetup(self):

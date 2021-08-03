@@ -100,6 +100,14 @@ if __name__ == "__main__":
         join_sectioned_snakes_logger = RecordLogger()
         all_loggers["JOIN SECTIONED SNAKES"] =join_sectioned_snakes_logger
 
+        parsed_join_sectioned_snakes_settings = JoinSectionedSnakesSetupForm.parseSettings(app.join_sectioned_snakes_settings)
+
+        join_sectioned_snakes(
+            parsed_join_sectioned_snakes_settings["source_json_dir"],
+            parsed_join_sectioned_snakes_settings["target_json_dir"],
+            source_jsons_depth=parsed_join_sectioned_snakes_settings["source_jsons_depth"],
+            logger=join_sectioned_snakes_logger)
+
     if app.do_make_snake_images:
         make_snake_images_logger = RecordLogger()
         all_loggers["MAKE SNAKE IMAGES"] = make_snake_images_logger

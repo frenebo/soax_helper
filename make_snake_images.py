@@ -52,10 +52,11 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
             if background_img is not None:
                 image_width, image_height = background_img.size
             else:
-                image_height,image_width = infer_height_width(snake_filename)
-                if image_width is None:
-                    logger.error("Must provide width and height of images, could not determine from filename {}".format(snake_filename))
-                    return
+                logger.error("Must provide width and height of images")
+                # image_height,image_width = infer_height_width(snake_filename)
+                # if image_width is None:
+                #     logger.error("Must provide width and height of images, could not determine from filename {}".format(snake_filename))
+                #     return
         if fp.endswith(".txt"):
             with open(fp, "r") as snake_file:
                 try:
