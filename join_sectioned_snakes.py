@@ -74,8 +74,8 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
     # The folders containing the source json files to be joined are one level less deep
     section_folder_depth = source_jsons_depth - 1
     source_folder_info = find_files_or_folders_at_depth(source_json_dir, section_folder_depth, folders_not_files=True)
-    info_strs = "    ".join(["({},{})".format(fol,fol2) for fol, fol2 in source_folder_info])
-    raise Exception(info_strs)
+    # info_strs = "    ".join(["({},{})".format(fol,fol2) for fol, fol2 in source_folder_info])
+    raise Exception("Source dir {}, target dir {}, depth {}, source info {}".format(source_json_dir, target_json_dir, section_folder_depth, info_strs))
     for containing_folder, source_folder_name in source_folder_info:
 
         relative_dir_path = os.path.relpath(containing_folder, source_json_dir)
