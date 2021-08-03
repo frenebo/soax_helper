@@ -36,8 +36,9 @@ def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, 
             sub_folders_and_files = find_files_or_folders_at_depth(
                 os.path.join(source_dir_path,subdir_name),
                 depth - 1,
-                file_extension,
-                folders_not_files)
+                file_extension=file_extension,
+                file_extensions=file_extensions,
+                folders_not_files=folders_not_files)
             folders_and_files.extend(sub_folders_and_files)
         return folders_and_files
 
