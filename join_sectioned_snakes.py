@@ -26,7 +26,7 @@ def get_section_bounds(fn, img_is_3d):
 
 def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logger):
     new_snakes = []
-    if source_filepaths[0][:2] == "2D":
+    if source_filenames[0][:2] == "2D":
         are_3d = False
     elif source_filenames[0][:2] == "3D":
         are_3d = True
