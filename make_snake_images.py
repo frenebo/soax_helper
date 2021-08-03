@@ -2,18 +2,25 @@ import sys
 import os
 from matplotlib import pyplot as plt
 import numpy as np
-from snakeutils.files import extract_snakes, readable_dir, find_files_or_folders_at_depth
+from snakeutils.files import extract_snakes, readable_dir, find_files_or_folders_at_depth, has_one_of_extensions
 import argparse
 from PIL import Image
 from snakeutils.logger import PrintLogger, Colors
+import json
 
 def infer_height_width(filename):
     # Expecting "sec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}.tif"
-    if not (filename.startswith("sec_") and filename.endswith(".tif")):
+    if not (filename.startswith("sec_") and has_one_of_extensions(filename, [".tif", ".tiff"])):
         return None,None
 
     try:
-        height_range,width_range,depth_range = filename[4:-4].split("_")
+        if has_one_of_extensions(filename, [".tif"]):
+            info_fn_part = filename[4:-4]
+        elif has_one_of_extensions(filename, [".tiff"]):
+            info_fn_part = filename[4:-5]
+        else:
+            raise Exception("case not accounted for")
+        height_range,width_range,depth_range = info_fn_part.split("_")
 
         height_lower,height_upper = height_range.split("-")
         width_lower,width_upper = width_range.split("-")
@@ -27,7 +34,7 @@ def infer_height_width(filename):
         return None,None
 
 def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_width=None,image_height=None,background_img_dir=None):
-    snake_filenames = [filename for filename in os.listdir(dir_name) if (filename.endswith(".txt") or ffilename.endswith(".pickle"))]
+    snake_filenames = [filename for filename in os.listdir(dir_name) if has_one_of_extensions(filename, [".json"])]
     snake_filenames.sort()
 
     if background_img_dir is not None:
@@ -53,27 +60,14 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
                 image_width, image_height = background_img.size
             else:
                 logger.error("Must provide width and height of images")
-                # image_height,image_width = infer_height_width(snake_filename)
-                # if image_width is None:
-                #     logger.error("Must provide width and height of images, could not determine from filename {}".format(snake_filename))
-                #     return
-        if fp.endswith(".txt"):
-            with open(fp, "r") as snake_file:
-                try:
-                    snakes = extract_snakes(snake_file)
-                except Exception as e:
-                    logger.FAIL(repr(e))
-        elif fp.endswith(".pickle"):
-            with open(fp, "r") as snake_file:
-                snakes = pickle.load(snake_file)
-        else:
-            logger.error("Unsupported extension with file {}".format(fp))
-            return
+
+        snakes = json.load(snake_file)
 
         for snake_idx, snake_pts in enumerate(snakes):
-            snake_pts = np.array(snake_pts)
+            snake_positions = [snake_part["pos"] for snake_part in snake_pts]
+            snake_positions = np.array(snake_positions)
 
-            x,y = snake_pts.T[:2]
+            x,y = snake_positions.T[:2]
 
             if colorful:
                 plt.plot(x,y)

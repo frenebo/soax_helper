@@ -2,11 +2,22 @@ import sys
 import os
 import argparse
 
-def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, folders_not_files=False):
-    if file_extension is None and not folders_not_files:
+def has_one_of_extensions(filename, file_extensions):
+    for file_extension in file_extensions:
+        if filename.lower().endswith(file_extension.lower()):
+            return True
+    return False
+
+def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, file_extensions=None, folders_not_files=False):
+    if file_extensions is None and file_extension is None and not folders_not_files:
         raise Exception("If looking for a file, must ")
+
+    # if user provided one extension
+    if (not foldes_not_files) and file_extensions is None:
+        file_extensions = [file_extension]
     contents = os.listdir(source_dir_path)
     contents.sort()
+
     if depth == 0:
         if folders_not_files:
             dirnames = [name for name in  contents if os.path.isdir(os.path.join(source_dir_path, name))]
@@ -14,7 +25,7 @@ def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, 
             return folders_and_folders
         else:
             files = [name for name in contents if os.path.isfile(os.path.join(source_dir_path,name))]
-            with_extension = [filename for filename in files if filename.lower().endswith(file_extension.lower())]
+            with_extension = [filename for filename in files if has_one_of_extensions(filename,file_extensions)]
             folders_and_files = [(source_dir_path, filename) for filename in with_extension]
             return folders_and_files
     # recursive find folders aand files at depth

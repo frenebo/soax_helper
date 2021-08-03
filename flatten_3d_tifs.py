@@ -1,4 +1,4 @@
-from snakeutils.files import readable_dir
+from snakeutils.files import readable_dir, has_one_of_extensions
 import argparse
 from PIL import Image
 import numpy as np
@@ -8,7 +8,7 @@ from snakeutils.logger import PrintLogger, Colors
 
 def flatten_3d_tifs(source_dir,target_dir,logger=PrintLogger):
 
-    tif_names = [name for name in os.listdir(source_dir) if name.endswith(".tif")]
+    tif_names = [name for name in os.listdir(source_dir) if has_one_of_extensions(name, [".tif", ".tiff"])]
     tif_names.sort()
 
     for src_tif_fn in tif_names:

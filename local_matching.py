@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import sys
 import os
-from snakeutils.files import readable_dir, extract_snakes
+from snakeutils.files import readable_dir, extract_snakes, has_one_of_extensions
 from scipy.spatial.distance import cdist
 import math
 import argparse
@@ -156,7 +156,7 @@ if __name__ == "__main__":
 
     snake_dir = args.snake_dir
     snake_filenames = os.listdir(snake_dir)
-    snake_filenames = [filename for filename in snake_filenames if filename.endswith(".txt")]
+    snake_filenames = [filename for filename in snake_filenames if has_one_of_extensions(filename, [".txt"])]
     snake_filenames.sort()
 
     for snake_fn in snake_filenames:

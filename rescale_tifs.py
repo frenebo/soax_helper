@@ -1,4 +1,4 @@
-from snakeutils.files import readable_dir
+from snakeutils.files import readable_dir, has_one_of_extensions
 from snakeutils.tifimage import save_3d_tif, tif_img_3d_to_arr
 import os
 import argparse

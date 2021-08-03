@@ -2,7 +2,7 @@ import cv2
 import sys
 import os
 import argparse
-from snakeutils.files import readable_dir
+from snakeutils.files import readable_dir, has_one_of_extensions
 from snakeutils.logger import PrintLogger, Colors
 
 def write_vid_for_dir_images(image_folder,video_path,logger):
@@ -11,7 +11,7 @@ def write_vid_for_dir_images(image_folder,video_path,logger):
 
     dir_contents = os.listdir(image_folder)
     dir_contents.sort()
-    images = [img for img in dir_contents if (img.endswith(".png") or img.endswith(".tif"))]
+    images = [img for img in dir_contents if has_one_of_extensions(img, [".png", ".tif", ".tiff"])]
     if len(images) == 0:
         logger.error("No images found in {}".format(image_folder))
         return
