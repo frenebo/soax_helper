@@ -28,7 +28,7 @@ def readable_dir(dirpath):
 
     return dirpath
 
-def tif_info(tif_paths,logger=PrintLogger):
+def tiff_info(tif_paths,logger=PrintLogger):
     for tif_path in tif_paths:
         data = Image.open(tif_path)
         shape = data.size
