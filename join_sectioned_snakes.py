@@ -87,7 +87,7 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
         target_json_fp = os.path.join(target_dir_path, source_folder_name + ".json")
 
         source_folder_path = os.path.join(containing_folder, source_folder_name)
-        source_files = [name for name in os.listdir(source_folder_path) if os.path.isfile(of.path.join(source_folder_info, name))]
+        source_files = [name for name in os.listdir(source_folder_path) if os.path.isfile(os.path.join(source_folder_info, name))]
         source_jsons = [fn for fn in source_files]
         source_jsons.sort()
 
