@@ -44,8 +44,8 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
         logger.log(", ".join(background_image_filenames))
 
     for img_idx, snake_filename in enumerate(snake_filenames):
-        fp = os.path.join(dir_name,snake_filename)
-        logger.log("Showing snakes for {}".format(fp))
+        snakes_json_fp = os.path.join(dir_name,snake_filename)
+        logger.log("Showing snakes for {}".format(snakes_json_fp))
 
         if background_img_dir is not None and img_idx < len(background_image_filenames):
             background_img_fp = os.path.join(background_img_dir,background_image_filenames[img_idx])
@@ -61,7 +61,7 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
             else:
                 logger.error("Must provide width and height of images")
 
-        snakes = json.load(snake_file)
+        snakes = json.load(snakes_json_fp)
 
         for snake_idx, snake_pts in enumerate(snakes):
             snake_positions = [snake_part["pos"] for snake_part in snake_pts]
