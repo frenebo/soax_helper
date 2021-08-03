@@ -114,6 +114,7 @@ if __name__ == "__main__":
         all_loggers["MAKE SNAKE IMAGES"] = make_snake_images_logger
 
         parsed_make_snake_images_settings = MakeSnakeImagesSetupForm.parseSettings(app.make_snake_images_settings)
+        print(parsed_make_snake_images_settings)
 
         make_snake_images(
             parsed_make_snake_images_settings["source_json_dir"],
@@ -123,6 +124,7 @@ if __name__ == "__main__":
             parsed_make_snake_images_settings["snake_files_depth"],
             parsed_make_snake_images_settings["use_colors"],
             parsed_make_snake_images_settings["background_images_dir"],
+            logger=make_snake_images_logger,
         )
 
     if app.do_make_videos_from_images:

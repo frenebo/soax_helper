@@ -96,7 +96,7 @@ def make_snake_images(
     image_dir,
     width,
     height,
-    snakes_files_depth,
+    snake_files_depth,
     colorful,
     background_img_dir,
     logger=PrintLogger,
@@ -104,14 +104,13 @@ def make_snake_images(
     if (background_img_dir is not None) and use_subsubdirs:
         logger.FAIL("Background images not supported with depth > 1")
 
-
-    if snakes_files_depth == 0:
+    if snake_files_depth == 0:
         snake_dirs = [dir_name]
         image_dirs = [image_dir]
     else:
         snake_dirs = []
         image_dirs = []
-        snake_dirs_depth = snakes_files_depth - 1
+        snake_dirs_depth = snake_files_depth - 1
         snake_folder_info = find_files_or_folders_at_depth(dir_name, snake_dirs_depth, folders_not_files=True)
 
         for parent_dir, snake_dir_name in snake_folder_info:
