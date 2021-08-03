@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from create_param_files import error_string_or_parse_arg_or_range
 from preprocess_tiffs import preprocess_tiffs
 from section_tiffs import section_tiffs
@@ -22,11 +24,11 @@ if __name__ == "__main__":
     app = SoaxSetupApp()
     app.run()
 
-    all_loggers = []
+    all_loggers = OrderedDict()
 
     if app.do_preprocess:
         preprocess_logger = RecordLogger()
-        all_loggers.append(preprocess_logger)
+        all_loggers["PREPROCESS"] = preprocess_logger
 
         parsed_preprocess_settings = PreprocessSetupForm.parseSettings(app.preprocess_settings)
 
@@ -40,7 +42,7 @@ if __name__ == "__main__":
 
     if app.do_section:
         sectioning_logger = RecordLogger()
-        all_loggers.append(sectioning_logger)
+        all_loggers["SECTIONING"] = sectioning_logger
 
         parsed_sectioning_settings = SectioningSetupForm.parseSettings(app.sectioning_settings)
 
@@ -53,7 +55,7 @@ if __name__ == "__main__":
 
     if app.do_create_params:
         create_params_logger = RecordLogger()
-        all_loggers.append(create_params_logger)
+        all_loggers["CREATE PARAMS"] = create_params_logger
 
         parsed_params_settings = ParamsSetupForm.parseSettings(app.params_settings)
         create_param_files(
@@ -67,7 +69,7 @@ if __name__ == "__main__":
 
     if app.do_run_soax:
         soax_logger = RecordLogger()
-        all_loggers.append(soax_logger)
+        all_loggers["RUN SOAX"] = soax_logger
 
         parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(app.soax_run_settings)
 
@@ -83,7 +85,7 @@ if __name__ == "__main__":
 
     if app.do_snakes_to_json:
         snakes_to_json_logger = RecordLogger()
-        all_loggers.append(snakes_to_json_logger)
+        all_loggers["SNAKES TO JSON"] = snakes_to_json_logger
 
         parsed_snakes_to_json_settings = SnakesToJsonSetupForm.parseSettings(app.snakes_to_json_settings)
 
@@ -96,12 +98,19 @@ if __name__ == "__main__":
 
     if app.do_join_sectioned_snakes:
         join_sectioned_snakes_logger = RecordLogger()
-        all_loggers.append(join_sectioned_snakes_logger)
+        all_loggers["JOIN SECTIONED SNAKES"] =join_sectioned_snakes_logger
 
     if app.do_make_snake_images:
         make_snake_images_logger = RecordLogger()
-        all_loggers.append(make_snake_images_logger)
+        all_loggers["MAKE SNAKE IMAGES"] = make_snake_images_logger
 
     if app.do_make_videos_from_images:
         make_videos_from_images = RecordLogger()
-        all_loggers.append(make_videos_from_images)
+        all_loggers["MAKE VIDEOS"] = make_videos_from_images
+
+    for step_name, record_logger in all_loggers.items():
+        if len(record_logger.errors) > 0:
+            PrintLogger.error("ERRORS FROM {}".format(step_name))
+            for err in record_logger.errors:
+                PrintLogger.error("  " + err)
+
