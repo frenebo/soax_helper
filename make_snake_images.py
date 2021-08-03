@@ -2,7 +2,7 @@ import sys
 import os
 from matplotlib import pyplot as plt
 import numpy as np
-from snakeutils.files import extract_snakes, readable_dir
+from snakeutils.files import extract_snakes, readable_dir, find_files_or_folders_at_depth
 import argparse
 from PIL import Image
 from snakeutils.logger import PrintLogger, Colors
@@ -102,8 +102,7 @@ def make_snake_images(
     image_dir,
     width,
     height,
-    use_subdirs,
-    use_subsubdirs,
+    snakes_subdir_depth,
     colorful,
     background_img_dir,
     logger=PrintLogger,
@@ -111,32 +110,30 @@ def make_snake_images(
     if (background_img_dir is not None) and use_subsubdirs:
         logger.FAIL("Background images not supported with depth > 1")
 
-    snake_dirs = []
-    image_dirs = []
 
-    if use_subsubdirs:
-        subs = [name for name in os.listdir(dir_name) if os.path.isdir(os.path.join(dir_name,name))]
-        for sub in subs:
-            subsubs = [name for name in os.listdir(os.path.join(dir_name,sub)) if os.path.isdir(os.path.join(dir_name,sub,name))]
-            image_subdir_path = os.path.join(image_dir,sub)
-            os.mkdir(image_subdir_path)
-            for subsub in subs:
-                snake_subsubdir_path = os.path.join(dir_name,sub,subsub)
-                image_subsubdir_path = os.path.join(image_dir,sub,subsub)
-                os.mkdir(image_subsubdir_path)
-                snake_dirs.append(snake_subsubdir_path)
-                image_dirs.append(image_subsubdir_path)
-    elif use_subdirs:
-        subs = [name for name in os.listdir(dir_name) if os.path.isdir(os.path.join(dir_name,name))]
-        for sub in subs:
-            snake_subdir_path = os.path.join(dir_name,sub)
-            image_subdir_path = os.path.join(image_dir,sub)
-            os.mkdir(image_subdir_path)
-            snake_dirs.append(snake_subdir_path)
-            image_dirs.append(image_subdir_path)
+    if snakes_subdir_depth == 0:
+        snake_dirs = [dir_name]
+        image_dirs = [image_dir]
     else:
-        snake_dirs.append(dir_name)
-        image_dirs.append(image_dir)
+        snake_dirs = []
+        image_dirs = []
+        snake_dirs_depth = snakes_subdir_depth - 1
+        snake_folder_info = find_files_or_folders_at_depth(dir_name, snake_dirs, file_extension=".json")
+        # snake_dirs = []
+        for parent_dir, snake_dir_name in snake_folder_info:
+            snake_dir_path = os.path.join(parent_dir, snake_dir_name)
+            snake_folder_relative_path = os.path.relpath(dir_name, snake_dir_path)
+            image_dir_path = os.path.join(image_dir, snake_folder_relative_path)
+
+            if not os.path.isdir(image_dir_path):
+                if os.path.exists(image_dir_path):
+                    logger.error("Cannot save images in {}, this path exists but is not dir".format(image_dir_path))
+                    continue
+                else:
+                    os.makedirs(image_dir_path)
+
+            snake_dirs.append(snake_dir_path)
+            image_dirs.append(image_dir_path)
 
     snake_dirs.sort()
     logger.log("Making images from snake files in {}".format(", ".join(snake_dirs)))
@@ -160,8 +157,9 @@ if __name__ == "__main__":
     parser.add_argument('image_dir',type=readable_dir,help="Target directory to save graphed snakes")
     parser.add_argument('--width',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
     parser.add_argument('--height',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
-    parser.add_argument('--subdirs', default=False, action='store_true',help='If we should make snakes for subdirectories in snake_dir and output in subdirectories in image_dir')
-    parser.add_argument('--subsubdirs', default=False, action='store_true',help='If subdirectories in snake_dir are two levels deep')
+    parser.add_argument('--snakes_depth',default=0,type=int,help="Subdir depth at which to find snake images in snake_dir")
+    # parser.add_argument('--subdirs', default=False, action='store_true',help='If we should make snakes for subdirectories in snake_dir and output in subdirectories in image_dir')
+    # parser.add_argument('--subsubdirs', default=False, action='store_true',help='If subdirectories in snake_dir are two levels deep')
     parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
     parser.add_argument('--background_img_dir', default=None,type=readable_dir,help="Directory with images to use as backgrounds for TIFs")
 
@@ -172,8 +170,7 @@ if __name__ == "__main__":
         args.image_dir,
         args.width,
         args.height,
-        args.subdirs,
-        args.subsubdirs,
+        args.snakes_depth,
         args.colorful,
         args.background_img_dir,
     )

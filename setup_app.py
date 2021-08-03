@@ -509,6 +509,7 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
     def parseSettings(field_strings, make_dirs_if_not_present=False):
         pos_int_fields = ["subdir_depth", "height", "width"]
         dir_fields = ["source_json_dir", "target_jpeg_dir"]
+        optional_dir_fields = ["background_images_dir"]
 
         parsed_fields = {}
 
@@ -521,6 +522,16 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
             check_dir_field(field_name, field_str, make_dirs_if_not_present)
             parsed_fields[field_name] = field_str
 
+        for field_name in optional_dir_fields:
+            field_str = field_strings[field_name]
+
+            if field_str.strip() == "":
+                parsed_fields[field_name] = None
+            else:
+                check_dir_field(field_name, field_str, make_dirs_if_not_present)
+                parsed_fields[field_name] = field_str
+
+
         # Use subdirs
         parsed_fields["use_colors"] = (field_strings["use_colors"] == "yes")
 
@@ -531,8 +542,10 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
             value="Make videos from images in directories")
         self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
             value=make_snake_images_settings["source_json_dir"])
-        self.field_target_mp4_dir = self.add(npyscreen.TitleFilename, name="target_mp4_dir",
+        self.field_target_jpeg_dir = self.add(npyscreen.TitleFilename, name="target_jpeg_dir",
             value=make_snake_images_settings["target_jpeg_dir"])
+        self.field_background_images_dir = self.add(npyscreen.TitleFilename, name="(Optional) background_images_dir",
+            value=make_snake_images_settings["background_images_dir"])
 
         self.field_subdir_depth = self.add(npyscreen.TitleText, name="subdir_depth",
             value=make_snake_images_settings["subdir_depth"])
@@ -560,11 +573,12 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
     def getFieldStrings(self):
         return {
             "source_json_dir": self.field_source_json_dir.value,
-            "target_jpeg_dir": self.field_target_mp4_dir.value,
+            "target_jpeg_dir": self.field_target_jpeg_dir.value,
             "height": self.field_height.value,
             "width": selff.field_height.height,
             "subdir_depth": self.field_subdir_depth.value,
-            "use_colors": "yes" if (0 in self.create_if_not_present) else "no",
+            "use_colors": "yes" if (0 in self.field_use_colors) else "no",
+            "background_images_dir": self.field_background_images_dir.value,
         }
 
     def afterEditing(self):
@@ -687,6 +701,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "height": "",
             "subdir_depth": "1",
             "use_colors": "no",
+            "background_images_dir": "",
         }
         self.make_snake_videos_settings = {
             "source_jpeg_dir": "",
