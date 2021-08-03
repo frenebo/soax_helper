@@ -11,12 +11,12 @@ def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, 
         if folders_not_files:
             dirnames = [name for name in  contents if os.path.isdir(os.path.join(source_dir_path, name))]
             folders_and_folders = [(source_dir_path, foldername) for foldername in dirnames]
+            return folders_and_folders
         else:
             files = [name for name in contents if os.path.isfile(os.path.join(source_dir_path,name))]
             with_extension = [filename for filename in files if filename.lower().endswith(file_extension.lower())]
             folders_and_files = [(source_dir_path, filename) for filename in with_extension]
-
-        return folders_and_files
+            return folders_and_files
     # recursive find folders aand files at depth
     else:
         subdirs = [name for name in contents if os.path.isdir(os.path.join(source_dir_path,name))]
