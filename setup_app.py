@@ -550,9 +550,9 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
         self.field_subdir_depth = self.add(npyscreen.TitleText, name="subdir_depth",
             value=make_snake_images_settings["subdir_depth"])
 
-        self.field_height = self.add(npyscreen.TitleText, name="subdir_depth",
+        self.field_height = self.add(npyscreen.TitleText, name="height",
             value=make_snake_images_settings["height"])
-        self.field_width = self.add(npyscreen.TitleText, name="subdir_depth",
+        self.field_width = self.add(npyscreen.TitleText, name="width",
             value=make_snake_images_settings["width"])
 
         self.field_use_colors = self.add(
@@ -756,7 +756,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         #If source tiff dir doesn't have anything at this depth, we won't do anything here
         if len(image_locations_info) == 0:
-            return
+            raise Exception("{}, {}".format(tiff_dir, str(img_depth)))
         first_img_dir = image_locations_info[0][0]
         first_img_name = image_locations_info[0][1]
         first_img_fp = os.path.join(first_img_dir, first_img_name)
