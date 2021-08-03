@@ -13,7 +13,7 @@ def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, 
         raise Exception("If looking for a file, must ")
 
     # if user provided one extension
-    if (not foldes_not_files) and file_extensions is None:
+    if (not folders_not_files) and file_extensions is None:
         file_extensions = [file_extension]
     contents = os.listdir(source_dir_path)
     contents.sort()
