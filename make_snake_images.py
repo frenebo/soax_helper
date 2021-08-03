@@ -113,8 +113,7 @@ def make_snake_images(
         image_dirs = []
         snake_dirs_depth = snakes_files_depth - 1
         snake_folder_info = find_files_or_folders_at_depth(dir_name, snake_dirs_depth, folders_not_files=True)
-        print("Found stuff: {}".format(snake_folder_info))
-        # snake_dirs = []
+
         for parent_dir, snake_dir_name in snake_folder_info:
             snake_dir_path = os.path.join(parent_dir, snake_dir_name)
             snake_folder_relative_path = os.path.relpath(snake_dir_path, dir_name)
@@ -130,8 +129,11 @@ def make_snake_images(
             snake_dirs.append(snake_dir_path)
             image_dirs.append(image_dir_path)
 
-    snake_dirs.sort()
     logger.log("Making images from snake files in :{}".format(", ".join(snake_dirs)))
+    print("Snake dirs: ")
+    print(snake_dirs)
+    print("Image dirs: ")
+    print(image_dirs)
 
     for i in range(len(snake_dirs)):
         logger.log("Making snakes for {}, saving in {}".format(snake_dirs[i],image_dirs[i]))
