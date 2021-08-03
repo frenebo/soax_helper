@@ -757,7 +757,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         #If source tiff dir doesn't have anything at this depth, we won't do anything here
         if len(image_locations_info) == 0:
             return
-            # raise Exception("{}, {}".format(tiff_dir, str(img_depth)))
+            raise Exception("{}, {}".format(tiff_dir, str(img_depth)))
         first_img_dir = image_locations_info[0][0]
         first_img_name = image_locations_info[0][1]
         first_img_fp = os.path.join(first_img_dir, first_img_name)
@@ -787,6 +787,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 preprocess_settings["source_tiff_dir"],
                 0,
             )
+        else:
+            raise Exception("ALready set")
         self.goToNextMenu()
 
     def startSectioningSetup(self):
