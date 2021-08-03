@@ -38,7 +38,7 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
     snake_filenames.sort()
 
     if background_img_dir is not None:
-        background_image_filenames = [filename for filename in os.listdir(background_img_dir) if (filename.endswith(".jpg") or filename.endswith(".jpeg") or filename.endswith(".tif"))]
+        background_image_filenames = [filename for filename in os.listdir(background_img_dir) if has_one_of_extensions(filename, [".jpg", ".jpeg", ".tif", ".tiff"])]
         background_image_filenames.sort()
         logger.log("Found background images: ")
         logger.log(", ".join(background_image_filenames))
@@ -138,10 +138,10 @@ def make_snake_images(
             snake_dirs[i],
             image_dirs[i],
             colorful,
+            logger,
             width,
             height,
             background_img_dir,
-            logger,
         )
 
 
