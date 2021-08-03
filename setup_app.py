@@ -507,7 +507,7 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
 class MakeSnakeImagesSetupForm(npyscreen.Form):
     @staticmethod
     def parseSettings(field_strings, make_dirs_if_not_present=False):
-        pos_int_fields = ["subdir_depth", "height", "width"]
+        pos_int_fields = ["snake_files_depth", "height", "width"]
         dir_fields = ["source_json_dir", "target_jpeg_dir"]
         optional_dir_fields = ["background_images_dir"]
 
@@ -547,8 +547,8 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
         self.field_background_images_dir = self.add(npyscreen.TitleFilename, name="(Optional) background_images_dir",
             value=make_snake_images_settings["background_images_dir"])
 
-        self.field_subdir_depth = self.add(npyscreen.TitleText, name="subdir_depth",
-            value=make_snake_images_settings["subdir_depth"])
+        self.field_snake_files_depth = self.add(npyscreen.TitleText, name="snake_files_depth",
+            value=make_snake_images_settings["snake_files_depth"])
 
         self.field_height = self.add(npyscreen.TitleText, name="height",
             value=make_snake_images_settings["height"])
@@ -575,8 +575,8 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
             "source_json_dir": self.field_source_json_dir.value,
             "target_jpeg_dir": self.field_target_jpeg_dir.value,
             "height": self.field_height.value,
-            "width": self.field_height.height,
-            "subdir_depth": self.field_subdir_depth.value,
+            "width": self.field_width.height,
+            "snake_files_depth": self.field_snake_files_depth,
             "use_colors": "yes" if (0 in self.field_use_colors.value) else "no",
             "background_images_dir": self.field_background_images_dir.value,
         }
@@ -859,7 +859,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.join_sectioned_snakes_settings = join_sectioned_snakes_settings
         self.make_snake_images_settings["source_json_dir"] = join_sectioned_snakes_settings["target_json_dir"]
         # Output jsons are one directory less deep since they've been joined
-        self.make_snake_images_settings["subdir_depth"] = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
+        self.make_snake_images_settings["snake_files_depth"] = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
         self.goToNextMenu()
 
     def startMakeSnakeImagesSetup(self):

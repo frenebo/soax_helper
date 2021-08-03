@@ -120,7 +120,7 @@ if __name__ == "__main__":
             parsed_make_snake_images_settings["target_jpeg_dir"],
             parsed_make_snake_images_settings["width"],
             parsed_make_snake_images_settings["height"],
-            parsed_make_snake_images_settings["subdir_depth"],
+            parsed_make_snake_images_settings["snake_files_depth"],
             parsed_make_snake_images_settings["use_colors"],
             parsed_make_snake_images_settings["background_images_dir"],
         )
