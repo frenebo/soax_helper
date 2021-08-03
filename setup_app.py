@@ -751,7 +751,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.goToNextMenu()
 
-    def auto_set_width_height_images_settings(tiff_dir, img_depth):
+    def auto_set_width_height_images_settings(self, tiff_dir, img_depth):
         image_locations_info = find_files_or_folders_at_depth(tiff_dir, img_depth, file_extension=".tiff")
 
         #If source tiff dir doesn't have anything at this depth, we won't do anything here
