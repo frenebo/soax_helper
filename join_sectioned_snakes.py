@@ -92,6 +92,7 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
     # info_strs = "    ".join(["({},{})".format(fol,fol2) for fol, fol2 in source_folder_info])
     # raise Exception("Source dir {}, target dir {}, depth {}, source info {}".format(source_json_dir, target_json_dir, section_folder_depth, info_strs))
     for containing_folder, source_folder_name in source_folder_info:
+
         relative_dir_path = os.path.relpath(containing_folder, source_json_dir)
         target_dir_path = os.path.join(target_json_dir, relative_dir_path)
         if not os.path.isdir(target_dir_path):
@@ -108,5 +109,6 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
         if len(source_jsons) == 0:
             logger.error("No JSON files found to join in {}".format(source_folder_path))
             continue
-
+        logger.log("Joining snake jsons in {}".format(source_folder_path))
         join_snake_files_and_save(source_folder_path, source_jsons, target_json_fp, logger)
+        logger.log("  Saved joined snakes to {}".format(target_json_fp))
