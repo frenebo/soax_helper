@@ -87,7 +87,7 @@ def run_soax_with_params(
 
                 soax_args.append({
                     "batch_soax": batch_soax,
-                    "tif_dir": tif_dir,
+                    "tif_dir": subdir_path,
                     "param_fp": param_fp,
                     "params_name": params_name,
                     "snakes_output_dir": snakes_output_dir,
