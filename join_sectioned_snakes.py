@@ -63,14 +63,14 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
                 orig_pos = snake_part["pos"]
                 if are_3d:
                     shifted_pos = [
-                        orig_pos[0] + sec_height_lower,
-                        orig_pos[1] + sec_width_lower,
+                        orig_pos[0] + sec_width_lower,
+                        orig_pos[1] + sec_height_lower,
                         orig_pos[2] + sec_depth_lower,
                     ]
                 else:
                     shifted_pos = [
-                        orig_pos[0] + sec_height_lower,
-                        orig_pos[1] + sec_width_lower
+                        orig_pos[0] + sec_width_lower,
+                        orig_pos[1] + sec_height_lower
                     ]
 
                 shifted_snake.append({
