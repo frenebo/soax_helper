@@ -699,7 +699,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "target_jpeg_dir": "./SnakeImages",
             "width": "",
             "height": "",
-            "subdir_depth": "1",
+            "snake_files_depth": "1",
             "use_colors": "no",
             "background_images_dir": "",
         }
