@@ -116,7 +116,9 @@ def extract_snakes(snake_file):
         elif len(line) == 6:
             x = float(line[2])
             y = float(line[3])
-            snake_points.append([x,y])
+            fg = float(line[4])
+            bg = float(line[5])
+            snake_points.append({"pos": [x,y], "fg": fg, "bg": bg})
 
             line_idx += 1
             continue
@@ -125,7 +127,9 @@ def extract_snakes(snake_file):
             x = float(line[2])
             y = float(line[3])
             z = float(line[4])
-            snake_points.append([x,y,z])
+            fg = float(line[5])
+            bg = float(line[6])
+            snake_points.append({"pos": [x,y,z], "fg": fg, "bg": bg})
 
             line_idx += 1
             continue
