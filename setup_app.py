@@ -575,7 +575,7 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
             "source_json_dir": self.field_source_json_dir.value,
             "target_jpeg_dir": self.field_target_jpeg_dir.value,
             "height": self.field_height.value,
-            "width": self.field_width.height,
+            "width": self.field_width.value,
             "snake_files_depth": self.field_snake_files_depth.value,
             "use_colors": "yes" if (0 in self.field_use_colors.value) else "no",
             "background_images_dir": self.field_background_images_dir.value,
