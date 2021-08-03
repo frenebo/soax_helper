@@ -357,7 +357,6 @@ class SoaxRunSetupForm(npyscreen.Form):
         self.use_subdirs = self.add(
             npyscreen.TitleSelectOne,
             max_height = 3,
-            max_width=60,
             name="Expect source images to be in subdirs (should be true if images are sectioned)",
             values=["yes", "no"],
             value=([0] if soax_run_settings["use_subdirs"] == "yes" else [1]),
@@ -581,7 +580,6 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
         self.use_subdirs = self.add(
             npyscreen.TitleSelectOne,
             max_height=3,
-            max_width=60,
             name="Expect snake images to be in subdirs",
             values=["yes", "no"],
             value=([0] if make_snake_videos_settings["use_subdirs"] == "yes" else [1]),
