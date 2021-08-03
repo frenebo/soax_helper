@@ -75,8 +75,8 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
 
                 shifted_snake.append({
                     "pos": shifted_pos,
-                    "fg": snake["fg"],
-                    "bg": snake["bg"],
+                    "fg": snake_part["fg"],
+                    "bg": snake_part["bg"],
                 })
             shifted_snakes.append(shifted_snake)
 
