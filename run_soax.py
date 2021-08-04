@@ -15,12 +15,13 @@ def run_soax(soax_args):
     params_name = soax_args["params_name"]
     param_fp = soax_args["param_fp"]
     snakes_output_dir = soax_args["snakes_output_dir"]
-    logging_dir = soax_args["logging_dir"]
     logger = soax_args["logger"]
+    stdout_fp = soax_args["stdout_fp"]
+    errors_fp = soax_args["errors_fp"]
 
-    error_fp = os.path.join(logging_dir,"error_" + params_name + ".txt")
+    # error_fp = os.path.join(logging_dir,"error_" + params_name + ".txt")
 
-    stdout_fp = os.path.join(logging_dir,"stdout_" + params_name + ".txt")
+    # stdout_fp = os.path.join(logging_dir,"stdout_" + params_name + ".txt")
 
     with open(error_fp,"w") as error_file, open(stdout_fp,"w") as stdout_file:
         command = "{batch_soax} --image {tif_dir} --parameter {param_fp} --snake {snakes_output_dir}".format(
@@ -68,17 +69,23 @@ def run_soax(
         subdir_names.sort()
 
         for params_filename in param_files:
+            param_fp = os.path.join(params_dir,params_filename)
+            params_name = params_filename[:-len(".txt")]
+
+            sublogging_dir = os.path.join(logging_dir, params_name)
+            if not os.path.isdir(sublogging_dir):
+                if os.path.exists(sublogging_dir):
+                    logger.FAIL("Logging dir {} exists but is not directory. Cannot log output there".format(sublogging_dir))
+                else:
+                    os.makedirs(sublogging_dir)
+
             for subdir_name in subdir_names:
-                param_fp = os.path.join(params_dir,params_filename)
-                params_name = params_filename[:-len(".txt")]
                 subdir_path = os.path.join(tif_dir,subdir_name)
                 snakes_output_dir = os.path.join(output_dir, params_name, subdir_name)
-                sublogging_dir = os.path.join(logging_dir,subdir_name)
-                if not os.path.isdir(sublogging_dir):
-                    if os.path.exists(sublogging_dir):
-                        logger.FAIL("Logging dir {} exists but is not directory. cannot log".format(sublogging_dir))
-                    else:
-                        os.makedirs(sublogging_dir)
+
+                stdout_fp = os.path.join(sublogging_dir, subdir_name + "_stdout.txt")
+                errors_fp = os.path.join(sublogging_dir, subdir_name + "_errors.txt")
+
                 if not os.path.isdir(snakes_output_dir):
                     if os.path.exists(snakes_output_dir):
                         logger.FAIL("Snakes dir {} exists but is not a directory. Cannot output snakes here".format(snakes_output_dir))
@@ -91,7 +98,8 @@ def run_soax(
                     "param_fp": param_fp,
                     "params_name": params_name,
                     "snakes_output_dir": snakes_output_dir,
-                    "logging_dir":sublogging_dir,
+                    "stdout_fp": stdout_fp,
+                    "errors_fp" errors_fp,
                     "logger": logger,
                 })
     # If no subdirs, we have
@@ -107,7 +115,8 @@ def run_soax(
                 "param_fp": param_fp,
                 "params_name": params_name,
                 "snakes_output_dir": output_dir,
-                "logging_dir": logging_dir,
+                "stdout_fp": os.path.join(logging_dir, "stdout.txt"),
+                "errors_fp" os.path.join(logging_dir, "errors.txt"),
                 "logger": logger,
             })
 

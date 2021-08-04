@@ -1,5 +1,7 @@
 from collections import OrderedDict
 import os
+import argparse
+import json
 
 from create_param_files import error_string_or_parse_arg_or_range
 from preprocess_tiffs import preprocess_tiffs
@@ -110,7 +112,6 @@ if __name__ == "__main__":
     parser.add_argument('--load_settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
     parser.add_argument('--save_settings',default=None,help="Save settings from GUI menu to JSON file")
     parser.add_argument('--do_not_run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
-    parser.add_argument('--subdirs', default=False, action='store_true',help='If tif_dir has subdirectories of image')
 
     args = parser.parse_args()
     if args.load_settings is not None and args.save_settings is not None:
@@ -130,7 +131,7 @@ if __name__ == "__main__":
         if args.save_settings is not None:
             if not args.save_settings.endswith(".json"):
                 raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(args.save_settings))
-            if os.exists(args.save_settings):
+            if os.path.exists(args.save_settings):
                 raise Exception("Cannot save settings as '{}', already exists".format(args.save_settings))
         app = SoaxSetupApp()
         app.run()
@@ -139,10 +140,10 @@ if __name__ == "__main__":
 
         if args.save_settings is not None:
             with open(args.save_settings, "w") as f:
-                json.dump(action_configs, f)
+                json.dump(action_configs, f, indent=4)
 
     if args.do_not_run:
-        return
+        exit()
 
     all_loggers = OrderedDict()
 
