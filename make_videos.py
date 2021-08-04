@@ -61,4 +61,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    make_videos(args.image_di,args.video_dir,args.source_images_dept)
+    make_videos(args.image_dir,args.video_dir,args.source_images_dept)

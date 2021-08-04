@@ -621,7 +621,7 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
             value=make_snake_videos_settings["target_mp4_dir"])
 
         self.field_source_images_depth = self.add(npyscreen.TitleText, name="source_images_depth",
-            value=make_snake_images_settings["source_images_depth"])
+            value=make_snake_videos_settings["source_images_depth"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
