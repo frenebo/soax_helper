@@ -62,7 +62,7 @@ def run_soax(
     #                 subdir1 -> tif,tif,tif,tif,
     #                    ........
     #                 subdir123 -> tif,tif,tif,tif,
-    # So we need to run soax on each subdir with parameter
+    # So we need to run soax on each subdir with each parameter
     if use_subdirs:
         tif_dir_contents = os.listdir(tif_dir)
         subdir_names = [name for name in tif_dir_contents if os.path.isdir(os.path.join(tif_dir,name))]
@@ -72,19 +72,19 @@ def run_soax(
             param_fp = os.path.join(params_dir,params_filename)
             params_name = params_filename[:-len(".txt")]
 
-            sublogging_dir = os.path.join(logging_dir, params_name)
-            if not os.path.isdir(sublogging_dir):
-                if os.path.exists(sublogging_dir):
+            params_logging_dir = os.path.join(logging_dir, params_name)
+            if not os.path.isdir(params_logging_dir):
+                if os.path.exists(params_logging_dir):
                     logger.FAIL("Logging dir {} exists but is not directory. Cannot log output there".format(sublogging_dir))
                 else:
-                    os.makedirs(sublogging_dir)
+                    os.makedirs(params_logging_dir)
 
             for subdir_name in subdir_names:
                 subdir_path = os.path.join(tif_dir,subdir_name)
                 snakes_output_dir = os.path.join(output_dir, params_name, subdir_name)
 
-                stdout_fp = os.path.join(sublogging_dir, subdir_name + "_stdout.txt")
-                errors_fp = os.path.join(sublogging_dir, subdir_name + "_errors.txt")
+                stdout_fp = os.path.join(params_logging_dir, subdir_name + "_stdout.txt")
+                errors_fp = os.path.join(params_logging_dir, subdir_name + "_errors.txt")
 
                 if not os.path.isdir(snakes_output_dir):
                     if os.path.exists(snakes_output_dir):

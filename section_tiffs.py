@@ -50,18 +50,26 @@ def section_tiff(tif_filepath,sectioned_dir,section_max_size,logger):
                     width_upper = width_boundaries[width_idx + 1]
                     depth_lower = depth_boundaries[depth_idx]
                     depth_upper = depth_boundaries[depth_idx + 1]
+
+                    # section filenames should be padded with zeros so they're same length.
+                    # ex. 3Dsec_0010-0020_0000-015_0990-1005.tif
+                    height_str_len = len(str(height))
+                    width_str_len = len(str(width))
+                    depth_str_len = len(str(depth))
+
                     section_arr = img_arr[
                         height_lower:height_upper,
                         width_lower:width_upper,
                         depth_lower:depth_upper,
                     ]
+
                     section_filename = "3Dsec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}.tif".format(
-                        height_lower=height_lower,
-                        height_upper=height_upper,
-                        width_lower=width_lower,
-                        width_upper=width_upper,
-                        depth_lower=depth_lower,
-                        depth_upper=depth_upper,
+                        height_lower=str(height_lower).zfill(height_str_len),
+                        height_upper=str(height_upper).zfill(height_str_len),
+                        width_lower=str(width_lower).zfill(width_str_len),
+                        width_upper=str(width_upper).zfill(width_str_len),
+                        depth_lower=str(depth_lower).zfill(depth_str_len),
+                        depth_upper=str(depth_upper).zfill(depth_str_len),
                     )
                     section_filepath = os.path.join(sectioned_dir,section_filename)
 
@@ -74,16 +82,21 @@ def section_tiff(tif_filepath,sectioned_dir,section_max_size,logger):
                     width_lower = width_boundaries[width_idx]
                     width_upper = width_boundaries[width_idx + 1]
 
+                    # section filenames should be padded with zeros so they're same length.
+                    # ex. 2Dsec_0010-0020_0000-015.tif
+                    height_str_len = len(str(height))
+                    width_str_len = len(str(width))
+
                     section_arr = img_arr[
                         height_lower:height_upper,
                         width_lower:width_upper,
                     ]
 
                     section_filename = "2Dsec_{height_lower}-{height_upper}_{width_lower}-{width_upper}.tif".format(
-                        height_lower=height_lower,
-                        height_upper=height_upper,
-                        width_lower=width_lower,
-                        width_upper=width_upper,
+                        height_lower=str(height_lower).zfill(height_str_len),
+                        height_upper=str(height_upper).zfill(height_str_len),
+                        width_lower=str(width_lower).zfill(width_str_len),
+                        width_upper=str(width_upper).zfill(width_str_len),
                     )
                     section_filepath = os.path.join(sectioned_dir,section_filename)
 
