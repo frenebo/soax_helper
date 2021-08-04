@@ -121,7 +121,6 @@ def run_soax_with_params(
         future = pool.map(run_soax, soax_args)
         logger.log("Future finished")
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
     parser.add_argument('batch_soax',help="Path to batch_soax executable")
@@ -143,4 +142,3 @@ if __name__ == "__main__":
         args.subdirs,
         args.workers_num,
     )
-

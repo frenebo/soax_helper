@@ -9,6 +9,7 @@ from snakeutils.logger import RecordLogger
 from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
 from make_snake_images import make_snake_images
+
 from setup_app import (
     SoaxSetupApp,
     PreprocessSetupForm,

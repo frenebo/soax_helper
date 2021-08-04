@@ -782,13 +782,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.preprocess_settings = preprocess_settings
         self.sectioning_settings["source_tiff_dir"] = preprocess_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = preprocess_settings["target_tiff_dir"]
+
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
                 preprocess_settings["source_tiff_dir"],
                 0,
             )
-        else:
-            raise Exception("ALready set")
+        if self.make_snake_images_settings["background_images_dir"] == "":
+            self.make_snake_images_settings["background_images_dir"] = preprocess_settings["target_tiff_dir"]
+
         self.goToNextMenu()
 
     def startSectioningSetup(self):
@@ -835,8 +837,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.auto_set_width_height_images_settings(
                 soax_run_settings["source_tiff_dir"],
                 img_depth)
-        # source_image_locations =
-        # shape, stack_height, dtype =
+
+        if self.make_snake_images_settings["background_images_dir"] == "":
+            self.make_snake_images_settings["background_images_dir"] = soax_run_settings["source_tiff_dir"]
+
         self.goToNextMenu()
 
     def startSnakesToJsonSetup(self):

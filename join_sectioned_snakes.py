@@ -6,7 +6,7 @@ from snakeutils.logger import PrintLogger
 # Given image slice dimensions, finds the highest width height (and depth if 3D) indices in names
 # and retuns the width height and depth the orig image must have had
 def get_section_bounds(fn, img_is_3d):
-    # remove "xDsec_" and ".json"
+    # remove "?Dsec_" and ".json"
     section_info = fn[6:-5]
 
     if img_is_3d:
