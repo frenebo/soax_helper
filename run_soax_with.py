@@ -40,7 +40,7 @@ def run_soax(soax_args):
             logger.error("STDERR saved in {}".format(error_fp))
             logger.error("STDOUT saved in {}".format(stdout_fp))
 
-def run_soax_with_params(
+def run_soax(
     batch_soax,
     tif_dir,
     params_dir,
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    run_soax_with_params(
+    run_soax(
         args.batch_soax,
         args.tif_dir,
         args.params_dir,

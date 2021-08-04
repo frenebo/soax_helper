@@ -707,6 +707,50 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.addForm('MAIN', StepsSetupForm, name='Select Steps')
         self.getForm('MAIN').configure()
 
+    def getActionConfigs(self):
+        action_configs = []
+        if self.do_preprocess:
+            action_configs.append({
+                "action": "preprocess_tiffs",
+                "settings": self.preprocess_settings,
+            })
+        if self.do_section:
+            action_configs.append({
+                "action": "section_tiffs",
+                "settings": self.sectioning_settings,
+            })
+        if self.do_create_params:
+            action_configs.append({
+                "action": "create_param_files",
+                "settings": self.params_settings,
+            })
+        if self.do_run_soax:
+            action_configs.append({
+                "action": "run_soax",
+                "settings": self.soax_run_settings,
+            })
+        if self.do_snakes_to_json:
+            action_configs.append({
+                "action": "convert_snakes_to_json",
+                "settings": self.snakes_to_json_settings,
+            })
+        if self.do_join_sectioned_snakes:
+            action_configs.append({
+                "action": "join_sectioned_snakes",
+                "settings": self.join_sectioned_snakes_settings,
+            })
+        if self.do_make_snake_images:
+            action_configs.append({
+                "action": "make_snake_images",
+                "settings": self.make_snake_images_settings,
+            })
+        if self.do_make_snake_videos:
+            action_configs.append({
+                "action": "make_videos",
+                "settings": self.make_snake_videos_settings,
+            })
+        return action_configs
+
     def stagesSelected(self,
         do_preprocess,
         do_section,
