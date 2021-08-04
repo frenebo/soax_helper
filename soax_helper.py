@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import os
 
 from create_param_files import error_string_or_parse_arg_or_range
 from preprocess_tiffs import preprocess_tiffs
@@ -105,10 +106,43 @@ def perform_action(action_name, setting_strings, logger):
         )
 
 if __name__ == "__main__":
-    app = SoaxSetupApp()
-    app.run()
+    parser = argparse.ArgumentParser(description='Soax Helper')
+    parser.add_argument('--load_settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
+    parser.add_argument('--save_settings',default=None,help="Save settings from GUI menu to JSON file")
+    parser.add_argument('--do_not_run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
+    parser.add_argument('--subdirs', default=False, action='store_true',help='If tif_dir has subdirectories of image')
 
-    action_configs = app.getActionConfigs()
+    args = parser.parse_args()
+    if args.load_settings is not None and args.save_settings is not None:
+        raise Exception("Loading settings and saving settings is not supported"
+            "(loading tells program to skip GUI, but saving is meant to store "
+            "settings configured in GUI)")
+    if args.load_settings is not None:
+        if not args.load_settings.endswith(".json"):
+            raise Exception("Invalid settings load file '{}': must be json file".format(args.load_settings))
+
+        if not os.file.exists(args.load_settings):
+            raise Exception("File '{}' does not exist".format(args.load_settings))
+
+        with open(args.load_settings, "r") as f:
+            action_configs = json.load(f)
+    else:
+        if args.save_settings is not None:
+            if not args.save_settings.endswith(".json"):
+                raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(args.save_settings))
+            if os.exists(args.save_settings):
+                raise Exception("Cannot save settings as '{}', already exists".format(args.save_settings))
+        app = SoaxSetupApp()
+        app.run()
+
+        action_configs = app.getActionConfigs()
+
+        if args.save_settings is not None:
+            with open(args.save_settings, "w") as f:
+                json.dump(action_configs, f)
+
+    if args.do_not_run:
+        return
 
     all_loggers = OrderedDict()
 
