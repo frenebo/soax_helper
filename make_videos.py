@@ -46,7 +46,7 @@ def make_videos(root_image_dir,root_video_dir,source_images_depth,logger=PrintLo
             image_dir_path = os.path.join(containing_dir, image_dir_name)
             video_path = os.path.join(video_containing_dirpath, image_dir_name + ".mp4")
 
-            write_vid_for_dir_images(image_dir_path, video_path)
+            write_vid_for_dir_images(image_dir_path, video_path, logger)
 
             logger.log("Making video for {}".format(image_dir_path))
             logger.log("  Saved video in {}".format(video_path))
