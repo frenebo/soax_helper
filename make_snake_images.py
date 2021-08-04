@@ -52,9 +52,12 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
             logger.log("  Using background image {}".format(background_img_fp))
             # background_img = Image.open(background_img_fp)
             background_img = plt.imread(background_img_fp)
-            logger.log("Backgroundd image size: ")
-            logger.log(str(background_img.shape))
-            plt.imshow(background_img)
+
+            background_img_is_grayscale = (len(background_img.shape) == 2)
+            if background_img_is_grayscale:
+                plt.imshow(background_img, cmap="gray)
+            else:
+                plt.imshow(background_img)
         else:
             background_img = None
 
