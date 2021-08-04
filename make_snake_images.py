@@ -52,7 +52,8 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
             logger.log("  Using background image {}".format(background_img_fp))
             # background_img = Image.open(background_img_fp)
             background_img = plt.imread(background_img_fp)
-            print(background_img.shape)
+            logger.log("Backgroundd image size: ")
+            logger.log(str(background_img.size))
             plt.imshow(background_img)
         else:
             background_img = None
@@ -128,10 +129,10 @@ def make_snake_images(
             image_dirs.append(image_dir_path)
 
     logger.log("Making images from snake files in :{}".format(", ".join(snake_dirs)))
-    print("Snake dirs: ")
-    print(snake_dirs)
-    print("Image dirs: ")
-    print(image_dirs)
+    logger.log("Snake dirs: ")
+    logger.log(str(snake_dirs))
+    logger.log("Image dirs: ")
+    logger.log(str(image_dirs))
 
     for i in range(len(snake_dirs)):
         logger.log("Making snakes for {}, saving in {}".format(snake_dirs[i],image_dirs[i]))
