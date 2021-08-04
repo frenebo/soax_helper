@@ -55,7 +55,7 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
 
             background_img_is_grayscale = (len(background_img.shape) == 2)
             if background_img_is_grayscale:
-                plt.imshow(background_img, cmap="gray)
+                plt.imshow(background_img, cmap="gray")
             else:
                 plt.imshow(background_img)
         else:
