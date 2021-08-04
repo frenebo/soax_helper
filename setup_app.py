@@ -63,7 +63,7 @@ class StepsSetupForm(npyscreen.Form):
         do_snakes_to_json          = 4 in self.select_steps.value
         do_join_sectioned_snakes   = 5 in self.select_steps.value
         do_make_snake_images       = 6 in self.select_steps.value
-        do_make_videos_from_images = 7 in self.select_steps.value
+        do_make_snake_videos = 7 in self.select_steps.value
 
         self.parentApp.stagesSelected(
             do_preprocess,
@@ -73,7 +73,7 @@ class StepsSetupForm(npyscreen.Form):
             do_snakes_to_json,
             do_join_sectioned_snakes,
             do_make_snake_images,
-            do_make_videos_from_images,
+            do_make_snake_videos,
         )
 
 class PreprocessSetupForm(npyscreen.Form):
@@ -597,15 +597,18 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
     @staticmethod
     def parseSettings(field_strings, make_dirs_if_not_present=False):
         dir_fields = ["source_jpeg_dir", "target_mp4_dir"]
+        pos_int_fields = ["source_images_depth"]
 
         parsed_fields = {}
+
+        for field_name in pos_int_fields:
+            field_str = field_strings[field_name]
+            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
+
         for field_name in dir_fields:
             field_str = field_strings[field_name]
             check_dir_field(field_name, field_str, make_dirs_if_not_present)
             parsed_fields[field_name] = field_str
-
-        # Use subdirs
-        parsed_fields["use_subdirs"] = (field_strings["use_subdirs"] == "yes")
 
         return parsed_fields
 
@@ -616,17 +619,9 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
             value=make_snake_videos_settings["source_jpeg_dir"])
         self.field_target_mp4_dir = self.add(npyscreen.TitleFilename, name="target_mp4_dir",
             value=make_snake_videos_settings["target_mp4_dir"])
-        self.add(npyscreen.FixedText,
-            value="Expect snake images to be in subdirs should be true unless")
-        self.add(npyscreen.FixedText,
-            value="using a directory of SOAX output from a single parameter file")
-        self.use_subdirs = self.add(
-            npyscreen.TitleSelectOne,
-            max_height=3,
-            name="Expect snake images to be in subdirs",
-            values=["yes", "no"],
-            value=([0] if make_snake_videos_settings["use_subdirs"] == "yes" else [1]),
-            scroll_exit=True)
+
+        self.field_source_images_depth = self.add(npyscreen.TitleText, name="source_images_depth",
+            value=make_snake_images_settings["source_images_depth"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
@@ -640,7 +635,7 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
         return {
             "source_jpeg_dir": self.field_source_jpeg_dir.value,
             "target_mp4_dir": self.field_target_mp4_dir.value,
-            "use_subdirs": "yes" if (0 in self.use_subdirs.value) else "no",
+            "source_images_depth": self.field_source_images_depth.value,
         }
 
     def afterEditing(self):
@@ -706,7 +701,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_snake_videos_settings = {
             "source_jpeg_dir": "",
             "target_mp4_dir": "./SnakeVideos",
-            "use_subdirs": "yes",
+            "source_images_depth": "1",
         }
 
         self.addForm('MAIN', StepsSetupForm, name='Select Steps')
@@ -720,7 +715,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_snakes_to_json,
         do_join_sectioned_snakes,
         do_make_snake_images,
-        do_make_videos_from_images,
+        do_make_snake_videos,
         ):
         self.do_preprocess = do_preprocess
         self.do_section = do_section
@@ -729,7 +724,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_snakes_to_json = do_snakes_to_json
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
         self.do_make_snake_images = do_make_snake_images
-        self.do_make_videos_from_images = do_make_videos_from_images
+        self.do_make_snake_videos = do_make_snake_videos
 
         self.menu_functions = []
         if self.do_preprocess:
@@ -746,7 +741,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startJoinSectionedSnakesSetup)
         if self.do_make_snake_images:
             self.menu_functions.append(self.startMakeSnakeImagesSetup)
-        if self.do_make_videos_from_images:
+        if self.do_make_snake_videos:
             self.menu_functions.append(self.startVideoSetup)
 
         self.goToNextMenu()

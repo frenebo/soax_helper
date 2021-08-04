@@ -9,6 +9,7 @@ from snakeutils.logger import RecordLogger
 from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
 from make_snake_images import make_snake_images
+from make_videos import make_videos
 
 from setup_app import (
     SoaxSetupApp,
@@ -128,9 +129,19 @@ if __name__ == "__main__":
             logger=make_snake_images_logger,
         )
 
-    if app.do_make_videos_from_images:
-        make_videos_from_images = RecordLogger()
-        all_loggers["MAKE VIDEOS"] = make_videos_from_images
+    if app.do_make_snake_videos:
+        make_snake_videos_logger = RecordLogger()
+        all_loggers["MAKE VIDEOS"] = make_snake_videos_logger
+
+        parsed_make_snake_videos_settings = MakeSnakeVideosSetupForm.parseSettings(app.make_snake_videos_settings)
+
+
+        make_videos(
+            parsed_make_snake_videos_settings["source_jpeg_dir"],
+            parsed_make_snake_videos_settings["target_mp4_dir"],
+            parsed_make_snake_videos_settings["source_images_depth"],
+            logger=make_snake_videos_logger,
+        )
 
     for step_name, record_logger in all_loggers.items():
         if len(record_logger.errors) > 0:
