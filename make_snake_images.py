@@ -53,7 +53,7 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
             # background_img = Image.open(background_img_fp)
             background_img = plt.imread(background_img_fp)
             logger.log("Backgroundd image size: ")
-            logger.log(str(background_img.size))
+            logger.log(str(background_img.shape))
             plt.imshow(background_img)
         else:
             background_img = None
