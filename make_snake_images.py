@@ -50,7 +50,8 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
         if background_img_dir is not None and img_idx < len(background_image_filenames):
             background_img_fp = os.path.join(background_img_dir,background_image_filenames[img_idx])
             logger.log("  Using background image {}".format(background_img_fp))
-            background_img = Image.open(background_img_fp)
+            # background_img = Image.open(background_img_fp)
+            background_img = plt.imread(background_img_fp)
             print(background_img.shape)
             plt.imshow(background_img)
         else:
