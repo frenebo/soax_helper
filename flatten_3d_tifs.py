@@ -6,6 +6,18 @@ import tifffile
 import os
 from snakeutils.logger import PrintLogger, Colors
 
+def flatten_3d_pil_img_return_arr(pil_img, logger):
+    arr_3d = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
+
+    for frame_idx in range(pil_img.n_frames):
+        pil_img.seek(frame_idx)
+        arr_3d[:,:, frame_idx] = np.array(pil_img)
+    # Maximum intensity projection
+    arr_2d = np.max(arr_3d,axis=2)
+
+    return arr_2d
+
+
 def flatten_3d_tifs(source_dir,target_dir,logger=PrintLogger):
 
     tif_names = [name for name in os.listdir(source_dir) if has_one_of_extensions(name, [".tif", ".tiff"])]
@@ -21,13 +33,7 @@ def flatten_3d_tifs(source_dir,target_dir,logger=PrintLogger):
             logger.error("Cannot flatten, TIF {} is already 2D".format(fp))
             return
 
-        arr_3d = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
-
-        for frame_idx in range(pil_img.n_frames):
-            pil_img.seek(frame_idx)
-            arr_3d[:,:, frame_idx] = np.array(pil_img)
-        # Maximum intensity projection
-        arr_2d = np.max(arr_3d,axis=2)
+        arr_2d = flatten_3d_pil_img_return_arr(pil_img, logger)
 
         new_tif_fn = "2d_" + src_tif_fn
         new_fp = os.path.join(target_dir, new_tif_fn)

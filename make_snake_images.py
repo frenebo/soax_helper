@@ -49,9 +49,20 @@ def save_images_for_dir_snakes(dir_name,image_dir_name,colorful,logger,image_wid
 
         if background_img_dir is not None and img_idx < len(background_image_filenames):
             background_img_fp = os.path.join(background_img_dir,background_image_filenames[img_idx])
+
             logger.log("  Using background image {}".format(background_img_fp))
-            # background_img = Image.open(background_img_fp)
-            background_img = plt.imread(background_img_fp)
+            # If TIFs are 3D, we want to use a max intensity 2D projection as background
+            if has_one_of_extensions(background_img_fp, [".tif", ".tiff"]):
+                pil_img = Image.open(background_img_fp)
+
+                # if just one frame, it's 2D already
+                if getattr(pil_img, "n_frames", 1) == 1:
+                    background_img = np.array(pil_img)
+                else:
+                    background_img = flatten_3d_pil_img_return_arr(pil_img, logger)
+            else:
+                # background_img = Image.open(background_img_fp)
+                background_img = plt.imread(background_img_fp)
 
             background_img_is_grayscale = (len(background_img.shape) == 2)
             if background_img_is_grayscale:

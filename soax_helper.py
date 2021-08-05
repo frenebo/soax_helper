@@ -106,6 +106,8 @@ def perform_action(action_name, setting_strings, logger):
             parsed_make_snake_videos_settings["source_images_depth"],
             logger=logger,
         )
+    else:
+        raise Exception("Unknown action name '{}'".format(action_name))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Soax Helper')
