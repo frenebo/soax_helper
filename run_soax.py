@@ -9,7 +9,7 @@ from ctypes import c_int32
 import time
 from snakeutils.logger import PrintLogger, Colors
 
-def run_soax(soax_args):
+def soax_instance(soax_args):
     batch_soax = soax_args["batch_soax"]
     tiff_dir = soax_args["tiff_dir"]
     params_name = soax_args["params_name"]
@@ -109,7 +109,7 @@ def run_soax(
         for params_filename in param_files:
             param_fp = os.path.join(params_dir,params_filename)
             params_name = params_filename[:-len(".txt")]
-            soxa_args.append({
+            soax_args.append({
                 "batch_soax": batch_soax,
                 "tiff_dir": tiff_dir,
                 "param_fp": param_fp,
@@ -127,7 +127,7 @@ def run_soax(
 
     with ThreadPool(workers_num) as pool:
         logger.log("Making future")
-        future = pool.map(run_soax, soax_args)
+        future = pool.map(soax_instance, soax_args)
         logger.log("Future finished")
 
 if __name__ == "__main__":
