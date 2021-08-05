@@ -880,7 +880,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.goToNextMenu()
 
-    def auto_set_width_height_images_settings(self, tiff_dir, img_depth):
+    def auto_set_width_height_images_settings(self, tiff_dir, img_depth, rescale_factor=None):
         image_locations_info = find_files_or_folders_at_depth(tiff_dir, img_depth, file_extensions=[".tiff", ".tif"])
 
         #If source tiff dir doesn't have anything at this depth, we won't do anything here
@@ -891,6 +891,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         first_img_fp = os.path.join(first_img_dir, first_img_name)
         shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
         width, height = shape
+        if rescale_factor is not None:
+            width = int(width * rescale_factor)
+            height = int(height * rescale_factor)
         self.make_snake_images_settings["width"] = str(width)
         self.make_snake_images_settings["height"] = str(height)
 
@@ -912,6 +915,17 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.auto_contrast_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
         self.sectioning_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
+        if self.make_snake_images["width"] == "":
+            self.auto_set_width_height_images_settings(
+                auto_contrast_settings["source_tiff_dir"],
+                0,
+                rescale_factor=float(rescale_settings["rescale_factor"]),
+            )
+        if self.make_snake_images_settings["background_images_dir"] == "":
+            self.make_snake_images_settings["background_images_dir"] = rescale_settings["target_tiff_dir"]
+
+        int(dim * rescale_factor)
+        self.goToNextMenu()
 
     def startAutoContrastSetup(self):
         self.addForm('AUTO_CONTRAST_SETUP', AutoConstrastSetupForm, name='Auto Contrasting Setup')
