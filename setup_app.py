@@ -910,8 +910,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.rescale_settings = rescale_settings
 
         self.auto_contrast_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
-        self.sectioning_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
-        self.soax_run_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
+        self.sectioning_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
+        self.soax_run_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
 
     def startAutoContrastSetup(self):
         self.addForm('AUTO_CONTRAST_SETUP', AutoConstrastSetupForm, name='Auto Contrasting Setup')
