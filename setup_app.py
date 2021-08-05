@@ -924,7 +924,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.make_snake_images_settings["background_images_dir"] == "":
             self.make_snake_images_settings["background_images_dir"] = rescale_settings["target_tiff_dir"]
 
-        int(dim * rescale_factor)
         self.goToNextMenu()
 
     def startAutoContrastSetup(self):
