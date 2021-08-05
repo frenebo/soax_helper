@@ -8,7 +8,7 @@ from preprocess_tiffs import preprocess_tiffs
 from section_tiffs import section_tiffs
 from create_param_files import create_param_files
 from run_soax import run_soax
-from snakeutils.logger import RecordLogger
+from snakeutils.logger import RecordLogger, PrintLogger
 from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
 from make_snake_images import make_snake_images
