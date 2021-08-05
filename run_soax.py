@@ -19,11 +19,7 @@ def soax_instance(soax_args):
     stdout_fp = soax_args["stdout_fp"]
     errors_fp = soax_args["errors_fp"]
 
-    # error_fp = os.path.join(logging_dir,"error_" + params_name + ".txt")
-
-    # stdout_fp = os.path.join(logging_dir,"stdout_" + params_name + ".txt")
-
-    with open(error_fp,"w") as error_file, open(stdout_fp,"w") as stdout_file:
+    with open(errors_fp,"w") as error_file, open(stdout_fp,"w") as stdout_file:
         command = "{batch_soax} --image {tiff_dir} --parameter {param_fp} --snake {snakes_output_dir}".format(
             batch_soax = batch_soax,
             tiff_dir=tiff_dir,
@@ -38,7 +34,7 @@ def soax_instance(soax_args):
         except subprocess.CalledProcessError as e:
             logger.error("ERROR: ")
             logger.error("Failed to run {}. return code {}".format(command,e.returncode))
-            logger.error("STDERR saved in {}".format(error_fp))
+            logger.error("STDERR saved in {}".format(errors_fp))
             logger.error("STDOUT saved in {}".format(stdout_fp))
 
 def run_soax(
