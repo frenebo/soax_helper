@@ -47,7 +47,7 @@ def preprocess_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent
         # if 3D
         else:
             image_arr = pil_img_3d_to_np_arr(pil_img)
-        image_arr = np.array()
+
         over_max_places = image_arr >= max_cutoff
         under_min_places = image_arr <= min_cutoff
 
