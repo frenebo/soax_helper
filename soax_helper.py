@@ -124,7 +124,7 @@ if __name__ == "__main__":
         if not args.load_settings.endswith(".json"):
             raise Exception("Invalid settings load file '{}': must be json file".format(args.load_settings))
 
-        if not os.file.exists(args.load_settings):
+        if not os.path.exists(args.load_settings):
             raise Exception("File '{}' does not exist".format(args.load_settings))
 
         with open(args.load_settings, "r") as f:
