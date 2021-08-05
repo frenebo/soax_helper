@@ -722,7 +722,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
         self.rescale_settings = {
             "source_tiff_dir": "",
-            "target_tiff_dir": "",
+            "target_tiff_dir": "./RescaledTIFFs",
             "rescale_factor": "1.0",
         }
         self.auto_contrast_settings = {
