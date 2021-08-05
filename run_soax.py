@@ -116,7 +116,7 @@ def run_soax(
                 "params_name": params_name,
                 "snakes_output_dir": output_dir,
                 "stdout_fp": os.path.join(logging_dir, "stdout.txt"),
-                "errors_fp" os.path.join(logging_dir, "errors.txt"),
+                "errors_fp": os.path.join(logging_dir, "errors.txt"),
                 "logger": logger,
             })
 
