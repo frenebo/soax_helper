@@ -6,6 +6,7 @@ from snakeutils.files import extract_snakes, readable_dir, find_files_or_folders
 import argparse
 from PIL import Image
 from snakeutils.logger import PrintLogger, Colors
+from flatten_3d_tiffs import flatten_3d_pil_img_return_arr
 import json
 
 def infer_height_width(filename):

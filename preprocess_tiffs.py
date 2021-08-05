@@ -1,7 +1,7 @@
 import argparse
 import argparse
 import math
-from snakeutils.files import readable_dir
+from snakeutils.files import readable_dir, pil_img_3d_to_np_arr
 from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
 import os
 import numpy as np
@@ -40,7 +40,14 @@ def preprocess_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent
         tiff_fp = os.path.join(source_dir,tiff_fn)
         preprocessed_fp = os.path.join(target_dir, "preprocessed_" + tiff_fn)
 
-        image_arr = np.array(Image.open(tiff_fp))
+        pil_img = Image.open(tiff_fp)
+        # If 2D
+        if getattr(pil_img, "n_frames", 1) == 1:
+            image_arr = np.array(pil_img)
+        # if 3D
+        else:
+            image_arr = pil_img_3d_to_np_arr(pil_img)
+        image_arr = np.array()
         over_max_places = image_arr >= max_cutoff
         under_min_places = image_arr <= min_cutoff
 

@@ -1,4 +1,4 @@
-from snakeutils.files import readable_dir, has_one_of_extensions
+from snakeutils.files import readable_dir, has_one_of_extensions, pil_img_3d_to_np_arr
 import argparse
 from PIL import Image
 import numpy as np
@@ -7,18 +7,14 @@ import os
 from snakeutils.logger import PrintLogger, Colors
 
 def flatten_3d_pil_img_return_arr(pil_img, logger):
-    arr_3d = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
-
-    for frame_idx in range(pil_img.n_frames):
-        pil_img.seek(frame_idx)
-        arr_3d[:,:, frame_idx] = np.array(pil_img)
+    arr_3d = pil_img_3d_to_np_arr(pil_img)
     # Maximum intensity projection
     arr_2d = np.max(arr_3d,axis=2)
 
     return arr_2d
 
 
-def flatten_3d_tifs(source_dir,target_dir,logger=PrintLogger):
+def flatten_3d_tiffs(source_dir,target_dir,logger=PrintLogger):
 
     tiff_names = [name for name in os.listdir(source_dir) if has_one_of_extensions(name, [".tif", ".tiff"])]
     tiff_names.sort()
@@ -48,4 +44,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    flatten_3d_tifs(args.source_dir,args.target_dir)
+    flatten_3d_tiffs(args.source_dir,args.target_dir)
