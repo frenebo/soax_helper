@@ -1,7 +1,7 @@
 import argparse
 import argparse
 import math
-from snakeutils.files import readable_dir, pil_img_3d_to_np_arr
+from snakeutils.files import readable_dir, pil_img_3d_to_np_arr, has_one_of_extensions
 from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
 import os
 import numpy as np
@@ -10,7 +10,7 @@ import tifffile
 from snakeutils.logger import PrintLogger
 
 def auto_contrast_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent,logger=PrintLogger):
-    source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
+    source_tifs = [filename for filename in os.listdir(source_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
     source_tifs.sort()
 
     if len(source_tifs) == 0:

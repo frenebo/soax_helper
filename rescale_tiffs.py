@@ -48,7 +48,7 @@ def rescale_multi_dim_arr(arr,rescale_factor,logger):
     return new_arr
 
 def rescale_tiffs(source_dir,target_dir,rescale_factor,logger=PrintLogger):
-    tiff_files = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
+    tiff_files = [filename for filename in os.listdir(source_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
     tiff_files.sort()
 
     for src_filename in tiff_files:
