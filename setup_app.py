@@ -720,6 +720,8 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
+        # Default settings to show in forms
+        # Not all of these will necessarily be used if self.do_rescale, self.do_auto_contrast, self.do_section, etc are False
         self.rescale_settings = {
             "source_tiff_dir": "",
             "target_tiff_dir": "./RescaledTIFFs",
