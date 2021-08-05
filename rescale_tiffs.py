@@ -53,7 +53,7 @@ def rescale_tiffs(source_dir,target_dir,rescale_factor,logger=PrintLogger):
 
     for src_filename in tiff_files:
         fp = os.path.join(source_dir,src_filename)
-        logger.log("Processing {}".format(fp))
+        logger.log("Rescaling {}".format(fp))
 
         pil_img = Image.open(fp)
 
