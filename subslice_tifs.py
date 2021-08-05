@@ -35,8 +35,8 @@ def subslice_tifs(slice_range,source_dir,target_dir,logger=PrintLogger):
 
     source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
 
-    for src_tif_fn in souce_tifs:
-        fp = os.path.join(source_dir,src_tif_fn)
+    for src_tiff_fn in souce_tifs:
+        fp = os.path.join(source_dir,src_tiff_fn)
         logger.log("Processing {}".format(fp))
 
         pil_img = Image.open(fp)
@@ -56,8 +56,8 @@ def subslice_tifs(slice_range,source_dir,target_dir,logger=PrintLogger):
             pil_img.seek(frame_idx)
             new_img_arr[:,:, frame_idx - start_slice] = np.array(pil_img)
 
-        new_tif_fn = "{}-{}sliced_".format(start_slice,end_slice) + src_tif_fn
-        new_fp = os.path.join(target_dir, new_tif_fn)
+        new_tiff_fn = "{}-{}sliced_".format(start_slice,end_slice) + src_tiff_fn
+        new_fp = os.path.join(target_dir, new_tiff_fn)
         logger.log("Saving sliced image as {}".format(new_fp))
 
         save_3d_tif(new_fp, new_img_arr)

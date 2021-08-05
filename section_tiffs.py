@@ -1,25 +1,25 @@
 import argparse
 import math
 from snakeutils.files import readable_dir
-from snakeutils.tifimage import save_3d_tif, tif_img_3d_to_arr
+from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
 import os
 import numpy as np
 from PIL import Image
 import tifffile
 from snakeutils.logger import PrintLogger
 
-def section_tiff(tif_filepath,sectioned_dir,section_max_size,logger):
-    logger.log("Processing {}".format(tif_filepath))
+def section_tiff(tiff_filepath,sectioned_dir,section_max_size,logger):
+    logger.log("Processing {}".format(tiff_filepath))
 
-    pil_img = Image.open(tif_filepath)
+    pil_img = Image.open(tiff_filepath)
 
-    tif_is_3d = getattr(pil_img, "n_frames", 1) != 1
+    tiff_is_3d = getattr(pil_img, "n_frames", 1) != 1
 
     width = pil_img.width
     height = pil_img.height
-    if tif_is_3d:
+    if tiff_is_3d:
         depth = pil_img.n_frames
-        img_arr = tif_img_3d_to_arr(pil_img)
+        img_arr = tiff_img_3d_to_arr(pil_img)
     else:
         img_arr = np.array(pil_img)
 
@@ -27,20 +27,20 @@ def section_tiff(tif_filepath,sectioned_dir,section_max_size,logger):
     # exactly divisible by section_size
     height_slices = math.ceil(height / section_max_size)
     width_slices = math.ceil(width / section_max_size)
-    if tif_is_3d:
+    if tiff_is_3d:
         depth_slices = math.ceil(depth / section_max_size)
 
     section_height = math.floor(height / height_slices)
     section_width = math.floor(width / width_slices)
-    if tif_is_3d:
+    if tiff_is_3d:
         section_depth = math.floor(depth / depth_slices)
 
     height_boundaries = [i*section_height for i in range(height_slices)] + [height]
     width_boundaries = [i*section_width for i in range(width_slices)] + [width]
-    if tif_is_3d:
+    if tiff_is_3d:
         depth_boundaries = [i*section_depth for i in range(depth_slices)] + [depth]
 
-    if tif_is_3d:
+    if tiff_is_3d:
         for width_idx in range(width_slices):
             for height_idx in range(height_slices):
                 for depth_idx in range(depth_slices):
@@ -102,13 +102,13 @@ def section_tiff(tif_filepath,sectioned_dir,section_max_size,logger):
 
                     tifffile.imsave(section_filepath,section_arr)
 
-    if tif_is_3d:
+    if tiff_is_3d:
         section_num = width_slices*height_slices*depth_slices
     else:
         section_num = width_slices*height_slices
 
     logger.log("  Split {} into {} sections in {}".format(
-        tif_filepath,
+        tiff_filepath,
         section_num,
         sectioned_dir))
 
@@ -119,11 +119,11 @@ def section_tiffs(section_max_size,source_dir,target_dir,logger=PrintLogger):
     source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
     source_tifs.sort()
 
-    for tif_fn in source_tifs:
-        tif_fp = os.path.join(source_dir,tif_fn)
+    for tiff_fn in source_tifs:
+        tiff_fp = os.path.join(source_dir,tiff_fn)
 
         # remove .tif from file name
-        image_name_extensionless = tif_fn[:-4]
+        image_name_extensionless = tiff_fn[:-4]
 
         sectioned_dir = os.path.join(target_dir, "sectioned_" + image_name_extensionless)
 
@@ -132,7 +132,7 @@ def section_tiffs(section_max_size,source_dir,target_dir,logger=PrintLogger):
 
         os.mkdir(sectioned_dir)
 
-        section_tiff(tif_fp,sectioned_dir,section_max_size,logger)
+        section_tiff(tiff_fp,sectioned_dir,section_max_size,logger)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')

@@ -20,11 +20,11 @@ def flatten_3d_pil_img_return_arr(pil_img, logger):
 
 def flatten_3d_tifs(source_dir,target_dir,logger=PrintLogger):
 
-    tif_names = [name for name in os.listdir(source_dir) if has_one_of_extensions(name, [".tif", ".tiff"])]
-    tif_names.sort()
+    tiff_names = [name for name in os.listdir(source_dir) if has_one_of_extensions(name, [".tif", ".tiff"])]
+    tiff_names.sort()
 
-    for src_tif_fn in tif_names:
-        fp = os.path.join(source_dir,src_tif_fn)
+    for src_tiff_fn in tiff_names:
+        fp = os.path.join(source_dir,src_tiff_fn)
         logger.log("Processing {}".format(fp))
         pil_img = Image.open(fp)
 
@@ -35,8 +35,8 @@ def flatten_3d_tifs(source_dir,target_dir,logger=PrintLogger):
 
         arr_2d = flatten_3d_pil_img_return_arr(pil_img, logger)
 
-        new_tif_fn = "2d_" + src_tif_fn
-        new_fp = os.path.join(target_dir, new_tif_fn)
+        new_tiff_fn = "2d_" + src_tiff_fn
+        new_fp = os.path.join(target_dir, new_tiff_fn)
         logger.success("  Saving flattened tif as {}".format(new_fp))
 
         tifffile.imsave(new_fp,arr_2d)

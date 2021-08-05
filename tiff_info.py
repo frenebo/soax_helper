@@ -5,13 +5,13 @@ from PIL import Image
 import numpy as np
 from snakeutils.logger import PrintLogger
 
-def tif_file_or_dir(target_path):
+def tiff_file_or_dir(target_path):
     try:
         dir_path = readable_dir(target_path)
         dir_contents = os.listdir(dir_path)
-        tif_filenames = [filename for filename in dir_contents if filename.endswith(".tif")]
-        tif_filepaths = [os.path.join(target_path,tif_fn) for tif_fn in tif_filenames]
-        return tif_filepaths
+        tiff_filenames = [filename for filename in dir_contents if filename.endswith(".tif")]
+        tiff_filepaths = [os.path.join(target_path,tiff_fn) for tiff_fn in tiff_filenames]
+        return tiff_filepaths
 
     except argparse.ArgumentTypeError:
         if not target_path.endswith(".tif"):
@@ -45,7 +45,7 @@ def tiff_info(tiff_paths,logger=PrintLogger):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Get info from tif file or directory of tif files')
-    parser.add_argument('target',type=tif_file_or_dir,help="TIF file or directory of tif files")
+    parser.add_argument('target',type=tiff_file_or_dir,help="TIF file or directory of tif files")
 
     args = parser.parse_args()
 

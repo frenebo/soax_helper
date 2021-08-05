@@ -1,5 +1,5 @@
 from snakeutils.files import readable_dir, has_one_of_extensions
-from snakeutils.tifimage import save_3d_tif, tif_img_3d_to_arr
+from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
 import os
 import argparse
 import matplotlib.pyplot as plt
@@ -48,10 +48,10 @@ def rescale_multi_dim_arr(arr,rescale_factor,logger):
     return new_arr
 
 def rescale_tiffs(rescale_factor,source_dir,target_dir,logger=PrintLogger):
-    tif_files = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
-    tif_files.sort()
+    tiff_files = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
+    tiff_files.sort()
 
-    for src_filename in tif_files:
+    for src_filename in tiff_files:
         fp = os.path.join(source_dir,src_filename)
         logger.log("Processing {}".format(fp))
 
@@ -61,7 +61,7 @@ def rescale_tiffs(rescale_factor,source_dir,target_dir,logger=PrintLogger):
         img_is_3d = getattr(pil_img, "n_frames", 1) != 1
 
         if img_is_3d:
-            arr = tif_img_3d_to_arr(pil_img)
+            arr = tiff_img_3d_to_arr(pil_img)
         else:
             arr = np.array(pil_img)
         logger.log("Orig shape: {}".format(arr.shape))
