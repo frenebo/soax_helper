@@ -55,7 +55,7 @@ def perform_action(action_name, setting_strings, logger):
             logger=logger,
         )
     elif action_name == "run_soax":
-        parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(setting_stings)
+        parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(setting_strings)
 
         run_soax(
             parsed_soax_run_settings["batch_soax_path"],
