@@ -99,7 +99,7 @@ def run_soax(
                     "params_name": params_name,
                     "snakes_output_dir": snakes_output_dir,
                     "stdout_fp": stdout_fp,
-                    "errors_fp" errors_fp,
+                    "errors_fp": errors_fp,
                     "logger": logger,
                 })
     # If no subdirs, we have
