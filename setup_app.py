@@ -57,7 +57,7 @@ class StepsSetupForm(npyscreen.Form):
         )
 
     def afterEditing(self):
-        do_rescale                 = 0 in self.select_steeps.value
+        do_rescale                 = 0 in self.select_steps.value
         do_auto_contrast           = 1 in self.select_steps.value
         do_section                 = 2 in self.select_steps.value
         do_create_params           = 3 in self.select_steps.value
