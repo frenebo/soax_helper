@@ -9,7 +9,7 @@ from PIL import Image
 import tifffile
 from snakeutils.logger import PrintLogger
 
-def preprocess_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent,logger=PrintLogger):
+def auto_contrast_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent,logger=PrintLogger):
     source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
     source_tifs.sort()
 
@@ -38,7 +38,7 @@ def preprocess_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent
 
     for tiff_fn in source_tifs:
         tiff_fp = os.path.join(source_dir,tiff_fn)
-        preprocessed_fp = os.path.join(target_dir, "preprocessed_" + tiff_fn)
+        auto_contrast_fp = os.path.join(target_dir, "auto_contrast_" + tiff_fn)
 
         pil_img = Image.open(tiff_fp)
         # If 2D
@@ -62,10 +62,10 @@ def preprocess_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent
         logger.log("New max: {}".format(new_arr.max()))
 
         if images_are_3d:
-            save_3d_tif(preprocessed_fp,new_arr)
+            save_3d_tif(auto_contrast_fp,new_arr)
         else:
-            tifffile.imsave(preprocessed_fp,new_arr)
-        logger.log("Saved preprocessed pic as {}".format(preprocessed_fp))
+            tifffile.imsave(auto_contrast_fp,new_arr)
+        logger.log("Saved auto contrast pic as {}".format(auto_contrast_fp))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Normalizes tif (useful if TIF image is too dark)')
@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    preprocess_tiffs(
+    auto_contrast_tiffs(
         args.source_dir,
         args.target_dir,
         args.max_cutoff_percent,

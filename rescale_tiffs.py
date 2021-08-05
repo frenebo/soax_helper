@@ -47,7 +47,7 @@ def rescale_multi_dim_arr(arr,rescale_factor,logger):
 
     return new_arr
 
-def rescale_tiffs(rescale_factor,source_dir,target_dir,logger=PrintLogger):
+def rescale_tiffs(source_dir,target_dir,rescale_factor,logger=PrintLogger):
     tiff_files = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
     tiff_files.sort()
 
@@ -78,13 +78,13 @@ def rescale_tiffs(rescale_factor,source_dir,target_dir,logger=PrintLogger):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('rescale_factor',type=float,help="Scale factor, for example 0.5 to make tifs half scale")
     parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
     parser.add_argument('target_dir',type=readable_dir)
+    parser.add_argument('rescale_factor',type=float,help="Scale factor, for example 0.5 to make tiffs half scale")
 
     args = parser.parse_args()
 
     if args.rescale_factor <= 0:
         raise Exception("Rescale factor must be positive")
 
-    rescale_tiffs(args.rescale_factor, args.source_dir, args.target_dir)
+    rescale_tiffs(args.source_dir, args.target_dir, args.rescale_factor)

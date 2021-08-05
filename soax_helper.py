@@ -4,7 +4,7 @@ import argparse
 import json
 
 from create_param_files import error_string_or_parse_arg_or_range
-from preprocess_tiffs import preprocess_tiffs
+from auto_contrast_tiffs import auto_contrast_tiffs
 from section_tiffs import section_tiffs
 from create_param_files import create_param_files
 from run_soax import run_soax
@@ -16,7 +16,8 @@ from make_videos import make_videos
 
 from setup_app import (
     SoaxSetupApp,
-    PreprocessSetupForm,
+    RescaleSetupForm,
+    AutoConstrastSetupForm,
     SectioningSetupForm,
     ParamsSetupForm,
     SoaxRunSetupForm,
@@ -26,18 +27,26 @@ from setup_app import (
     MakeSnakeVideosSetupForm,
 )
 
-def perform_action(action_name, setting_strings, logger):
-    if action_name == "preprocess_tiffs":
-        parsed_preprocess_settings = PreprocessSetupForm.parseSettings(setting_strings)
-        preprocess_tiffs(
-            parsed_preprocess_settings["source_tiff_dir"],
-            parsed_preprocess_settings["target_tiff_dir"],
-            parsed_preprocess_settings["max_cutoff_percent"],
-            parsed_preprocess_settings["min_cutoff_percent"],
+def perform_action(action_name, setting_strings, make_dirs, logger):
+    if action_name == "rescale_tiffs":
+        parsed_rescale_settings = RescaleSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        rescale_tiffs(
+            parsed_rescale_settings["source_tiff_dir"],
+            parsed_rescale_settings["target_tiff_dir"],
+            parsed_rescale_settings["rescale_factor"],
+            logger=logger
+        )
+    elif action_name == "auto_contrast_tiffs":
+        parsed_auto_contrast_settings = AutoConstrastSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        auto_contrast_tiffs(
+            parsed_auto_contrast_settings["source_tiff_dir"],
+            parsed_auto_contrast_settings["target_tiff_dir"],
+            parsed_auto_contrast_settings["max_cutoff_percent"],
+            parsed_auto_contrast_settings["min_cutoff_percent"],
             logger=logger,
         )
     elif action_name == "section_tiffs":
-        parsed_sectioning_settings = SectioningSetupForm.parseSettings(setting_strings)
+        parsed_sectioning_settings = SectioningSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
         section_tiffs(
             parsed_sectioning_settings["section_max_size"],
             parsed_sectioning_settings["source_tiff_dir"],
@@ -45,7 +54,7 @@ def perform_action(action_name, setting_strings, logger):
             logger=logger,
         )
     elif action_name == "create_param_files":
-        parsed_params_settings = ParamsSetupForm.parseSettings(setting_strings)
+        parsed_params_settings = ParamsSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
         create_param_files(
             parsed_params_settings["params_save_dir"],
             parsed_params_settings["alpha"],
@@ -55,7 +64,7 @@ def perform_action(action_name, setting_strings, logger):
             logger=logger,
         )
     elif action_name == "run_soax":
-        parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(setting_strings)
+        parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
 
         run_soax(
             parsed_soax_run_settings["batch_soax_path"],
@@ -68,7 +77,7 @@ def perform_action(action_name, setting_strings, logger):
             logger=logger,
         )
     elif action_name == "convert_snakes_to_json":
-        parsed_snakes_to_json_settings = SnakesToJsonSetupForm.parseSettings(setting_strings)
+        parsed_snakes_to_json_settings = SnakesToJsonSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
 
         convert_snakes_to_json(
             parsed_snakes_to_json_settings["source_snakes_dir"],
@@ -77,7 +86,7 @@ def perform_action(action_name, setting_strings, logger):
             logger=logger
         )
     elif action_name == "join_sectioned_snakes":
-        parsed_join_sectioned_snakes_settings = JoinSectionedSnakesSetupForm.parseSettings(setting_strings)
+        parsed_join_sectioned_snakes_settings = JoinSectionedSnakesSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
 
         join_sectioned_snakes(
             parsed_join_sectioned_snakes_settings["source_json_dir"],
@@ -85,7 +94,7 @@ def perform_action(action_name, setting_strings, logger):
             source_jsons_depth=parsed_join_sectioned_snakes_settings["source_jsons_depth"],
             logger=logger)
     elif action_name == "make_snake_images":
-        parsed_make_snake_images_settings = MakeSnakeImagesSetupForm.parseSettings(setting_strings)
+        parsed_make_snake_images_settings = MakeSnakeImagesSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
 
         make_snake_images(
             parsed_make_snake_images_settings["source_json_dir"],
@@ -98,7 +107,7 @@ def perform_action(action_name, setting_strings, logger):
             logger=logger,
         )
     elif action_name == "make_videos":
-        parsed_make_snake_videos_settings = MakeSnakeVideosSetupForm.parseSettings(setting_strings)
+        parsed_make_snake_videos_settings = MakeSnakeVideosSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
 
         make_videos(
             parsed_make_snake_videos_settings["source_jpeg_dir"],
@@ -114,6 +123,7 @@ if __name__ == "__main__":
     parser.add_argument('--load_settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
     parser.add_argument('--save_settings',default=None,help="Save settings from GUI menu to JSON file")
     parser.add_argument('--do_not_run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
+    parser.add_argument('--make_dirs',default=False,action='store_true', help='If --load_settings, whether program should make directories in settings file is the directories don\'t exist already.')
 
     args = parser.parse_args()
     if args.load_settings is not None and args.save_settings is not None:
@@ -156,7 +166,7 @@ if __name__ == "__main__":
         action_logger = RecordLogger()
         all_loggers[action_name] = action_logger
 
-        perform_action(action_name, action_settings, action_logger)
+        perform_action(action_name, action_settings, args.make_dirs, action_logger)
 
     for step_name, record_logger in all_loggers.items():
         if len(record_logger.errors) > 0:
