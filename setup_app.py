@@ -125,6 +125,12 @@ class RescaleSetupForm(npyscreen.Form):
             npyscreen.TitleText,
             value=rescale_settings["rescale_factor"],
             name="rescale_factor")
+        self.create_if_not_present = self.add(
+            npyscreen.TitleSelectOne,
+            name="Create dirs if not present",
+            values=["yes", "no"],
+            value=[1],
+            scroll_exit=True)
 
     def getFieldStrings(self):
         return {
