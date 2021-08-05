@@ -917,7 +917,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
-                auto_contrast_settings["source_tiff_dir"],
+                rescale_settings["source_tiff_dir"],
                 0,
                 rescale_factor=float(rescale_settings["rescale_factor"]),
             )
