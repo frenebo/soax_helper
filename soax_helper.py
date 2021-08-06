@@ -35,10 +35,10 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     if action_name == "z_rescale_tiffs":
         parsed_z_rescale_settings = ZRescaleSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
         z_rescale_tiffs(
-            parsed_xy_rescale_settings["batch_resample_path"],
-            parsed_xy_rescale_settings["source_tiff_dir"],
-            parsed_xy_rescale_settings["target_tiff_dir"],
-            parsed_xy_rescale_settings["rescale_factor"],
+            parsed_z_rescale_settings["batch_resample_path"],
+            parsed_z_rescale_settings["source_tiff_dir"],
+            parsed_z_rescale_settings["target_tiff_dir"],
+            parsed_z_rescale_settings["rescale_factor"],
             logger=logger
         )
     elif action_name == "xy_rescale_tiffs":
