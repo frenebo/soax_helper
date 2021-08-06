@@ -47,7 +47,7 @@ def rescale_multi_dim_arr(arr,rescale_factor,logger):
 
     return new_arr
 
-def rescale_tiffs(source_dir,target_dir,rescale_factor,logger=PrintLogger):
+def xy_rescale_tiffs(source_dir,target_dir,rescale_factor,logger=PrintLogger):
     tiff_files = [filename for filename in os.listdir(source_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
     tiff_files.sort()
 
@@ -87,4 +87,4 @@ if __name__ == "__main__":
     if args.rescale_factor <= 0:
         raise Exception("Rescale factor must be positive")
 
-    rescale_tiffs(args.source_dir, args.target_dir, args.rescale_factor)
+    xy_rescale_tiffs(args.source_dir, args.target_dir, args.rescale_factor)

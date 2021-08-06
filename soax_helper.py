@@ -5,7 +5,8 @@ import json
 import time
 
 from create_param_files import error_string_or_parse_arg_or_range
-from rescale_tiffs import rescale_tiffs
+from xy_rescale_tiffs import xy_rescale_tiffs
+from z_rescale_tiffs import z_rescale_tiffs
 from auto_contrast_tiffs import auto_contrast_tiffs
 from section_tiffs import section_tiffs
 from create_param_files import create_param_files
@@ -18,7 +19,7 @@ from make_videos import make_videos
 
 from setup_app import (
     SoaxSetupApp,
-    RescaleSetupForm,
+    XYRescaleSetupForm,
     AutoConstrastSetupForm,
     SectioningSetupForm,
     ParamsSetupForm,
@@ -30,12 +31,21 @@ from setup_app import (
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
-    if action_name == "rescale_tiffs":
-        parsed_rescale_settings = RescaleSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
-        rescale_tiffs(
-            parsed_rescale_settings["source_tiff_dir"],
-            parsed_rescale_settings["target_tiff_dir"],
-            parsed_rescale_settings["rescale_factor"],
+    if action_name == "z_rescale_tiffs":
+        parsed_z_rescale_settings = ZRescaleSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        z_rescale_tiffs(
+            parsed_xy_rescale_settings["batch_resample_path"],
+            parsed_xy_rescale_settings["source_tiff_dir"],
+            parsed_xy_rescale_settings["target_tiff_dir"],
+            parsed_xy_rescale_settings["rescale_factor"],
+            logger=logger
+        )
+    elif action_name == "xy_rescale_tiffs":
+        parsed_xy_rescale_settings = XYRescaleSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        xy_rescale_tiffs(
+            parsed_xy_rescale_settings["source_tiff_dir"],
+            parsed_xy_rescale_settings["target_tiff_dir"],
+            parsed_xy_rescale_settings["rescale_factor"],
             logger=logger
         )
     elif action_name == "auto_contrast_tiffs":
@@ -183,6 +193,7 @@ if __name__ == "__main__":
             PrintLogger.error("ERRORS FROM {}".format(step_name))
             for err in record_logger.errors:
                 PrintLogger.error("  " + err)
+
     for i, (step_name, seconds_taken) in all_times:
         print("Step #{}, '{}' took {} seconds".format(i + 1, step_name, seconds_taken))
 

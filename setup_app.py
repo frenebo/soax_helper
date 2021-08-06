@@ -35,6 +35,20 @@ def parse_pos_int(field_name, field_str):
         raise ParseException("Field '{}' has invalid value '{}': must be positive integer".format(field_name, field_str))
     return field_val
 
+def parse_pos_float(field_name, field_str):
+    if field_str == "":
+        raise ParseException("'{}' is a required field".format(field_name))
+    try:
+        val_float = float(field_str)
+    except ValueError:
+        raise ParseException("'{}' value '{}' is not a float".format(field_name, field_str))
+
+    if val_float <= 0:
+        raise ParseException("Invalid '{}' value '{}': Should be positive value".format(field_name, str(val_float)))
+
+    return val_float
+
+
 class StepsSetupForm(npyscreen.Form):
     def configure(self):
         self.select_steps = self.add(
@@ -43,7 +57,7 @@ class StepsSetupForm(npyscreen.Form):
             value = [3,4,5,7,8],
             name="Pick steps (spacebar to toggle)",
             values = [
-                "Rescale TIFFs",
+                "Rescale TIFFs in X and Y",
                 "Auto Contrast Raw TIFFs",
                 "Section TIFFs before running SOAX",
                 "Create Parameter Files",
@@ -57,18 +71,18 @@ class StepsSetupForm(npyscreen.Form):
         )
 
     def afterEditing(self):
-        do_rescale                 = 0 in self.select_steps.value
-        do_auto_contrast           = 1 in self.select_steps.value
-        do_section                 = 2 in self.select_steps.value
-        do_create_params           = 3 in self.select_steps.value
-        do_run_soax                = 4 in self.select_steps.value
-        do_snakes_to_json          = 5 in self.select_steps.value
-        do_join_sectioned_snakes   = 6 in self.select_steps.value
-        do_make_snake_images       = 7 in self.select_steps.value
-        do_make_snake_videos       = 8 in self.select_steps.value
+        do_xy_rescale            = 0 in self.select_steps.value
+        do_auto_contrast         = 1 in self.select_steps.value
+        do_section               = 2 in self.select_steps.value
+        do_create_params         = 3 in self.select_steps.value
+        do_run_soax              = 4 in self.select_steps.value
+        do_snakes_to_json        = 5 in self.select_steps.value
+        do_join_sectioned_snakes = 6 in self.select_steps.value
+        do_make_snake_images     = 7 in self.select_steps.value
+        do_make_snake_videos     = 8 in self.select_steps.value
 
         self.parentApp.stagesSelected(
-            do_rescale,
+            do_xy_rescale,
             do_auto_contrast,
             do_section,
             do_create_params,
@@ -79,7 +93,7 @@ class StepsSetupForm(npyscreen.Form):
             do_make_snake_videos,
         )
 
-class RescaleSetupForm(npyscreen.Form):
+class ZRescaleSetupForm(npyscreen.Form):
     @staticmethod
     def parseSettings(field_strings, make_dirs_if_not_present=False):
         dir_fields = ["source_tiff_dir", "target_tiff_dir"]
@@ -90,41 +104,24 @@ class RescaleSetupForm(npyscreen.Form):
         for field_name in dir_fields:
             field_str = field_strings[field_name]
             check_dir_field(field_name, field_str, make_dirs_if_not_present)
-
             parsed_fields[field_name] = field_str
 
 
         for field_name in pos_float_fields:
             field_str = field_strings[field_name]
-
-            if field_str == "":
-                raise ParseException("'{}' is a required field".format(field_name))
-            try:
-                val_float = float(field_str)
-            except ValueError:
-                raise ParseException("'{}' value '{}' is not a float".format(field_name, field_str))
-
-            if val_float <= 0:
-                raise ParseException("Invalid '{}' value '{}': Should be positive value".format(field_name, str(val_float)))
-
-            parsed_fields[field_name] = val_float
+            parsed_fields[field_name] = parse_pos_float(field_name, field_str)
 
         return parsed_fields
 
-    def configure(self, rescale_settings):
-
+    def configure(self, z_rescale_settings):
         self.add(npyscreen.FixedText,
-            value="Rescale height and width of images in source directory by factor (depth dimension unaffected for 3D images)")
-        self.add(npyscreen.FixedText,
-            value="Ex. rescale factor 0.5 would make images half as tall and wide")
+            value="Rescale z-axis depth of images using SOAX batch_resample. Useful if making images smaller or correcting for z-slice size")
         self.field_source_tiff_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
-            value=rescale_settings["source_tiff_dir"])
+            value=z_rescale_settings["source_tiff_dir"])
         self.field_target_tiff_dir = self.add(npyscreen.TitleFilename, name="target_tiff_dir",
-            value=rescale_settings["target_tiff_dir"])
-        self.field_rescale_factor = self.add(
-            npyscreen.TitleText,
-            value=rescale_settings["rescale_factor"],
-            name="rescale_factor")
+            value=z_rescale_settings["target_tiff_dir"])
+        self.field_rescale_factor = self.add(npyscreen.TitleText, name="rescale_factor",
+            value="rescale_factor")
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
             name="Create dirs if not present",
@@ -149,7 +146,66 @@ class RescaleSetupForm(npyscreen.Form):
             npyscreen.notify_confirm(str(e),editw=1)
             return
 
-        self.parentApp.rescaleSetupDone(self.getFieldStrings())
+        self.parentApp.ZRescaleSetupDone(self.getFieldStrings())
+
+
+class XYRescaleSetupForm(npyscreen.Form):
+    @staticmethod
+    def parseSettings(field_strings, make_dirs_if_not_present=False):
+        dir_fields = ["source_tiff_dir", "target_tiff_dir"]
+        pos_float_fields = ["rescale_factor"]
+
+        parsed_fields = {}
+
+        for field_name in dir_fields:
+            field_str = field_strings[field_name]
+            check_dir_field(field_name, field_str, make_dirs_if_not_present)
+            parsed_fields[field_name] = field_str
+
+
+        for field_name in pos_float_fields:
+            field_str = field_strings[field_name]
+            parsed_fields[field_name] = parse_pos_float(field_name, field_str)
+
+        return parsed_fields
+
+    def configure(self, xy_rescale_settings):
+
+        self.add(npyscreen.FixedText,
+            value="Rescale x and y width/height of images in source directory by factor (depth dimension unaffected for 3D images)")
+        self.add(npyscreen.FixedText,
+            value="Ex. rescale factor 0.5 would make images half as tall and wide")
+        self.field_source_tiff_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
+            value=xy_rescale_settings["source_tiff_dir"])
+        self.field_target_tiff_dir = self.add(npyscreen.TitleFilename, name="target_tiff_dir",
+            value=xy_rescale_settings["target_tiff_dir"])
+        self.field_rescale_factor = self.add(npyscreen.TitleText, name="rescale_factor",
+            value=xy_rescale_settings["rescale_factor"])
+        self.create_if_not_present = self.add(
+            npyscreen.TitleSelectOne,
+            name="Create dirs if not present",
+            values=["yes", "no"],
+            value=[1],
+            scroll_exit=True)
+
+    def getFieldStrings(self):
+        return {
+            "source_tiff_dir": self.field_source_tiff_dir.value,
+            "target_tiff_dir": self.field_target_tiff_dir.value,
+            "rescale_factor": self.field_rescale_factor.value,
+        }
+
+    def afterEditing(self):
+        # option zero is "yes"
+        make_dirs_if_not_present = 0 in self.create_if_not_present.value
+
+        try:
+            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
+        except ParseException as e:
+            npyscreen.notify_confirm(str(e),editw=1)
+            return
+
+        self.parentApp.XYRescaleSetupDone(self.getFieldStrings())
 
 class AutoConstrastSetupForm(npyscreen.Form):
     @staticmethod
@@ -727,10 +783,16 @@ class MakeSnakeVideosSetupForm(npyscreen.Form):
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
         # Default settings to show in forms
-        # Not all of these will necessarily be used if self.do_rescale, self.do_auto_contrast, self.do_section, etc are False
-        self.rescale_settings = {
+        # Not all of these will necessarily be used if self.do_xy_rescale, self.do_auto_contrast, self.do_section, etc are False
+        self.z_rescale_settings = {
+            "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax/batch_resample"
             "source_tiff_dir": "",
-            "target_tiff_dir": "./RescaledTIFFs",
+            "target_tiff_dir": "./ZRescaledTIFFs",
+            "rescale_factor": "1.0",
+        }
+        self.xy_rescale_settings = {
+            "source_tiff_dir": "",
+            "target_tiff_dir": "./XYRescaledTIFFs",
             "rescale_factor": "1.0",
         }
         self.auto_contrast_settings = {
@@ -790,10 +852,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def getActionConfigs(self):
         action_configs = []
-        if self.do_rescale:
+        if self.do_z_rescale:
             action_configs.append({
-                "action": "rescale_tiffs",
-                "settings": self.rescale_settings,
+                "action": "z_rescale_tiffs",
+                "settings": self.z_rescale_settings,
+            })
+        if self.do_xy_rescale:
+            action_configs.append({
+                "action": "xy_rescale_tiffs",
+                "settings": self.xy_rescale_settings,
             })
         if self.do_auto_contrast:
             action_configs.append({
@@ -838,7 +905,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         return action_configs
 
     def stagesSelected(self,
-        do_rescale,
+        do_z_rescale,
+        do_xy_rescale,
         do_auto_contrast,
         do_section,
         do_create_params,
@@ -848,7 +916,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_make_snake_images,
         do_make_snake_videos,
         ):
-        self.do_rescale = do_rescale
+        self.do_z_rescale = do_z_rescale
+        self.do_xy_rescale = do_xy_rescale
         self.do_auto_contrast = do_auto_contrast
         self.do_section = do_section
         self.do_create_params = do_create_params
@@ -859,8 +928,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_make_snake_videos = do_make_snake_videos
 
         self.menu_functions = []
-        if self.do_rescale:
-            self.menu_functions.append(self.startRescaleSetup)
+        if self.do_z_rescale:
+            self.menu_functions.append(self.startZRescaleSetup)
+        if self.do_xy_rescale:
+            self.menu_functions.append(self.startXYRescaleSetup)
         if self.do_auto_contrast:
             self.menu_functions.append(self.startAutoContrastSetup)
         if self.do_section:
@@ -904,25 +975,43 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             next_menu_func = self.menu_functions.pop(0)
             next_menu_func()
 
-    def startRescaleSetup(self):
-        self.addForm('RESCALE_SETUP', RescaleSetupForm, name='Rescale Setup')
-        self.getForm('RESCALE_SETUP').configure(self.rescale_settings)
-        self.setNextForm('RESCALE_SETUP')
+    def startZRescaleSetup(self):
+        self.addForm('Z_RESCALE_SETUP', ZRescaleSetupForm, name='Z Rescale Setup')
+        self.getForm('Z_RESCALE_SETUP').configure(self.z_rescale_settings)
+        self.setNextForm('Z_RESCALE_SETUP')
 
-    def rescaleSetupDone(self, rescale_settings):
-        self.rescale_settings = rescale_settings
+    def ZRescaleSetupDone(self, z_rescale_settings):
+        self.z_rescale_settings = z_rescale_settings
+        self.xy_rescale_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
+        self.auto_contrast_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
+        self.sectioning_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
+        self.soax_run_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
 
-        self.auto_contrast_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
-        self.sectioning_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
-        self.soax_run_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
+    def startXYRescaleSetup(self):
+        self.addForm('XY_RESCALE_SETUP', XYRescaleSetupForm, name='Rescale Setup')
+        self.getForm('XY_RESCALE_SETUP').configure(self.xy_rescale_settings)
+        self.setNextForm('XY_RESCALE_SETUP')
+
+    def XYRescaleSetupDone(self, xy_rescale_settings):
+        self.xy_rescale_settings = xy_rescale_settings
+
+        self.auto_contrast_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
+        self.sectioning_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
+        self.soax_run_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
         if self.make_snake_images_settings["width"] == "":
+            if self.do_z_rescale:
+                img_source_dir = self.z_rescale_settings["source_tiff_dir"]
+            else:
+                img_source_dir = xy_rescale_settings["source_tiff_dir"]
+
             self.auto_set_width_height_images_settings(
-                rescale_settings["source_tiff_dir"],
+                img_source_dir,
                 0,
-                rescale_factor=float(rescale_settings["rescale_factor"]),
+                rescale_factor=float(xy_rescale_settings["rescale_factor"]),
             )
+
         if self.make_snake_images_settings["background_images_dir"] == "":
-            self.make_snake_images_settings["background_images_dir"] = rescale_settings["target_tiff_dir"]
+            self.make_snake_images_settings["background_images_dir"] = xy_rescale_settings["target_tiff_dir"]
 
         self.goToNextMenu()
 
