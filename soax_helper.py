@@ -2,6 +2,7 @@ from collections import OrderedDict
 import os
 import argparse
 import json
+import time
 
 from create_param_files import error_string_or_parse_arg_or_range
 from rescale_tiffs import rescale_tiffs
@@ -158,20 +159,30 @@ if __name__ == "__main__":
     if args.do_not_run:
         exit()
 
-    all_loggers = OrderedDict()
+    all_loggers = []
+    all_times = []
 
     for action_conf in action_configs:
         action_name = action_conf["action"]
         action_settings = action_conf["settings"]
 
+        start_time = time.time()
+
         action_logger = RecordLogger()
-        all_loggers[action_name] = action_logger
+        all_loggers.append((action_name, action_logger))
 
         perform_action(action_name, action_settings, args.make_dirs, action_logger)
 
-    for step_name, record_logger in all_loggers.items():
+        end_time = time.time()
+        elapsed = end_time - start_time
+        all_times.append((action_name, elapsed))
+        PrintLogger.log("{} took {} seconds".format(action_name, elapsed))
+
+    for step_name, record_logger in all_loggers:
         if len(record_logger.errors) > 0:
             PrintLogger.error("ERRORS FROM {}".format(step_name))
             for err in record_logger.errors:
                 PrintLogger.error("  " + err)
+    for i, (step_name, seconds_taken) in all_times:
+        print("Step #{}, '{}' took {} seconds".format(i + 1, step_name, seconds_taken))
 
