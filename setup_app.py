@@ -24,6 +24,14 @@ def check_dir_field(field_name, dir_string, make_dir_if_not_present):
             else:
                 raise ParseException("'{}' does not exist".format(dir_string))
 
+def check_file_field(field_name, file_path):
+    if file_path == "":
+        raise ParseException("'{}' is a required field".format(field_name))
+    if not os.path.exists(file_path):
+        raise ParseException("'{}' does not exist".format(file_path))
+    if not os.path.isfile(file_path):
+        raise ParseException("'{}' is not a file".format(file_path))
+
 def parse_pos_int(field_name, field_str):
     if field_str == "":
         raise ParseException("'{}' is a required field".format(field_name))
@@ -96,25 +104,100 @@ class StepsSetupForm(npyscreen.Form):
             do_make_snake_videos,
         )
 
-class ZRescaleSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        dir_fields = ["source_tiff_dir", "target_tiff_dir"]
-        pos_float_fields = ["rescale_factor"]
+class SetupForm(npyscreen.Form):
+    dir_fields = []
+    file_fields = []
+    pos_float_fields = []
+    percentage_fields = []
+    pos_int_fields = []
+    arg_or_range_fields = []
+    file_fields = []
+    optional_dir_fields = []
 
+    @classmethod
+    def parseSettings(cls, field_strings, make_dirs_if_not_present=False):
         parsed_fields = {}
 
-        for field_name in dir_fields:
+        for field_name in cls.dir_fields:
             field_str = field_strings[field_name]
             check_dir_field(field_name, field_str, make_dirs_if_not_present)
             parsed_fields[field_name] = field_str
 
+        for field_name in cls.file_fields:
+            field_str = field_strings[field_name]
+            check_dir_field(field_name, field_str)
+            parsed_fields[field_name] = field_str
 
-        for field_name in pos_float_fields:
+        for field_name in cls.pos_float_fields:
             field_str = field_strings[field_name]
             parsed_fields[field_name] = parse_pos_float(field_name, field_str)
 
+        for field_name in cls.percentage_fields:
+            field_str = field_strings[field_name]
+
+            if field_str == "":
+                raise ParseException("'{}' is a required field".format(field_name))
+            try:
+                perc = float(field_str)
+            except ValueError:
+                raise ParseException("'{}' value '{}' is not a number".format(field_name,field_str))
+
+
+            if perc < 0 or perc > 100:
+                raise ParseException("Invalid '{}' value '{}': should be between 0 and 100".format(field_name,str(perc)))
+
+            parsed_fields[field_name] = perc
+
+
+        for field_name in cls.pos_int_fields:
+            field_str = field_strings[field_name]
+            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
+
+
+        for field_name in cls.arg_or_range_fields:
+            field_str = field_strings[field_name]
+
+            if field_str == "":
+                raise ParseException("'{}' is a required field")
+
+            err_str_or_val = error_string_or_parse_arg_or_range(field_str)
+            if isinstance(err_str_or_val, str):
+                raise ParseException("Error parsing {}: {}".format(field_name, err_str_or_val))
+            else:
+                parsed_fields[field_name] = err_str_or_val
+
+        for field_name in cls.file_fields:
+            field_str = field_strings[field_name]
+            check_dir_field(field_name, field_str)
+            parsed_fields[field_name] = field_str
+
+
+        for field_name in cls.optional_dir_fields:
+            field_str = field_strings[field_name]
+
+            if field_str.strip() == "":
+                parsed_fields[field_name] = None
+            else:
+                check_dir_field(field_name, field_str, make_dirs_if_not_present)
+                parsed_fields[field_name] = field_str
+
+
         return parsed_fields
+
+    def configure(self, settings);
+        raise NotImplementedError()
+
+    def getFieldStrings(self):
+        raise NotImplementedError()
+
+    def afterEditing(self):
+        raise NotImplementedError()
+
+
+class ZRescaleSetupForm(npyscreen.Form):
+    dir_fields = ["source_tiff_dir", "target_tiff_dir"]
+    pos_float_fields = ["rescale_factor"]
+    file_fields = ["batch_resample_path"]
 
     def configure(self, z_rescale_settings):
         self.add(npyscreen.FixedText,
@@ -134,6 +217,7 @@ class ZRescaleSetupForm(npyscreen.Form):
 
     def getFieldStrings(self):
         return {
+            "batch_resample_path": self.field_batch_resample_path.value,
             "source_tiff_dir": self.field_source_tiff_dir.value,
             "target_tiff_dir": self.field_target_tiff_dir.value,
             "rescale_factor": self.field_rescale_factor.value,
@@ -153,24 +237,8 @@ class ZRescaleSetupForm(npyscreen.Form):
 
 
 class XYRescaleSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        dir_fields = ["source_tiff_dir", "target_tiff_dir"]
-        pos_float_fields = ["rescale_factor"]
-
-        parsed_fields = {}
-
-        for field_name in dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-            parsed_fields[field_name] = field_str
-
-
-        for field_name in pos_float_fields:
-            field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_pos_float(field_name, field_str)
-
-        return parsed_fields
+    dir_fields = ["source_tiff_dir", "target_tiff_dir"]
+    pos_float_fields = ["rescale_factor"]
 
     def configure(self, xy_rescale_settings):
 
@@ -211,35 +279,8 @@ class XYRescaleSetupForm(npyscreen.Form):
         self.parentApp.XYRescaleSetupDone(self.getFieldStrings())
 
 class AutoConstrastSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        percentage_fields = ["min_cutoff_percent", "max_cutoff_percent"]
-        dir_fields = ["source_tiff_dir", "target_tiff_dir"]
-        parsed_fields = {}
-
-        for field_name in percentage_fields:
-            field_str = field_strings[field_name]
-
-            if field_str == "":
-                raise ParseException("'{}' is a required field".format(field_name))
-            try:
-                perc = float(field_str)
-            except ValueError:
-                raise ParseException("'{}' value '{}' is not a number".format(field_name,field_str))
-
-
-            if perc < 0 or perc > 100:
-                raise ParseException("Invalid '{}' value '{}': should be between 0 and 100".format(field_name,str(perc)))
-
-            parsed_fields[field_name] = perc
-
-        for field_name in dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-
-            parsed_fields[field_name] = field_str
-
-        return parsed_fields
+    percentage_fields = ["min_cutoff_percent", "max_cutoff_percent"]
+    dir_fields = ["source_tiff_dir", "target_tiff_dir"]
 
     def configure(self, auto_contrast_settings):
         self.field_source_tiff_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
@@ -293,22 +334,8 @@ class AutoConstrastSetupForm(npyscreen.Form):
         self.parentApp.autoContrastSetupDone(self.getFieldStrings())
 
 class SectioningSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        pos_int_fields = ["section_max_size"]
-        dir_fields = ["source_tiff_dir","target_sectioned_tiff_dir"]
-        parsed_fields = {}
-
-        for field_name in pos_int_fields:
-            field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
-
-        for field_name in dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-            parsed_fields[field_name] = field_str
-
-        return parsed_fields
+    pos_int_fields = ["section_max_size"]
+    dir_fields = ["source_tiff_dir", "target_sectioned_tiff_dir"]
 
     def configure(self, sectioning_settings):
         self.field_source_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
@@ -348,30 +375,8 @@ class SectioningSetupForm(npyscreen.Form):
         self.parentApp.sectioningSetupDone(self.getFieldStrings())
 
 class ParamsSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        parsed_fields = {}
-        arg_or_range_fields = ["alpha", "beta", "min_foreground", "ridge_threshold"]
-        dir_fields = ["params_save_dir"]
-
-        for field_name in arg_or_range_fields:
-            field_str = field_strings[field_name]
-
-            if field_str == "":
-                raise ParseException("'{}' is a required field")
-
-            err_str_or_val = error_string_or_parse_arg_or_range(field_str)
-            if isinstance(err_str_or_val, str):
-                raise ParseException("Error parsing {}: {}".format(field_name, err_str_or_val))
-            else:
-                parsed_fields[field_name] = err_str_or_val
-
-        for field_name in dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-            parsed_fields[field_name] = field_str
-
-        return parsed_fields
+    arg_or_range_fields = ["alpha", "beta", "min_foreground", "ridge_threshold"]
+    dir_fields = ["params_save_dir"]
 
     def configure(self, params_settings):
         self.add(npyscreen.FixedText,
@@ -422,47 +427,15 @@ class ParamsSetupForm(npyscreen.Form):
         self.parentApp.paramsSetupDone(self.getFieldStrings())
 
 class SoaxRunSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        dir_fields = [
-            "source_tiff_dir",
-            "target_snakes_dir",
-            "param_files_dir",
-            "soax_log_dir",
-        ]
+    dir_fields = [
+        "source_tiff_dir",
+        "target_snakes_dir",
+        "param_files_dir",
+        "soax_log_dir",
+    ]
 
-        parsed_fields = {}
-        for field_name in dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-            parsed_fields[field_name] = field_str
-
-        # Batch soax executable dir
-        batch_soax_path = field_strings["batch_soax_path"]
-        if batch_soax_path == "":
-            raise ParseException("'batch_soax_path' is a required field")
-        if not os.path.exists(batch_soax_path):
-            raise ParseException("'{}' does not exist".format(batch_soax_path))
-        if os.path.isdir(batch_soax_path):
-            raise ParseException("'{}' is a directory, should be executable file".format(batch_soax_path))
-        parsed_fields["batch_soax_path"] = batch_soax_path
-
-        # Use subdirs
-        parsed_fields["use_subdirs"] = (field_strings["use_subdirs"] == "yes")
-
-        # Workers number
-        workers_str = field_strings["workers"]
-        if workers_str == "":
-            raise ParseException("'workers' is a required field")
-        try:
-            workers_num = int(workers_str)
-        except ValueError as e:
-            raise ParseException("Cannot parse 'workers' value '{}' as integer".format(workers_str))
-        if workers_num <= 0:
-            raise ParseException("Value of 'workers' must be greater or equal to one")
-        parsed_fields["workers"] = workers_num
-
-        return parsed_fields
+    file_fields = ["batch_soax_path"]
+    pos_int_fields = ["workers"]
 
     def configure(self, soax_run_settings):
         self.add(npyscreen.FixedText,
@@ -523,23 +496,8 @@ class SoaxRunSetupForm(npyscreen.Form):
         self.parentApp.soaxRunSetupDone(self.getFieldStrings())
 
 class SnakesToJsonSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        pos_int_fields = ["subdir_depth"]
-        dir_fields = ["source_snakes_dir", "target_json_dir"]
-
-        parsed_fields = {}
-
-        for field_name in pos_int_fields:
-            field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
-
-        for field_name in dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-            parsed_fields[field_name] = field_str
-
-        return parsed_fields
+    pos_int_fields = ["subdir_depth"]
+    dir_fields = ["source_snakes_dir", "target_json_dir"]
 
     def configure(self, snakes_to_json_settings):
         self.add(npyscreen.FixedText,
@@ -580,22 +538,8 @@ class SnakesToJsonSetupForm(npyscreen.Form):
         self.parentApp.snakesToJsonSetupDone(self.getFieldStrings())
 
 class JoinSectionedSnakesSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        pos_int_fields = ["source_jsons_depth"]
-        dir_fields = ["source_json_dir", "target_json_dir"]
-
-        parsed_fields = {}
-        for field_name in dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-            parsed_fields[field_name] = field_str
-
-        for field_name in pos_int_fields:
-            field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
-
-        return parsed_fields
+    pos_int_fields = ["source_jsons_depth"]
+    dir_fields = ["source_json_dir", "target_json_dir"]
 
     def configure(self, join_sectioned_snakes_settings):
         self.add(npyscreen.FixedText,
@@ -638,37 +582,9 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
         self.parentApp.joinSectionedSnakesSetupDone(self.getFieldStrings())
 
 class MakeSnakeImagesSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        pos_int_fields = ["snake_files_depth", "height", "width"]
-        dir_fields = ["source_json_dir", "target_jpeg_dir"]
-        optional_dir_fields = ["background_images_dir"]
-
-        parsed_fields = {}
-
-        for field_name in pos_int_fields:
-            field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
-
-        for field_name in dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-            parsed_fields[field_name] = field_str
-
-        for field_name in optional_dir_fields:
-            field_str = field_strings[field_name]
-
-            if field_str.strip() == "":
-                parsed_fields[field_name] = None
-            else:
-                check_dir_field(field_name, field_str, make_dirs_if_not_present)
-                parsed_fields[field_name] = field_str
-
-
-        # Use subdirs
-        parsed_fields["use_colors"] = (field_strings["use_colors"] == "yes")
-
-        return parsed_fields
+    pos_int_fields = ["snake_files_depth", "height", "width"]
+    dir_fields = ["source_json_dir", "target_jpeg_dir"]
+    optional_dir_fields = ["background_images_dir"]
 
     def configure(self, make_snake_images_settings):
         self.add(npyscreen.FixedText,
@@ -727,23 +643,8 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
         self.parentApp.makeSnakeImagesSetupDone(self.getFieldStrings())
 
 class MakeSnakeVideosSetupForm(npyscreen.Form):
-    @staticmethod
-    def parseSettings(field_strings, make_dirs_if_not_present=False):
-        dir_fields = ["source_jpeg_dir", "target_mp4_dir"]
-        pos_int_fields = ["source_images_depth"]
-
-        parsed_fields = {}
-
-        for field_name in pos_int_fields:
-            field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
-
-        for field_name in dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-            parsed_fields[field_name] = field_str
-
-        return parsed_fields
+    dir_fields = ["source_jpeg_dir", "target_mp4_dir"]
+    pos_int_fields = ["source_images_depth"]
 
     def configure(self, make_snake_videos_settings):
         self.add(npyscreen.FixedText,
