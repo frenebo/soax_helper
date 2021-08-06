@@ -19,6 +19,7 @@ def soax_instance(soax_args):
     stdout_fp = soax_args["stdout_fp"]
     errors_fp = soax_args["errors_fp"]
 
+    success = None
     with open(errors_fp,"w") as error_file, open(stdout_fp,"w") as stdout_file:
         command = "{batch_soax} --image {tiff_dir} --parameter {param_fp} --snake {snakes_output_dir}".format(
             batch_soax = batch_soax,
@@ -31,11 +32,16 @@ def soax_instance(soax_args):
         try:
             code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
             logger.success("Completed {}".format(command))
+            success = True
         except subprocess.CalledProcessError as e:
             logger.error("ERROR: ")
             logger.error("Failed to run {}. return code {}".format(command,e.returncode))
             logger.error("STDERR saved in {}".format(errors_fp))
             logger.error("STDOUT saved in {}".format(stdout_fp))
+            success = False
+    if success:
+        os.remove(errors_fp)
+        os.remove(stdout_fp)
 
 def run_soax(
     batch_soax,
