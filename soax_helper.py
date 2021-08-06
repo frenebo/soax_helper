@@ -19,6 +19,7 @@ from make_videos import make_videos
 
 from setup_app import (
     SoaxSetupApp,
+    ZRescaleSetupForm,
     XYRescaleSetupForm,
     AutoConstrastSetupForm,
     SectioningSetupForm,
