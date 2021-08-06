@@ -785,7 +785,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # Default settings to show in forms
         # Not all of these will necessarily be used if self.do_xy_rescale, self.do_auto_contrast, self.do_section, etc are False
         self.z_rescale_settings = {
-            "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax/batch_resample"
+            "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax/batch_resample",
             "source_tiff_dir": "",
             "target_tiff_dir": "./ZRescaledTIFFs",
             "rescale_factor": "1.0",
