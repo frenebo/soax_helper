@@ -124,7 +124,7 @@ class ZRescaleSetupForm(npyscreen.Form):
         self.field_target_tiff_dir = self.add(npyscreen.TitleFilename, name="target_tiff_dir",
             value=z_rescale_settings["target_tiff_dir"])
         self.field_rescale_factor = self.add(npyscreen.TitleText, name="rescale_factor",
-            value="rescale_factor")
+            value=z_rescale_settings["rescale_factor"])
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
             name="Create dirs if not present",
