@@ -990,6 +990,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.sectioning_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
 
+        self.goToNextMenu()
+
     def startXYRescaleSetup(self):
         self.addForm('XY_RESCALE_SETUP', XYRescaleSetupForm, name='Rescale Setup')
         self.getForm('XY_RESCALE_SETUP').configure(self.xy_rescale_settings)
