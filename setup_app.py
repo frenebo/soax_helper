@@ -148,11 +148,9 @@ class SetupForm(npyscreen.Form):
 
             parsed_fields[field_name] = perc
 
-
         for field_name in cls.pos_int_fields:
             field_str = field_strings[field_name]
             parsed_fields[field_name] = parse_pos_int(field_name, field_str)
-
 
         for field_name in cls.arg_or_range_fields:
             field_str = field_strings[field_name]
@@ -165,12 +163,6 @@ class SetupForm(npyscreen.Form):
                 raise ParseException("Error parsing {}: {}".format(field_name, err_str_or_val))
             else:
                 parsed_fields[field_name] = err_str_or_val
-
-        for field_name in cls.file_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str)
-            parsed_fields[field_name] = field_str
-
 
         for field_name in cls.optional_dir_fields:
             field_str = field_strings[field_name]
