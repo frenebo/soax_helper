@@ -173,6 +173,9 @@ class SetupForm(npyscreen.Form):
                 check_dir_field(field_name, field_str, make_dirs_if_not_present)
                 parsed_fields[field_name] = field_str
 
+        for field_name in cls.yes_no_fields:
+            field_str = field_strings[field_name]
+            parsed_fields[field_name] = True if field_str == "yes" else False
 
         return parsed_fields
 
@@ -428,6 +431,7 @@ class SoaxRunSetupForm(SetupForm):
 
     file_fields = ["batch_soax_path"]
     pos_int_fields = ["workers"]
+    yes_no_fields = ["use_subdirs"]
 
     def configure(self, soax_run_settings):
         self.add(npyscreen.FixedText,
