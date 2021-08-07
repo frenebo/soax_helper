@@ -184,7 +184,7 @@ class SetupForm(npyscreen.Form):
 
         return parsed_fields
 
-    def configure(self, settings);
+    def configure(self, settings):
         raise NotImplementedError()
 
     def getFieldStrings(self):
