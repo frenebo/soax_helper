@@ -125,7 +125,7 @@ class SetupForm(npyscreen.Form):
 
         for field_name in cls.file_fields:
             field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str)
+            check_file_field(field_name, field_str)
             parsed_fields[field_name] = field_str
 
         for field_name in cls.pos_float_fields:
