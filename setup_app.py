@@ -194,7 +194,7 @@ class SetupForm(npyscreen.Form):
         raise NotImplementedError()
 
 
-class ZRescaleSetupForm(npyscreen.Form):
+class ZRescaleSetupForm(SetupForm):
     dir_fields = ["source_tiff_dir", "target_tiff_dir"]
     pos_float_fields = ["rescale_factor"]
     file_fields = ["batch_resample_path"]
@@ -236,7 +236,7 @@ class ZRescaleSetupForm(npyscreen.Form):
         self.parentApp.ZRescaleSetupDone(self.getFieldStrings())
 
 
-class XYRescaleSetupForm(npyscreen.Form):
+class XYRescaleSetupForm(SetupForm):
     dir_fields = ["source_tiff_dir", "target_tiff_dir"]
     pos_float_fields = ["rescale_factor"]
 
@@ -278,7 +278,7 @@ class XYRescaleSetupForm(npyscreen.Form):
 
         self.parentApp.XYRescaleSetupDone(self.getFieldStrings())
 
-class AutoConstrastSetupForm(npyscreen.Form):
+class AutoConstrastSetupForm(SetupForm):
     percentage_fields = ["min_cutoff_percent", "max_cutoff_percent"]
     dir_fields = ["source_tiff_dir", "target_tiff_dir"]
 
@@ -333,7 +333,7 @@ class AutoConstrastSetupForm(npyscreen.Form):
 
         self.parentApp.autoContrastSetupDone(self.getFieldStrings())
 
-class SectioningSetupForm(npyscreen.Form):
+class SectioningSetupForm(SetupForm):
     pos_int_fields = ["section_max_size"]
     dir_fields = ["source_tiff_dir", "target_sectioned_tiff_dir"]
 
@@ -374,7 +374,7 @@ class SectioningSetupForm(npyscreen.Form):
 
         self.parentApp.sectioningSetupDone(self.getFieldStrings())
 
-class ParamsSetupForm(npyscreen.Form):
+class ParamsSetupForm(SetupForm):
     arg_or_range_fields = ["alpha", "beta", "min_foreground", "ridge_threshold"]
     dir_fields = ["params_save_dir"]
 
@@ -426,7 +426,7 @@ class ParamsSetupForm(npyscreen.Form):
 
         self.parentApp.paramsSetupDone(self.getFieldStrings())
 
-class SoaxRunSetupForm(npyscreen.Form):
+class SoaxRunSetupForm(SetupForm):
     dir_fields = [
         "source_tiff_dir",
         "target_snakes_dir",
@@ -495,7 +495,7 @@ class SoaxRunSetupForm(npyscreen.Form):
 
         self.parentApp.soaxRunSetupDone(self.getFieldStrings())
 
-class SnakesToJsonSetupForm(npyscreen.Form):
+class SnakesToJsonSetupForm(SetupForm):
     pos_int_fields = ["subdir_depth"]
     dir_fields = ["source_snakes_dir", "target_json_dir"]
 
@@ -537,7 +537,7 @@ class SnakesToJsonSetupForm(npyscreen.Form):
 
         self.parentApp.snakesToJsonSetupDone(self.getFieldStrings())
 
-class JoinSectionedSnakesSetupForm(npyscreen.Form):
+class JoinSectionedSnakesSetupForm(SetupForm):
     pos_int_fields = ["source_jsons_depth"]
     dir_fields = ["source_json_dir", "target_json_dir"]
 
@@ -581,7 +581,7 @@ class JoinSectionedSnakesSetupForm(npyscreen.Form):
 
         self.parentApp.joinSectionedSnakesSetupDone(self.getFieldStrings())
 
-class MakeSnakeImagesSetupForm(npyscreen.Form):
+class MakeSnakeImagesSetupForm(SetupForm):
     pos_int_fields = ["snake_files_depth", "height", "width"]
     dir_fields = ["source_json_dir", "target_jpeg_dir"]
     optional_dir_fields = ["background_images_dir"]
@@ -642,7 +642,7 @@ class MakeSnakeImagesSetupForm(npyscreen.Form):
 
         self.parentApp.makeSnakeImagesSetupDone(self.getFieldStrings())
 
-class MakeSnakeVideosSetupForm(npyscreen.Form):
+class MakeSnakeVideosSetupForm(SetupForm):
     dir_fields = ["source_jpeg_dir", "target_mp4_dir"]
     pos_int_fields = ["source_images_depth"]
 
