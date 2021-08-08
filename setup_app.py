@@ -361,7 +361,7 @@ class ParamsSetupForm(SetupForm):
 
     def __init__(self, *args, **kwargs):
         super(ParamsSetupForm, self).__init__(
-            minimum_lines=40,
+            minimum_lines=30,
             *args,
             **kwargs,
         )
