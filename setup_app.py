@@ -57,7 +57,7 @@ def parse_pos_float(field_name, field_str):
     return val_float
 
 
-class StepsSetupForm(npyscreen.FormMultiPage):
+class StepsSetupForm(npyscreen.Form):
     def configure(self):
         self.select_steps = self.add(
             npyscreen.TitleMultiSelect,
@@ -359,6 +359,13 @@ class ParamsSetupForm(SetupForm):
     ]
     dir_fields = ["params_save_dir"]
 
+    def __init__(self, *args, **kwargs):
+        super(ParamsSetupForm, self).__init__(
+            minimum_lines=40,
+            *args,
+            **kwargs,
+        )
+
     def configure(self, params_settings):
         self.setup_done_func = self.parentApp.paramsSetupDone
         self.add(npyscreen.FixedText,
@@ -381,7 +388,6 @@ class ParamsSetupForm(SetupForm):
             value=params_settings["min_foreground"])
         self.field_ridge_threshold = self.add(npyscreen.TitleText, name="ridge_threshold",
             value=params_settings["ridge_threshold"])
-        self.add_page()
         self.field_min_snake_length = self.add(npyscreen.TitleText, name="min_snake_length",
             value=params_settings["min_snake_length"])
         self.field_gaussian_std = self.add(npyscreen.TitleText, name="gaussian_std",
