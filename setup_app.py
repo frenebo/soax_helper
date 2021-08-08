@@ -546,6 +546,7 @@ class MakeSnakeImagesSetupForm(SetupForm):
     pos_int_fields = ["snake_files_depth", "height", "width"]
     dir_fields = ["source_json_dir", "target_jpeg_dir"]
     optional_dir_fields = ["background_images_dir"]
+    yes_no_fields = ["use_colors"]
 
     def configure(self, make_snake_images_settings):
         self.setup_done_func = self.parentApp.makeSnakeImagesSetupDone
