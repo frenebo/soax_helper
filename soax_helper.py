@@ -75,10 +75,10 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             gamma_start_stop_step=parsed_params_settings["gamma"],
             min_foreground_start_stop_step=parsed_params_settings["min_foreground"],
             ridge_threshold_start_stop_step=parsed_params_settings["ridge_threshold"],
-            min_snake_length_start_stop_step=parsed_param_settings["min_snake_length"],
-            gaussian_std_start_stop_step=parsed_param_settings["gaussian_std"],
-            snake_point_spacing_start_stop_step=parsed_param_settings["snake_point_spacing"],
-            external_factor_start_stop_step=parsed_param_settings["external_factor"],
+            min_snake_length_start_stop_step=parsed_params_settings["min_snake_length"],
+            gaussian_std_start_stop_step=parsed_params_settings["gaussian_std"],
+            snake_point_spacing_start_stop_step=parsed_params_settings["snake_point_spacing"],
+            external_factor_start_stop_step=parsed_params_settings["external_factor"],
             logger=logger,
         )
     elif action_name == "run_soax":
