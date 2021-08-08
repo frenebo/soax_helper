@@ -70,10 +70,15 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         parsed_params_settings = ParamsSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
         create_param_files(
             parsed_params_settings["params_save_dir"],
-            parsed_params_settings["alpha"],
-            parsed_params_settings["beta"],
-            parsed_params_settings["min_foreground"],
-            parsed_params_settings["ridge_threshold"],
+            alpha_start_stop_step=parsed_params_settings["alpha"],
+            beta_start_stop_step=parsed_params_settings["beta"],
+            gamma_start_stop_step=parsed_params_settings["gamma"],
+            min_foreground_start_stop_step=parsed_params_settings["min_foreground"],
+            ridge_threshold_start_stop_step=parsed_params_settings["ridge_threshold"],
+            min_snake_length_start_stop_step=parsed_param_settings["min_snake_length"],
+            gaussian_std_start_stop_step=parsed_param_settings["gaussian_std"],
+            snake_point_spacing_start_stop_step=parsed_param_settings["snake_point_spacing"],
+            external_factor_start_stop_step=parsed_param_settings["external_factor"],
             logger=logger,
         )
     elif action_name == "run_soax":

@@ -370,7 +370,17 @@ class SectioningSetupForm(SetupForm):
         self.parentApp.sectioningSetupDone(self.getFieldStrings())
 
 class ParamsSetupForm(SetupForm):
-    arg_or_range_fields = ["alpha", "beta", "min_foreground", "ridge_threshold"]
+    arg_or_range_fields = [
+        "alpha",
+        "beta",
+        "gamma",
+        "min_foreground",
+        "ridge_threshold",
+        "min_snake_length",
+        "gaussian_std",
+        "snake_point_spacing",
+        "external_factor",
+    ]
     dir_fields = ["params_save_dir"]
 
     def configure(self, params_settings):
@@ -388,10 +398,20 @@ class ParamsSetupForm(SetupForm):
             value=params_settings["alpha"])
         self.field_beta            = self.add(npyscreen.TitleText, name="beta",
             value=params_settings["beta"])
+        self.field_beta            = self.add(npyscreen.TitleText, name="gamma",
+            value=params_settings["gamma"])
         self.field_min_foreground  = self.add(npyscreen.TitleText, name="min_foreground",
             value=params_settings["min_foreground"])
         self.field_ridge_threshold = self.add(npyscreen.TitleText, name="ridge_threshold",
             value=params_settings["ridge_threshold"])
+        self.field_min_snake_length = self.add(npyscreen.TitleText, name="min_snake_length",
+            value=params_settings["min_snake_length"])
+        self.field_gaussian_std = self.add(npyscreen.TitleText, name="gaussian_std",
+            value=params_settings["gaussian_std"])
+        self.field_snake_point_spacing = self.add(npyscreen.TitleText, name="snake_point_spacing",
+            value=params_settings["snake_point_spacing"])
+        self.field_external_factor = self.add(npyscreen.TitleText, name="external_factor",
+            value=params_settings["external_factor"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
@@ -405,8 +425,13 @@ class ParamsSetupForm(SetupForm):
             "params_save_dir": self.field_params_save_dir.value,
             "alpha": self.field_alpha.value,
             "beta": self.field_beta.value,
+            "gamma": self.field_gamma.value,
             "min_foreground": self.field_min_foreground.value,
             "ridge_threshold": self.field_ridge_threshold.value,
+            "min_snake_length": self.field_min_snake_length,
+            "gaussian_std": self.field_gaussian_std,
+            "snake_point_spacing": self.field_snake_point_spacing,
+            "external_factor": self.field_external_factor,
         }
 
     def afterEditing(self):
@@ -710,8 +735,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "params_save_dir": "./Params",
             "alpha": "0.01",
             "beta": "0.1",
-            "min_foreground": "10",
-            "ridge_threshold": "0.01",
+            "gamma": "2",
+            "min_foreground":"10",
+            "ridge_threshold":"0.01",
+            "min_snake_length":"20",
+            "gaussian_std":"0",
+            "snake_point_spacing":"5",
+            "external_factor":"1",
         }
         self.soax_run_settings = {
             "workers": "5",

@@ -81,46 +81,158 @@ def param_form_settings(start,stop,step):
 
     return {"decimal_places":decimal_places,"str_length": str_length}
 
+param_abbreviations = {
+    "alpha": "a",
+    "beta": "b",
+    "gamma": "g",
+    "min_foreground": "mf",
+    "ridge_threshold": "rt",
+    "min_snake_length": "msl",
+    "gaussian_std": "gstd",
+    "snake_point_spacing": "sos",
+    "external_factor": "exf",
+}
+
 def create_param_files(
     target_dir,
     alpha_start_stop_step,
     beta_start_stop_step,
+    gamma_start_stop_step,
     min_foreground_start_stop_step,
     ridge_threshold_start_stop_step,
+    min_snake_length_start_stop_step,
+    gaussian_std_start_stop_step,
+    snake_point_spacing_start_stop_step,
+    external_factor_start_stop_step,
     logger=PrintLogger
     ):
     alphas = create_range(**alpha_start_stop_step)
     betas = create_range(**beta_start_stop_step)
+    gammas = create_range(**gamma_start_stop_step)
     min_foregrounds = create_range(**min_foreground_start_stop_step)
     ridge_thresholds = create_range(**ridge_threshold_start_stop_step)
+    min_snake_lengths = create_range(**min_snake_length_start_stop_step)
+    gaussian_stds = create_range(**gaussian_std_start_stop_step)
+    snake_point_spacings = create_range(**snake_point_spacing_start_stop_step)
+    external_factors = create_range(**external_factor_start_stop_step)
 
     alpha_form_settings = param_form_settings(**alpha_start_stop_step)
     beta_form_settings = param_form_settings(**beta_start_stop_step)
+    gamma_form_settings = param_form_settings(**gamma_start_stop_step)
     min_foreground_settings = param_form_settings(**min_foreground_start_stop_step)
     ridge_threshold_settings = param_form_settings(**ridge_threshold_start_stop_step)
+    min_snake_length = param_form_settings(**min_snake_length_start_stop_step)
+    gaussian_std = param_form_settings(**gaussian_std_start_stop_step)
+    snake_point_spacing = param_form_settings(**snake_point_spacing_start_stop_step)
+    external_factor = param_form_settings(**external_factor_start_stop_step)
+    filename_template = "params"
+    # For varied param settings we name param files to tell them part
+    if len(alphas) > 1:
+        filename_template += "_{abbreviation}{{alpha:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["alpha"],
+            str_length=alpha_form_settings["str_length"],
+            decimals=alpha_form_settings["decimal_places"],
+        )
+    if len(betas) > 1:
+        filename_template += "_{abbreviation}{{beta:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["beta"],
+            str_length=beta_form_settings["str_length"],
+            decimals=beta_form_settings["decimal_places"],
+        )
+    if len(gammas) > 1:
+        filename_template += "_{abbreviation}{{gamma:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["gamma"],
+            str_length=gamma_form_settings["str_length"],
+            decimals=gamma_form_settings["decimal_places"],
+        )
+    if len(min_foregrounds) > 1:
+        filename_template += "_{abbreviation}{{min_foreground:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["min_foreground"],
+            str_length=min_foreground_settings["str_length"],
+            decimals=min_foreground_settings["decimal_places"],
+        )
+    if len(ridge_thresholds) > 1:
+        filename_template += "_{abbreviation}{{ridge_threshold:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["ridge_threshold"],
+            str_length=ridge_threshold_settings["str_length"],
+            decimals=ridge_threshold_settings["decimal_places"],
+        )
+    if len(min_snake_lengths) > 1:
+        filename_template += "_{abbreviation}{{min_snake_length:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["min_snake_length"],
+            str_length=min_snake_length_settings["str_length"],
+            decimals=min_snake_length_settings["decimal_places"],
+        )
+    if len(gaussian_stds) > 1:
+        filename_template += "_{abbreviation}{{gaussian_std:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["gaussian_std"],
+            str_length=gaussian_std_settings["str_length"],
+            decimals=gaussian_std_settings["decimal_places"],
+        )
+    if len(snake_point_spacings) > 1:
+        filename_template += "_{abbreviation}{{snake_point_spacing:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["snake_point_spacing"],
+            str_length=snake_point_spacing_settings["str_length"],
+            decimals=snake_point_spacing_settings["decimal_places"],
+        )
+    if len(external_factors) > 1:
+        filename_template += "_{abbreviation}{{external_factor:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["external_factor"],
+            str_length=external_factor_settings["str_length"],
+            decimals=external_factor_settings["decimal_places"],
+        )
 
-    filename_template = "params_a{{alpha:0{}.{}f}}_b{{beta:0{}.{}f}}_mf{{min_foreground:0{}.{}f}}_rt{{ridge_threshold:0{}.{}f}}.txt".format(
-        alpha_form_settings["str_length"],
-        alpha_form_settings["decimal_places"],
-        beta_form_settings["str_length"],
-        beta_form_settings["decimal_places"],
-        min_foreground_settings["str_length"],
-        min_foreground_settings["decimal_places"],
-        ridge_threshold_settings["str_length"],
-        ridge_threshold_settings["decimal_places"],
-    )
+    filename_template += ".txt"
+    # raise Exception("Not done")
+    # filename_template = "params_a{{alpha:0{}.{}f}}_b{{beta:0{}.{}f}}_mf{{min_foreground:0{}.{}f}}_rt{{ridge_threshold:0{}.{}f}}.txt".format(
+    #     alpha_form_settings["str_length"],
+    #     alpha_form_settings["decimal_places"],
+    #     beta_form_settings["str_length"],
+    #     beta_form_settings["decimal_places"],
+    #     min_foreground_settings["str_length"],
+    #     min_foreground_settings["decimal_places"],
+    #     ridge_threshold_settings["str_length"],
+    #     ridge_threshold_settings["decimal_places"],
+    # )
     logger.log("Using param filename template {}".format(filename_template))
 
     # all possible combinations of these parameters
-    param_combinations = itertools.product(alphas,betas,min_foregrounds,ridge_thresholds)
+    param_combinations = itertools.product(
+        alphas,
+        betas,
+        gammas,
+        min_foregrounds,
+        ridge_thresholds,
+        min_snake_lengths,
+        gaussian_stds,
+        snake_point_spacings,
+        external_factors,
+    )
+    logger.log("Creating {} different param combinations".format(len(param_combinations)))
 
-    for alpha,beta,min_foreground,ridge_threshold in param_combinations:
+    for (
+        alpha,
+        beta,
+        gamma,
+        min_foreground,
+        ridge_threshold,
+        min_snake_length,
+        gaussian_std,
+        snake_point_spacing,
+        external_factor,
+    ) in param_combinations:
         params_filename = filename_template.format(
             alpha=alpha,
             beta=beta,
+            gamma=gamma,
             min_foreground=min_foreground,
             ridge_threshold=ridge_threshold,
+            min_snake_length=min_snake_length,
+            gaussian_std=gaussian_std,
+            snake_point_spacing=snake_point_spacing,
+            external_factor=external_factor,
         )
+
 
         fp = os.path.join(target_dir, params_filename)
 
@@ -135,32 +247,32 @@ def create_param_files(
             file.write(params_text)
 
 
-if __name__ == "__main__":
-    default_alpha = decimal.Decimal("0.01")
-    default_beta = decimal.Decimal("0.1")
-    default_min_foreground = decimal.Decimal("0")
-    default_ridge_threshold = decimal.Decimal("0.01")
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('target_dir',type=readable_dir,help='Directory for putting created parameter files')
-    parser.add_argument('--alpha',
-                        type=arg_or_range,
-                        default={"start":default_alpha,"stop":default_alpha,"step":decimal.Decimal(0)})
-    parser.add_argument('--beta',
-                        type=arg_or_range,
-                        default={"start":default_beta,"stop":default_beta,"step":decimal.Decimal(0)})
-    parser.add_argument('--min_foreground',
-                        type=arg_or_range,
-                        default={"start":default_min_foreground,"stop":default_min_foreground,"step":decimal.Decimal(0)})
-    parser.add_argument('--ridge_threshold',
-                        type=arg_or_range,
-                        default={"start":default_ridge_threshold,"stop":default_ridge_threshold,"step":decimal.Decimal(0)})
+# if __name__ == "__main__":
+#     default_alpha = decimal.Decimal("0.01")
+#     default_beta = decimal.Decimal("0.1")
+#     default_min_foreground = decimal.Decimal("0")
+#     default_ridge_threshold = decimal.Decimal("0.01")
+#     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+#     parser.add_argument('target_dir',type=readable_dir,help='Directory for putting created parameter files')
+#     parser.add_argument('--alpha',
+#                         type=arg_or_range,
+#                         default={"start":default_alpha,"stop":default_alpha,"step":decimal.Decimal(0)})
+#     parser.add_argument('--beta',
+#                         type=arg_or_range,
+#                         default={"start":default_beta,"stop":default_beta,"step":decimal.Decimal(0)})
+#     parser.add_argument('--min_foreground',
+#                         type=arg_or_range,
+#                         default={"start":default_min_foreground,"stop":default_min_foreground,"step":decimal.Decimal(0)})
+#     parser.add_argument('--ridge_threshold',
+#                         type=arg_or_range,
+#                         default={"start":default_ridge_threshold,"stop":default_ridge_threshold,"step":decimal.Decimal(0)})
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    create_param_files(
-        args.target_dir,
-        args.alpha,
-        args.beta,
-        args.min_foreground,
-        args.ridge_threshold,
-    )
+#     create_param_files(
+#         args.target_dir,
+#         args.alpha,
+#         args.beta,
+#         args.min_foreground,
+#         args.ridge_threshold,
+#     )
