@@ -113,6 +113,7 @@ class SetupForm(npyscreen.Form):
     arg_or_range_fields = []
     file_fields = []
     optional_dir_fields = []
+    yes_no_fields = []
 
     @classmethod
     def parseSettings(cls, field_strings, make_dirs_if_not_present=False):
