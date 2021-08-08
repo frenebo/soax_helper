@@ -412,10 +412,10 @@ class ParamsSetupForm(SetupForm):
             "gamma": self.field_gamma.value,
             "min_foreground": self.field_min_foreground.value,
             "ridge_threshold": self.field_ridge_threshold.value,
-            "min_snake_length": self.field_min_snake_length,
-            "gaussian_std": self.field_gaussian_std,
-            "snake_point_spacing": self.field_snake_point_spacing,
-            "external_factor": self.field_external_factor,
+            "min_snake_length": self.field_min_snake_length.value,
+            "gaussian_std": self.field_gaussian_std.value,
+            "snake_point_spacing": self.field_snake_point_spacing.value,
+            "external_factor": self.field_external_factor.value,
         }
 
 class SoaxRunSetupForm(SetupForm):
