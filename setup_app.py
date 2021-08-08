@@ -382,7 +382,7 @@ class ParamsSetupForm(SetupForm):
             value=params_settings["alpha"])
         self.field_beta            = self.add(npyscreen.TitleText, name="beta",
             value=params_settings["beta"])
-        self.field_beta            = self.add(npyscreen.TitleText, name="gamma",
+        self.field_gamma            = self.add(npyscreen.TitleText, name="gamma",
             value=params_settings["gamma"])
         self.field_min_foreground  = self.add(npyscreen.TitleText, name="min_foreground",
             value=params_settings["min_foreground"])
