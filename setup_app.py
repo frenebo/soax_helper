@@ -197,6 +197,8 @@ class ZRescaleSetupForm(SetupForm):
     def configure(self, z_rescale_settings):
         self.add(npyscreen.FixedText,
             value="Rescale z-axis depth of images using SOAX batch_resample. Useful if making images smaller or correcting for z-slice size")
+        self.field_batch_resample_path = self.add(npyscreen.TitleFilename, name="batch_resample_path",
+            value=z_rescale_settings["batch_resample_path"])
         self.field_source_tiff_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
             value=z_rescale_settings["source_tiff_dir"])
         self.field_target_tiff_dir = self.add(npyscreen.TitleFilename, name="target_tiff_dir",
