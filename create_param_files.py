@@ -208,7 +208,7 @@ def create_param_files(
         snake_point_spacings,
         external_factors,
     )
-    logger.log("Creating {} different param combinations".format(len(list(param_combinations))))
+    # logger.log("Creating {} different param combinations".format(len(list(param_combinations))))
 
     for (
         alpha,
