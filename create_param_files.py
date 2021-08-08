@@ -121,10 +121,10 @@ def create_param_files(
     gamma_form_settings = param_form_settings(**gamma_start_stop_step)
     min_foreground_settings = param_form_settings(**min_foreground_start_stop_step)
     ridge_threshold_settings = param_form_settings(**ridge_threshold_start_stop_step)
-    min_snake_length = param_form_settings(**min_snake_length_start_stop_step)
-    gaussian_std = param_form_settings(**gaussian_std_start_stop_step)
-    snake_point_spacing = param_form_settings(**snake_point_spacing_start_stop_step)
-    external_factor = param_form_settings(**external_factor_start_stop_step)
+    min_snake_length_settings = param_form_settings(**min_snake_length_start_stop_step)
+    gaussian_std_settings = param_form_settings(**gaussian_std_start_stop_step)
+    snake_point_spacing_settings = param_form_settings(**snake_point_spacing_start_stop_step)
+    external_factor_settings = param_form_settings(**external_factor_start_stop_step)
     filename_template = "params"
     # For varied param settings we name param files to tell them part
     if len(alphas) > 1:
