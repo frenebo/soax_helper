@@ -180,6 +180,12 @@ class SetupForm(npyscreen.Form):
 
         return parsed_fields
 
+    def __init__(self, *args, **kwargs):
+        # Should be set in configure of form classes
+        self.setup_done_func = None
+
+        super(SetupForm, self).__init__(*args, **kwargs)
+
     def configure(self, settings):
         raise NotImplementedError()
 
@@ -187,8 +193,18 @@ class SetupForm(npyscreen.Form):
         raise NotImplementedError()
 
     def afterEditing(self):
-        raise NotImplementedError()
+        # option zero is "yes"
+        make_dirs_if_not_present = 0 in self.create_if_not_present.value
 
+        try:
+            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
+        except ParseException as e:
+            npyscreen.notify_confirm(str(e),editw=1)
+            return
+        if self.setup_done_func is None:
+            raise Exception("Missing setup_done_func to call with argument strings")
+
+        self.setup_done_func(self.getFieldStrings())
 
 class ZRescaleSetupForm(SetupForm):
     dir_fields = ["source_tiff_dir", "target_tiff_dir"]
@@ -196,6 +212,8 @@ class ZRescaleSetupForm(SetupForm):
     file_fields = ["batch_resample_path"]
 
     def configure(self, z_rescale_settings):
+        self.setup_done_func = self.parentApp.ZRescaleSetupDone
+
         self.add(npyscreen.FixedText,
             value="Rescale z-axis depth of images using SOAX batch_resample. Useful if making images smaller or correcting for z-slice size")
         self.field_batch_resample_path = self.add(npyscreen.TitleFilename, name="batch_resample_path",
@@ -221,25 +239,12 @@ class ZRescaleSetupForm(SetupForm):
             "rescale_factor": self.field_rescale_factor.value,
         }
 
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.ZRescaleSetupDone(self.getFieldStrings())
-
-
 class XYRescaleSetupForm(SetupForm):
     dir_fields = ["source_tiff_dir", "target_tiff_dir"]
     pos_float_fields = ["rescale_factor"]
 
     def configure(self, xy_rescale_settings):
-
+        self.setup_done_func = self.parentApp.XYRescaleSetupDone
         self.add(npyscreen.FixedText,
             value="Rescale x and y width/height of images in source directory by factor (depth dimension unaffected for 3D images)")
         self.add(npyscreen.FixedText,
@@ -264,23 +269,13 @@ class XYRescaleSetupForm(SetupForm):
             "rescale_factor": self.field_rescale_factor.value,
         }
 
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.XYRescaleSetupDone(self.getFieldStrings())
-
 class AutoConstrastSetupForm(SetupForm):
     percentage_fields = ["min_cutoff_percent", "max_cutoff_percent"]
     dir_fields = ["source_tiff_dir", "target_tiff_dir"]
 
     def configure(self, auto_contrast_settings):
+        self.setup_done_func = self.parentApp.autoContrastSetupDone
+
         self.field_source_tiff_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
             value=auto_contrast_settings["source_tiff_dir"])
         self.field_target_tiff_dir = self.add(npyscreen.TitleFilename, name="target_tiff_dir",
@@ -319,23 +314,13 @@ class AutoConstrastSetupForm(SetupForm):
             "target_tiff_dir": self.field_target_tiff_dir.value,
         }
 
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.autoContrastSetupDone(self.getFieldStrings())
-
 class SectioningSetupForm(SetupForm):
     pos_int_fields = ["section_max_size"]
     dir_fields = ["source_tiff_dir", "target_sectioned_tiff_dir"]
 
     def configure(self, sectioning_settings):
+        self.setup_done_func = self.parentApp.sectioningSetupDone
+
         self.field_source_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
             value=sectioning_settings["source_tiff_dir"])
         self.field_sectioned_target_dir = self.add(npyscreen.TitleFilename, name="target_sectioned_tiff_dir",
@@ -360,18 +345,6 @@ class SectioningSetupForm(SetupForm):
             "section_max_size": self.field_section_max_size.value,
         }
 
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.sectioningSetupDone(self.getFieldStrings())
-
 class ParamsSetupForm(SetupForm):
     arg_or_range_fields = [
         "alpha",
@@ -387,6 +360,7 @@ class ParamsSetupForm(SetupForm):
     dir_fields = ["params_save_dir"]
 
     def configure(self, params_settings):
+        self.setup_done_func = self.parentApp.paramsSetupDone
         self.add(npyscreen.FixedText,
             value="Enter SOAX run parameters to try.")
         self.add(npyscreen.FixedText,
@@ -437,18 +411,6 @@ class ParamsSetupForm(SetupForm):
             "external_factor": self.field_external_factor,
         }
 
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.paramsSetupDone(self.getFieldStrings())
-
 class SoaxRunSetupForm(SetupForm):
     dir_fields = [
         "source_tiff_dir",
@@ -462,6 +424,7 @@ class SoaxRunSetupForm(SetupForm):
     yes_no_fields = ["use_subdirs"]
 
     def configure(self, soax_run_settings):
+        self.setup_done_func = self.parentApp.soaxRunSetupDone
         self.add(npyscreen.FixedText,
             value="note: workers field is number of batch_soax instances to run at once")
 
@@ -507,23 +470,12 @@ class SoaxRunSetupForm(SetupForm):
             "workers": self.field_worker_number.value,
         }
 
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.soaxRunSetupDone(self.getFieldStrings())
-
 class SnakesToJsonSetupForm(SetupForm):
     pos_int_fields = ["subdir_depth"]
     dir_fields = ["source_snakes_dir", "target_json_dir"]
 
     def configure(self, snakes_to_json_settings):
+        self.setup_done_func = self.parentApp.snakesToJsonSetupDone
         self.add(npyscreen.FixedText,
             value="Convert snakes from the SOAX's text output to JSON.")
 
@@ -549,23 +501,13 @@ class SnakesToJsonSetupForm(SetupForm):
             "subdir_depth": self.field_subdir_depth.value,
         }
 
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.snakesToJsonSetupDone(self.getFieldStrings())
-
 class JoinSectionedSnakesSetupForm(SetupForm):
     pos_int_fields = ["source_jsons_depth"]
     dir_fields = ["source_json_dir", "target_json_dir"]
 
     def configure(self, join_sectioned_snakes_settings):
+        self.setup_done_func = self.parentApp.joinSectionedSnakesSetupDone
+
         self.add(npyscreen.FixedText,
             value="Join JSON snake files from sections of an image")
         self.add(npyscreen.FixedText,
@@ -593,24 +535,14 @@ class JoinSectionedSnakesSetupForm(SetupForm):
             "source_jsons_depth": self.field_source_jsons_depth.value,
         }
 
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.joinSectionedSnakesSetupDone(self.getFieldStrings())
-
 class MakeSnakeImagesSetupForm(SetupForm):
     pos_int_fields = ["snake_files_depth", "height", "width"]
     dir_fields = ["source_json_dir", "target_jpeg_dir"]
     optional_dir_fields = ["background_images_dir"]
 
     def configure(self, make_snake_images_settings):
+        self.setup_done_func = self.parentApp.makeSnakeImagesSetupDone
+
         self.add(npyscreen.FixedText,
             value="Make videos from images in directories")
         self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
@@ -654,23 +586,12 @@ class MakeSnakeImagesSetupForm(SetupForm):
             "background_images_dir": self.field_background_images_dir.value,
         }
 
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.makeSnakeImagesSetupDone(self.getFieldStrings())
-
 class MakeSnakeVideosSetupForm(SetupForm):
     dir_fields = ["source_jpeg_dir", "target_mp4_dir"]
     pos_int_fields = ["source_images_depth"]
 
     def configure(self, make_snake_videos_settings):
+        self.setup_done_func = self.parentApp.makeSnakeVideosSetupDone
         self.add(npyscreen.FixedText,
             value="Make videos from images in directories")
         self.field_source_jpeg_dir = self.add(npyscreen.TitleFilename, name="source_jpeg_dir",
@@ -695,18 +616,6 @@ class MakeSnakeVideosSetupForm(SetupForm):
             "target_mp4_dir": self.field_target_mp4_dir.value,
             "source_images_depth": self.field_source_images_depth.value,
         }
-
-    def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
-
-        try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
-        except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
-
-        self.parentApp.makeSnakeVideosSetupDone(self.getFieldStrings())
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
