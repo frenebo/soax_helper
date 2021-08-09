@@ -362,7 +362,7 @@ class ParamsSetupForm(SetupForm):
 
     def __init__(self, *args, **kwargs):
         super(ParamsSetupForm, self).__init__(
-            minimum_lines=30,
+            minimum_lines=36,
             *args,
             **kwargs,
         )
@@ -398,11 +398,15 @@ class ParamsSetupForm(SetupForm):
         self.field_external_factor = self.add(npyscreen.TitleText, name="external_factor",
             value=params_settings["external_factor"])
         self.add(npyscreen.FixedText,
-            value="Intensity scaling controls how SOAX rescales image brightness. 0=automatic, 1.0=use image brightness")
+            value="Intensity scaling controls how SOAX rescales image brightness. 0=automatic, 1.0=use image original brightness")
         self.add(npyscreen.FixedText,
-            value="If input images have been brightness-scaled already, we don't want SOAX to rescale brightness. In this case, set to 1.0")
+            value="If input images have been contrast-scaled in a previous step, we don't want SOAX to rescale brightness")
         self.add(npyscreen.FixedText,
-            value="If input images are sectioned before feeding to SOAX, they should be contrast rescaled before sectioning, so all sections have same contrast setting")
+            value="In this case, set intensity_scaling to 1.0.")
+        self.add(npyscreen.FixedText,
+            value="If input images are sectioned before feeding to SOAX, they should be contrast rescaled")
+        self.add(npyscreen.FixedText,
+            value="before sectioning, so all sections have same contrast setting")
         self.field_intensity_scaling = self.add(npyscreen.TitleText, name="intensity_scaling",
             value=params_settings["intensity_scaling"])
 
