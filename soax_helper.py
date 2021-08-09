@@ -200,6 +200,6 @@ if __name__ == "__main__":
             for err in record_logger.errors:
                 PrintLogger.error("  " + err)
 
-    for i, (step_name, seconds_taken) in all_times:
+    for i, (step_name, seconds_taken) in enumerate(all_times):
         print("Step #{}, '{}' took {} seconds".format(i + 1, step_name, seconds_taken))
 
