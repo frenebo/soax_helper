@@ -1,5 +1,6 @@
 from snakeutils.files import readable_dir, has_one_of_extensions
 from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
+from skimage.transform import resize
 import os
 import argparse
 import matplotlib.pyplot as plt
@@ -40,10 +41,13 @@ def rescale_multi_dim_arr(arr,rescale_factor,logger):
 
         new_arr = np.zeros((new_height,new_width,depth),dtype=arr.dtype)
         for i in range(depth):
-            new_arr[:,:,i] = cv2.resize(arr[:,:,i],dsize=(new_width,new_height))
+            # pil_frame = Image
+            # new_arr[:,:,i] = cv2.resize(arr[:,:,i],dsize=(new_width,new_height))
+            new_arr[:,:,i] = resize(arr[:,:,i],(new_width,new_height))
     else:
         logger.log("  Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
-        new_arr = cv2.resize(arr,dsize=(new_width,new_height), interpolation=cv2.INTER_CUBIC)
+        new_arr[:,:,i] = resize(arr[:,:,i],(new_width,new_height))
+        # new_arr = cv2.resize(arr,dsize=(new_width,new_height), interpolation=cv2.INTER_CUBIC)
 
     return new_arr
 
