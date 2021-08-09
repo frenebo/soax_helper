@@ -23,6 +23,7 @@ def resize_frame(frame_arr, new_dims):
     print("RESIZED FLOAT min: {}, max: {}".format(np.min(resized_float_arr), np.max(resized_float_arr)))
     resized_orig_type_arr = (resized_float_arr * data_type_max).astype(frame_arr.dtype)
     print("RESIZED ORIG type min: {}, max: {}".format(np.min(resized_orig_type_arr), np.max(resized_orig_type_arr)))
+    return resized_orig_type_arr
 
 def rescale_multi_dim_arr(arr,rescale_factor,logger):
     if len(arr.shape) > 3:
