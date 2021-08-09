@@ -80,9 +80,9 @@ class StepsSetupForm(npyscreen.Form):
         )
 
     def afterEditing(self):
+        do_auto_contrast         = 2 in self.select_steps.value
         do_z_rescale             = 0 in self.select_steps.value
         do_xy_rescale            = 1 in self.select_steps.value
-        do_auto_contrast         = 2 in self.select_steps.value
         do_section               = 3 in self.select_steps.value
         do_create_params         = 4 in self.select_steps.value
         do_run_soax              = 5 in self.select_steps.value
@@ -92,9 +92,9 @@ class StepsSetupForm(npyscreen.Form):
         do_make_snake_videos     = 9 in self.select_steps.value
 
         self.parentApp.stagesSelected(
+            do_auto_contrast,
             do_z_rescale,
             do_xy_rescale,
-            do_auto_contrast,
             do_section,
             do_create_params,
             do_run_soax,
@@ -629,6 +629,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
         # Default settings to show in forms
         # Not all of these will necessarily be used if self.do_xy_rescale, self.do_auto_contrast, self.do_section, etc are False
+        self.auto_contrast_settings = {
+            "max_cutoff_percent": "95.5",
+            "min_cutoff_percent": "0.1",
+            "source_tiff_dir": "",
+            "target_tiff_dir": "./AutoContrastedTIFFs",
+        }
         self.z_rescale_settings = {
             "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax/batch_resample",
             "source_tiff_dir": "",
@@ -639,12 +645,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_tiff_dir": "",
             "target_tiff_dir": "./XYRescaledTIFFs",
             "rescale_factor": "1.0",
-        }
-        self.auto_contrast_settings = {
-            "max_cutoff_percent": "95.5",
-            "min_cutoff_percent": "0.1",
-            "source_tiff_dir": "",
-            "target_tiff_dir": "./AutoContrastedTIFFs",
         }
         self.sectioning_settings = {
             "source_tiff_dir": "",
@@ -702,6 +702,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def getActionConfigs(self):
         action_configs = []
+        if self.do_auto_contrast:
+            action_configs.append({
+                "action": "auto_contrast_tiffs",
+                "settings": self.auto_contrast_settings,
+            })
         if self.do_z_rescale:
             action_configs.append({
                 "action": "z_rescale_tiffs",
@@ -711,11 +716,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             action_configs.append({
                 "action": "xy_rescale_tiffs",
                 "settings": self.xy_rescale_settings,
-            })
-        if self.do_auto_contrast:
-            action_configs.append({
-                "action": "auto_contrast_tiffs",
-                "settings": self.auto_contrast_settings,
             })
         if self.do_section:
             action_configs.append({
@@ -755,9 +755,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         return action_configs
 
     def stagesSelected(self,
+        do_auto_contrast,
         do_z_rescale,
         do_xy_rescale,
-        do_auto_contrast,
         do_section,
         do_create_params,
         do_run_soax,
@@ -766,9 +766,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_make_snake_images,
         do_make_snake_videos,
         ):
+        self.do_auto_contrast = do_auto_contrast
         self.do_z_rescale = do_z_rescale
         self.do_xy_rescale = do_xy_rescale
-        self.do_auto_contrast = do_auto_contrast
         self.do_section = do_section
         self.do_create_params = do_create_params
         self.do_run_soax = do_run_soax
@@ -778,12 +778,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_make_snake_videos = do_make_snake_videos
 
         self.menu_functions = []
+        if self.do_auto_contrast:
+            self.menu_functions.append(self.startAutoContrastSetup)
         if self.do_z_rescale:
             self.menu_functions.append(self.startZRescaleSetup)
         if self.do_xy_rescale:
             self.menu_functions.append(self.startXYRescaleSetup)
-        if self.do_auto_contrast:
-            self.menu_functions.append(self.startAutoContrastSetup)
         if self.do_section:
             self.menu_functions.append(self.startSectioningSetup)
         if self.do_create_params:
@@ -825,6 +825,28 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             next_menu_func = self.menu_functions.pop(0)
             next_menu_func()
 
+    def startAutoContrastSetup(self):
+        self.addForm('AUTO_CONTRAST_SETUP', AutoConstrastSetupForm, name='Auto Contrasting Setup')
+        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_settings)
+        self.setNextForm('AUTO_CONTRAST_SETUP')
+
+    def autoContrastSetupDone(self, auto_contrast_settings):
+        self.auto_contrast_settings = auto_contrast_settings
+        self.xy_rescale_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
+        self.z_rescale_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
+        self.sectioning_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
+        self.soax_run_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
+
+        if self.make_snake_images_settings["width"] == "":
+            self.auto_set_width_height_images_settings(
+                auto_contrast_settings["source_tiff_dir"],
+                0,
+            )
+        if self.make_snake_images_settings["background_images_dir"] == "":
+            self.make_snake_images_settings["background_images_dir"] = auto_contrast_settings["target_tiff_dir"]
+
+        self.goToNextMenu()
+
     def startZRescaleSetup(self):
         self.addForm('Z_RESCALE_SETUP', ZRescaleSetupForm, name='Z Rescale Setup')
         self.getForm('Z_RESCALE_SETUP').configure(self.z_rescale_settings)
@@ -833,7 +855,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def ZRescaleSetupDone(self, z_rescale_settings):
         self.z_rescale_settings = z_rescale_settings
         self.xy_rescale_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
-        self.auto_contrast_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
+        # self.auto_contrast_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
         self.sectioning_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
 
@@ -847,7 +869,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def XYRescaleSetupDone(self, xy_rescale_settings):
         self.xy_rescale_settings = xy_rescale_settings
 
-        self.auto_contrast_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
+        # self.auto_contrast_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
         self.sectioning_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
         if self.make_snake_images_settings["width"] == "":
@@ -864,26 +886,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         if self.make_snake_images_settings["background_images_dir"] == "":
             self.make_snake_images_settings["background_images_dir"] = xy_rescale_settings["target_tiff_dir"]
-
-        self.goToNextMenu()
-
-    def startAutoContrastSetup(self):
-        self.addForm('AUTO_CONTRAST_SETUP', AutoConstrastSetupForm, name='Auto Contrasting Setup')
-        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_settings)
-        self.setNextForm('AUTO_CONTRAST_SETUP')
-
-    def autoContrastSetupDone(self, auto_contrast_settings):
-        self.auto_contrast_settings = auto_contrast_settings
-        self.sectioning_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
-        self.soax_run_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
-
-        if self.make_snake_images_settings["width"] == "":
-            self.auto_set_width_height_images_settings(
-                auto_contrast_settings["source_tiff_dir"],
-                0,
-            )
-        if self.make_snake_images_settings["background_images_dir"] == "":
-            self.make_snake_images_settings["background_images_dir"] = auto_contrast_settings["target_tiff_dir"]
 
         self.goToNextMenu()
 
