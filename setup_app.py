@@ -851,6 +851,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.z_rescale_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
         self.sectioning_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
+        self.params_settings["intensity_scaling"] = "1.0"
 
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
