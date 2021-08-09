@@ -12,6 +12,15 @@ import tifffile
 import numpy as np
 from snakeutils.logger import PrintLogger
 
+def resize_frame(frame_arr, new_width, new_height):
+    data_type_max =  np.iinfo(frame_arr.dtype).max
+    float_frame_arr = frame_arr.astype('float64')
+    float_frame_arr = float_frame_arr / data_type_max
+    pil_img = Image.fromarray(float_frame_arr)
+    resized_pil_img = pil_img.resize((new_width, new_height), Image.ANTIALIAS)
+    resized_float_arr = np.array(resized_pil_img)
+    return (resized_float_arr * data_type_max).astype(frame_arr.dtype)
+
 def rescale_multi_dim_arr(arr,rescale_factor,logger):
     if len(arr.shape) > 3:
         logger.FAIL("Can't resize array with more than three dimensions")
@@ -43,10 +52,10 @@ def rescale_multi_dim_arr(arr,rescale_factor,logger):
         for i in range(depth):
             # pil_frame = Image
             # new_arr[:,:,i] = cv2.resize(arr[:,:,i],dsize=(new_width,new_height))
-            new_arr[:,:,i] = resize(arr[:,:,i],(new_width,new_height))
+            new_arr[:,:,i] = resize_fame(arr[:,:,i],(new_width,new_height))
     else:
         logger.log("  Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
-        new_arr = resize(arr,(new_width,new_height))
+        new_arr = resize_frame(arr,(new_width,new_height))
         # new_arr = cv2.resize(arr,dsize=(new_width,new_height), interpolation=cv2.INTER_CUBIC)
 
     return new_arr
