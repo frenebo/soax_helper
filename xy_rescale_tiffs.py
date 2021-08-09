@@ -20,6 +20,10 @@ def resize_frame(frame_arr, new_dims):
     pil_img = Image.fromarray(float_frame_arr)
     resized_pil_img = pil_img.resize(new_dims, Image.LANCZOS)
     resized_float_arr = np.array(resized_pil_img)
+    # Lanczos resize may give negative or greater than 1 pixel values, set these to 0 and 1 respectively
+    resized_float_arr[resized_float_arr < 0] = 0
+    resized_float_arr[resized_float_arr > 1] = 1
+
     print("RESIZED FLOAT min: {}, max: {}".format(np.min(resized_float_arr), np.max(resized_float_arr)))
     resized_orig_type_arr = (resized_float_arr * data_type_max).astype(frame_arr.dtype)
     print("RESIZED ORIG type min: {}, max: {}".format(np.min(resized_orig_type_arr), np.max(resized_orig_type_arr)))
