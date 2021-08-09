@@ -17,7 +17,7 @@ def resize_frame(frame_arr, new_dims):
     float_frame_arr = frame_arr.astype('float64')
     float_frame_arr = float_frame_arr / data_type_max
     pil_img = Image.fromarray(float_frame_arr)
-    resized_pil_img = pil_img.resize(new_dims, Image.ANTIALIAS)
+    resized_pil_img = pil_img.resize(new_dims, Image.LANCZOS)
     resized_float_arr = np.array(resized_pil_img)
     return (resized_float_arr * data_type_max).astype(frame_arr.dtype)
 
