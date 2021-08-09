@@ -65,9 +65,9 @@ class StepsSetupForm(npyscreen.Form):
             value = [4,5,6,8,9],
             name="Pick steps (spacebar to toggle)",
             values = [
+                "Auto Contrast Raw TIFFs",
                 "Rescale TIFFs in Z",
                 "Rescale TIFFs in X and Y",
-                "Auto Contrast Raw TIFFs",
                 "Section TIFFs before running SOAX",
                 "Create Parameter Files",
                 "Run SOAX",
@@ -80,9 +80,9 @@ class StepsSetupForm(npyscreen.Form):
         )
 
     def afterEditing(self):
-        do_auto_contrast         = 2 in self.select_steps.value
-        do_z_rescale             = 0 in self.select_steps.value
-        do_xy_rescale            = 1 in self.select_steps.value
+        do_auto_contrast         = 0 in self.select_steps.value
+        do_z_rescale             = 1 in self.select_steps.value
+        do_xy_rescale            = 2 in self.select_steps.value
         do_section               = 3 in self.select_steps.value
         do_create_params         = 4 in self.select_steps.value
         do_run_soax              = 5 in self.select_steps.value
