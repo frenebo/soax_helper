@@ -226,7 +226,7 @@ def create_param_files(
         gaussian_std,
         snake_point_spacing,
         external_factor,
-        inteensity_scaling
+        intensity_scaling,
     ) in param_combinations:
         params_filename = filename_template.format(
             alpha=alpha,
