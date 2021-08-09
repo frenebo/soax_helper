@@ -8,8 +8,10 @@ def create_params(
     min_snake_length=20,
     gaussian_std=0,
     snake_point_spacing=5,
-    external_factor=1):
-    params = """intensity-scaling	0
+    external_factor=1,
+    intensity_scaling=1.0, # Should be equal to one to skip auto intensity scaling
+    ):
+    params = """intensity-scaling	{intensity_scaling}
 gaussian-std	{gaussian_std}
 ridge-threshold	{ridge_threshold}
 maximum-foreground	65535
@@ -44,5 +46,6 @@ damp-z	false""".format(
         gaussian_std=gaussian_std,
         snake_point_spacing=snake_point_spacing,
         external_factor=external_factor,
+        intensity_scaling=intensity_scaling,
         )
     return params

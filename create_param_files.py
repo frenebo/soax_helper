@@ -55,11 +55,12 @@ def create_range(start,stop,step):
     current_val = start
     while True:
         vals.append(current_val)
-        if current_val > stop:
-            break
         current_val += step
 
-        if current_val >= stop:
+        if current_val > stop:
+            break
+
+        if current_val == stop and step != 0:
             vals.append(current_val)
             break
     return vals
@@ -128,12 +129,14 @@ def create_param_files(
     filename_template = "params"
     # For varied param settings we name param files to tell them part
     if len(alphas) > 1:
+        print("Alphas: {}".format(alphas))
         filename_template += "_{abbreviation}{{alpha:0{str_length}.{decimals}f}}".format(
             abbreviation=param_abbreviations["alpha"],
             str_length=alpha_form_settings["str_length"],
             decimals=alpha_form_settings["decimal_places"],
         )
     if len(betas) > 1:
+        print("Betas: {}".format(betas))
         filename_template += "_{abbreviation}{{beta:0{str_length}.{decimals}f}}".format(
             abbreviation=param_abbreviations["beta"],
             str_length=beta_form_settings["str_length"],
@@ -231,6 +234,7 @@ def create_param_files(
             gaussian_std=gaussian_std,
             snake_point_spacing=snake_point_spacing,
             external_factor=external_factor,
+            intensity_scaling=intensity_scaling,
         )
 
 
@@ -239,8 +243,14 @@ def create_param_files(
         params_text = create_params(
             alpha=alpha,
             beta=beta,
+            gamma=gamma,
             min_foreground=min_foreground,
             ridge_threshold=ridge_threshold,
+            min_snake_length=min_snake_length,
+            gaussian_std=gaussian_std,
+            snake_point_spacing=snake_point_spacing,
+            external_factor=external_factor,
+            intensity_scaling=intensity_scaling,
         )
 
         with open(fp,"w") as file:
