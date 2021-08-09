@@ -43,7 +43,7 @@ def rescale_multi_dim_arr(arr,rescale_factor,logger):
             new_arr[:,:,i] = cv2.resize(arr[:,:,i],dsize=(new_width,new_height))
     else:
         logger.log("  Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
-        new_arr = cv2.resize(arr,dsize=(new_width,new_height))
+        new_arr = cv2.resize(arr,dsize=(new_width,new_height), interpolation=cv2.INTER_CUBIC)
 
     return new_arr
 
