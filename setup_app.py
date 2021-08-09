@@ -356,6 +356,7 @@ class ParamsSetupForm(SetupForm):
         "gaussian_std",
         "snake_point_spacing",
         "external_factor",
+        "intensity_scaling",
     ]
     dir_fields = ["params_save_dir"]
 
@@ -396,6 +397,14 @@ class ParamsSetupForm(SetupForm):
             value=params_settings["snake_point_spacing"])
         self.field_external_factor = self.add(npyscreen.TitleText, name="external_factor",
             value=params_settings["external_factor"])
+        self.add(npyscreen.FixedText,
+            value="Intensity scaling controls how SOAX rescales image brightness. 0=automatic, 1.0=use image brightness")
+        self.add(npyscreen.FixedText,
+            value="If input images have been brightness-scaled already, we don't want SOAX to rescale brightness. In this case, set to 1.0")
+        self.add(npyscreen.FixedText,
+            value="If input images are sectioned before feeding to SOAX, they should be contrast rescaled before sectioning, so all sections have same contrast setting")
+        self.field_intensity_scaling = self.add(npyscreen.TitleText, name="intensity_scaling",
+            value=params_settings["intensity_scaling"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
@@ -416,6 +425,7 @@ class ParamsSetupForm(SetupForm):
             "gaussian_std": self.field_gaussian_std.value,
             "snake_point_spacing": self.field_snake_point_spacing.value,
             "external_factor": self.field_external_factor.value,
+            "intensity_scaling": self.field_intensity_scaling.value,
         }
 
 class SoaxRunSetupForm(SetupForm):
@@ -662,6 +672,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "gaussian_std":"0",
             "snake_point_spacing":"5",
             "external_factor":"1",
+            "intensity_scaling": "0",
         }
         self.soax_run_settings = {
             "workers": "5",
