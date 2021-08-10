@@ -32,15 +32,25 @@ def check_file_field(field_name, file_path):
     if not os.path.isfile(file_path):
         raise ParseException("'{}' is not a file".format(file_path))
 
-def parse_pos_int(field_name, field_str):
+def parse_int(field_name, field_str):
     if field_str == "":
         raise ParseException("'{}' is a required field".format(field_name))
     try:
         field_val = int(field_str)
     except ValueError as e:
         raise ParseException("Cannot parse '{}' value '{}' as integer".format(field_name,field_str))
+    return field_val
+
+def parse_pos_int(field_name, field_str):
+    field_val = parse_int(field_name, field_str)
     if field_val <= 0:
         raise ParseException("Field '{}' has invalid value '{}': must be positive integer".format(field_name, field_str))
+    return field_val
+
+def parse_non_neg_int(field_name, field_str):
+    field_val = parse_int(field_name, field_str)
+    if field_val < 0:
+        raise ParseException("Field '{}' has invalid value '{}': must be non negative integer".format(field_name, field_str))
     return field_val
 
 def parse_pos_float(field_name, field_str):
@@ -112,6 +122,7 @@ class SetupForm(npyscreen.Form):
     file_fields = []
     pos_float_fields = []
     percentage_fields = []
+    non_neg_int_fields = []
     pos_int_fields = []
     arg_or_range_fields = []
     file_fields = []
@@ -155,6 +166,10 @@ class SetupForm(npyscreen.Form):
         for field_name in cls.pos_int_fields:
             field_str = field_strings[field_name]
             parsed_fields[field_name] = parse_pos_int(field_name, field_str)
+
+        for field_name in cls.non_neg_int_fields:
+            field_str = field_strings[field_name]
+            parsed_fields[field_name] = parse_non_neg_int(field_name, field_str)
 
         for field_name in cls.arg_or_range_fields:
             field_str = field_strings[field_name]
@@ -498,7 +513,7 @@ class SoaxRunSetupForm(SetupForm):
         }
 
 class SnakesToJsonSetupForm(SetupForm):
-    pos_int_fields = ["subdir_depth"]
+    non_neg_int_fields = ["subdir_depth"]
     dir_fields = ["source_snakes_dir", "target_json_dir"]
 
     def configure(self, snakes_to_json_settings):
@@ -529,7 +544,7 @@ class SnakesToJsonSetupForm(SetupForm):
         }
 
 class JoinSectionedSnakesSetupForm(SetupForm):
-    pos_int_fields = ["source_jsons_depth"]
+    non_neg_int_fields = ["source_jsons_depth"]
     dir_fields = ["source_json_dir", "target_json_dir"]
 
     def configure(self, join_sectioned_snakes_settings):
@@ -563,7 +578,8 @@ class JoinSectionedSnakesSetupForm(SetupForm):
         }
 
 class MakeSnakeImagesSetupForm(SetupForm):
-    pos_int_fields = ["snake_files_depth", "height", "width"]
+    non_neg_int_fields = ["snake_files_depth"]
+    pos_int_fields = ["height", "width"]
     dir_fields = ["source_json_dir", "target_jpeg_dir"]
     optional_dir_fields = ["background_images_dir"]
     yes_no_fields = ["use_colors"]
@@ -616,7 +632,7 @@ class MakeSnakeImagesSetupForm(SetupForm):
 
 class MakeSnakeVideosSetupForm(SetupForm):
     dir_fields = ["source_jpeg_dir", "target_mp4_dir"]
-    pos_int_fields = ["source_images_depth"]
+    non_neg_int_fields = ["source_images_depth"]
 
     def configure(self, make_snake_videos_settings):
         self.setup_done_func = self.parentApp.makeSnakeVideosSetupDone
@@ -647,6 +663,7 @@ class MakeSnakeVideosSetupForm(SetupForm):
 
 class MakeOrientationFieldsSetupForm(SetupForm):
     dir_fields = ["source_json_dir", "target_data_dir"]
+    non_neg_int_fields = ["source_jsons_depth"]
 
     def configure(self, make_orientation_fields_settings):
         self.setup_done_func = self.parentApp.makeOrientationFieldsSetupDone
@@ -655,6 +672,8 @@ class MakeOrientationFieldsSetupForm(SetupForm):
             value=make_orientation_fields_settings["source_json_dir"])
         self.field_target_data_dir = self.add(npyscreen.TitleFilename, name="target_data_dir",
             value=make_orientation_fields_settings["target_data_dir"])
+        self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
+            value=make_orientation_fields_settings["source_jsons_depth"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
@@ -668,6 +687,7 @@ class MakeOrientationFieldsSetupForm(SetupForm):
         return {
             "source_json_dir": self.field_source_json_dir.value,
             "target_data_dir": self.field_target_data_dir.value,
+            "source_jsons_depth"]: self.field_source_jsons_depth.value,
         }
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
@@ -744,6 +764,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         }
         self.make_orientation_fields_settings = {
             "source_json_dir": "",
+            "source_jsons_depth": "1",
             "target_data_dir": "./OrientationFields",
         }
 

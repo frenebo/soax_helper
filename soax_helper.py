@@ -16,6 +16,7 @@ from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
 from make_snake_images import make_snake_images
 from make_videos import make_videos
+from make_orientation_fields import make_orientation_fields
 
 from setup_app import (
     SoaxSetupApp,
@@ -29,6 +30,7 @@ from setup_app import (
     JoinSectionedSnakesSetupForm,
     MakeSnakeImagesSetupForm,
     MakeSnakeVideosSetupForm,
+    MakeOrientationFieldsSetupForm,
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
@@ -132,6 +134,15 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_make_snake_videos_settings["source_jpeg_dir"],
             parsed_make_snake_videos_settings["target_mp4_dir"],
             parsed_make_snake_videos_settings["source_images_depth"],
+            logger=logger,
+        )
+    elif action_name == "make_orientation_fields":
+        parsed_make_orientation_fields_settings = MakeOrientationFieldsSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+
+        make_orientation_fields(
+            parsed_make_orientation_fields_settings["source_json_dir"],
+            parsed_make_orientation_fields_settings["target_data_dir"],
+            parsed_make_orientation_fields_settings["source_jsons_depth"],
             logger=logger,
         )
     else:

@@ -3,7 +3,7 @@ import sys
 import os
 import argparse
 from snakeutils.files import readable_dir, has_one_of_extensions, find_files_or_folders_at_depth
-from snakeutils.logger import PrintLogger, Colors
+from snakeutils.logger import PrintLogger
 
 def write_vid_for_dir_images(image_folder,video_path,logger):
     if not video_path.endswith(".mp4"):
