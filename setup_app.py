@@ -379,7 +379,7 @@ class ParamsSetupPage1Form(SetupForm):
 
     all_fields = dir_fields + arg_or_range_fields
 
-    def configure(self, params_settings):
+    def configure(self, params_page1_settings):
         self.setup_done_func = self.parentApp.paramsSetupPage1Done
         self.add(npyscreen.FixedText,
             value="Enter SOAX run parameters to try.")
@@ -389,20 +389,20 @@ class ParamsSetupPage1Form(SetupForm):
             value="If ranges are given, soax will be run multiple times, trying all combinations of parameter values")
 
         self.field_params_save_dir = self.add(npyscreen.TitleFilename, name="params_save_dir",
-            value=params_settings["params_save_dir"])
+            value=params_page1_settings["params_save_dir"])
 
         self.field_alpha           = self.add(npyscreen.TitleText, name="alpha",
-            value=params_settings["alpha"])
+            value=params_page1_settings["alpha"])
         self.field_beta            = self.add(npyscreen.TitleText, name="beta",
-            value=params_settings["beta"])
+            value=params_page1_settings["beta"])
         self.field_gamma            = self.add(npyscreen.TitleText, name="gamma",
-            value=params_settings["gamma"])
+            value=params_page1_settings["gamma"])
         self.field_min_foreground  = self.add(npyscreen.TitleText, name="min_foreground",
-            value=params_settings["min_foreground"])
+            value=params_page1_settings["min_foreground"])
         self.field_ridge_threshold = self.add(npyscreen.TitleText, name="ridge_threshold",
-            value=params_settings["ridge_threshold"])
+            value=params_page1_settings["ridge_threshold"])
         self.field_min_snake_length = self.add(npyscreen.TitleText, name="min_snake_length",
-            value=params_settings["min_snake_length"])
+            value=params_page1_settings["min_snake_length"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
@@ -432,15 +432,15 @@ class ParamsSetupPage2Form(SetupForm):
     ]
     all_fields = dir_fields + arg_or_range_fields
 
-    def configure(self, params_settings):
+    def configure(self, params_page2_settings):
         self.setup_done_func = self.parentApp.paramsSetupPage2Done
 
         self.field_gaussian_std = self.add(npyscreen.TitleText, name="gaussian_std",
-            value=params_settings["gaussian_std"])
+            value=params_page2_settings["gaussian_std"])
         self.field_snake_point_spacing = self.add(npyscreen.TitleText, name="snake_point_spacing",
-            value=params_settings["snake_point_spacing"])
+            value=params_page2_settings["snake_point_spacing"])
         self.field_external_factor = self.add(npyscreen.TitleText, name="external_factor",
-            value=params_settings["external_factor"])
+            value=params_page2_settings["external_factor"])
         self.add(npyscreen.FixedText,
             value="Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling")
         self.add(npyscreen.FixedText,
@@ -452,7 +452,7 @@ class ParamsSetupPage2Form(SetupForm):
         self.add(npyscreen.FixedText,
             value="before sectioning, so all sections have same contrast setting")
         self.field_intensity_scaling = self.add(npyscreen.TitleText, name="intensity_scaling",
-            value=params_settings["intensity_scaling"])
+            value=params_page2_settings["intensity_scaling"])
 
     def getFieldStrings(self):
         return {
@@ -732,7 +732,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "target_sectioned_tiff_dir": "./SectionedTIFFs",
             "section_max_size": "200",
         }
-        self.params_settings = {
+        self.params_page1_settings = {
             "params_save_dir": "./Params",
             "alpha": "0.01",
             "beta": "0.1",
@@ -740,6 +740,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "min_foreground":"10",
             "ridge_threshold":"0.01",
             "min_snake_length":"20",
+        }
+        self.params_page2_settings = {
             "gaussian_std":"0",
             "snake_point_spacing":"5",
             "external_factor":"1",
@@ -812,7 +814,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.do_create_params:
             action_configs.append({
                 "action": "create_param_files",
-                "settings": self.params_settings,
+                # Combine page 1 and page 2 settings
+                "settings": {
+                    **self.params_page1_settings,
+                    **self.params_page2_settings,
+                },
             })
         if self.do_run_soax:
             action_configs.append({
@@ -940,7 +946,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # When SOAX runs and converts to floats, intensities should be rescaled from 0 to 1.0
         # We can't have 0.0 to 1.0 scale in original TIFFs because TIFFs have only integer brightness
         # levels
-        self.params_settings["intensity_scaling"] = format(1/65535, '.9f')
+        self.params_page2_settings["intensity_scaling"] = format(1/65535, '.9f')
 
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
@@ -1014,21 +1020,21 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startParamSetupPage1(self):
         self.addForm('PARAM_SETUP_PAGE_1', ParamsSetupPage1Form, name="SOAX Params Setup Page 1/2")
-        self.getForm('PARAM_SETUP_PAGE_1').configure(self.params_settings)
+        self.getForm('PARAM_SETUP_PAGE_1').configure(self.params_page1_settings)
         self.setNextForm('PARAM_SETUP_PAGE_1')
 
     def paramsSetupPage1Done(self, params_page1_settings):
-        self.params_settings.update(params_page1_settings)
+        self.params_page1_settings = params_page1_settings
         self.soax_run_settings["param_files_dir"] = params_page1_settings["params_save_dir"]
         self.goToNextMenu()
 
     def startParamSetupPage2(self):
         self.addForm('PARAM_SETUP_PAGE_1', ParamsSetupPage2Form, name="SOAX Params Setup Page 2/2")
-        self.getForm('PARAM_SETUP_PAGE_1').configure(self.params_settings)
+        self.getForm('PARAM_SETUP_PAGE_1').configure(self.params_page2_settings)
         self.setNextForm('PARAM_SETUP_PAGE_1')
 
     def paramsSetupPage2Done(self, params_page2_settings):
-        self.params_settings.update(params_page2_settings)
+        self.params_page2_settings = params_page2_settings
         self.goToNextMenu()
 
     def startSoaxRunSetup(self):
