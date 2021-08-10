@@ -851,7 +851,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.z_rescale_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
         self.sectioning_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
-        self.params_settings["intensity_scaling"] = str(1/65535)
+        # If input TIFFs have been rescaled to range from 0 to 65535,
+        # When SOAX runs and converts to floats, intensities should be rescaled from 0 to 1.0
+        # We can't have 0.0 to 1.0 scale in original TIFFs because TIFFs have only integer brightness
+        # levels
+        self.params_settings["intensity_scaling"] = format(1/65535, '.8f')
 
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
