@@ -398,11 +398,11 @@ class ParamsSetupForm(SetupForm):
         self.field_external_factor = self.add(npyscreen.TitleText, name="external_factor",
             value=params_settings["external_factor"])
         self.add(npyscreen.FixedText,
-            value="Intensity scaling controls how SOAX rescales image brightness. 0=automatic, 1.0=use image original brightness")
+            value="Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling")
         self.add(npyscreen.FixedText,
             value="If input images have been contrast-scaled in a previous step, we don't want SOAX to rescale brightness")
         self.add(npyscreen.FixedText,
-            value="In this case, set intensity_scaling to 1.0.")
+            value="In this case, set intensity_scaling to 1/65535 = 0.00001525902. to rescale from TIF max intensity to 1.0 max intensity")
         self.add(npyscreen.FixedText,
             value="If input images are sectioned before feeding to SOAX, they should be contrast rescaled")
         self.add(npyscreen.FixedText,
@@ -851,7 +851,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.z_rescale_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
         self.sectioning_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
-        self.params_settings["intensity_scaling"] = "1.0"
+        self.params_settings["intensity_scaling"] = str(1/65535)
 
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(

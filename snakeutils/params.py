@@ -9,7 +9,7 @@ def create_params(
     gaussian_std=0,
     snake_point_spacing=5,
     external_factor=1,
-    intensity_scaling=1.0, # Should be equal to one to skip auto intensity scaling
+    intensity_scaling=0.0, # Should be equal to one to skip auto intensity scaling
     ):
     params = """intensity-scaling	{intensity_scaling}
 gaussian-std	{gaussian_std}
