@@ -75,21 +75,23 @@ class StepsSetupForm(npyscreen.Form):
                 "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
                 "Make images of snakes",
                 "Make videos from snake images",
+                "Make Orientation Fields",
             ],
             scroll_exit=True,
         )
 
     def afterEditing(self):
-        do_auto_contrast         = 0 in self.select_steps.value
-        do_z_rescale             = 1 in self.select_steps.value
-        do_xy_rescale            = 2 in self.select_steps.value
-        do_section               = 3 in self.select_steps.value
-        do_create_params         = 4 in self.select_steps.value
-        do_run_soax              = 5 in self.select_steps.value
-        do_snakes_to_json        = 6 in self.select_steps.value
-        do_join_sectioned_snakes = 7 in self.select_steps.value
-        do_make_snake_images     = 8 in self.select_steps.value
-        do_make_snake_videos     = 9 in self.select_steps.value
+        do_auto_contrast           = 0 in self.select_steps.value
+        do_z_rescale               = 1 in self.select_steps.value
+        do_xy_rescale              = 2 in self.select_steps.value
+        do_section                 = 3 in self.select_steps.value
+        do_create_params           = 4 in self.select_steps.value
+        do_run_soax                = 5 in self.select_steps.value
+        do_snakes_to_json          = 6 in self.select_steps.value
+        do_join_sectioned_snakes   = 7 in self.select_steps.value
+        do_make_snake_images       = 8 in self.select_steps.value
+        do_make_snake_videos       = 9 in self.select_steps.value
+        do_make_orientation_fields = 10 in self.select_steps.value
 
         self.parentApp.stagesSelected(
             do_auto_contrast,
@@ -102,6 +104,7 @@ class StepsSetupForm(npyscreen.Form):
             do_join_sectioned_snakes,
             do_make_snake_images,
             do_make_snake_videos,
+            do_make_orientation_fields
         )
 
 class SetupForm(npyscreen.Form):
@@ -193,8 +196,11 @@ class SetupForm(npyscreen.Form):
         raise NotImplementedError()
 
     def afterEditing(self):
-        # option zero is "yes"
-        make_dirs_if_not_present = 0 in self.create_if_not_present.value
+        if hasattr(self, "create_if_not_present"):
+            # option zero is "yes"
+            make_dirs_if_not_present = 0 in self.create_if_not_present.value
+        else:
+            make_dirs_if_not_present = False
 
         try:
             self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
@@ -402,7 +408,7 @@ class ParamsSetupForm(SetupForm):
         self.add(npyscreen.FixedText,
             value="If input images have been contrast-scaled in a previous step, we don't want SOAX to rescale brightness")
         self.add(npyscreen.FixedText,
-            value="In this case, set intensity_scaling to 1/65535 = 0.00001525902. to rescale from TIF max intensity to 1.0 max intensity")
+            value="In this case, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIF max intensity to 1.0 max intensity")
         self.add(npyscreen.FixedText,
             value="If input images are sectioned before feeding to SOAX, they should be contrast rescaled")
         self.add(npyscreen.FixedText,
@@ -639,6 +645,31 @@ class MakeSnakeVideosSetupForm(SetupForm):
             "source_images_depth": self.field_source_images_depth.value,
         }
 
+class MakeOrientationFieldsSetupForm(SetupForm):
+    dir_fields = ["source_json_dir", "target_data_dir"]
+
+    def configure(self, make_orientation_fields_settings):
+        self.setup_done_func = self.parentApp.makeOrientationFieldsSetupDone
+
+        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
+            value=make_orientation_fields_settings["source_json_dir"])
+        self.field_target_data_dir = self.add(npyscreen.TitleFilename, name="target_data_dir",
+            value=make_orientation_fields_settings["target_data_dir"])
+
+        self.create_if_not_present = self.add(
+            npyscreen.TitleSelectOne,
+            max_height=3,
+            name="Create dirs if not present",
+            values=["yes", "no"],
+            value=[1],
+            scroll_exit=True)
+
+    def getFieldStrings(self):
+        return {
+            "source_json_dir": self.field_source_json_dir.value,
+            "target_data_dir": self.field_target_data_dir.value,
+        }
+
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
         # Default settings to show in forms
@@ -711,6 +742,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "target_mp4_dir": "./SnakeVideos",
             "source_images_depth": "1",
         }
+        self.make_orientation_fields_settings = {
+            "source_json_dir": "",
+            "target_data_dir": "./OrientationFields",
+        }
 
         self.addForm('MAIN', StepsSetupForm, name='Select Steps')
         self.getForm('MAIN').configure()
@@ -767,6 +802,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "make_videos",
                 "settings": self.make_snake_videos_settings,
             })
+        if self.do_make_orientation_fields:
+            action_configs.append({
+                "action": "make_orientation_fields",
+                "settings": self.make_orientation_fields_settings,
+            })
         return action_configs
 
     def stagesSelected(self,
@@ -780,6 +820,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_join_sectioned_snakes,
         do_make_snake_images,
         do_make_snake_videos,
+        do_make_orientation_fields,
         ):
         self.do_auto_contrast = do_auto_contrast
         self.do_z_rescale = do_z_rescale
@@ -791,6 +832,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
         self.do_make_snake_images = do_make_snake_images
         self.do_make_snake_videos = do_make_snake_videos
+        self.do_make_orientation_fields = do_make_orientation_fields
 
         self.menu_functions = []
         if self.do_auto_contrast:
@@ -813,6 +855,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startMakeSnakeImagesSetup)
         if self.do_make_snake_videos:
             self.menu_functions.append(self.startVideoSetup)
+        if self.do_make_orientation_fields:
+            self.menu_functions.append(self.startMakeOrientationFieldsSetup)
 
         self.goToNextMenu()
 
@@ -855,7 +899,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # When SOAX runs and converts to floats, intensities should be rescaled from 0 to 1.0
         # We can't have 0.0 to 1.0 scale in original TIFFs because TIFFs have only integer brightness
         # levels
-        self.params_settings["intensity_scaling"] = format(1/65535, '.8f')
+        self.params_settings["intensity_scaling"] = format(1/65535, '.9f')
 
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
@@ -968,6 +1012,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.snakes_to_json_settings = snakes_to_json_settings
         self.join_sectioned_snakes_settings["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
         self.make_snake_images_settings["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
+        self.make_orientation_fields["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
         self.goToNextMenu()
 
     def startJoinSectionedSnakesSetup(self):
@@ -978,6 +1023,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def joinSectionedSnakesSetupDone(self, join_sectioned_snakes_settings):
         self.join_sectioned_snakes_settings = join_sectioned_snakes_settings
         self.make_snake_images_settings["source_json_dir"] = join_sectioned_snakes_settings["target_json_dir"]
+        self.make_orientation_fields["source_json_dir"] = join_sectioned_snakes_settings["target_json_dir"]
         # Output jsons are one directory less deep since they've been joined
         self.make_snake_images_settings["snake_files_depth"] = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
         self.goToNextMenu()
@@ -990,6 +1036,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def makeSnakeImagesSetupDone(self, make_snake_images_settings):
         self.make_snake_images_settings = make_snake_images_settings
         self.make_snake_videos_settings["source_jpeg_dir"] = make_snake_images_settings["target_jpeg_dir"]
+        self.goToNextMenu()
+
+    def startMakeOrientationFieldsSetup(self):
+        self.addForm('MAKE_ORIENTATION_FIELDS', MakeOrientationFieldsSetupForm, name="Make Orientation Fields Setup")
+        self.getForm('MAKE_ORIENTATION_FIELDS').configure(self.make_orientation_fields_settings)
+        self.setNextForm('MAKE_ORIENTATION_FIELDS')
+
+    def makeOrientationFieldsSetupDone(self, make_orientation_fields_settings):
+        self.make_orientation_fields_settings = make_orientation_fields_settings
         self.goToNextMenu()
 
     def startVideoSetup(self):
