@@ -730,7 +730,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "intensity_scaling": "0",
         }
         self.soax_run_settings = {
-            "workers": "5",
+            "workers": "1",
             "use_subdirs": "no",
             "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax/batch_soax",
             "source_tiff_dir": "",

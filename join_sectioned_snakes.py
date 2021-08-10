@@ -97,7 +97,7 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
         target_dir_path = os.path.join(target_json_dir, relative_dir_path)
         if not os.path.isdir(target_dir_path):
             if os.path.exists(target_dir_path):
-                logger.FAILL("Cannot save results to {}, this exists but is not directory".format(target_dir_path))
+                logger.FAIL("Cannot save results to {}, this exists but is not directory".format(target_dir_path))
             os.makedirs(target_dir_path)
         target_json_fp = os.path.join(target_dir_path, source_folder_name + ".json")
 
