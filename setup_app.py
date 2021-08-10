@@ -366,7 +366,8 @@ class SectioningSetupForm(SetupForm):
             "section_max_size": self.field_section_max_size.value,
         }
 
-class ParamsSetupForm(SetupForm):
+class ParamsSetupPage1Form(SetupForm):
+    dir_fields = ["params_save_dir"]
     arg_or_range_fields = [
         "alpha",
         "beta",
@@ -374,22 +375,12 @@ class ParamsSetupForm(SetupForm):
         "min_foreground",
         "ridge_threshold",
         "min_snake_length",
-        "gaussian_std",
-        "snake_point_spacing",
-        "external_factor",
-        "intensity_scaling",
     ]
-    dir_fields = ["params_save_dir"]
 
-    def __init__(self, *args, **kwargs):
-        super(ParamsSetupForm, self).__init__(
-            minimum_lines=36,
-            *args,
-            **kwargs,
-        )
+    all_fields = dir_fields + arg_or_range_fields
 
     def configure(self, params_settings):
-        self.setup_done_func = self.parentApp.paramsSetupDone
+        self.setup_done_func = self.parentApp.paramsSetupPage1Done
         self.add(npyscreen.FixedText,
             value="Enter SOAX run parameters to try.")
         self.add(npyscreen.FixedText,
@@ -412,6 +403,38 @@ class ParamsSetupForm(SetupForm):
             value=params_settings["ridge_threshold"])
         self.field_min_snake_length = self.add(npyscreen.TitleText, name="min_snake_length",
             value=params_settings["min_snake_length"])
+
+        self.create_if_not_present = self.add(
+            npyscreen.TitleSelectOne,
+            name="Create dirs if not present",
+            values=["yes", "no"],
+            value=[1],
+            scroll_exit=True)
+
+    def getFieldStrings(self):
+        return {
+            "params_save_dir": self.field_params_save_dir.value,
+            "alpha": self.field_alpha.value,
+            "beta": self.field_beta.value,
+            "gamma": self.field_gamma.value,
+            "min_foreground": self.field_min_foreground.value,
+            "ridge_threshold": self.field_ridge_threshold.value,
+            "min_snake_length": self.field_min_snake_length.value,
+        }
+
+class ParamsSetupPage2Form(SetupForm):
+    dir_fields = []
+    arg_or_range_fields = [
+        "gaussian_std",
+        "snake_point_spacing",
+        "external_factor",
+        "intensity_scaling",
+    ]
+    all_fields = dir_fields + arg_or_range_fields
+
+    def configure(self, params_settings):
+        self.setup_done_func = self.parentApp.paramsSetupPage2Done
+
         self.field_gaussian_std = self.add(npyscreen.TitleText, name="gaussian_std",
             value=params_settings["gaussian_std"])
         self.field_snake_point_spacing = self.add(npyscreen.TitleText, name="snake_point_spacing",
@@ -431,27 +454,20 @@ class ParamsSetupForm(SetupForm):
         self.field_intensity_scaling = self.add(npyscreen.TitleText, name="intensity_scaling",
             value=params_settings["intensity_scaling"])
 
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
     def getFieldStrings(self):
         return {
-            "params_save_dir": self.field_params_save_dir.value,
-            "alpha": self.field_alpha.value,
-            "beta": self.field_beta.value,
-            "gamma": self.field_gamma.value,
-            "min_foreground": self.field_min_foreground.value,
-            "ridge_threshold": self.field_ridge_threshold.value,
-            "min_snake_length": self.field_min_snake_length.value,
             "gaussian_std": self.field_gaussian_std.value,
             "snake_point_spacing": self.field_snake_point_spacing.value,
             "external_factor": self.field_external_factor.value,
             "intensity_scaling": self.field_intensity_scaling.value,
         }
+
+class ParamsSetupForm(SetupForm):
+    dir_fields = ParamsSetupPage1Form.dir_fields + ParamsSetupPage2Form.dir_fields
+    arg_or_range_fields = ParamsSetupPage1Form.arg_or_range_fields + ParamsSetupPage2Form.arg_or_range_fields
+
+    def configure(self):
+        raise Exception("Only exists for parse stuff")
 
 class SoaxRunSetupForm(SetupForm):
     dir_fields = [
@@ -865,7 +881,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.do_section:
             self.menu_functions.append(self.startSectioningSetup)
         if self.do_create_params:
-            self.menu_functions.append(self.startParamSetup)
+            self.menu_functions.append(self.startParamSetupPage1)
+            self.menu_functions.append(self.startParamSetupPage2)
         if self.do_run_soax:
             self.menu_functions.append(self.startSoaxRunSetup)
         if self.do_snakes_to_json:
@@ -879,6 +896,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.do_make_orientation_fields:
             self.menu_functions.append(self.startMakeOrientationFieldsSetup)
 
+        self.form_index = -1
+        # Move onto index 0
         self.goToNextMenu()
 
     def auto_set_width_height_images_settings(self, tiff_dir, img_depth, rescale_factor=None):
@@ -899,10 +918,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_snake_images_settings["height"] = str(height)
 
     def goToNextMenu(self):
-        if len(self.menu_functions) == 0:
+        self.form_index += 1
+        if self.form_index >= len(self.menu_functions):
             self.setNextForm(None)
         else:
-            next_menu_func = self.menu_functions.pop(0)
+            next_menu_func = self.menu_functions[self.form_index]
             next_menu_func()
 
     def startAutoContrastSetup(self):
@@ -992,14 +1012,23 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             )
         self.goToNextMenu()
 
-    def startParamSetup(self):
-        self.addForm('PARAM_SETUP', ParamsSetupForm, name="SOAX Params Setup")
-        self.getForm('PARAM_SETUP').configure(self.params_settings)
-        self.setNextForm('PARAM_SETUP')
+    def startParamSetupPage1(self):
+        self.addForm('PARAM_SETUP_PAGE_1', ParamsSetupPage1Form, name="SOAX Params Setup Page 1/2")
+        self.getForm('PARAM_SETUP_PAGE_1').configure(self.params_settings)
+        self.setNextForm('PARAM_SETUP_PAGE_1')
 
-    def paramsSetupDone(self, params_settings):
-        self.params_settings = params_settings
-        self.soax_run_settings["param_files_dir"] = params_settings["params_save_dir"]
+    def paramsSetupPage1Done(self, params_page1_settings):
+        self.params_settings.update(params_page1_settings)
+        self.soax_run_settings["param_files_dir"] = params_page1_settings["params_save_dir"]
+        self.goToNextMenu()
+
+    def startParamSetupPage2(self):
+        self.addForm('PARAM_SETUP_PAGE_1', ParamsSetupPage2Form, name="SOAX Params Setup Page 2/2")
+        self.getForm('PARAM_SETUP_PAGE_1').configure(self.params_settings)
+        self.setNextForm('PARAM_SETUP_PAGE_1')
+
+    def paramsSetupPage2Done(self, params_page2_settings):
+        self.params_settings.update(params_page2_settings)
         self.goToNextMenu()
 
     def startSoaxRunSetup(self):
