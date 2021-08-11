@@ -915,15 +915,33 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # Move onto index 0
         self.goToNextMenu()
 
-    def auto_set_width_height_images_settings(self, tiff_dir, img_depth, rescale_factor=None):
+    def first_img_fp(self, tiff_dir, img_depth):
         image_locations_info = find_files_or_folders_at_depth(tiff_dir, img_depth, file_extensions=[".tiff", ".tif"])
 
         #If source tiff dir doesn't have anything at this depth, we won't do anything here
         if len(image_locations_info) == 0:
-            return
+            return None
         first_img_dir = image_locations_info[0][0]
         first_img_name = image_locations_info[0][1]
         first_img_fp = os.path.join(first_img_dir, first_img_name)
+
+        return first_img_fp
+
+    def get_first_tif_data_type_max(self, tiff_dir, img_depth):
+        first_img_fp = self.first_img_fp(tiff_dir, img_depth)
+        if first_img_fp is None:
+            return None
+        shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
+        return np.iinfo(dtype).max
+
+    def auto_set_width_height_images_settings(self, tiff_dir, img_depth, rescale_factor=None):
+        first_img_fp = self.first_img_fp(tiff_dir, img_depth)
+        if first_img_fp is None:
+            npyscreen.notify_confirm(
+                "Cannot determine width and height of images, you'll have to set those manually if needed later. No images found in {} at depth {}".format(tiff_dir, img_depth),
+                editw=1,
+            )
+            return
         shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
         width, height = shape
         if rescale_factor is not None:
@@ -955,12 +973,23 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # When SOAX runs and converts to floats, intensities should be rescaled from 0 to 1.0
         # We can't have 0.0 to 1.0 scale in original TIFFs because TIFFs have only integer brightness
         # levels
-        self.params_page2_settings["intensity_scaling"] = format(1/65535, '.9f')
+        img_search_depth = 0
+        tif_max_level = get_first_tif_data_type_max(
+            auto_contrast_settings["source_tiff_dir"],
+            img_search_depth,
+        )
+        if tif_max_level is None:
+            npyscreen.notify_confirm(
+                "In soax run stage intensity_scaling will need to be set manually, could not find TIFF files in {} at depth {} to set intensity to 1 / tiff data type max value".format(auto_contrast_settings["source_tiff_dir"], img_search_depth),
+                wide=True,
+                editw=1)
+        else:
+            self.params_page2_settings["intensity_scaling"] = format(1/tif_max_level, '.9f')
 
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
                 auto_contrast_settings["source_tiff_dir"],
-                0,
+                img_search_depth,
             )
         if self.make_snake_images_settings["background_images_dir"] == "":
             self.make_snake_images_settings["background_images_dir"] = auto_contrast_settings["target_tiff_dir"]
