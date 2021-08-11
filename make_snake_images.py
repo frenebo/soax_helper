@@ -3,7 +3,7 @@ import os
 from matplotlib import pyplot as plt
 import numpy as np
 from snakeutils.files import extract_snakes, readable_dir, find_files_or_folders_at_depth, has_one_of_extensions
-import argparse
+# import argparse
 from PIL import Image
 from snakeutils.logger import PrintLogger, Colors
 from flatten_3d_tiffs import flatten_3d_pil_img_return_arr
@@ -162,24 +162,24 @@ def make_snake_images(
         )
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('snake_dir',type=readable_dir,help="Source directory where snake text files are")
-    parser.add_argument('image_dir',type=readable_dir,help="Target directory to save graphed snakes")
-    parser.add_argument('--width',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
-    parser.add_argument('--height',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
-    parser.add_argument('--snake_files_depth',default=0,type=int,help="Subdir depth at which to find snake images in snake_dir")
-    parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
-    parser.add_argument('--background_img_dir', default=None,type=readable_dir,help="Directory with images to use as backgrounds for TIFs")
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+#     parser.add_argument('snake_dir',type=readable_dir,help="Source directory where snake text files are")
+#     parser.add_argument('image_dir',type=readable_dir,help="Target directory to save graphed snakes")
+#     parser.add_argument('--width',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
+#     parser.add_argument('--height',default=None,type=int,help="Width dimension of frame. Optional if can guess from image names")
+#     parser.add_argument('--snake_files_depth',default=0,type=int,help="Subdir depth at which to find snake images in snake_dir")
+#     parser.add_argument('-c','--colorful', action='store_true',help="Use different colors for each snake")
+#     parser.add_argument('--background_img_dir', default=None,type=readable_dir,help="Directory with images to use as backgrounds for TIFs")
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    make_snake_images(
-        args.snake_dir,
-        args.image_dir,
-        args.width,
-        args.height,
-        args.snake_files_depth,
-        args.colorful,
-        args.background_img_dir,
-    )
+#     make_snake_images(
+#         args.snake_dir,
+#         args.image_dir,
+#         args.width,
+#         args.height,
+#         args.snake_files_depth,
+#         args.colorful,
+#         args.background_img_dir,
+#     )

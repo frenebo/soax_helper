@@ -1,9 +1,14 @@
 import argparse
-from snakeutils.files import readable_dir
 import os
 from PIL import Image
 import numpy as np
 from snakeutils.logger import PrintLogger
+
+def readable_dir(dirpath):
+    if not os.path.isdir(dirpath):
+        raise argparse.ArgumentTypeError("{} is not a directory".format(dirpath))
+
+    return dirpath
 
 def tiff_file_or_dir(target_path):
     try:
@@ -12,7 +17,7 @@ def tiff_file_or_dir(target_path):
         tiff_filenames = [filename for filename in dir_contents if filename.endswith(".tif")]
         tiff_filepaths = [os.path.join(target_path,tiff_fn) for tiff_fn in tiff_filenames]
         return tiff_filepaths
-
+    # bad idea why did i do it this way
     except argparse.ArgumentTypeError:
         if not target_path.endswith(".tif"):
             raise argparse.ArgumentTypeError("{} is not a directory or tif file".format(target_path))

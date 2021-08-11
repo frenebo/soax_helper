@@ -1,4 +1,4 @@
-import argparse
+# import argparse
 from snakeutils.files import readable_dir
 import os
 import multiprocessing as mp
@@ -132,24 +132,24 @@ def run_soax(
         future = pool.map(soax_instance, soax_args)
         logger.log("Future finished")
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('batch_soax',help="Path to batch_soax executable")
-    parser.add_argument('tiff_dir',type=readable_dir,help='Directory with tif files to run in soax')
-    parser.add_argument('params_dir',type=readable_dir,help='Directory with soax param text files')
-    parser.add_argument('output_dir',type=readable_dir,help='Directory to put')
-    parser.add_argument('logging_dir', type=readable_dir,help='Directory to write error messages')
-    parser.add_argument('--subdirs', default=False, action='store_true',help='If tiff_dir has subdirectories of image')
-    parser.add_argument('--workers', default=5, type=int, help='Number of batch_soax processes to have running at once')
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+#     parser.add_argument('batch_soax',help="Path to batch_soax executable")
+#     parser.add_argument('tiff_dir',type=readable_dir,help='Directory with tif files to run in soax')
+#     parser.add_argument('params_dir',type=readable_dir,help='Directory with soax param text files')
+#     parser.add_argument('output_dir',type=readable_dir,help='Directory to put')
+#     parser.add_argument('logging_dir', type=readable_dir,help='Directory to write error messages')
+#     parser.add_argument('--subdirs', default=False, action='store_true',help='If tiff_dir has subdirectories of image')
+#     parser.add_argument('--workers', default=5, type=int, help='Number of batch_soax processes to have running at once')
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    run_soax(
-        args.batch_soax,
-        args.tiff_dir,
-        args.params_dir,
-        args.output_dir,
-        args.logging_dir,
-        args.subdirs,
-        args.workers_num,
-    )
+#     run_soax(
+#         args.batch_soax,
+#         args.tiff_dir,
+#         args.params_dir,
+#         args.output_dir,
+#         args.logging_dir,
+#         args.subdirs,
+#         args.workers_num,
+#     )

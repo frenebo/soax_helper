@@ -56,12 +56,6 @@ def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, 
             folders_and_files.extend(sub_folders_and_files)
         return folders_and_files
 
-def readable_dir(dirpath):
-    if not os.path.isdir(dirpath):
-        raise argparse.ArgumentTypeError("{} is not a directory".format(dirpath))
-
-    return dirpath
-
 def run_fast_scandir(dir, ext):    # dir: str, ext: list
     subfolders, files = [], []
 

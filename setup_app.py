@@ -1077,7 +1077,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.snakes_to_json_settings = snakes_to_json_settings
         self.join_sectioned_snakes_settings["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
         self.make_snake_images_settings["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
-        self.make_orientation_fields["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
+        self.make_orientation_fields_settings["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
         self.goToNextMenu()
 
     def startJoinSectionedSnakesSetup(self):

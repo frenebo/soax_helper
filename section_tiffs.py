@@ -1,4 +1,4 @@
-import argparse
+# import argparse
 import math
 from snakeutils.files import readable_dir
 from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
@@ -134,16 +134,16 @@ def section_tiffs(section_max_size,source_dir,target_dir,logger=PrintLogger):
 
         section_tiff(tiff_fp,sectioned_dir,section_max_size,logger)
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('section_max_size',type=int,help="Maximum width/height/depth of a sextion (pixels along)")
-    parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
-    parser.add_argument('target_dir',type=readable_dir,help="Directory to save secitoned tifs")
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
+#     parser.add_argument('section_max_size',type=int,help="Maximum width/height/depth of a sextion (pixels along)")
+#     parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
+#     parser.add_argument('target_dir',type=readable_dir,help="Directory to save secitoned tifs")
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    section_tiffs(
-        args.section_max_size,
-        args.source_dir,
-        args.target_dir,
-    )
+#     section_tiffs(
+#         args.section_max_size,
+#         args.source_dir,
+#         args.target_dir,
+#     )

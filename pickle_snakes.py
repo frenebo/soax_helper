@@ -4,7 +4,6 @@ from matplotlib import pyplot as plt
 import numpy as np
 from snakeutils.files import extract_snakes, run_fast_scandir
 import pickle
-import argparse
 from snakeutils.logger import PrintLogger, Colors
 
 def pickle_snakes(dir_name,pickles_dir,logger=PrintLogger):
@@ -33,11 +32,3 @@ def pickle_snakes(dir_name,pickles_dir,logger=PrintLogger):
         logger.log("  Saving snake pickle in {}".format(pickle_fp))
         with open(pickle_fp, 'wb') as handle:
             pickle.dump(snakes, handle, protocol=pickle.HIGHEST_PROTOCOL)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-    parser.add_argument('snakes_dir',help="Directory with snake text files")
-    parser.add_argument('pickles_dir',help="Directory to save pickled snakes")
-
-    args = parser.parse_args()

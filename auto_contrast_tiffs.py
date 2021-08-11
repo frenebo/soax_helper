@@ -1,5 +1,5 @@
-import argparse
-import argparse
+# import argparse
+# import argparse
 import math
 from snakeutils.files import readable_dir, pil_img_3d_to_np_arr, has_one_of_extensions
 from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
@@ -67,20 +67,20 @@ def auto_contrast_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_perc
             tifffile.imsave(auto_contrast_fp,new_arr)
         logger.log("Saved auto contrast pic as {}".format(auto_contrast_fp))
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Normalizes tif (useful if TIF image is too dark)')
-    parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
-    parser.add_argument('target_dir',type=readable_dir,help="Directory to save secitoned tifs")
-    max_default_percentile = 95.5
-    parser.add_argument('--max_cutoff_percent',type=float,default=max_default_percentile,help="Pixel brightness percentile to set image max to. Default {}".format(max_default_percentile))
-    min_default_percentile = 0.1
-    parser.add_argument('--min_cutoff_percent',type=float,default=min_default_percentile,help="Pixel brightness percentile to set image min to. Default {}".format(min_default_percentile))
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser(description='Normalizes tif (useful if TIF image is too dark)')
+#     parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
+#     parser.add_argument('target_dir',type=readable_dir,help="Directory to save secitoned tifs")
+#     max_default_percentile = 95.5
+#     parser.add_argument('--max_cutoff_percent',type=float,default=max_default_percentile,help="Pixel brightness percentile to set image max to. Default {}".format(max_default_percentile))
+#     min_default_percentile = 0.1
+#     parser.add_argument('--min_cutoff_percent',type=float,default=min_default_percentile,help="Pixel brightness percentile to set image min to. Default {}".format(min_default_percentile))
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    auto_contrast_tiffs(
-        args.source_dir,
-        args.target_dir,
-        args.max_cutoff_percent,
-        args.min_cutoff_percent,
-    )
+#     auto_contrast_tiffs(
+#         args.source_dir,
+#         args.target_dir,
+#         args.max_cutoff_percent,
+#         args.min_cutoff_percent,
+#     )
