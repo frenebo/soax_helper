@@ -8,7 +8,14 @@ def make_field_for_json(json_fp, data_fp, logger):
 
     raise Exception("unimplemented")
 
-def make_orientation_fields(source_json_dir, target_data_dir, source_jsons_depth, logger=PrintLogger):
+def make_orientation_fields(
+    source_json_dir,
+    target_data_dir,
+    source_jsons_depth,
+    image_width,
+    image_height,
+    logger=PrintLogger,
+):
     source_jsons_info = find_files_or_folders_at_depth(source_json_dir, source_jsons_depth, extension=".json")
 
     for json_containing_dirpath, json_filename in source_jsons_info:

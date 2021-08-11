@@ -680,6 +680,7 @@ class MakeSnakeVideosSetupForm(SetupForm):
 class MakeOrientationFieldsSetupForm(SetupForm):
     dir_fields = ["source_json_dir", "target_data_dir"]
     non_neg_int_fields = ["source_jsons_depth"]
+    pos_int_fields = ["image_width", "image_height"]
 
     def configure(self, make_orientation_fields_settings):
         self.setup_done_func = self.parentApp.makeOrientationFieldsSetupDone
@@ -690,6 +691,10 @@ class MakeOrientationFieldsSetupForm(SetupForm):
             value=make_orientation_fields_settings["target_data_dir"])
         self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
             value=make_orientation_fields_settings["source_jsons_depth"])
+        self.field_image_width = self.add(npyscreen.TitleText, name="image_width",
+            value=make_orientation_fields_settings["image_width"])
+        self.field_image_height = self.add(npyscreen.TitleText, name="image_height",
+            value=make_orientation_fields_settings["image_height"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
@@ -704,6 +709,8 @@ class MakeOrientationFieldsSetupForm(SetupForm):
             "source_json_dir": self.field_source_json_dir.value,
             "target_data_dir": self.field_target_data_dir.value,
             "source_jsons_depth": self.field_source_jsons_depth.value,
+            "image_width": self.field_image_width.value,
+            "image_height": self.field_image_height.value,
         }
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
@@ -784,6 +791,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_json_dir": "",
             "source_jsons_depth": "1",
             "target_data_dir": "./OrientationFields",
+            "image_width": "",
+            "image_height": "",
         }
 
         self.addForm('MAIN', StepsSetupForm, name='Select Steps')

@@ -143,6 +143,8 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_make_orientation_fields_settings["source_json_dir"],
             parsed_make_orientation_fields_settings["target_data_dir"],
             parsed_make_orientation_fields_settings["source_jsons_depth"],
+            parsed_make_orientation_fields_settings["image_width"],
+            parsed_make_orientation_fields_settings["image_height"],
             logger=logger,
         )
     else:
