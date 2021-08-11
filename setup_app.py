@@ -1088,7 +1088,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def joinSectionedSnakesSetupDone(self, join_sectioned_snakes_settings):
         self.join_sectioned_snakes_settings = join_sectioned_snakes_settings
         self.make_snake_images_settings["source_json_dir"] = join_sectioned_snakes_settings["target_json_dir"]
-        self.make_orientation_fields["source_json_dir"] = join_sectioned_snakes_settings["target_json_dir"]
+        self.make_orientation_fields_settings["source_json_dir"] = join_sectioned_snakes_settings["target_json_dir"]
         # Output jsons are one directory less deep since they've been joined
         self.make_snake_images_settings["snake_files_depth"] = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
         self.goToNextMenu()
