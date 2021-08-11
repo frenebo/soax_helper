@@ -1,4 +1,4 @@
-from snakeutils.files import readable_dir, has_one_of_extensions
+from snakeutils.files import has_one_of_extensions
 from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
 from skimage.transform import resize
 import os
@@ -96,16 +96,3 @@ def xy_rescale_tiffs(source_dir,target_dir,rescale_factor,logger=PrintLogger):
             save_3d_tif(new_fp,resized_img)
         else:
             tifffile.imsave(new_fp, resized_img)
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-#     parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
-#     parser.add_argument('target_dir',type=readable_dir)
-#     parser.add_argument('rescale_factor',type=float,help="Scale factor, for example 0.5 to make tiffs half scale")
-
-#     args = parser.parse_args()
-
-#     if args.rescale_factor <= 0:
-#         raise Exception("Rescale factor must be positive")
-
-#     xy_rescale_tiffs(args.source_dir, args.target_dir, args.rescale_factor)

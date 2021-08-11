@@ -1,6 +1,5 @@
 import argparse
 from snakeutils.params import create_params
-from snakeutils.files import readable_dir
 from snakeutils.logger import PrintLogger
 import os
 import math

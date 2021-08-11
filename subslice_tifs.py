@@ -1,4 +1,3 @@
-from snakeutils.files import readable_dir
 from snakeutils.tifimage import save_3d_tif
 import os
 # import argparse
@@ -59,15 +58,3 @@ def subslice_tifs(start_slice, end_slice, source_dir,target_dir,logger=PrintLogg
         logger.log("Saving sliced image as {}".format(new_fp))
 
         save_3d_tif(new_fp, new_img_arr)
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-#     parser.add_argument('slice_range',type=slice_range,help="Range of TIF slices to keep. Ex 10-20 to keep slices 10-20, inclusive")
-#     parser.add_argument('source_dir',type=readable_dir,help="Directory where source tif files are")
-#     parser.add_argument('target_dir',type=readable_dir,help="Directory to save subslice tifs")
-
-#     args = parser.parse_args()
-
-#     start_slice, end_slice = args.slice_range
-
-#     subslice_tifs(start_slice, end_slice,args.source_dir,target_dir)

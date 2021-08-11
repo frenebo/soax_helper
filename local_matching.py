@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import sys
 import os
-from snakeutils.files import readable_dir, extract_snakes, has_one_of_extensions
+from snakeutils.files import extract_snakes, has_one_of_extensions
 from scipy.spatial.distance import cdist
 import math
 # import argparse
@@ -144,30 +144,4 @@ def local_match_snakes(snakes):
 
     print("{} tip matches".format(len(tip_matches)))
     print(tip_matches)
-
-
-
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-#     parser.add_argument('snake_dir',type=readable_dir,help="Directory with snake files")
-
-#     args = parser.parse_args()
-
-#     snake_dir = args.snake_dir
-#     snake_filenames = os.listdir(snake_dir)
-#     snake_filenames = [filename for filename in snake_filenames if has_one_of_extensions(filename, [".txt"])]
-#     snake_filenames.sort()
-
-#     for snake_fn in snake_filenames:
-#         snake_fp = os.path.join(snake_dir,snake_fn)
-#         with open(snake_fp, "r") as snake_file:
-#             try:
-#                 snakes = extract_snakes(snake_file)
-#             except:
-#                 print("Could not extract snakes")
-#                 raise
-
-#             local_match_snakes(snakes)
-
 

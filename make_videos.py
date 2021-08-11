@@ -2,7 +2,7 @@ import cv2
 import sys
 import os
 # import argparse
-from snakeutils.files import readable_dir, has_one_of_extensions, find_files_or_folders_at_depth
+from snakeutils.files import has_one_of_extensions, find_files_or_folders_at_depth
 from snakeutils.logger import PrintLogger
 
 def write_vid_for_dir_images(image_folder,video_path,logger):
@@ -50,15 +50,3 @@ def make_videos(root_image_dir,root_video_dir,source_images_depth,logger=PrintLo
 
             logger.log("Making video for {}".format(image_dir_path))
             logger.log("  Saved video in {}".format(video_path))
-
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description='Try some parameters for snakes')
-#     parser.add_argument('image_dir',type=readable_dir,help="Source directory to find graphed snakes")
-#     parser.add_argument('video_dir',type=readable_dir,help="Directory to save video(s)")
-#     parser.add_argument('source_images_depth', default=0, type=int, help="How many subdirs deep to find source images (default 0)")
-#     # parser.add_argument('--subdirs', default=False, action='store_true',help='If we should make snakes for subdirectories in snake_dir and output in subdirectories in image_dir')
-
-#     args = parser.parse_args()
-
-#     make_videos(args.image_dir,args.video_dir,args.source_images_dept)

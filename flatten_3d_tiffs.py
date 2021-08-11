@@ -1,4 +1,4 @@
-from snakeutils.files import readable_dir, has_one_of_extensions, pil_img_3d_to_np_arr
+from snakeutils.files import has_one_of_extensions, pil_img_3d_to_np_arr
 # import argparse
 from PIL import Image
 import numpy as np
@@ -36,12 +36,3 @@ def flatten_3d_tiffs(source_dir,target_dir,logger=PrintLogger):
         logger.success("  Saving flattened tif as {}".format(new_fp))
 
         tifffile.imsave(new_fp,arr_2d)
-
-# if __name__ == "__main__":
-#     parser = argparse.ArgumentParser(description='Maximum Intensity Projection to flatten 3D tifs to 2D tifs')
-#     parser.add_argument('source_dir',type=readable_dir,help="Directory where source 3Dtif files are")
-#     parser.add_argument('target_dir',type=readable_dir,help="Directory to save 2D flat tifs")
-
-#     args = parser.parse_args()
-
-#     flatten_3d_tiffs(args.source_dir,args.target_dir)
