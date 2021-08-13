@@ -24,7 +24,8 @@ from setup_app import (
     XYRescaleSetupForm,
     AutoConstrastSetupForm,
     SectioningSetupForm,
-    ParamsSetupForm,
+    ParamsSetupPage1Form,
+    ParamsSetupPage2Form,
     SoaxRunSetupForm,
     SnakesToJsonSetupForm,
     JoinSectionedSnakesSetupForm,
@@ -69,7 +70,12 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "create_param_files":
-        parsed_params_settings = ParamsSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_page1_params_settings = ParamsSetupPage1Form.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_page2_params_settings = ParamsSetupPage2Form.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_params_settings = {
+            **parsed_page1_params_settings,
+            **parsed_page2_params_settings,
+        }
         create_param_files(
             parsed_params_settings["params_save_dir"],
             alpha_start_stop_step=parsed_params_settings["alpha"],

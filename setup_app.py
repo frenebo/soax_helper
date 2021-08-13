@@ -464,12 +464,12 @@ class ParamsSetupPage2Form(SetupForm):
             "intensity_scaling": self.field_intensity_scaling.value,
         }
 
-class ParamsSetupForm(SetupForm):
-    dir_fields = ParamsSetupPage1Form.dir_fields + ParamsSetupPage2Form.dir_fields
-    arg_or_range_fields = ParamsSetupPage1Form.arg_or_range_fields + ParamsSetupPage2Form.arg_or_range_fields
+# class ParamsSetupForm(SetupForm):
+#     dir_fields = ParamsSetupPage1Form.dir_fields + ParamsSetupPage2Form.dir_fields
+#     arg_or_range_fields = ParamsSetupPage1Form.arg_or_range_fields + ParamsSetupPage2Form.arg_or_range_fields
 
-    def configure(self):
-        raise Exception("Only exists for parse stuff")
+#     def configure(self):
+#         raise Exception("Only exists for parse stuff")
 
 class SoaxRunSetupForm(SetupForm):
     dir_fields = [
