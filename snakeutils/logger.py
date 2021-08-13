@@ -1,11 +1,6 @@
 from colorama import Fore, Style
 import threading
 
-class Colors:
-    RED = "red"
-    YELLOW = "yellow"
-    GREEN = "green"
-
 class PagerFailError(Exception):
     pass
 

@@ -4,7 +4,7 @@ from PIL import Image
 import numpy as np
 import tifffile
 import os
-from snakeutils.logger import PrintLogger, Colors
+from snakeutils.logger import PrintLogger
 
 def flatten_3d_pil_img_return_arr(pil_img, logger):
     arr_3d = pil_img_3d_to_np_arr(pil_img)

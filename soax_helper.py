@@ -122,7 +122,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_make_snake_images_settings["target_jpeg_dir"],
             parsed_make_snake_images_settings["width"],
             parsed_make_snake_images_settings["height"],
-            parsed_make_snake_images_settings["snake_files_depth"],
+            parsed_make_snake_images_settings["snake_jsons_depth"],
             parsed_make_snake_images_settings["use_colors"],
             parsed_make_snake_images_settings["background_images_dir"],
             logger=logger,
@@ -145,6 +145,16 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_make_orientation_fields_settings["source_jsons_depth"],
             parsed_make_orientation_fields_settings["image_width"],
             parsed_make_orientation_fields_settings["image_height"],
+            logger=logger,
+        )
+    elif action_name == "make_cindy_matrices_from_snakes":
+        parsed_make_cindy_matrices_from_snakes_settings = MakeCindyMatricesFromSnakesSetupForm.parseSettings(seetting_strings, make_dirs_if_not_present=make_dirs)
+
+        make_cindy_matrices_from_snakes(
+            parsed_make_cindy_matrices_from_snakes_settings["source_json_dir"],
+            parsed_make_cindy_matrices_from_snakes_settings["source_jsons_depth"],
+            parsed_make_cindy_matrices_from_snakes_settings["orientation_matrix_dir"],
+            parsed_make_cindy_matrices_from_snakes_settings["position_matrix_dir"],
             logger=logger,
         )
     else:
