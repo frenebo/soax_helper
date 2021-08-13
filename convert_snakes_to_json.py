@@ -3,9 +3,9 @@ import os
 import json
 from snakeutils.logger import PrintLogger
 
-def convert_snakes_to_json(source_snakes_dir, target_json_dir, subdir_depth=0, logger=PrintLogger):
+def convert_snakes_to_json(source_snakes_dir, target_json_dir, source_snakes_depth=0, logger=PrintLogger):
     snakes_ext = ".txt"
-    snake_folders_and_filenames = find_files_or_folders_at_depth(source_snakes_dir,subdir_depth,snakes_ext)
+    snake_folders_and_filenames = find_files_or_folders_at_depth(source_snakes_dir,source_snakes_depth,snakes_ext)
 
     for folder_path, snake_filename in snake_folders_and_filenames:
         folder_relative_path = os.path.relpath(folder_path, source_snakes_dir)

@@ -82,6 +82,7 @@ class StepsSetupForm(npyscreen.Form):
                 "Run SOAX",
                 "Convert Snake files to JSON",
                 "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
+                "Scale JSON snakes to real length units",
                 "Make images of snakes",
                 "Make videos from snake images",
                 "Make Orientation Fields",
@@ -99,10 +100,11 @@ class StepsSetupForm(npyscreen.Form):
         do_run_soax                        = 5  in self.select_steps.value
         do_snakes_to_json                  = 6  in self.select_steps.value
         do_join_sectioned_snakes           = 7  in self.select_steps.value
-        do_make_snake_images               = 8  in self.select_steps.value
-        do_make_snake_videos               = 9  in self.select_steps.value
-        do_make_orientation_fields         = 10 in self.select_steps.value
-        do_make_cindy_matrices_from_snakes = 11 in self.select_steps.value
+        do_scale_json_snakes_to_units      = 8  in self.select_steps.value
+        do_make_snake_images               = 9  in self.select_steps.value
+        do_make_snake_videos               = 10 in self.select_steps.value
+        do_make_orientation_fields         = 11 in self.select_steps.value
+        do_make_cindy_matrices_from_snakes = 12 in self.select_steps.value
 
         self.parentApp.stagesSelected(
             do_auto_contrast,
@@ -113,6 +115,7 @@ class StepsSetupForm(npyscreen.Form):
             do_run_soax,
             do_snakes_to_json,
             do_join_sectioned_snakes,
+            do_scale_json_snakes_to_units,
             do_make_snake_images,
             do_make_snake_videos,
             do_make_orientation_fields,
@@ -123,6 +126,7 @@ class SetupForm(npyscreen.Form):
     dir_fields = []
     file_fields = []
     pos_float_fields = []
+    optional_pos_float_fields = []
     percentage_fields = []
     non_neg_int_fields = []
     pos_int_fields = []
@@ -130,6 +134,7 @@ class SetupForm(npyscreen.Form):
     file_fields = []
     optional_dir_fields = []
     yes_no_fields = []
+    text_fields = []
 
     @classmethod
     def parseSettings(cls, field_strings, make_dirs_if_not_present=False):
@@ -149,6 +154,13 @@ class SetupForm(npyscreen.Form):
             field_str = field_strings[field_name]
             parsed_fields[field_name] = parse_pos_float(field_name, field_str)
 
+        for field_name in cls.optional_pos_float_fields:
+            field_str = field_strings[field_name]
+            if field_str.strip() == "":
+                parsed_fields[field_name] = None
+            else:
+                parsed_fields[field_name] = parse_pos_float(field_name, field_str)
+
         for field_name in cls.percentage_fields:
             field_str = field_strings[field_name]
 
@@ -167,7 +179,7 @@ class SetupForm(npyscreen.Form):
 
         for field_name in cls.pos_int_fields:
             field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_pos_int(field_name, field_str)
+            parsed_fields[field_name] = parse_pos_int(field_nasme, field_str)
 
         for field_name in cls.non_neg_int_fields:
             field_str = field_strings[field_name]
@@ -196,7 +208,15 @@ class SetupForm(npyscreen.Form):
 
         for field_name in cls.yes_no_fields:
             field_str = field_strings[field_name]
+            if field_str != "yes" and field_str != "no":
+                raise ParseException("Error parsing {}: value must be 'yes' or 'no', is '{}'".format(field_name, field_str))
             parsed_fields[field_name] = True if field_str == "yes" else False
+
+        for field_name in cls.text_fields:
+            field_str = field_strings[field_name]
+            if len(field_str.strip()) == 0:
+                raise ParseException("Invalid text field '{}' value '{}': value is empty".format(field_name, field_str))
+            parsed_fields[field_name] = field_str
 
         return parsed_fields
 
@@ -464,13 +484,6 @@ class ParamsSetupPage2Form(SetupForm):
             "intensity_scaling": self.field_intensity_scaling.value,
         }
 
-# class ParamsSetupForm(SetupForm):
-#     dir_fields = ParamsSetupPage1Form.dir_fields + ParamsSetupPage2Form.dir_fields
-#     arg_or_range_fields = ParamsSetupPage1Form.arg_or_range_fields + ParamsSetupPage2Form.arg_or_range_fields
-
-#     def configure(self):
-#         raise Exception("Only exists for parse stuff")
-
 class SoaxRunSetupForm(SetupForm):
     dir_fields = [
         "source_tiff_dir",
@@ -531,7 +544,7 @@ class SoaxRunSetupForm(SetupForm):
         }
 
 class SnakesToJsonSetupForm(SetupForm):
-    non_neg_int_fields = ["subdir_depth"]
+    non_neg_int_fields = ["source_snakes_depth"]
     dir_fields = ["source_snakes_dir", "target_json_dir"]
 
     def configure(self, snakes_to_json_settings):
@@ -544,8 +557,8 @@ class SnakesToJsonSetupForm(SetupForm):
         self.field_target_json_dir = self.add(npyscreen.TitleFilename, name="target_json_dir",
             value=snakes_to_json_settings["target_json_dir"])
 
-        self.field_subdir_depth = self.add(npyscreen.TitleText, name="subdir_depth",
-            value=snakes_to_json_settings["subdir_depth"])
+        self.field_source_snakes_depth = self.add(npyscreen.TitleText, name="source_snakes_depth",
+            value=snakes_to_json_settings["source_snakes_depth"])
 
         self.create_if_not_present = self.add(
             npyscreen.TitleSelectOne,
@@ -558,7 +571,7 @@ class SnakesToJsonSetupForm(SetupForm):
         return {
             "source_snakes_dir": self.field_source_snakes_dir.value,
             "target_json_dir": self.field_target_json_dir.value,
-            "subdir_depth": self.field_subdir_depth.value,
+            "source_snakes_depth": self.field_source_snakes_depth.value,
         }
 
 class JoinSectionedSnakesSetupForm(SetupForm):
@@ -595,8 +608,54 @@ class JoinSectionedSnakesSetupForm(SetupForm):
             "source_jsons_depth": self.field_source_jsons_depth.value,
         }
 
+class ScaleJsonSnakesToUnitsSetupForm(SetupForm):
+    non_neg_int_fields = ["source_jsons_depth"]
+    dir_fields = ["source_json_dir", "target_json_dir"]
+    pos_ifloatfields = ["x_y_pixel_size", "x_y_rescale_factor"]
+    optional_pos_float_fields = ["z_stack_spacing"]
+    text_fields = ["unit_abbreviation"]
+
+    def configure(self, scale_json_snakes_to_units_settings):
+        self.setup_done_func = self.parentApp.scaleJsonSnakesToUnitsSetupDone
+
+        self.add(npyscreen.FixedText,
+            value="Take json snakes with pixel coordinate values and convert to real length units")
+        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
+            value=scale_json_snakes_to_units_settings["source_json_dir"])
+        self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
+            value=scale_json_snakes_to_units_settings["source_jsons_depth"])
+        self.field_target_json_dir = self.add(npyscreen.TitleFilename, name="target_json_dir",
+            value=scale_json_snakes_to_units_settings["target_json_dir"])
+        self.add(npyscreen.FixedText,
+            value="x_y_pixel_size is the size of a single pixel in the original TIFF image")
+        self.field_x_y_pixel_size = self.add(npyscreen.TitleText, name="x_y_pixel_size",
+            value=scale_json_snakes_to_units_settings["x_y_pixel_size"])
+        self.add(npyscreen.FixedText,
+            value="If image was rescaled in x and y before being run to soax, enter scale factor here")
+        self.add(npyscreen.FixedText,
+            value="(ex. 0.5 for half sized image scale) to account for changed pixel size when calculating real length")
+        self.field_x_y_image_scale_factor = self.add(npyscreen.TitleText, name="x_y_image_scale_factor",
+            value=scale_json_snakes_to_units_settings["x_y_image_scale_factor"])
+        self.add(npyscreen.FixedText,
+            value="The distance between z stacks in source TIFF images")
+        self.field_z_stack_spacing = self.add(npyscreen.TitleText, name="z_stack_spacing (if applicable)",
+            value=scale_json_snakes_to_units_settings["z_stack_spacing"])
+        self.field_unit_abbreviation = self.add(npyscreen.TitleText, name="unit_abbreviation",
+            value=scale_json_snakes_to_units_settings["unit_abbreviation"])
+
+    def getFieldStrings(self):
+        return {
+            "source_json_dir": self.field_source_json_dir.value,
+            "source_jsons_depth": self.field_source_jsons_depth.value,
+            "target_json_dir": self.field_target_json_dir.value,
+            "x_y_pixel_size": self.field_x_y_pixel_size.value,
+            "x_y_image_scale_factor": self.field_x_y_image_scale_factor.value,
+            "z_stack_spacing": self.field_z_stack_spacing.value,
+            "unit_abbreviation": self.field_unit_abbreviation.value,
+        }
+
 class MakeSnakeImagesSetupForm(SetupForm):
-    non_neg_int_fields = ["snake_jsons_depth"]
+    non_neg_int_fields = ["source_jsons_depth"]
     pos_int_fields = ["height", "width"]
     dir_fields = ["source_json_dir", "target_jpeg_dir"]
     optional_dir_fields = ["background_images_dir"]
@@ -606,7 +665,7 @@ class MakeSnakeImagesSetupForm(SetupForm):
         self.setup_done_func = self.parentApp.makeSnakeImagesSetupDone
 
         self.add(npyscreen.FixedText,
-            value="Make videos from images in directories")
+            value="Make images from json files in directories")
         self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
             value=make_snake_images_settings["source_json_dir"])
         self.field_target_jpeg_dir = self.add(npyscreen.TitleFilename, name="target_jpeg_dir",
@@ -614,8 +673,8 @@ class MakeSnakeImagesSetupForm(SetupForm):
         self.field_background_images_dir = self.add(npyscreen.TitleFilename, name="(Optional) background_images_dir",
             value=make_snake_images_settings["background_images_dir"])
 
-        self.field_snake_jsons_depth = self.add(npyscreen.TitleText, name="snake_jsons_depth",
-            value=make_snake_images_settings["snake_jsons_depth"])
+        self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
+            value=make_snake_images_settings["source_jsons_depth"])
 
         self.field_height = self.add(npyscreen.TitleText, name="height",
             value=make_snake_images_settings["height"])
@@ -643,7 +702,7 @@ class MakeSnakeImagesSetupForm(SetupForm):
             "target_jpeg_dir": self.field_target_jpeg_dir.value,
             "height": self.field_height.value,
             "width": self.field_width.value,
-            "snake_jsons_depth": self.field_snake_jsons_depth.value,
+            "source_jsons_depth": self.field_source_jsons_depth.value,
             "use_colors": "yes" if (0 in self.field_use_colors.value) else "no",
             "background_images_dir": self.field_background_images_dir.value,
         }
@@ -796,30 +855,39 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.snakes_to_json_settings = {
             "source_snakes_dir": "",
             "target_json_dir": "./JsonSnakes",
-            "subdir_depth": "1",
+            "source_snakes_depth": "",
         }
         self.join_sectioned_snakes_settings = {
             "source_json_dir": "",
             "target_json_dir": "./JoinedJsonSnakes",
-            "source_jsons_depth": "2",
+            "source_jsons_depth": "",
+        }
+        self.scale_json_snakes_to_units_settings = {
+            "source_json_dir": "",
+            "target_json_dir": "./UnitScaledJsonSnakes",
+            "x_y_pixel_size": "",
+            "x_y_image_scale_factor": "",
+            "z_stack_spacing": "",
+            "unit_abbreviation": "",
         }
         self.make_snake_images_settings = {
             "source_json_dir": "",
+            "source_jsons_depth", "1",
             "target_jpeg_dir": "./SnakeImages",
             "width": "",
             "height": "",
-            "snake_jsons_depth": "1",
+            "source_jsons_depth": "",
             "use_colors": "no",
             "background_images_dir": "",
         }
         self.make_snake_videos_settings = {
             "source_jpeg_dir": "",
             "target_mp4_dir": "./SnakeVideos",
-            "source_images_depth": "1",
+            "source_images_depth": "",
         }
         self.make_orientation_fields_settings = {
             "source_json_dir": "",
-            "source_jsons_depth": "1",
+            "source_jsons_depth": "",
             "target_data_dir": "./OrientationFields",
             "image_width": "",
             "image_height": "",
@@ -880,6 +948,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "join_sectioned_snakes",
                 "settings": self.join_sectioned_snakes_settings,
             })
+        if self.do_scale_json_snakes_to_units:
+            action_configs.append({
+                "action_scale_json_snakes_to_units",
+                "settings": self.scale_json_snakes_to_units_settings,
+            })
         if self.do_make_snake_images:
             action_configs.append({
                 "action": "make_snake_images",
@@ -911,6 +984,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_run_soax,
         do_snakes_to_json,
         do_join_sectioned_snakes,
+        do_scale_json_snakes_to_units,
         do_make_snake_images,
         do_make_snake_videos,
         do_make_orientation_fields,
@@ -924,6 +998,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_run_soax = do_run_soax
         self.do_snakes_to_json = do_snakes_to_json
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
+        self.do_scale_json_snakes_to_units = do_scale_json_snakes_to_units
         self.do_make_snake_images = do_make_snake_images
         self.do_make_snake_videos = do_make_snake_videos
         self.do_make_orientation_fields = do_make_orientation_fields
@@ -947,6 +1022,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startSnakesToJsonSetup)
         if self.do_join_sectioned_snakes:
             self.menu_functions.append(self.startJoinSectionedSnakesSetup)
+        if self.do_scale_json_snakes_to_units:
+            self.menu_functions.append(self.startScaleJsonSnakesToUnitsSetup)
         if self.do_make_snake_images:
             self.menu_functions.append(self.startMakeSnakeImagesSetup)
         if self.do_make_snake_videos:
@@ -1092,8 +1169,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.sectioning_settings = sectioning_settings
         self.soax_run_settings["source_tiff_dir"] = sectioning_settings["target_sectioned_tiff_dir"]
         self.soax_run_settings["use_subdirs"] = "yes"
-        self.snakes_to_json_settings["subdir_depth"] = "2"
-        self.join_sectioned_snakes_settings["source_jsons_depth"] = "2"
+        # self.snakes_to_json_settings["source_snakes_depth"] = "2"
+        # self.join_sectioned_snakes_settings["source_jsons_depth"] = "2"
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
                 self.sectioning_settings["source_tiff_dir"],
@@ -1129,6 +1206,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_settings = soax_run_settings
         self.snakes_to_json_settings["source_snakes_dir"] = soax_run_settings["target_snakes_dir"]
 
+        if soax_run_settings["use_subdirs"] == "yes":
+            self.snakes_to_json_settings["source_snakes_depth"] = "2"
+        else:
+            self.snakes_to_json_settings["source_snakes_depth"] = "1"
+
         # Only want to do this if we know soax is getting the original shaped images
         if self.make_snake_images_settings["width"] == "" and not soax_run_settings["use_subdirs"]:
             # Set width and height for make images step
@@ -1149,10 +1231,21 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def snakesToJsonSetupDone(self, snakes_to_json_settings):
         self.snakes_to_json_settings = snakes_to_json_settings
-        self.join_sectioned_snakes_settings["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
-        self.make_snake_images_settings["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
-        self.make_orientation_fields_settings["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
-        self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = snakes_to_json_settings["target_json_dir"]
+
+        target_json_dir = snakes_to_json_settings["target_json_dir"]
+        self.join_sectioned_snakes_settings["source_json_dir"] = target_json_dir
+        self.make_snake_images_settings["source_json_dir"] = target_json_dir
+        self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
+        self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
+        self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
+
+        output_jsons_depth = snakes_to_json_settings["source_snakes_depth"]
+        self.join_sectioned_snakes_settings["source_jsons_depth"] = output_jsons_depth
+        self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
+        self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
+        self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
+        self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
+
         self.goToNextMenu()
 
     def startJoinSectionedSnakesSetup(self):
@@ -1162,15 +1255,39 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def joinSectionedSnakesSetupDone(self, join_sectioned_snakes_settings):
         self.join_sectioned_snakes_settings = join_sectioned_snakes_settings
-        self.make_snake_images_settings["source_json_dir"] = join_sectioned_snakes_settings["target_json_dir"]
-        self.make_orientation_fields_settings["source_json_dir"] = join_sectioned_snakes_settings["target_json_dir"]
-        self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = join_sectioned_snakes_settings["target_json_dir"]
+
+        target_json_dir = join_sectioned_snakes_settings["target_json_dir"]
+        self.make_snake_images_settings["source_json_dir"] = target_json_dir
+        self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
+        self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
+        self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
 
         # Output jsons are one directory less deep since they've been joined
-        self.make_snake_images_settings["snake_jsons_depth"] = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
-        self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
+        output_jsons_depth = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
+        self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
+        self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
+        self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
+        self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
 
         self.goToNextMenu()
+
+    def startScaleJsonSnakesToUnitsSetup(self):
+        self.addForm('SCALE_JSON_SNAKES_TO_UNITS', ScaleJsonSnakesToUnitsSetupForm, name="Scale JSON Snakes to Units")
+        self.getForm('SCALE_JSON_SNAKES_TO_UNITS').configure(self.scale_json_snakes_to_units_settings)
+        self.setNextForm('SCALE_JSON_SNAKES_TO_UNITS')
+
+    def scaleJsonSnakesToUnitsSetupDone(self, scale_json_snakes_to_units_settings):
+        self.scale_json_snakes_to_units_settings = scale_json_snakes_to_units_settings
+
+        target_json_dir = scale_json_snakes_to_units_settings["target_json_dir"]
+        self.make_snake_images_settings["source_json_dir"] = target_json_dir
+        self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
+        self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
+
+        output_jsons_depth = self.scale_json_snakes_to_units_settings["source_jsons_depth"]
+        self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
+        self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
+        self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
 
     def startMakeSnakeImagesSetup(self):
         self.addForm('MAKE_SNAKE_IMAGES_SETUP', MakeSnakeImagesSetupForm, name="Make Snake Images Setup")

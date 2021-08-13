@@ -109,8 +109,8 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         convert_snakes_to_json(
             parsed_snakes_to_json_settings["source_snakes_dir"],
             parsed_snakes_to_json_settings["target_json_dir"],
-            parsed_snakes_to_json_settings["subdir_depth"],
-            logger=logger
+            parsed_snakes_to_json_settings["source_snakes_depth"],
+            logger=logger,
         )
     elif action_name == "join_sectioned_snakes":
         parsed_join_sectioned_snakes_settings = JoinSectionedSnakesSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
@@ -128,7 +128,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_make_snake_images_settings["target_jpeg_dir"],
             parsed_make_snake_images_settings["width"],
             parsed_make_snake_images_settings["height"],
-            parsed_make_snake_images_settings["snake_jsons_depth"],
+            parsed_make_snake_images_settings["source_jsons_depth"],
             parsed_make_snake_images_settings["use_colors"],
             parsed_make_snake_images_settings["background_images_dir"],
             logger=logger,
