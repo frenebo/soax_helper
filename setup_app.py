@@ -781,6 +781,8 @@ class MakeCindyMatricesFromSnakesSetupForm(SetupForm):
         "position_matrix_dir",
     ]
     non_neg_int_fields = ["source_jsons_depth"]
+    pos_float_fields = ["width", "height"]
+    optional_pos_float_fields = ["depth"]
 
     def configure(self, make_cindy_matrices_from_snakes_settings):
         self.setup_done_func = self.parentApp.makeCindyMatricesFromSnakesSetupDone
@@ -789,6 +791,16 @@ class MakeCindyMatricesFromSnakesSetupForm(SetupForm):
             value=make_cindy_matrices_from_snakes_settings["source_json_dir"])
         self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
             value=make_cindy_matrices_from_snakes_settings["source_jsons_depth"])
+        self.add(npyscreen.FixedText,
+            value="Width, height (in length units of the json snakes) to make the matrices for CINDy")
+        self.field_width = self.add(npyscreen.TitleText, name="width",
+            value=make_cindy_matrices_from_snakes["width"])
+        self.field_height = self.add(npyscreen.TitleText, name="height",
+            value=make_cindy_matrices_from_snakes["height"])
+        self.add(npyscreen.FixedText,
+            value="Provide depth (in length units of json snakes) if snakes are 3D")
+        self.field_depth = self.add(npyscreen.TitleText, name="depth",
+            value=make_cindy_matrices_from_snakes["depth"])
         self.field_orientation_matrix_dir = self.add(npyscreen.TitleFilename, name="orientation_matrix_dir",
             value=make_cindy_matrices_from_snakes_settings["orientation_matrix_dir"])
         self.field_position_matrix_dir = self.add(npyscreen.TitleFilename, name="position_matrix_dir",
@@ -873,7 +885,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         }
         self.make_snake_images_settings = {
             "source_json_dir": "",
-            "source_jsons_depth", "1",
+            "source_jsons_depth": "1",
             "target_jpeg_dir": "./SnakeImages",
             "width": "",
             "height": "",
