@@ -865,6 +865,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.scale_json_snakes_to_units_settings = {
             "source_json_dir": "",
             "target_json_dir": "./UnitScaledJsonSnakes",
+            "source_jsons_depth": "",
             "x_y_pixel_size": "",
             "x_y_image_scale_factor": "",
             "z_stack_spacing": "",
@@ -950,7 +951,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             })
         if self.do_scale_json_snakes_to_units:
             action_configs.append({
-                "action_scale_json_snakes_to_units",
+                "action": "scale_json_snakes_to_units",
                 "settings": self.scale_json_snakes_to_units_settings,
             })
         if self.do_make_snake_images:
@@ -1257,17 +1258,17 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.join_sectioned_snakes_settings = join_sectioned_snakes_settings
 
         target_json_dir = join_sectioned_snakes_settings["target_json_dir"]
+        self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
         self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
         self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
-        self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
 
         # Output jsons are one directory less deep since they've been joined
         output_jsons_depth = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
+        self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
         self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
         self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
-        self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
 
         self.goToNextMenu()
 

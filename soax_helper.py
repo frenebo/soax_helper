@@ -14,9 +14,11 @@ from run_soax import run_soax
 from snakeutils.logger import RecordLogger, PrintLogger
 from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
+from scale_json_snakes_to_units import scale_json_snakes_to_units
 from make_snake_images import make_snake_images
 from make_videos import make_videos
 from make_orientation_fields import make_orientation_fields
+from cindy_matrices_from_snakes import cindy_matrices_from_snakes
 
 from setup_app import (
     SoaxSetupApp,
@@ -29,6 +31,7 @@ from setup_app import (
     SoaxRunSetupForm,
     SnakesToJsonSetupForm,
     JoinSectionedSnakesSetupForm,
+    ScaleJsonSnakesToUnitsSetupForm,
     MakeSnakeImagesSetupForm,
     MakeSnakeVideosSetupForm,
     MakeOrientationFieldsSetupForm,
@@ -36,7 +39,7 @@ from setup_app import (
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
     if action_name == "z_rescale_tiffs":
-        parsed_z_rescale_settings = ZRescaleSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_z_rescale_settings = ZRescaleSetupForm.parseSettings(setting_strings, make_dirs)
         z_rescale_tiffs(
             parsed_z_rescale_settings["batch_resample_path"],
             parsed_z_rescale_settings["source_tiff_dir"],
@@ -45,7 +48,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger
         )
     elif action_name == "xy_rescale_tiffs":
-        parsed_xy_rescale_settings = XYRescaleSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_xy_rescale_settings = XYRescaleSetupForm.parseSettings(setting_strings, make_dirs)
         xy_rescale_tiffs(
             parsed_xy_rescale_settings["source_tiff_dir"],
             parsed_xy_rescale_settings["target_tiff_dir"],
@@ -53,7 +56,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger
         )
     elif action_name == "auto_contrast_tiffs":
-        parsed_auto_contrast_settings = AutoConstrastSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_auto_contrast_settings = AutoConstrastSetupForm.parseSettings(setting_strings, make_dirs)
         auto_contrast_tiffs(
             parsed_auto_contrast_settings["source_tiff_dir"],
             parsed_auto_contrast_settings["target_tiff_dir"],
@@ -62,7 +65,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "section_tiffs":
-        parsed_sectioning_settings = SectioningSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_sectioning_settings = SectioningSetupForm.parseSettings(setting_strings, make_dirs)
         section_tiffs(
             parsed_sectioning_settings["section_max_size"],
             parsed_sectioning_settings["source_tiff_dir"],
@@ -70,8 +73,8 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "create_param_files":
-        parsed_page1_params_settings = ParamsSetupPage1Form.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
-        parsed_page2_params_settings = ParamsSetupPage2Form.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_page1_params_settings = ParamsSetupPage1Form.parseSettings(setting_strings, make_dirs)
+        parsed_page2_params_settings = ParamsSetupPage2Form.parseSettings(setting_strings, make_dirs)
         parsed_params_settings = {
             **parsed_page1_params_settings,
             **parsed_page2_params_settings,
@@ -91,7 +94,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "run_soax":
-        parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(setting_strings, make_dirs)
 
         run_soax(
             parsed_soax_run_settings["batch_soax_path"],
@@ -104,7 +107,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "convert_snakes_to_json":
-        parsed_snakes_to_json_settings = SnakesToJsonSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_snakes_to_json_settings = SnakesToJsonSetupForm.parseSettings(setting_strings, make_dirs)
 
         convert_snakes_to_json(
             parsed_snakes_to_json_settings["source_snakes_dir"],
@@ -113,15 +116,29 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "join_sectioned_snakes":
-        parsed_join_sectioned_snakes_settings = JoinSectionedSnakesSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_join_sectioned_snakes_settings = JoinSectionedSnakesSetupForm.parseSettings(setting_strings, make_dirs)
 
         join_sectioned_snakes(
             parsed_join_sectioned_snakes_settings["source_json_dir"],
             parsed_join_sectioned_snakes_settings["target_json_dir"],
             source_jsons_depth=parsed_join_sectioned_snakes_settings["source_jsons_depth"],
-            logger=logger)
+            logger=logger,
+        )
+    elif action_name == "scale_json_snakes_to_units":
+        parsed_scale_json_snakes_to_units = ScaleJsonSnakesToUnitsSetupForm.parseSettings(setting_strings, make_dir_if_not_present=make_dirs)
+
+        scale_json_snakes_to_units(
+            parsed_scale_json_snakes_to_units["source_json_dir"],
+            parsed_scale_json_snakes_to_units["source_jsons_depth"],
+            parsed_scale_json_snakes_to_units["target_json_dir"],
+            parsed_scale_json_snakes_to_units["x_y_pixel_size"],
+            parsed_scale_json_snakes_to_units["x_y_image_scale_factor"],
+            parsed_scale_json_snakes_to_units["z_stack_spacing"],
+            parsed_scale_json_snakes_to_units["unit_abbreviation"],
+            logger=logger,
+        )
     elif action_name == "make_snake_images":
-        parsed_make_snake_images_settings = MakeSnakeImagesSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_make_snake_images_settings = MakeSnakeImagesSetupForm.parseSettings(setting_strings, make_dirs)
 
         make_snake_images(
             parsed_make_snake_images_settings["source_json_dir"],
@@ -134,7 +151,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "make_videos":
-        parsed_make_snake_videos_settings = MakeSnakeVideosSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_make_snake_videos_settings = MakeSnakeVideosSetupForm.parseSettings(setting_strings, make_dirs)
 
         make_videos(
             parsed_make_snake_videos_settings["source_jpeg_dir"],
@@ -143,7 +160,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "make_orientation_fields":
-        parsed_make_orientation_fields_settings = MakeOrientationFieldsSetupForm.parseSettings(setting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_make_orientation_fields_settings = MakeOrientationFieldsSetupForm.parseSettings(setting_strings, make_dirs)
 
         make_orientation_fields(
             parsed_make_orientation_fields_settings["source_json_dir"],
@@ -154,7 +171,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "make_cindy_matrices_from_snakes":
-        parsed_make_cindy_matrices_from_snakes_settings = MakeCindyMatricesFromSnakesSetupForm.parseSettings(seetting_strings, make_dirs_if_not_present=make_dirs)
+        parsed_make_cindy_matrices_from_snakes_settings = MakeCindyMatricesFromSnakesSetupForm.parseSettings(seetting_strings, make_dirs)
 
         make_cindy_matrices_from_snakes(
             parsed_make_cindy_matrices_from_snakes_settings["source_json_dir"],
