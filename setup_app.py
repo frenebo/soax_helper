@@ -66,13 +66,13 @@ def parse_pos_float(field_name, field_str):
 
     return val_float
 
-class StepsSetupForm(npyscreen.Form):
+class SoaxStepsSelectForm(npyscreen.Form):
     def configure(self):
         self.select_steps = self.add(
             npyscreen.TitleMultiSelect,
             max_height =-2,
-            value = [4,5,6,8,9],
-            name="Pick steps (spacebar to toggle)",
+            value = [],
+            name="Pick SOAX Steps (spacebar to toggle)",
             values = [
                 "Auto Contrast Raw TIFFs",
                 "Rescale TIFFs in Z",
@@ -106,7 +106,7 @@ class StepsSetupForm(npyscreen.Form):
         do_make_orientation_fields         = 11 in self.select_steps.value
         do_make_cindy_matrices_from_snakes = 12 in self.select_steps.value
 
-        self.parentApp.stagesSelected(
+        self.parentApp.soaxStepsSelectDone(
             do_auto_contrast,
             do_z_rescale,
             do_xy_rescale,
@@ -122,118 +122,210 @@ class StepsSetupForm(npyscreen.Form):
             do_make_cindy_matrices_from_snakes,
         )
 
+class PIVStepsSelectForm(npyscreen.Form):
+    def configure(self):
+        self.select_steps = self.add(
+            npyscreen.TitleMultiSelect,
+            max_height =-2,
+            value = [],
+            name="Pick PIV Steps (spacebar to toggle)",
+            values = [
+                "Bead PIV",
+            ],
+            scroll_exit=True,
+        )
+
+    def afterEditing(self):
+        do_bead_PIV = 0 in self.select_steps.value
+
+        self.parentApp.PIVStepsSelectDone(
+            do_bead_PIV,
+        )
+
 class SetupForm(npyscreen.Form):
-    dir_fields = []
-    file_fields = []
-    pos_float_fields = []
-    optional_pos_float_fields = []
-    percentage_fields = []
-    non_neg_int_fields = []
-    pos_int_fields = []
-    arg_or_range_fields = []
-    file_fields = []
-    optional_dir_fields = []
-    yes_no_fields = []
-    text_fields = []
+    field_infos = []
+    app_done_func_name = None
 
-    @classmethod
-    def parseSettings(cls, field_strings, make_dirs_if_not_present=False):
-        parsed_fields = {}
-
-        for field_name in cls.dir_fields:
-            field_str = field_strings[field_name]
-            check_dir_field(field_name, field_str, make_dirs_if_not_present)
-            parsed_fields[field_name] = field_str
-
-        for field_name in cls.file_fields:
-            field_str = field_strings[field_name]
-            check_file_field(field_name, field_str)
-            parsed_fields[field_name] = field_str
-
-        for field_name in cls.pos_float_fields:
-            field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_pos_float(field_name, field_str)
-
-        for field_name in cls.optional_pos_float_fields:
-            field_str = field_strings[field_name]
+    @staticmethod
+    def parseField(field_id, field_str, field_type, field_details, make_dirs_if_not_present):
+        if field_type == "dir":
+            check_dir_field(field_id, field_str, make_dirs_if_not_present)
+            return field_str
+        elif field_type == "file":
+            check_file_field(field_id, field_str)
+            return field_str
+        elif field_type == "pos_float":
+            return parse_pos_float(field_id, field_str)
+        elif field_type == "optional_pos_float":
             if field_str.strip() == "":
-                parsed_fields[field_name] = None
+                return None
             else:
-                parsed_fields[field_name] = parse_pos_float(field_name, field_str)
-
-        for field_name in cls.percentage_fields:
-            field_str = field_strings[field_name]
-
+                return parse_pos_float(field_id, field_str)
+        elif field_type == "percentage":
             if field_str == "":
-                raise ParseException("'{}' is a required field".format(field_name))
+                raise ParseException("'{}' is a required field".format(field_id))
             try:
                 perc = float(field_str)
             except ValueError:
-                raise ParseException("'{}' value '{}' is not a number".format(field_name,field_str))
-
+                raise ParseException("'{}' value '{}' is not a number".format(field_id,field_str))
 
             if perc < 0 or perc > 100:
-                raise ParseException("Invalid '{}' value '{}': should be between 0 and 100".format(field_name,str(perc)))
+                raise ParseException("Invalid '{}' value '{}': should be between 0 and 100".format(field_id,str(perc)))
 
-            parsed_fields[field_name] = perc
-
-        for field_name in cls.pos_int_fields:
-            field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_pos_int(field_nasme, field_str)
-
-        for field_name in cls.non_neg_int_fields:
-            field_str = field_strings[field_name]
-            parsed_fields[field_name] = parse_non_neg_int(field_name, field_str)
-
-        for field_name in cls.arg_or_range_fields:
-            field_str = field_strings[field_name]
-
+            return perc
+        elif field_type == "pos_int":
+            return parse_pos_int(field_id, field_str)
+        elif field_type == "non_neg_int";
+            return parse_non_neg_int(field_id, field_str)
+        elif field_type ==  "arg_or_range":
             if field_str == "":
                 raise ParseException("'{}' is a required field")
 
             err_str_or_val = error_string_or_parse_arg_or_range(field_str)
             if isinstance(err_str_or_val, str):
-                raise ParseException("Error parsing {}: {}".format(field_name, err_str_or_val))
+                raise ParseException("Error parsing {}: {}".format(field_id, err_str_or_val))
             else:
-                parsed_fields[field_name] = err_str_or_val
-
-        for field_name in cls.optional_dir_fields:
-            field_str = field_strings[field_name]
+                return err_str_or_val
+        elif field_type == "optional_dir":
+            field_str = field_strings[field_id]
 
             if field_str.strip() == "":
-                parsed_fields[field_name] = None
+                return None
             else:
-                check_dir_field(field_name, field_str, make_dirs_if_not_present)
-                parsed_fields[field_name] = field_str
-
-        for field_name in cls.yes_no_fields:
-            field_str = field_strings[field_name]
+                check_dir_field(field_id, field_str, make_dirs_if_not_present)
+                return field_str
+        elif field_type == "yes_no":
             if field_str != "yes" and field_str != "no":
-                raise ParseException("Error parsing {}: value must be 'yes' or 'no', is '{}'".format(field_name, field_str))
-            parsed_fields[field_name] = True if field_str == "yes" else False
-
-        for field_name in cls.text_fields:
-            field_str = field_strings[field_name]
+                raise ParseException("Error parsing {}: value must be 'yes' or 'no', is '{}'".format(field_id, field_str))
+            return True if field_str == "yes" else False
+        elif field_type == "text":
+            field_str = field_strings[field_id]
             if len(field_str.strip()) == 0:
-                raise ParseException("Invalid text field '{}' value '{}': value is empty".format(field_name, field_str))
-            parsed_fields[field_name] = field_str
+                raise ParseException("Invalid text field '{}' value '{}': value is empty".format(field_id, field_str))
+            return field_str
+        else:
+            raise Exception("Unknown field type '{}'".format(field_type))
+
+    @classmethod
+    def parseSettings(cls, field_strings, make_dirs_if_not_present=False):
+        parsed_fields = {}
+
+        for field_info in cls.field_infos:
+            field_id = field_info["id"]
+            field_type = field_info["type"]
+            field_str = field_strings[field_id]
+            field_details = field_info["details"] if "details" in field_info else None
+
+            parsed_fields[field_id] = cls.parseField(field_id, field_str, field_type, field_details, field_details)
 
         return parsed_fields
 
-    def __init__(self, *args, **kwargs):
-        # Should be set in configure of form classes
-        self.setup_done_func = None
+    def add_info_text(self, info_str):
+        self.add(npyscreen.FixedText, value=info_str)
 
-        super(SetupForm, self).__init__(*args, **kwargs)
+    def add_field(self, field_id, field_name, field_str, field_type):
+        if field_type in [
+            "dir",
+            "optional_dir",
+            "file",
+        ]:
+            self.npy_fields[field_id] = self.add(
+                npyscreen.TitleFilename,
+                name=field_name,
+                value=field_str,
+            )
+        elif field_type in [
+            "pos_float",
+            "optional_pos_float",
+            "percentage",
+            "pos_int",
+            "non_neg_int",
+            "arg_or_range",
+            "text",
+        ]:
+            self.npy_fields[field_id] = self.add(
+                npyscreen.TitleText,
+                name=field_name,
+                value=field_str)
+        elif field_type == "yes_no":
+            self.npy_fields[field_id] = self.add(
+                npyscreen.TitleSelectOne,
+                max_height = 3,
+                name=field_name,
+                values=["yes", "no"],
+                value=([0] if field_str == "yes" else [1]),
+                scroll_exit=True)
+        else:
+            raise Exception("Unknown type '{}' for field '{}'".format(field_type, field_id))
 
-    def configure(self, settings):
-        raise NotImplementedError()
+    def configure(self, field_defaults):
+        self.npy_fields = {}
+
+        has_dir_field = False
+        for field_info in field_infos:
+            if "help" in field_info:
+                if type(field_info["help"]) == list:
+                    for info_str in field_info["help"]:
+                        self.add_info_text(info_str)
+                else:
+                    self.add_info_text(field_info["help"])
+
+            field_id = field_info["id"]
+            if "name" in field_info:
+                field_name = field_info["name"]
+            else:
+                field_name = field_id
+            field_str = field_defaults[field_id]
+            field_type = field_info["type"]
+
+            if field_type in ["dir", "optional_dir"]:
+                has_dir_field = True
+
+            self.add_field(field_id, field_name, field_str, field_type)
+
+        if has_dir_field:
+            self.create_if_not_present = self.add(
+                npyscreen.TitleSelectOne,
+                name="Create dirs if not present",
+                values=["yes", "no"],
+                value=[1],
+                scroll_exit=True)
+        else:
+            self.create_if_not_present = None
+
+    def getFieldString(self, field_type, field_id, field_details):
+        if field_type in [
+            "dir",
+            "optional_dir",
+            "file",
+            "pos_float",
+            "optional_pos_float",
+            "percentage",
+            "pos_int",
+            "non_neg_int",
+            "arg_or_range",
+            "text",
+        ]:
+            return self.npy_fields[field_id].value
+        elif field_type in ["yes_no"]:
+            return "yes" if (0 in self.npy_fields[field_id].value) else "no"
 
     def getFieldStrings(self):
-        raise NotImplementedError()
+        field_strings = {}
+
+        for field_info in cls.field_infos:
+            field_id = field_info["id"]
+            field_type = field_info["type"]
+            field_details = field_info["details"] if "details" in field_info else None
+
+            field_str = getFieldString(field_type, field_id, field_details)
+            field_strings[field_id] = field_str
+
+        return field_strings
+
 
     def afterEditing(self):
-        if hasattr(self, "create_if_not_present"):
+        if self.create_if_not_present is not None:
             # option zero is "yes"
             make_dirs_if_not_present = 0 in self.create_if_not_present.value
         else:
@@ -244,575 +336,404 @@ class SetupForm(npyscreen.Form):
         except ParseException as e:
             npyscreen.notify_confirm(str(e),editw=1)
             return
-        if self.setup_done_func is None:
-            raise Exception("Missing setup_done_func to call with argument strings")
+        if self.app_done_func_name is None:
+            raise Exception("Class isissing app_done_func_name to call with argument strings")
+        if not hasattr(self.parentApp, app_done_func_name):
+            raise Exception("Parent app does not have a done function named '{}'".format(app_done_func_name))
+        setup_done_func = getattr(self.parentApp, app_done_func_name)
 
-        self.setup_done_func(self.getFieldStrings())
+        setup_done_func(self.getFieldStrings())
 
 class ZRescaleSetupForm(SetupForm):
-    dir_fields = ["source_tiff_dir", "target_tiff_dir"]
-    pos_float_fields = ["rescale_factor"]
-    file_fields = ["batch_resample_path"]
-
-    def configure(self, z_rescale_settings):
-        self.setup_done_func = self.parentApp.ZRescaleSetupDone
-
-        self.add(npyscreen.FixedText,
-            value="Rescale z-axis depth of images using SOAX batch_resample. Useful if making images smaller or correcting for z-slice size")
-        self.field_batch_resample_path = self.add(npyscreen.TitleFilename, name="batch_resample_path",
-            value=z_rescale_settings["batch_resample_path"])
-        self.field_source_tiff_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
-            value=z_rescale_settings["source_tiff_dir"])
-        self.field_target_tiff_dir = self.add(npyscreen.TitleFilename, name="target_tiff_dir",
-            value=z_rescale_settings["target_tiff_dir"])
-        self.field_rescale_factor = self.add(npyscreen.TitleText, name="rescale_factor",
-            value=z_rescale_settings["rescale_factor"])
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-    def getFieldStrings(self):
-        return {
-            "batch_resample_path": self.field_batch_resample_path.value,
-            "source_tiff_dir": self.field_source_tiff_dir.value,
-            "target_tiff_dir": self.field_target_tiff_dir.value,
-            "rescale_factor": self.field_rescale_factor.value,
+    field_infos = [
+        {
+            "id": "batch_resample_path",
+            "type": "file",
+        },
+        {
+            "help": "Rescale z-axis depth of images using SOAX batch_resample. Useful if making images smaller or correcting for z-slice size",
+            "id": "source_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "target_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "rescale_factor",
+            "type": "pos_float",
         }
+    ]
+
+    app_done_func_name = "ZRescaleSetupDone"
 
 class XYRescaleSetupForm(SetupForm):
-    dir_fields = ["source_tiff_dir", "target_tiff_dir"]
-    pos_float_fields = ["rescale_factor"]
+    field_infos = [
+        {
+            "id": "source_tiff_dir",
+            "type": "dir",
+            "help": [
+                "Rescale x and y width/height of images in source directory by factor (depth dimension unaffected for 3D images)",
+                "Ex. rescale factor 0.5 would make images half as tall and wide",
+            ],
+        },
+        {
+            "id": "target_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "rescale_factor",
+            "type": "pos_float"
+        },
+    ]
 
-    def configure(self, xy_rescale_settings):
-        self.setup_done_func = self.parentApp.XYRescaleSetupDone
-        self.add(npyscreen.FixedText,
-            value="Rescale x and y width/height of images in source directory by factor (depth dimension unaffected for 3D images)")
-        self.add(npyscreen.FixedText,
-            value="Ex. rescale factor 0.5 would make images half as tall and wide")
-        self.field_source_tiff_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
-            value=xy_rescale_settings["source_tiff_dir"])
-        self.field_target_tiff_dir = self.add(npyscreen.TitleFilename, name="target_tiff_dir",
-            value=xy_rescale_settings["target_tiff_dir"])
-        self.field_rescale_factor = self.add(npyscreen.TitleText, name="rescale_factor",
-            value=xy_rescale_settings["rescale_factor"])
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
+    app_done_func_name = "XYRescaleSetupDone"
 
-    def getFieldStrings(self):
-        return {
-            "source_tiff_dir": self.field_source_tiff_dir.value,
-            "target_tiff_dir": self.field_target_tiff_dir.value,
-            "rescale_factor": self.field_rescale_factor.value,
-        }
+class AutoContrastSetupForm(SetupForm):
+    field_infos = [
+        {
+            "id": "source_tiff_dir",
+            "type": "dir",
+            "help": [
+                "Min and max cutoff percent are brightness level percentiles to use to rescale the TIFF image brightnesses ",
+                "min=1 and max=99 would find the brightness that only 1% of tiff pixels in the first TIF in the directory are dimmer than, ",
+                "and the brightness that 99% of tiff pixels are dimmer than. The 1% brightness is the lower threshold, and 99% brightness is the upper threhold. ",
+                "All pixels dimmer than the lower threshold are set to total black, all pixels brighter than the upper threshold are set to pure white, ",
+                "and pixel brightnesses in between are rescaled to a new value between total black and total white",
+            ],
+        },
+        {
+            "id": "target_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "min_cutoff_percent",
+            "type": "percentage",
+        },
+        {
+            "id": "max_cutoff_percent",
+            "type": "percentage",
+        },
+    ]
 
-class AutoConstrastSetupForm(SetupForm):
-    percentage_fields = ["min_cutoff_percent", "max_cutoff_percent"]
-    dir_fields = ["source_tiff_dir", "target_tiff_dir"]
-
-    def configure(self, auto_contrast_settings):
-        self.setup_done_func = self.parentApp.autoContrastSetupDone
-
-        self.field_source_tiff_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
-            value=auto_contrast_settings["source_tiff_dir"])
-        self.field_target_tiff_dir = self.add(npyscreen.TitleFilename, name="target_tiff_dir",
-            value=auto_contrast_settings["target_tiff_dir"])
-
-        self.field_min_cutoff_percent = self.add(
-            npyscreen.TitleText,
-            value=auto_contrast_settings["min_cutoff_percent"],
-            name="min_cutoff_percent")
-        self.field_max_cutoff_percent = self.add(
-            npyscreen.TitleText,
-            value=auto_contrast_settings["max_cutoff_percent"],
-            name="max_cutoff_percent")
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-        npyscreen.notify_confirm(
-            "Min and max cutoff percent are brightness level percentiles to use to rescale the TIFF image brightnesses " +
-            "min=1 and max=99 would find the brightness that only 1% of tiff pixels in the first TIF in the directory are dimmer than, " +
-            "and the brightness that 99% of tiff pixels are dimmer than. The 1% brightness is the lower threshold, and 99% brightness is the upper threhold. " +
-            "All pixels dimmer than the lower threshold are set to total black, all pixels brighter than the upper threshold are set to pure white, " +
-            "and pixel brightnesses in between are rescaled to a new value between total black and total white",
-            wide=True,
-            editw=1,
-        )
-
-    def getFieldStrings(self):
-        return {
-            "max_cutoff_percent": self.field_max_cutoff_percent.value,
-            "min_cutoff_percent": self.field_min_cutoff_percent.value,
-            "source_tiff_dir": self.field_source_tiff_dir.value,
-            "target_tiff_dir": self.field_target_tiff_dir.value,
-        }
+    app_done_func_name = "autoContrastSetupDone"
 
 class SectioningSetupForm(SetupForm):
-    pos_int_fields = ["section_max_size"]
-    dir_fields = ["source_tiff_dir", "target_sectioned_tiff_dir"]
-
-    def configure(self, sectioning_settings):
-        self.setup_done_func = self.parentApp.sectioningSetupDone
-
-        self.field_source_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
-            value=sectioning_settings["source_tiff_dir"])
-        self.field_sectioned_target_dir = self.add(npyscreen.TitleFilename, name="target_sectioned_tiff_dir",
-            value=sectioning_settings["target_sectioned_tiff_dir"])
-
-        self.add(npyscreen.FixedText, value="Enter maximum side length (pixels) of an image section")
-
-        self.field_section_max_size = self.add(npyscreen.TitleText, name="section max size",
-            value=sectioning_settings["section_max_size"])
-
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-    def getFieldStrings(self):
-        return {
-            "source_tiff_dir": self.field_source_dir.value,
-            "target_sectioned_tiff_dir": self.field_sectioned_target_dir.value,
-            "section_max_size": self.field_section_max_size.value,
+    field_infos = [
+        {
+            "id": "source_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "target_sectioned_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "section_max_size",
+            "type": "pos_int",
         }
-
-class ParamsSetupPage1Form(SetupForm):
-    dir_fields = ["params_save_dir"]
-    arg_or_range_fields = [
-        "alpha",
-        "beta",
-        "gamma",
-        "min_foreground",
-        "ridge_threshold",
-        "min_snake_length",
     ]
 
-    all_fields = dir_fields + arg_or_range_fields
+    app_done_func_name = "sectioningSetupDone"
 
-    def configure(self, params_page1_settings):
-        self.setup_done_func = self.parentApp.paramsSetupPage1Done
-        self.add(npyscreen.FixedText,
-            value="Enter SOAX run parameters to try.")
-        self.add(npyscreen.FixedText,
-            value="Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)")
-        self.add(npyscreen.FixedText,
-            value="If ranges are given, soax will be run multiple times, trying all combinations of parameter values")
-
-        self.field_params_save_dir = self.add(npyscreen.TitleFilename, name="params_save_dir",
-            value=params_page1_settings["params_save_dir"])
-
-        self.field_alpha           = self.add(npyscreen.TitleText, name="alpha",
-            value=params_page1_settings["alpha"])
-        self.field_beta            = self.add(npyscreen.TitleText, name="beta",
-            value=params_page1_settings["beta"])
-        self.field_gamma            = self.add(npyscreen.TitleText, name="gamma",
-            value=params_page1_settings["gamma"])
-        self.field_min_foreground  = self.add(npyscreen.TitleText, name="min_foreground",
-            value=params_page1_settings["min_foreground"])
-        self.field_ridge_threshold = self.add(npyscreen.TitleText, name="ridge_threshold",
-            value=params_page1_settings["ridge_threshold"])
-        self.field_min_snake_length = self.add(npyscreen.TitleText, name="min_snake_length",
-            value=params_page1_settings["min_snake_length"])
-
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-    def getFieldStrings(self):
-        return {
-            "params_save_dir": self.field_params_save_dir.value,
-            "alpha": self.field_alpha.value,
-            "beta": self.field_beta.value,
-            "gamma": self.field_gamma.value,
-            "min_foreground": self.field_min_foreground.value,
-            "ridge_threshold": self.field_ridge_threshold.value,
-            "min_snake_length": self.field_min_snake_length.value,
-        }
-
-class ParamsSetupPage2Form(SetupForm):
-    dir_fields = []
-    arg_or_range_fields = [
-        "gaussian_std",
-        "snake_point_spacing",
-        "external_factor",
-        "intensity_scaling",
+class SoaxParamsSetupPage1Form(SetupForm):
+    field_infos = [
+        {
+            "id": "params_save_dir",
+            "type": "dir",
+            "help": [
+                "Enter SOAX run parameters to try.",
+                "Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)",
+                "If ranges are given, soax will be run multiple times, trying all combinations of parameter values",
+            ],
+        },
+        {
+            "id": "alpha",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "beta",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "gamma",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "min_foreground",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "ridge_threshold",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "min_snake_length",
+            "type": "arg_or_range",
+        },
     ]
-    all_fields = dir_fields + arg_or_range_fields
 
-    def configure(self, params_page2_settings):
-        self.setup_done_func = self.parentApp.paramsSetupPage2Done
+    app_done_func_name = "soaxParamsSetupPage1Done"
 
-        self.field_gaussian_std = self.add(npyscreen.TitleText, name="gaussian_std",
-            value=params_page2_settings["gaussian_std"])
-        self.field_snake_point_spacing = self.add(npyscreen.TitleText, name="snake_point_spacing",
-            value=params_page2_settings["snake_point_spacing"])
-        self.field_external_factor = self.add(npyscreen.TitleText, name="external_factor",
-            value=params_page2_settings["external_factor"])
-        self.add(npyscreen.FixedText,
-            value="Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling")
-        self.add(npyscreen.FixedText,
-            value="If input images have been contrast-scaled in a previous step, we don't want SOAX to rescale brightness")
-        self.add(npyscreen.FixedText,
-            value="In this case, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIF max intensity to 1.0 max intensity")
-        self.add(npyscreen.FixedText,
-            value="If input images are sectioned before feeding to SOAX, they should be contrast rescaled")
-        self.add(npyscreen.FixedText,
-            value="before sectioning, so all sections have same contrast setting")
-        self.field_intensity_scaling = self.add(npyscreen.TitleText, name="intensity_scaling",
-            value=params_page2_settings["intensity_scaling"])
+class SoaxParamsSetupPage2Form(SetupForm):
+    field_infos = [
+        {
+            "id": "gaussian_std",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "snake_point_spacing",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "external_factor",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "intensity_scaling",
+            "type": "arg_or_range",
+            "help": [
+                "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling",
+                "If input images have been contrast-scaled in a previous step, we don't want SOAX to rescale brightness",
+                "In this case, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIF max intensity to 1.0 max intensity",
+                "If input images are sectioned before feeding to SOAX, they should be contrast rescaled",
+                "before sectioning, so all sections have same contrast setting",
+            ],
+        },
+    ]
 
-    def getFieldStrings(self):
-        return {
-            "gaussian_std": self.field_gaussian_std.value,
-            "snake_point_spacing": self.field_snake_point_spacing.value,
-            "external_factor": self.field_external_factor.value,
-            "intensity_scaling": self.field_intensity_scaling.value,
-        }
+    app_done_func_name = "soaxParamsSetupPage2Done"
 
 class SoaxRunSetupForm(SetupForm):
-    dir_fields = [
-        "source_tiff_dir",
-        "target_snakes_dir",
-        "param_files_dir",
-        "soax_log_dir",
+    field_infos = [
+        {
+            "id": "source_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "target_snakes_dir",
+            "type": "dir",
+        },
+        {
+            "id": "param_files_dir",
+            "type": "dir",
+        },
+        {
+            "id": "soax_log_dir",
+            "type": "dir",
+        },
+        {
+            "id": "batch_soax_path",
+            "type": "file",
+        },
+        {
+            "id": "workers",
+            "type": "pos_int",
+        },
+        {
+            "id": "use_subdirs",
+            "type": "yes_no"
+        }
     ]
 
-    file_fields = ["batch_soax_path"]
-    pos_int_fields = ["workers"]
-    yes_no_fields = ["use_subdirs"]
-
-    def configure(self, soax_run_settings):
-        self.setup_done_func = self.parentApp.soaxRunSetupDone
-        self.add(npyscreen.FixedText,
-            value="note: workers field is number of batch_soax instances to run at once")
-
-        self.field_source_dir = self.add(npyscreen.TitleFilename, name="source_tiff_dir",
-            value=soax_run_settings["source_tiff_dir"])
-        self.field_target_snakes = self.add(npyscreen.TitleFilename, name="target_snakes_dir",
-            value=soax_run_settings["target_snakes_dir"])
-        self.field_param_files_dir = self.add(npyscreen.TitleFilename, name="param_files_dir",
-            value=soax_run_settings["param_files_dir"])
-        self.field_soax_log_dir = self.add(npyscreen.TitleFilename, name="soax_log_dir",
-            value=soax_run_settings["soax_log_dir"])
-        self.field_soax_executable_path = self.add(npyscreen.TitleFilename, name="batch_soax_path",
-            value=soax_run_settings["batch_soax_path"])
-        self.field_worker_number = self.add(npyscreen.TitleFilename, name="workers",
-            value=soax_run_settings["workers"])
-
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            max_height = 3,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-        self.use_subdirs = self.add(
-            npyscreen.TitleSelectOne,
-            max_height = 3,
-            name="Expect source images to be in subdirs (should be true if images are sectioned)",
-            values=["yes", "no"],
-            value=([0] if soax_run_settings["use_subdirs"] == "yes" else [1]),
-            scroll_exit=True)
-
-    def getFieldStrings(self):
-        return {
-            "use_subdirs": "yes" if (0 in self.use_subdirs.value) else "no",
-
-            "source_tiff_dir": self.field_source_dir.value,
-            "target_snakes_dir": self.field_target_snakes.value,
-            "param_files_dir": self.field_param_files_dir.value,
-            "soax_log_dir": self.field_soax_log_dir.value,
-
-            "batch_soax_path": self.field_soax_executable_path.value,
-            "workers": self.field_worker_number.value,
-        }
+    app_done_func_name = "soaxRunSetupDone"
 
 class SnakesToJsonSetupForm(SetupForm):
-    non_neg_int_fields = ["source_snakes_depth"]
-    dir_fields = ["source_snakes_dir", "target_json_dir"]
-
-    def configure(self, snakes_to_json_settings):
-        self.setup_done_func = self.parentApp.snakesToJsonSetupDone
-        self.add(npyscreen.FixedText,
-            value="Convert snakes from the SOAX's text output to JSON.")
-
-        self.field_source_snakes_dir = self.add(npyscreen.TitleFilename, name="source_snakes_dir",
-            value=snakes_to_json_settings["source_snakes_dir"])
-        self.field_target_json_dir = self.add(npyscreen.TitleFilename, name="target_json_dir",
-            value=snakes_to_json_settings["target_json_dir"])
-
-        self.field_source_snakes_depth = self.add(npyscreen.TitleText, name="source_snakes_depth",
-            value=snakes_to_json_settings["source_snakes_depth"])
-
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-    def getFieldStrings(self):
-        return {
-            "source_snakes_dir": self.field_source_snakes_dir.value,
-            "target_json_dir": self.field_target_json_dir.value,
-            "source_snakes_depth": self.field_source_snakes_depth.value,
+    field_infos = [
+        {
+            "id": "source_snakes_dir",
+            "type": "dir",
+        },
+        {
+            "id": "target_json_dir",
+            "type": "dir",
+        },
+        {
+            "id": "source_snakes_depth",
+            "type": "non_neg_int",
         }
+    ]
+
+    app_done_func_name = "snakesToJsonSetupDone"
 
 class JoinSectionedSnakesSetupForm(SetupForm):
-    non_neg_int_fields = ["source_jsons_depth"]
-    dir_fields = ["source_json_dir", "target_json_dir"]
-
-    def configure(self, join_sectioned_snakes_settings):
-        self.setup_done_func = self.parentApp.joinSectionedSnakesSetupDone
-
-        self.add(npyscreen.FixedText,
-            value="Join JSON snake files from sections of an image")
-        self.add(npyscreen.FixedText,
-            value="to form JSON files with all the snakes from original images")
-
-        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
-            value=join_sectioned_snakes_settings["source_json_dir"])
-        self.field_target_json_dir = self.add(npyscreen.TitleFilename, name="target_json_dir",
-            value=join_sectioned_snakes_settings["target_json_dir"])
-
-        self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
-            value=join_sectioned_snakes_settings["source_jsons_depth"])
-
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-    def getFieldStrings(self):
-        return {
-            "source_json_dir": self.field_source_json_dir.value,
-            "target_json_dir": self.field_target_json_dir.value,
-            "source_jsons_depth": self.field_source_jsons_depth.value,
+    field_infos = [
+        {
+            "id": "source_json_dir",
+            "type": "dir",
+            "help": [
+                "Join JSON snake files from sections of an image",
+                "to form JSON files with all the snakes from original images",
+            ],
+        },
+        {
+            "id": "target_json_dir",
+            "type": "dir",
+        },
+        {
+            "id": "source_jsons_depth",
+            "type": "non_neg_int",
         }
+    ]
+
+    app_done_func_name = "joinSectionedSnakesSetupDone"
 
 class ScaleJsonSnakesToUnitsSetupForm(SetupForm):
-    non_neg_int_fields = ["source_jsons_depth"]
-    dir_fields = ["source_json_dir", "target_json_dir"]
-    pos_ifloatfields = ["x_y_pixel_size", "x_y_rescale_factor"]
-    optional_pos_float_fields = ["z_stack_spacing"]
-    text_fields = ["unit_abbreviation"]
-
-    def configure(self, scale_json_snakes_to_units_settings):
-        self.setup_done_func = self.parentApp.scaleJsonSnakesToUnitsSetupDone
-
-        self.add(npyscreen.FixedText,
-            value="Take json snakes with pixel coordinate values and convert to real length units")
-        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
-            value=scale_json_snakes_to_units_settings["source_json_dir"])
-        self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
-            value=scale_json_snakes_to_units_settings["source_jsons_depth"])
-        self.field_target_json_dir = self.add(npyscreen.TitleFilename, name="target_json_dir",
-            value=scale_json_snakes_to_units_settings["target_json_dir"])
-        self.add(npyscreen.FixedText,
-            value="x_y_pixel_size is the size of a single pixel in the original TIFF image")
-        self.field_x_y_pixel_size = self.add(npyscreen.TitleText, name="x_y_pixel_size",
-            value=scale_json_snakes_to_units_settings["x_y_pixel_size"])
-        self.add(npyscreen.FixedText,
-            value="If image was rescaled in x and y before being run to soax, enter scale factor here")
-        self.add(npyscreen.FixedText,
-            value="(ex. 0.5 for half sized image scale) to account for changed pixel size when calculating real length")
-        self.field_x_y_image_scale_factor = self.add(npyscreen.TitleText, name="x_y_image_scale_factor",
-            value=scale_json_snakes_to_units_settings["x_y_image_scale_factor"])
-        self.add(npyscreen.FixedText,
-            value="The distance between z stacks in source TIFF images")
-        self.field_z_stack_spacing = self.add(npyscreen.TitleText, name="z_stack_spacing (if applicable)",
-            value=scale_json_snakes_to_units_settings["z_stack_spacing"])
-        self.field_unit_abbreviation = self.add(npyscreen.TitleText, name="unit_abbreviation",
-            value=scale_json_snakes_to_units_settings["unit_abbreviation"])
-
-    def getFieldStrings(self):
-        return {
-            "source_json_dir": self.field_source_json_dir.value,
-            "source_jsons_depth": self.field_source_jsons_depth.value,
-            "target_json_dir": self.field_target_json_dir.value,
-            "x_y_pixel_size": self.field_x_y_pixel_size.value,
-            "x_y_image_scale_factor": self.field_x_y_image_scale_factor.value,
-            "z_stack_spacing": self.field_z_stack_spacing.value,
-            "unit_abbreviation": self.field_unit_abbreviation.value,
+    field_infos = [
+        {
+            "id": "source_json_dir",
+            "type": "dir",
+            "help": "Take json snakes with pixel coordinate values and convert to real length units",
+        },
+        {
+            "id": "target_json_dir",
+            "type": "dir",
+        },
+        {
+            "id": "source_jsons_depth",
+            "type": "non_neg_int"
+        },
+        {
+            "id": "x_y_pixel_size",
+            "type": "pos_float",
+            "help": "x_y_pixel_size is the size of a single pixel in the original TIFF image",
+        },
+        {
+            "id": "x_y_image_scale_factor",
+            "type": "pos_float",
+            "help": [
+                "If image was rescaled in x and y before being run to soax, enter scale factor here",
+                "(ex. 0.5 for half sized image scale) to account for changed pixel size when calculating real length",
+            ],
+        },
+        {
+            "id": "z_stack_spacing",
+            "name": "z_stack_spacing (if applicable)",
+            "type": "optional_pos_float",
+            "help": "The distance between z stacks in source TIFF images",
+        },
+        {
+            "id": "unit_abbreviation",
+            "type": "text"
         }
+    ]
+
+    app_done_func_name = "scaleJsonSnakesToUnitsSetupDone"
 
 class MakeSnakeImagesSetupForm(SetupForm):
-    non_neg_int_fields = ["source_jsons_depth"]
-    pos_int_fields = ["height", "width"]
-    dir_fields = ["source_json_dir", "target_jpeg_dir"]
-    optional_dir_fields = ["background_images_dir"]
-    yes_no_fields = ["use_colors"]
-
-    def configure(self, make_snake_images_settings):
-        self.setup_done_func = self.parentApp.makeSnakeImagesSetupDone
-
-        self.add(npyscreen.FixedText,
-            value="Make images from json files in directories")
-        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
-            value=make_snake_images_settings["source_json_dir"])
-        self.field_target_jpeg_dir = self.add(npyscreen.TitleFilename, name="target_jpeg_dir",
-            value=make_snake_images_settings["target_jpeg_dir"])
-        self.field_background_images_dir = self.add(npyscreen.TitleFilename, name="(Optional) background_images_dir",
-            value=make_snake_images_settings["background_images_dir"])
-
-        self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
-            value=make_snake_images_settings["source_jsons_depth"])
-
-        self.field_height = self.add(npyscreen.TitleText, name="height",
-            value=make_snake_images_settings["height"])
-        self.field_width = self.add(npyscreen.TitleText, name="width",
-            value=make_snake_images_settings["width"])
-
-        self.field_use_colors = self.add(
-            npyscreen.TitleSelectOne,
-            max_height = 3,
-            name="Graph snakes with different colors",
-            values=["yes", "no"],
-            value=([0] if make_snake_images_settings["use_colors"] == "yes" else [1]),
-            scroll_exit=True)
-
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-    def getFieldStrings(self):
-        return {
-            "source_json_dir": self.field_source_json_dir.value,
-            "target_jpeg_dir": self.field_target_jpeg_dir.value,
-            "height": self.field_height.value,
-            "width": self.field_width.value,
-            "source_jsons_depth": self.field_source_jsons_depth.value,
-            "use_colors": "yes" if (0 in self.field_use_colors.value) else "no",
-            "background_images_dir": self.field_background_images_dir.value,
-        }
+    field_infos = [
+        {
+            "id": "source_json_dir",
+            "type": "dir",
+            "help": "Make images from json files in directories",
+        },
+        {
+            "id": "target_jpeg_dir",
+            "type": "dir",
+        },
+        {
+            "id": "background_images_dir",
+            "name": "(Optional) background_images_dir",
+            "type": "optional_dir",
+        },
+        {
+            "id": "source_jsons_depth",
+            "type": "non_neg_int",
+        },
+        {
+            "id": "height",
+            "type": "pos_int",
+        },
+        {
+            "id": "width",
+            "type": "pos_int",
+        },
+        {
+            "id": "use_colors",
+            "name": "Graph snakes with different colors",
+            "type": "yes_no",
+        },
+    ]
+    app_done_func_name = "makeSnakeImagesSetupDone"
 
 class MakeSnakeVideosSetupForm(SetupForm):
-    dir_fields = ["source_jpeg_dir", "target_mp4_dir"]
-    non_neg_int_fields = ["source_images_depth"]
-
-    def configure(self, make_snake_videos_settings):
-        self.setup_done_func = self.parentApp.makeSnakeVideosSetupDone
-        self.add(npyscreen.FixedText,
-            value="Make videos from images in directories")
-        self.field_source_jpeg_dir = self.add(npyscreen.TitleFilename, name="source_jpeg_dir",
-            value=make_snake_videos_settings["source_jpeg_dir"])
-        self.field_target_mp4_dir = self.add(npyscreen.TitleFilename, name="target_mp4_dir",
-            value=make_snake_videos_settings["target_mp4_dir"])
-
-        self.field_source_images_depth = self.add(npyscreen.TitleText, name="source_images_depth",
-            value=make_snake_videos_settings["source_images_depth"])
-
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            max_height=3,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-    def getFieldStrings(self):
-        return {
-            "source_jpeg_dir": self.field_source_jpeg_dir.value,
-            "target_mp4_dir": self.field_target_mp4_dir.value,
-            "source_images_depth": self.field_source_images_depth.value,
+    field_infos = [
+        {
+            "id": "source_jpeg_dir",
+            "type": "dir",
+            "help": "Make videos from images in directories"
+        },
+        {
+            "id": "target_mp4_dir",
+            "type": "dir",
+        },
+        {
+            "id": "source_images_depth",
+            "type": "non_neg_int"
         }
+    ]
+
+    app_done_func_name = "makeSnakeVideosSetupDone"
 
 class MakeOrientationFieldsSetupForm(SetupForm):
-    dir_fields = ["source_json_dir", "target_data_dir"]
-    non_neg_int_fields = ["source_jsons_depth"]
-    pos_int_fields = ["image_width", "image_height"]
+    field_infos = [
+        {
+            "id": "source_json_dir",
+            "type": "dir",
+        },
+        {
+            "id": "target_data_dir",
+            "type": "dir",
+        },
+        {
+            "id": "source_jsons_depth",
+            "type": "non_neg_int",
+        },
+        {
+            "id": "image_width",
+            "type": "pos_int",
+        },
+        {
+            "id": "image_height",
+            "type": "pos_int",
+        },
+    ]
 
-    def configure(self, make_orientation_fields_settings):
-        self.setup_done_func = self.parentApp.makeOrientationFieldsSetupDone
-
-        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
-            value=make_orientation_fields_settings["source_json_dir"])
-        self.field_target_data_dir = self.add(npyscreen.TitleFilename, name="target_data_dir",
-            value=make_orientation_fields_settings["target_data_dir"])
-        self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
-            value=make_orientation_fields_settings["source_jsons_depth"])
-        self.field_image_width = self.add(npyscreen.TitleText, name="image_width",
-            value=make_orientation_fields_settings["image_width"])
-        self.field_image_height = self.add(npyscreen.TitleText, name="image_height",
-            value=make_orientation_fields_settings["image_height"])
-
-        self.create_if_not_present = self.add(
-            npyscreen.TitleSelectOne,
-            max_height=3,
-            name="Create dirs if not present",
-            values=["yes", "no"],
-            value=[1],
-            scroll_exit=True)
-
-    def getFieldStrings(self):
-        return {
-            "source_json_dir": self.field_source_json_dir.value,
-            "target_data_dir": self.field_target_data_dir.value,
-            "source_jsons_depth": self.field_source_jsons_depth.value,
-            "image_width": self.field_image_width.value,
-            "image_height": self.field_image_height.value,
-        }
+    app_done_func_name = "makeOrientationFieldsSetupDone"
 
 class MakeCindyMatricesFromSnakesSetupForm(SetupForm):
-    dir_fields = [
-        "source_json_dir",
-        "orientation_matrix_dir",
-        "position_matrix_dir",
-    ]
-    non_neg_int_fields = ["source_jsons_depth"]
-    pos_float_fields = ["width", "height"]
-    optional_pos_float_fields = ["depth"]
-
-    def configure(self, make_cindy_matrices_from_snakes_settings):
-        self.setup_done_func = self.parentApp.makeCindyMatricesFromSnakesSetupDone
-
-        self.field_source_json_dir = self.add(npyscreen.TitleFilename, name="source_json_dir",
-            value=make_cindy_matrices_from_snakes_settings["source_json_dir"])
-        self.field_source_jsons_depth = self.add(npyscreen.TitleText, name="source_jsons_depth",
-            value=make_cindy_matrices_from_snakes_settings["source_jsons_depth"])
-        self.add(npyscreen.FixedText,
-            value="Width, height (in length units of the json snakes) to make the matrices for CINDy")
-        self.field_width = self.add(npyscreen.TitleText, name="width",
-            value=make_cindy_matrices_from_snakes["width"])
-        self.field_height = self.add(npyscreen.TitleText, name="height",
-            value=make_cindy_matrices_from_snakes["height"])
-        self.add(npyscreen.FixedText,
-            value="Provide depth (in length units of json snakes) if snakes are 3D")
-        self.field_depth = self.add(npyscreen.TitleText, name="depth",
-            value=make_cindy_matrices_from_snakes["depth"])
-        self.field_orientation_matrix_dir = self.add(npyscreen.TitleFilename, name="orientation_matrix_dir",
-            value=make_cindy_matrices_from_snakes_settings["orientation_matrix_dir"])
-        self.field_position_matrix_dir = self.add(npyscreen.TitleFilename, name="position_matrix_dir",
-            value=make_cindy_matrices_from_snakes_settings["position_matrix_dir"])
-
-    def getFieldStrings(self):
-        return {
-            "source_json_dir": self.field_source_json_dir.value,
-            "source_jsons_depth": self.field_source_jsons_depth.value,
-            "orientation_matrix_dir": self.field_orientation_matrix_dir.value,
-            "position_matrix_dir": self.field_position_matrix_dir.value,
+    field_infos = [
+        {
+            "id": "source_json_dir",
+            "type": "dir",
+        },
+        {
+            "id": "orientation_matrix_dir",
+            "type": "dir",
+        },
+        {
+            "id": "position_matrix_dir",
+            "type": "dir",
+        },
+        {
+            "id": "source_jsons_depth",
+            "type": "non_neg_int",
+        },
+        {
+            "id": "width",
+            "type": "pos_float",
+        },
+        {
+            "id": "height",
+            "type": "pos_float",
+        },
+        {
+            "id": "depth",
+            "type": "optional_pos_float"
         }
+    ]
+
+    app_done_func_name = "makeCindyMatricesFromSnakesSetupDone"
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
@@ -840,7 +761,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "target_sectioned_tiff_dir": "./SectionedTIFFs",
             "section_max_size": "200",
         }
-        self.params_page1_settings = {
+        self.soax_params_page1_settings = {
             "params_save_dir": "./Params",
             "alpha": "0.01",
             "beta": "0.1",
@@ -849,7 +770,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "ridge_threshold":"0.01",
             "min_snake_length":"20",
         }
-        self.params_page2_settings = {
+        self.soax_params_page2_settings = {
             "gaussian_std":"0",
             "snake_point_spacing":"5",
             "external_factor":"1",
@@ -912,8 +833,20 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "position_matrix_dir": "./CindyData/Positions",
         }
 
-        self.addForm('MAIN', StepsSetupForm, name='Select Steps')
-        self.getForm('MAIN').configure()
+
+        #PIV settings
+        self.bead_PIV_settings = {
+            "source_tiff_dir": "",
+            "target_piv_data_dir": "./BeadPivData",
+        }
+
+        self.menu_functions = [
+            self.startSoaxStepsSelect,
+            self.startPIVStepsSelect,
+        ]
+        self.form_index = -1
+
+        self.goToNextMenu()
 
     def getActionConfigs(self):
         action_configs = []
@@ -942,8 +875,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "create_param_files",
                 # Combine page 1 and page 2 settings
                 "settings": {
-                    **self.params_page1_settings,
-                    **self.params_page2_settings,
+                    **self.soax_params_page1_settings,
+                    **self.soax_params_page2_settings,
                 },
             })
         if self.do_run_soax:
@@ -986,69 +919,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "make_cindy_matrices_from_snakes",
                 "settings": self.make_cindy_matrices_from_snakes_settings,
             })
+        if self.do_bead_PIV:
+            action_configs.append({
+                "action": "do_bead_PIV",
+                "settings": self.bead_PIV_settings,
+            })
         return action_configs
-
-    def stagesSelected(self,
-        do_auto_contrast,
-        do_z_rescale,
-        do_xy_rescale,
-        do_section,
-        do_create_params,
-        do_run_soax,
-        do_snakes_to_json,
-        do_join_sectioned_snakes,
-        do_scale_json_snakes_to_units,
-        do_make_snake_images,
-        do_make_snake_videos,
-        do_make_orientation_fields,
-        do_make_cindy_matrices_from_snakes,
-        ):
-        self.do_auto_contrast = do_auto_contrast
-        self.do_z_rescale = do_z_rescale
-        self.do_xy_rescale = do_xy_rescale
-        self.do_section = do_section
-        self.do_create_params = do_create_params
-        self.do_run_soax = do_run_soax
-        self.do_snakes_to_json = do_snakes_to_json
-        self.do_join_sectioned_snakes = do_join_sectioned_snakes
-        self.do_scale_json_snakes_to_units = do_scale_json_snakes_to_units
-        self.do_make_snake_images = do_make_snake_images
-        self.do_make_snake_videos = do_make_snake_videos
-        self.do_make_orientation_fields = do_make_orientation_fields
-        self.do_make_cindy_matrices_from_snakes = do_make_cindy_matrices_from_snakes
-
-        self.menu_functions = []
-        if self.do_auto_contrast:
-            self.menu_functions.append(self.startAutoContrastSetup)
-        if self.do_z_rescale:
-            self.menu_functions.append(self.startZRescaleSetup)
-        if self.do_xy_rescale:
-            self.menu_functions.append(self.startXYRescaleSetup)
-        if self.do_section:
-            self.menu_functions.append(self.startSectioningSetup)
-        if self.do_create_params:
-            self.menu_functions.append(self.startParamSetupPage1)
-            self.menu_functions.append(self.startParamSetupPage2)
-        if self.do_run_soax:
-            self.menu_functions.append(self.startSoaxRunSetup)
-        if self.do_snakes_to_json:
-            self.menu_functions.append(self.startSnakesToJsonSetup)
-        if self.do_join_sectioned_snakes:
-            self.menu_functions.append(self.startJoinSectionedSnakesSetup)
-        if self.do_scale_json_snakes_to_units:
-            self.menu_functions.append(self.startScaleJsonSnakesToUnitsSetup)
-        if self.do_make_snake_images:
-            self.menu_functions.append(self.startMakeSnakeImagesSetup)
-        if self.do_make_snake_videos:
-            self.menu_functions.append(self.startVideoSetup)
-        if self.do_make_orientation_fields:
-            self.menu_functions.append(self.startMakeOrientationFieldsSetup)
-        if self.do_make_cindy_matrices_from_snakes:
-            self.menu_functions.append(self.startMakeCindyMatricesFromSnakesSetup)
-
-        self.form_index = -1
-        # Move onto index 0
-        self.goToNextMenu()
 
     def first_img_fp(self, tiff_dir, img_depth):
         image_locations_info = find_files_or_folders_at_depth(tiff_dir, img_depth, file_extensions=[".tiff", ".tif"])
@@ -1093,8 +969,90 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             next_menu_func = self.menu_functions[self.form_index]
             next_menu_func()
 
+    def startSoaxStepsSelect(self):
+        self.addForm('SOAX_STEPS_SELECT', SoaxStepsSelectForm, name='Select Soax Steps')
+        self.getForm('SOAX_STEPS_SELECT').configure()
+        self.setNextForm('SOAX_STEPS_SELECT')
+
+    def soaxStepsSelectDone(self,
+        do_auto_contrast,
+        do_z_rescale,
+        do_xy_rescale,
+        do_section,
+        do_create_params,
+        do_run_soax,
+        do_snakes_to_json,
+        do_join_sectioned_snakes,
+        do_scale_json_snakes_to_units,
+        do_make_snake_images,
+        do_make_snake_videos,
+        do_make_orientation_fields,
+        do_make_cindy_matrices_from_snakes,
+        ):
+        self.do_auto_contrast = do_auto_contrast
+        self.do_z_rescale = do_z_rescale
+        self.do_xy_rescale = do_xy_rescale
+        self.do_section = do_section
+        self.do_create_params = do_create_params
+        self.do_run_soax = do_run_soax
+        self.do_snakes_to_json = do_snakes_to_json
+        self.do_join_sectioned_snakes = do_join_sectioned_snakes
+        self.do_scale_json_snakes_to_units = do_scale_json_snakes_to_units
+        self.do_make_snake_images = do_make_snake_images
+        self.do_make_snake_videos = do_make_snake_videos
+        self.do_make_orientation_fields = do_make_orientation_fields
+        self.do_make_cindy_matrices_from_snakes = do_make_cindy_matrices_from_snakes
+
+        self.menu_functions = []
+        if self.do_auto_contrast:
+            self.menu_functions.append(self.startAutoContrastSetup)
+        if self.do_z_rescale:
+            self.menu_functions.append(self.startZRescaleSetup)
+        if self.do_xy_rescale:
+            self.menu_functions.append(self.startXYRescaleSetup)
+        if self.do_section:
+            self.menu_functions.append(self.startSectioningSetup)
+        if self.do_create_params:
+            self.menu_functions.append(self.startSoaxParamsSetupPage1)
+            self.menu_functions.append(self.startSoaxParamsSetupPage2)
+        if self.do_run_soax:
+            self.menu_functions.append(self.startSoaxRunSetup)
+        if self.do_snakes_to_json:
+            self.menu_functions.append(self.startSnakesToJsonSetup)
+        if self.do_join_sectioned_snakes:
+            self.menu_functions.append(self.startJoinSectionedSnakesSetup)
+        if self.do_scale_json_snakes_to_units:
+            self.menu_functions.append(self.startScaleJsonSnakesToUnitsSetup)
+        if self.do_make_snake_images:
+            self.menu_functions.append(self.startMakeSnakeImagesSetup)
+        if self.do_make_snake_videos:
+            self.menu_functions.append(self.startVideoSetup)
+        if self.do_make_orientation_fields:
+            self.menu_functions.append(self.startMakeOrientationFieldsSetup)
+        if self.do_make_cindy_matrices_from_snakes:
+            self.menu_functions.append(self.startMakeCindyMatricesFromSnakesSetup)
+
+        # Move onto next index
+        self.goToNextMenu()
+
+    def startPIVStepsSelect(self):
+        self.addForm('PIV_STEPS_SELECT', PIVStepsSelectForm, name='Select PIV Steps')
+        self.getForm('PIV_STEPS_SELECT').configure()
+        self.setNextForm('PIV_STEPS_SELECT')
+
+    def PIVStepsSelectDone(self,
+        do_bead_PIV,
+        ):
+        self.do_bead_PIV = do_bead_PIV
+
+        if self.do_bead_PIV:
+            self.menu_functions.append(self.startBeadPIV)
+            # @TODO implement startBeadPIV, BeadPIVSetupForm, beadPIVSetupDone, bead_PIV_settings
+
+        self.goToNextMenu()
+
     def startAutoContrastSetup(self):
-        self.addForm('AUTO_CONTRAST_SETUP', AutoConstrastSetupForm, name='Auto Contrasting Setup')
+        self.addForm('AUTO_CONTRAST_SETUP', AutoContrastSetupForm, name='Auto Contrasting Setup')
         self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_settings)
         self.setNextForm('AUTO_CONTRAST_SETUP')
 
@@ -1119,7 +1077,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 wide=True,
                 editw=1)
         else:
-            self.params_page2_settings["intensity_scaling"] = format(1/tif_max_level, '.9f')
+            self.soax_params_page2_settings["intensity_scaling"] = format(1/tif_max_level, '.9f')
 
         if self.make_snake_images_settings["width"] == "":
             self.auto_set_width_height_images_settings(
@@ -1191,23 +1149,23 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             )
         self.goToNextMenu()
 
-    def startParamSetupPage1(self):
-        self.addForm('PARAM_SETUP_PAGE_1', ParamsSetupPage1Form, name="SOAX Params Setup Page 1/2")
-        self.getForm('PARAM_SETUP_PAGE_1').configure(self.params_page1_settings)
+    def startSoaxParamsSetupPage1(self):
+        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/2")
+        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_settings)
         self.setNextForm('PARAM_SETUP_PAGE_1')
 
-    def paramsSetupPage1Done(self, params_page1_settings):
-        self.params_page1_settings = params_page1_settings
-        self.soax_run_settings["param_files_dir"] = params_page1_settings["params_save_dir"]
+    def soaxParamsSetupPage1Done(self, soax_params_page1_settings):
+        self.params_page1_settings = soax_params_page1_settings
+        self.soax_run_settings["param_files_dir"] = soax_params_page1_settings["params_save_dir"]
         self.goToNextMenu()
 
-    def startParamSetupPage2(self):
-        self.addForm('PARAM_SETUP_PAGE_1', ParamsSetupPage2Form, name="SOAX Params Setup Page 2/2")
-        self.getForm('PARAM_SETUP_PAGE_1').configure(self.params_page2_settings)
+    def startSoaxParamsSetupPage2(self):
+        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/2")
+        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax)params_page2_settings)
         self.setNextForm('PARAM_SETUP_PAGE_1')
 
-    def paramsSetupPage2Done(self, params_page2_settings):
-        self.params_page2_settings = params_page2_settings
+    def soaxParamsSetupPage2Done(self, soax_params_page2_settings):
+        self.soax_params_page2_settings = soax_params_page2_settings
         self.goToNextMenu()
 
     def startSoaxRunSetup(self):
@@ -1337,4 +1295,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def makeCindyMatricesFromSnakesSetupDone(self, make_cindy_matrices_from_snakes_settings):
         self.make_cindy_matrices_from_snakes_settings = make_cindy_matrices_from_snakes_settings
+        self.goToNextMenu()
+
+    def startBeadPIV(self):
+        self.addForm('BEAD_PIV_SETUP', BeadPIVSetupForm, name="Bead PIV Setup")
+        self.getForm('BEAD_PIV_SETUP').configure(self.bead_PIV_settings)
+        self.setNextForm('BEAD_PIV_SETUP')
+
+    def beadPIVSetupDone(self, bead_PIV_settings):
+        self.bead_PIV_settings = bead_PIV_settings
         self.goToNextMenu()
