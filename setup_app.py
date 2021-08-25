@@ -735,6 +735,39 @@ class MakeCindyMatricesFromSnakesSetupForm(SetupForm):
 
     app_done_func_name = "makeCindyMatricesFromSnakesSetupDone"
 
+class BeadPIVSetupForm(SetupForm):
+    field_infos = [
+        {
+            "id":"source_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id":"target_piv_data_dir",
+            "type": "dir",
+        },
+        {
+            "id": "x_y_pixel_size",
+            "type": "pos_float",
+            "help": "x_y_pixel_size is the size of a single pixel in the original TIFF image",
+        },
+        {
+            "id": "z_stack_spacing",
+            "name": "z_stack_spacing (if applicable)",
+            "type": "optional_pos_float",
+            "help": "The distance between z stacks in source TIFF images",
+        },
+        {
+            "id": "bead_size",
+            "type": "pos_float",
+        },
+        {
+            "id": "unit_abbreviation",
+            "type": "text",
+        },
+    ]
+
+    app_done_func_name = "beadPIVSetupDone"
+
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
         # Default settings to show in forms
@@ -838,6 +871,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.bead_PIV_settings = {
             "source_tiff_dir": "",
             "target_piv_data_dir": "./BeadPivData",
+            "x_y_pixel_size": "",
+            "z_stack_spacing": "",
+            "bead_size": "",
+            "unit_abbreviation": "",
         }
 
         self.menu_functions = [
@@ -1047,7 +1084,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIV)
-            # @TODO implement startBeadPIV, BeadPIVSetupForm, beadPIVSetupDone, bead_PIV_settings
 
         self.goToNextMenu()
 
