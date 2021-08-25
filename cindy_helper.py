@@ -19,6 +19,7 @@ from make_snake_images import make_snake_images
 from make_videos import make_videos
 from make_orientation_fields import make_orientation_fields
 from cindy_matrices_from_snakes import cindy_matrices_from_snakes
+from do_bead_PIV import do_bead_PIV
 
 from setup_app import (
     SoaxSetupApp,
@@ -35,6 +36,7 @@ from setup_app import (
     MakeSnakeImagesSetupForm,
     MakeSnakeVideosSetupForm,
     MakeOrientationFieldsSetupForm,
+    BeadPIVSetupForm,
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
@@ -171,13 +173,25 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "make_cindy_matrices_from_snakes":
-        parsed_make_cindy_matrices_from_snakes_settings = MakeCindyMatricesFromSnakesSetupForm.parseSettings(seetting_strings, make_dirs)
+        parsed_make_cindy_matrices_from_snakes_settings = MakeCindyMatricesFromSnakesSetupForm.parseSettings(setting_strings, make_dirs)
 
         make_cindy_matrices_from_snakes(
             parsed_make_cindy_matrices_from_snakes_settings["source_json_dir"],
             parsed_make_cindy_matrices_from_snakes_settings["source_jsons_depth"],
             parsed_make_cindy_matrices_from_snakes_settings["orientation_matrix_dir"],
             parsed_make_cindy_matrices_from_snakes_settings["position_matrix_dir"],
+            logger=logger,
+        )
+    elif action_name == "do_bead_PIV":
+        parsed_bead_PIV_settings = BeadPIVSetupForm.parseSettings(setting_strings, make_dirs)
+
+        do_bead_PIV(
+            parsed_bead_PIV_settings["source_tiff_dir"],
+            parsed_bead_PIV_settings["target_piv_data_dir"],
+            parsed_bead_PIV_settings["x_y_pixel_size"],
+            parsed_bead_PIV_settings["z_stack_spacing"],
+            parsed_bead_PIV_settings["bead_size"],
+            parsed_bead_PIV_settings["unit_abbreviation"],
             logger=logger,
         )
     else:
