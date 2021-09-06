@@ -130,15 +130,18 @@ class PIVStepsSelectForm(npyscreen.Form):
             value = [],
             name="Pick PIV Steps (spacebar to toggle)",
             values = [
+                "Convert TIFFs to PNG zips",
                 "Bead PIV",
             ],
             scroll_exit=True,
         )
 
     def afterEditing(self):
-        do_bead_PIV = 0 in self.select_steps.value
+        do_convert_tiffs_to_png_zips = 0 in self.select_steps.value
+        do_bead_PIV =                  1 in self.select_steps.value
 
         self.parentApp.PIVStepsSelectDone(
+            do_convert_tiffs_to_png_zips,
             do_bead_PIV,
         )
 
@@ -187,8 +190,6 @@ class SetupForm(npyscreen.Form):
             else:
                 return err_str_or_val
         elif field_type == "optional_dir":
-            field_str = field_strings[field_id]
-
             if field_str.strip() == "":
                 return None
             else:
@@ -199,9 +200,14 @@ class SetupForm(npyscreen.Form):
                 raise ParseException("Error parsing {}: value must be 'yes' or 'no', is '{}'".format(field_id, field_str))
             return True if field_str == "yes" else False
         elif field_type == "text":
-            field_str = field_strings[field_id]
             if len(field_str.strip()) == 0:
                 raise ParseException("Invalid text field '{}' value '{}': value is empty".format(field_id, field_str))
+            return field_str
+        elif field_type == "letter":
+            if len(field_str.strip()) == 0:
+                raise ParseException("Invalid letter field '{}' value '{}': value is empty".format(field_id, field_str))
+            if len(field_str) != 1:
+                raise ParseException("Invalid letter field '{}' value '{}': Expected one character, got".format(field_id, field_str, len(field_str)))
             return field_str
         else:
             raise Exception("Unknown field type '{}'".format(field_type))
@@ -242,6 +248,7 @@ class SetupForm(npyscreen.Form):
             "non_neg_int",
             "arg_or_range",
             "text",
+            "letter",
         ]:
             self.npy_fields[field_id] = self.add(
                 npyscreen.TitleText,
@@ -305,6 +312,7 @@ class SetupForm(npyscreen.Form):
             "non_neg_int",
             "arg_or_range",
             "text",
+            "letter",
         ]:
             return self.npy_fields[field_id].value
         elif field_type in ["yes_no"]:
@@ -742,6 +750,16 @@ class BeadPIVSetupForm(SetupForm):
             "type": "dir",
         },
         {
+            "id": "tiff_fn_letter_before_frame_num",
+            "type": "letter",
+            "help": [
+                "The source TIFF files should have names like fileName0.tif, fileName1.tif, etc",
+                "The library that trackpy uses to read the TIFFs in sequence requires the letter that comes",
+                "before the number in each tiff filename. For 'fileNamexx.tif', the letter would be 'e' since",
+                "that's the last letter in 'fileName' before the number starts."
+            ],
+        },
+        {
             "id":"target_piv_data_dir",
             "type": "dir",
         },
@@ -767,6 +785,19 @@ class BeadPIVSetupForm(SetupForm):
     ]
 
     app_done_func_name = "beadPIVSetupDone"
+
+class ConvertTiffsToPngZipsSetupForm(SetupForm):
+    field_infos = [
+        {
+            "id": "source_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "target_zip_dir",
+            "type": "dir",
+        },
+    ]
+    app_done_func_name = "convertTiffsToPngZipsSetupDone"
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
@@ -866,10 +897,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "position_matrix_dir": "./CindyData/Positions",
         }
 
-
         #PIV settings
+        self.convert_tiffs_to_png_zips_settings = {
+            "source_tiff_dir": "",
+            "target_zip_dir": "./PIVStackPngZips",
+        }
         self.bead_PIV_settings = {
             "source_tiff_dir": "",
+            "tiff_fn_letter_before_frame_num": "",
             "target_piv_data_dir": "./BeadPivData",
             "x_y_pixel_size": "",
             "z_stack_spacing": "",
@@ -960,6 +995,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             action_configs.append({
                 "action": "do_bead_PIV",
                 "settings": self.bead_PIV_settings,
+            })
+        if self.do_convert_tiffs_to_png_zips:
+            action_configs.append({
+                "action": "convert_tiffs_to_png_zips",
+                "settings": self.convert_tiffs_to_png_zips_settings,
             })
         return action_configs
 
@@ -1078,12 +1118,16 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('PIV_STEPS_SELECT')
 
     def PIVStepsSelectDone(self,
+        do_convert_tiffs_to_png_zips,
         do_bead_PIV,
         ):
+        self.do_convert_tiffs_to_png_zips = do_convert_tiffs_to_png_zips
         self.do_bead_PIV = do_bead_PIV
 
+        if self.do_convert_tiffs_to_png_zips:
+            self.menu_functions.append(self.startConvertTiffsToPngZipsSetup)
         if self.do_bead_PIV:
-            self.menu_functions.append(self.startBeadPIV)
+            self.menu_functions.append(self.startBeadPIVSetup)
 
         self.goToNextMenu()
 
@@ -1333,7 +1377,17 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_cindy_matrices_from_snakes_settings = make_cindy_matrices_from_snakes_settings
         self.goToNextMenu()
 
-    def startBeadPIV(self):
+    def startConvertTiffsToPngZipsSetup(self):
+        self.addForm('CONVERT_TIFFS_TO_PNG_ZIPS_SETUP', ConvertTiffsToPngZipsSetupForm, name="Convert TIFFs to PNG Zips Setup")
+        self.getForm('CONVERT_TIFFS_TO_PNG_ZIPS_SETUP').configure(self.convert_tiffs_to_png_zips_settings)
+        self.setNextForm('CONVERT_TIFFS_TO_PNG_ZIPS_SETUP')
+
+    def convertTiffsToPngZipsSetupDone(self, convert_tiffs_to_png_zips_settings):
+        self.convert_tiffs_to_png_zips_settings =  convert_tiffs_to_png_zips_settings
+        self.bead_PIV_settings["source_tiff_dir"] = convert_tiffs_to_png_zips_settings["target_zip_dir"]
+        self.goToNextMenu()
+
+    def startBeadPIVSetup(self):
         self.addForm('BEAD_PIV_SETUP', BeadPIVSetupForm, name="Bead PIV Setup")
         self.getForm('BEAD_PIV_SETUP').configure(self.bead_PIV_settings)
         self.setNextForm('BEAD_PIV_SETUP')

@@ -37,6 +37,7 @@ from setup_app import (
     MakeSnakeVideosSetupForm,
     MakeOrientationFieldsSetupForm,
     BeadPIVSetupForm,
+    ConvertTiffsToPngZipsSetupForm
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
@@ -187,12 +188,19 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
 
         do_bead_PIV(
             parsed_bead_PIV_settings["source_tiff_dir"],
+            parsed_bead_PIV_settings["tiff_fn_letter_before_frame_num"],
             parsed_bead_PIV_settings["target_piv_data_dir"],
             parsed_bead_PIV_settings["x_y_pixel_size"],
             parsed_bead_PIV_settings["z_stack_spacing"],
             parsed_bead_PIV_settings["bead_size"],
             parsed_bead_PIV_settings["unit_abbreviation"],
             logger=logger,
+        )
+    elif action_name == "convert_tiffs_to_png_zips":
+        parsed_convert_tiffs_to_png_zips_settings = ConvertTiffsToPngZipsSetupForm.parseSettings(setting_strings, make_dirs)
+
+        convert_tiffs_to_png_zips(
+            parsed_bead_PIV
         )
     else:
         raise Exception("Unknown action name '{}'".format(action_name))
