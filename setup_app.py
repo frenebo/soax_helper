@@ -810,7 +810,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "target_tiff_dir": "./AutoContrastedTIFFs",
         }
         self.z_rescale_settings = {
-            "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax/batch_resample",
+            "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.0/batch_resample",
             "source_tiff_dir": "",
             "target_tiff_dir": "./ZRescaledTIFFs",
             "rescale_factor": "1.0",
@@ -843,7 +843,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_settings = {
             "workers": "1",
             "use_subdirs": "no",
-            "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax/batch_soax",
+            "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.0/batch_soax",
             "source_tiff_dir": "",
             "target_snakes_dir": "./Snakes",
             "param_files_dir": "",
@@ -1050,6 +1050,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.addForm('SOAX_STEPS_SELECT', SoaxStepsSelectForm, name='Select Soax Steps')
         self.getForm('SOAX_STEPS_SELECT').configure()
         self.setNextForm('SOAX_STEPS_SELECT')
+        npyscreen.notify_confirm("Soax steps",editw=1)
+
 
     def soaxStepsSelectDone(self,
         do_auto_contrast,
