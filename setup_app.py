@@ -22,13 +22,13 @@ def check_dir_field(field_name, dir_string, make_dir_if_not_present):
                 except Exception as e:
                     raise ParseException("Could not make directory {}: {}".format(dir_string, repr(e)))
             else:
-                raise ParseException("'{}' does not exist".format(dir_string))
+                raise ParseException("Directory '{}' does not exist".format(dir_string))
 
 def check_file_field(field_name, file_path):
     if file_path == "":
         raise ParseException("'{}' is a required field".format(field_name))
     if not os.path.exists(file_path):
-        raise ParseException("'{}' does not exist".format(file_path))
+        raise ParseException("File '{}' does not exist".format(file_path))
     if not os.path.isfile(file_path):
         raise ParseException("'{}' is not a file".format(file_path))
 
@@ -335,7 +335,6 @@ class SetupForm(npyscreen.Form):
     def afterEditing(self):
         if self.create_if_not_present is not None:
             # option zero is "yes"
-            npyscreen.notify_confirm(str(self.create_if_not_present.value),editw=1)
             make_dirs_if_not_present = 0 in self.create_if_not_present.value
         else:
             make_dirs_if_not_present = False
