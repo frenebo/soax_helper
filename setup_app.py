@@ -1,4 +1,4 @@
-from create_param_files import error_string_or_parse_arg_or_range, create_param_files
+from create_soax_param_files import error_string_or_parse_arg_or_range, create_soax_param_files
 import npyscreen
 import os
 from tiff_info import get_single_tiff_info
@@ -96,7 +96,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
         do_z_rescale                       = 1  in self.select_steps.value
         do_xy_rescale                      = 2  in self.select_steps.value
         do_section                         = 3  in self.select_steps.value
-        do_create_params                   = 4  in self.select_steps.value
+        do_create_soax_params              = 4  in self.select_steps.value
         do_run_soax                        = 5  in self.select_steps.value
         do_snakes_to_json                  = 6  in self.select_steps.value
         do_join_sectioned_snakes           = 7  in self.select_steps.value
@@ -111,7 +111,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
             do_z_rescale,
             do_xy_rescale,
             do_section,
-            do_create_params,
+            do_create_soax_params,
             do_run_soax,
             do_snakes_to_json,
             do_join_sectioned_snakes,
@@ -942,9 +942,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "section_tiffs",
                 "settings": self.sectioning_settings,
             })
-        if self.do_create_params:
+        if self.do_create_soax_params:
             action_configs.append({
-                "action": "create_param_files",
+                "action": "create_soax_param_files",
                 # Combine page 1 and page 2 settings
                 "settings": {
                     **self.soax_params_page1_settings,
@@ -1056,7 +1056,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_z_rescale,
         do_xy_rescale,
         do_section,
-        do_create_params,
+        do_create_soax_params,
         do_run_soax,
         do_snakes_to_json,
         do_join_sectioned_snakes,
@@ -1070,7 +1070,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_z_rescale = do_z_rescale
         self.do_xy_rescale = do_xy_rescale
         self.do_section = do_section
-        self.do_create_params = do_create_params
+        self.do_create_soax_params = do_create_soax_params
         self.do_run_soax = do_run_soax
         self.do_snakes_to_json = do_snakes_to_json
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
@@ -1089,7 +1089,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startXYRescaleSetup)
         if self.do_section:
             self.menu_functions.append(self.startSectioningSetup)
-        if self.do_create_params:
+        if self.do_create_soax_params:
             self.menu_functions.append(self.startSoaxParamsSetupPage1)
             self.menu_functions.append(self.startSoaxParamsSetupPage2)
         if self.do_run_soax:

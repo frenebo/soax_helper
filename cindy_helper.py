@@ -4,12 +4,11 @@ import argparse
 import json
 import time
 
-from create_param_files import error_string_or_parse_arg_or_range
+from create_soax_param_files import error_string_or_parse_arg_or_range, create_soax_param_files
 from xy_rescale_tiffs import xy_rescale_tiffs
 from z_rescale_tiffs import z_rescale_tiffs
 from auto_contrast_tiffs import auto_contrast_tiffs
 from section_tiffs import section_tiffs
-from create_param_files import create_param_files
 from run_soax import run_soax
 from snakeutils.logger import RecordLogger, PrintLogger
 from convert_snakes_to_json import convert_snakes_to_json
@@ -27,8 +26,8 @@ from setup_app import (
     XYRescaleSetupForm,
     AutoContrastSetupForm,
     SectioningSetupForm,
-    ParamsSetupPage1Form,
-    ParamsSetupPage2Form,
+    SoaxParamsSetupPage1Form,
+    SoaxParamsSetupPage2Form,
     SoaxRunSetupForm,
     SnakesToJsonSetupForm,
     JoinSectionedSnakesSetupForm,
@@ -75,14 +74,14 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_sectioning_settings["target_sectioned_tiff_dir"],
             logger=logger,
         )
-    elif action_name == "create_param_files":
-        parsed_page1_params_settings = ParamsSetupPage1Form.parseSettings(setting_strings, make_dirs)
-        parsed_page2_params_settings = ParamsSetupPage2Form.parseSettings(setting_strings, make_dirs)
+    elif action_name == "create_soax_param_files":
+        parsed_page1_params_settings = SoaxParamsSetupPage1Form.parseSettings(setting_strings, make_dirs)
+        parsed_page2_params_settings = SoaxParamsSetupPage2Form.parseSettings(setting_strings, make_dirs)
         parsed_params_settings = {
             **parsed_page1_params_settings,
             **parsed_page2_params_settings,
         }
-        create_param_files(
+        create_soax_param_files(
             parsed_params_settings["params_save_dir"],
             alpha_start_stop_step=parsed_params_settings["alpha"],
             beta_start_stop_step=parsed_params_settings["beta"],

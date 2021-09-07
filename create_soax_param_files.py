@@ -95,7 +95,7 @@ param_abbreviations = {
     "intensity_scaling": "intscale",
 }
 
-def create_param_files(
+def create_soax_param_files(
     target_dir,
     alpha_start_stop_step,
     beta_start_stop_step,
