@@ -1147,7 +1147,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # We can't have 0.0 to 1.0 scale in original TIFFs because TIFFs have only integer brightness
         # levels
         img_search_depth = 0
-        tif_max_level = get_first_tif_data_type_max(
+        tif_max_level = self.get_first_tif_data_type_max(
             auto_contrast_settings["source_tiff_dir"],
             img_search_depth,
         )
