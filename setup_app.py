@@ -178,7 +178,7 @@ class SetupForm(npyscreen.Form):
             return perc
         elif field_type == "pos_int":
             return parse_pos_int(field_id, field_str)
-        elif field_type == "non_neg_int";
+        elif field_type == "non_neg_int":
             return parse_non_neg_int(field_id, field_str)
         elif field_type ==  "arg_or_range":
             if field_str == "":
