@@ -335,6 +335,7 @@ class SetupForm(npyscreen.Form):
     def afterEditing(self):
         if self.create_if_not_present is not None:
             # option zero is "yes"
+            npyscreen.notify_confirm(str(self.create_if_not_present.value),editw=1)
             make_dirs_if_not_present = 0 in self.create_if_not_present.value
         else:
             make_dirs_if_not_present = False
