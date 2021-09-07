@@ -1240,9 +1240,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage2(self):
-        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/2")
-        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_settings)
-        self.setNextForm('PARAM_SETUP_PAGE_1')
+        self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/2")
+        self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_settings)
+        self.setNextForm('PARAM_SETUP_PAGE_2')
 
     def soaxParamsSetupPage2Done(self, soax_params_page2_settings):
         self.soax_params_page2_settings = soax_params_page2_settings
