@@ -1050,7 +1050,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.addForm('SOAX_STEPS_SELECT', SoaxStepsSelectForm, name='Select Soax Steps')
         self.getForm('SOAX_STEPS_SELECT').configure()
         self.setNextForm('SOAX_STEPS_SELECT')
-        npyscreen.notify_confirm("Soax steps",editw=1)
 
 
     def soaxStepsSelectDone(self,
@@ -1082,7 +1081,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_make_orientation_fields = do_make_orientation_fields
         self.do_make_cindy_matrices_from_snakes = do_make_cindy_matrices_from_snakes
 
-        self.menu_functions = []
         if self.do_auto_contrast:
             self.menu_functions.append(self.startAutoContrastSetup)
         if self.do_z_rescale:
