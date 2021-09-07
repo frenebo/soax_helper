@@ -213,7 +213,7 @@ class SetupForm(npyscreen.Form):
             raise Exception("Unknown field type '{}'".format(field_type))
 
     @classmethod
-    def parseSettings(cls, field_strings, make_dirs_if_not_present=False):
+    def parseSettings(cls, field_strings, make_dirs_if_not_present):
         parsed_fields = {}
 
         for field_info in cls.field_infos:
@@ -222,7 +222,7 @@ class SetupForm(npyscreen.Form):
             field_str = field_strings[field_id]
             field_details = field_info["details"] if "details" in field_info else None
 
-            parsed_fields[field_id] = cls.parseField(field_id, field_str, field_type, field_details, field_details)
+            parsed_fields[field_id] = cls.parseField(field_id, field_str, field_type, field_details, make_dirs_if_not_present)
 
         return parsed_fields
 
