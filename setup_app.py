@@ -269,7 +269,7 @@ class SetupForm(npyscreen.Form):
         self.npy_fields = {}
 
         has_dir_field = False
-        for field_info in cls.field_infos:
+        for field_info in self.field_infos:
             if "help" in field_info:
                 if type(field_info["help"]) == list:
                     for info_str in field_info["help"]:
