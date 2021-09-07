@@ -25,7 +25,7 @@ from setup_app import (
     SoaxSetupApp,
     ZRescaleSetupForm,
     XYRescaleSetupForm,
-    AutoConstrastSetupForm,
+    AutoContrastSetupForm
     SectioningSetupForm,
     ParamsSetupPage1Form,
     ParamsSetupPage2Form,
@@ -37,7 +37,7 @@ from setup_app import (
     MakeSnakeVideosSetupForm,
     MakeOrientationFieldsSetupForm,
     BeadPIVSetupForm,
-    ConvertTiffsToPngZipsSetupForm
+    ConvertTiffsToPngZipsSetupForm,
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
