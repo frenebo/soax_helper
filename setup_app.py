@@ -326,7 +326,7 @@ class SetupForm(npyscreen.Form):
             field_type = field_info["type"]
             field_details = field_info["details"] if "details" in field_info else None
 
-            field_str = getFieldString(field_type, field_id, field_details)
+            field_str = self.getFieldString(field_type, field_id, field_details)
             field_strings[field_id] = field_str
 
         return field_strings
