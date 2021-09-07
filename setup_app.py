@@ -3,6 +3,7 @@ import npyscreen
 import os
 from tiff_info import get_single_tiff_info
 from snakeutils.files import find_files_or_folders_at_depth
+import numpy as np
 
 # For parsing setting strings
 class ParseException(Exception):
