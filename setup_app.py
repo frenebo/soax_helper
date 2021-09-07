@@ -348,7 +348,7 @@ class SetupForm(npyscreen.Form):
             raise Exception("Parent app does not have a done function named '{}'".format(app_done_func_name))
         if self.app_done_func_name is None:
             raise Exception("Class isissing app_done_func_name to call with argument strings")
-        setup_done_func = getattr(self.parentApp, app_done_func_name)
+        setup_done_func = getattr(self.parentApp, self.app_done_func_name)
 
         setup_done_func(self.getFieldStrings())
 
