@@ -58,7 +58,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger
         )
     elif action_name == "auto_contrast_tiffs":
-        parsed_auto_contrast_settings = AutoConstrastSetupForm.parseSettings(setting_strings, make_dirs)
+        parsed_auto_contrast_settings = AutoContrastSetupForm.parseSettings(setting_strings, make_dirs)
         auto_contrast_tiffs(
             parsed_auto_contrast_settings["source_tiff_dir"],
             parsed_auto_contrast_settings["target_tiff_dir"],
