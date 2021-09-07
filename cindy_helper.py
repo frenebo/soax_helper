@@ -25,7 +25,7 @@ from setup_app import (
     SoaxSetupApp,
     ZRescaleSetupForm,
     XYRescaleSetupForm,
-    AutoContrastSetupForm
+    AutoContrastSetupForm,
     SectioningSetupForm,
     ParamsSetupPage1Form,
     ParamsSetupPage2Form,
