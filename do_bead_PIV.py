@@ -8,7 +8,7 @@ from snakeutils.logger import PrintLogger
 def round_to_odd(num):
     return round( (num - 1)/2 ) * 2 + 1
 
-def do_bead_PIV(
+def do_bead_piv(
     source_tiff_dir,
     tiff_fn_letter_before_frame_num,
     target_piv_data_dir,
