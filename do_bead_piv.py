@@ -48,5 +48,7 @@ def do_bead_piv(
     f['yum'] = f['y'] * x_y_pixel_size_um
     f['zum'] = f['z'] * z_stack_spacing_um
 
+    print(f)
+
     if show_things:
         pass
