@@ -49,7 +49,7 @@ def auto_contrast_instance(arg_dict):
         save_3d_tif(auto_contrast_fp,new_arr)
     else:
         tifffile.imsave(auto_contrast_fp,new_arr)
-    logger.log("Saved auto contrast pic as {}".format(auto_contrast_fp))
+    logger.success("Saved auto contrast pic as {}".format(auto_contrast_fp))
 
 
 def auto_contrast_tiffs(
