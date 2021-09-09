@@ -998,7 +998,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             })
         if self.do_tube_PIV:
             action_configs.append({
-                "action": "do_tube_PIV":
+                "action": "do_tube_PIV",
                 "settings": self.tube_PIV_settings,
             })
         return action_configs
