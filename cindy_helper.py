@@ -18,7 +18,7 @@ from make_snake_images import make_snake_images
 from make_videos import make_videos
 from make_orientation_fields import make_orientation_fields
 from cindy_matrices_from_snakes import cindy_matrices_from_snakes
-from do_bead_PIV import do_bead_PIV
+from do_bead_piv import do_bead_piv
 
 from setup_app import (
     SoaxSetupApp,
@@ -36,7 +36,7 @@ from setup_app import (
     MakeSnakeVideosSetupForm,
     MakeOrientationFieldsSetupForm,
     BeadPIVSetupForm,
-    ConvertTiffsToPngZipsSetupForm,
+    TubePIVSetupForm,
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
@@ -185,7 +185,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     elif action_name == "do_bead_PIV":
         parsed_bead_PIV_settings = BeadPIVSetupForm.parseSettings(setting_strings, make_dirs)
 
-        do_bead_PIV(
+        do_bead_piv(
             parsed_bead_PIV_settings["source_tiff_dir"],
             parsed_bead_PIV_settings["tiff_fn_letter_before_frame_num"],
             parsed_bead_PIV_settings["target_piv_data_dir"],
@@ -195,11 +195,13 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_bead_PIV_settings["unit_abbreviation"],
             logger=logger,
         )
-    elif action_name == "convert_tiffs_to_png_zips":
-        parsed_convert_tiffs_to_png_zips_settings = ConvertTiffsToPngZipsSetupForm.parseSettings(setting_strings, make_dirs)
+    elif action_name == "do_tube_PIV":
+        parsed_tube_PIV_settings = TubePIVSetupForm.parseSettings(setting_strings, make_dirs)
 
-        convert_tiffs_to_png_zips(
-            parsed_bead_PIV
+        do_tube_piv(
+            parsed_tube_PIV_settings["source_tiff_dir"],
+            parsed_tube_PIV_settings["target_piv_data_dir"],
+            logger=logger,
         )
     else:
         raise Exception("Unknown action name '{}'".format(action_name))

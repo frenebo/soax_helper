@@ -131,19 +131,19 @@ class PIVStepsSelectForm(npyscreen.Form):
             value = [],
             name="Pick PIV Steps (spacebar to toggle)",
             values = [
-                "Convert TIFFs to PNG zips",
                 "Bead PIV",
+                "Tube PIV",
             ],
             scroll_exit=True,
         )
 
     def afterEditing(self):
-        do_convert_tiffs_to_png_zips = 0 in self.select_steps.value
-        do_bead_PIV =                  1 in self.select_steps.value
+        do_bead_PIV = 0 in self.select_steps.value
+        do_tube_PIV = 1 in self.select_steps.value
 
         self.parentApp.PIVStepsSelectDone(
-            do_convert_tiffs_to_png_zips,
             do_bead_PIV,
+            do_tube_PIV,
         )
 
 class SetupForm(npyscreen.Form):
@@ -754,10 +754,8 @@ class BeadPIVSetupForm(SetupForm):
             "id": "tiff_fn_letter_before_frame_num",
             "type": "letter",
             "help": [
-                "The source TIFF files should have names like fileName0.tif, fileName1.tif, etc",
-                "The library that trackpy uses to read the TIFFs in sequence requires the letter that comes",
-                "before the number in each tiff filename. For 'fileNamexx.tif', the letter would be 'e' since",
-                "that's the last letter in 'fileName' before the number starts."
+                "The source TIFF files should have names like fileName0.tif, fileName1.tif, etc. The library that trackpy uses to read the TIFFs in sequence requires the letter that comes",
+                "before the number in each tiff filename. For 'fileNamexx.tif', the letter would be 'e' since that's the last letter in 'fileName' before the number starts."
             ],
         },
         {
@@ -787,18 +785,19 @@ class BeadPIVSetupForm(SetupForm):
 
     app_done_func_name = "beadPIVSetupDone"
 
-class ConvertTiffsToPngZipsSetupForm(SetupForm):
+class TubePIVSetupForm(SetupForm):
     field_infos = [
         {
             "id": "source_tiff_dir",
             "type": "dir",
         },
         {
-            "id": "target_zip_dir",
+            "id": "target_piv_data_dir",
             "type": "dir",
         },
     ]
-    app_done_func_name = "convertTiffsToPngZipsSetupDone"
+
+    app_done_func_name = "tubePIVSetupDone"
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
@@ -899,18 +898,18 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         }
 
         #PIV settings
-        self.convert_tiffs_to_png_zips_settings = {
-            "source_tiff_dir": "",
-            "target_zip_dir": "./PIVStackPngZips",
-        }
         self.bead_PIV_settings = {
             "source_tiff_dir": "",
             "tiff_fn_letter_before_frame_num": "",
-            "target_piv_data_dir": "./BeadPivData",
+            "target_piv_data_dir": "./BeadPIVsData",
             "x_y_pixel_size": "",
             "z_stack_spacing": "",
             "bead_size": "",
             "unit_abbreviation": "",
+        }
+        self.tube_PIV_settings = {
+            "source_tiff_dir": "",
+            "target_piv_data_dir": "./TubePIVData",
         }
 
         self.menu_functions = [
@@ -997,10 +996,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "do_bead_PIV",
                 "settings": self.bead_PIV_settings,
             })
-        if self.do_convert_tiffs_to_png_zips:
+        if self.do_tube_PIV:
             action_configs.append({
-                "action": "convert_tiffs_to_png_zips",
-                "settings": self.convert_tiffs_to_png_zips_settings,
+                "action": "do_tube_PIV":
+                "settings": self.tube_PIV_settings,
             })
         return action_configs
 
@@ -1119,16 +1118,16 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('PIV_STEPS_SELECT')
 
     def PIVStepsSelectDone(self,
-        do_convert_tiffs_to_png_zips,
         do_bead_PIV,
+        do_tube_PIV,
         ):
-        self.do_convert_tiffs_to_png_zips = do_convert_tiffs_to_png_zips
         self.do_bead_PIV = do_bead_PIV
+        self.do_tube_PIV = do_tube_PIV
 
-        if self.do_convert_tiffs_to_png_zips:
-            self.menu_functions.append(self.startConvertTiffsToPngZipsSetup)
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIVSetup)
+        if self.do_tube_PIV:
+            self.menu_functions.append(self.startTubePIVSetup)
 
         self.goToNextMenu()
 
@@ -1378,16 +1377,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_cindy_matrices_from_snakes_settings = make_cindy_matrices_from_snakes_settings
         self.goToNextMenu()
 
-    def startConvertTiffsToPngZipsSetup(self):
-        self.addForm('CONVERT_TIFFS_TO_PNG_ZIPS_SETUP', ConvertTiffsToPngZipsSetupForm, name="Convert TIFFs to PNG Zips Setup")
-        self.getForm('CONVERT_TIFFS_TO_PNG_ZIPS_SETUP').configure(self.convert_tiffs_to_png_zips_settings)
-        self.setNextForm('CONVERT_TIFFS_TO_PNG_ZIPS_SETUP')
-
-    def convertTiffsToPngZipsSetupDone(self, convert_tiffs_to_png_zips_settings):
-        self.convert_tiffs_to_png_zips_settings =  convert_tiffs_to_png_zips_settings
-        self.bead_PIV_settings["source_tiff_dir"] = convert_tiffs_to_png_zips_settings["target_zip_dir"]
-        self.goToNextMenu()
-
     def startBeadPIVSetup(self):
         self.addForm('BEAD_PIV_SETUP', BeadPIVSetupForm, name="Bead PIV Setup")
         self.getForm('BEAD_PIV_SETUP').configure(self.bead_PIV_settings)
@@ -1395,4 +1384,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def beadPIVSetupDone(self, bead_PIV_settings):
         self.bead_PIV_settings = bead_PIV_settings
+        self.goToNextMenu()
+
+    def startTubePIVSetup(self):
+        self.addForm('TUBE_PIV_SETUP', TubePIVSetupForm, name="Tube PIV Setup")
+        self.getForm('TUBE_PIV_SETUP').configure(self.tube_PIV_settings)
+        self.setNextForm('TUBE_PIV_SETUP')
+
+    def tubePIVSetupDone(self, tube_PIV_settings):
+        self.tube_PIV_settings = tube_PIV_settings
         self.goToNextMenu()
