@@ -16,6 +16,7 @@ def do_bead_piv(
     z_stack_spacing_um,
     bead_diameter_um,
     logger=PrintLogger,
+    show_things=False,
     ):
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num])
     # Inside a frame axes are labelled x,y,c
@@ -43,4 +44,9 @@ def do_bead_piv(
     logger.log("Finding features with diameter {}".format(diameter))
 
     f = tp.batch(frames, diameter=diameter)
-    f
+    f['xum'] = f['x'] * x_y_pixel_size_um
+    f['yum'] = f['y'] * x_y_pixel_size_um
+    f['zum'] = f['z'] * z_stack_spacing_um
+
+    if show_things:
+        pass
