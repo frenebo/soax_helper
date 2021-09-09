@@ -21,6 +21,7 @@ def auto_contrast_instance(arg_dict):
     images_are_3d = arg_dict["images_are_3d"]
 
     tiff_fp = os.path.join(source_dir,tiff_fn)
+    logger.log("Performing auto contrast on {}".format(tiff_fp))
     auto_contrast_fp = os.path.join(target_dir, "auto_contrast_" + tiff_fn)
 
     pil_img = Image.open(tiff_fp)
@@ -41,8 +42,8 @@ def auto_contrast_instance(arg_dict):
     new_arr[over_max_places] = new_max
     new_arr[under_min_places] = 0
 
-    logger.log("New min:  {}".format(new_arr.min()))
-    logger.log("New max: {}".format(new_arr.max()))
+    # logger.log("New min:  {}".format(new_arr.min()))
+    # logger.log("New max: {}".format(new_arr.max()))
 
     if images_are_3d:
         save_3d_tif(auto_contrast_fp,new_arr)
@@ -100,7 +101,7 @@ def auto_contrast_tiffs(
             "images_are_3d": images_are_3d,
         })
         # auto_contrast_instance(contrast_arg_dicts[-1])
-
+    print(contrast_arg_dicts)
     with ThreadPool(workers_num) as pool:
         logger.log("Making future")
         future = pool.map(auto_contrast_instance, contrast_arg_dicts)
