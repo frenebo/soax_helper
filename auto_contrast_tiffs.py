@@ -1,15 +1,62 @@
-# import argparse
-# import argparse
 import math
-from snakeutils.files import pil_img_3d_to_np_arr, has_one_of_extensions
-from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
+from multiprocessing.pool import ThreadPool
 import os
 import numpy as np
 from PIL import Image
 import tifffile
-from snakeutils.logger import PrintLogger
 
-def auto_contrast_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_percent,logger=PrintLogger):
+from snakeutils.logger import PrintLogger
+from snakeutils.files import pil_img_3d_to_np_arr, has_one_of_extensions
+from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
+
+def auto_contrast_instance(arg_dict):
+    source_dir   = arg_dict["source_dir"]
+    tiff_fn      = arg_dict["tiff_fn"]
+    target_dir   = arg_dict["target_dir"]
+    max_cutoff   = arg_dict["max_cutoff"]
+    min_cutoff   = arg_dict["min_cutoff"]
+    scale_factor = arg_dict["scale_factor"]
+    new_max      = arg_dict["new_max"]
+
+    tiff_fp = os.path.join(source_dir,tiff_fn)
+    auto_contrast_fp = os.path.join(target_dir, "auto_contrast_" + tiff_fn)
+
+    pil_img = Image.open(tiff_fp)
+    # If 2D
+    if getattr(pil_img, "n_frames", 1) == 1:
+        image_arr = np.array(pil_img)
+    # if 3D
+    else:
+        image_arr = pil_img_3d_to_np_arr(pil_img)
+
+    over_max_places = image_arr >= max_cutoff
+    under_min_places = image_arr <= min_cutoff
+
+    # float_arr = image_arr.astype(np.float64)
+    new_arr = (image_arr - min_cutoff)* scale_factor
+
+    new_arr = new_arr.astype(image_arr.dtype)
+    new_arr[over_max_places] = new_max
+    new_arr[under_min_places] = 0
+
+    logger.log("New min:  {}".format(new_arr.min()))
+    logger.log("New max: {}".format(new_arr.max()))
+
+    if images_are_3d:
+        save_3d_tif(auto_contrast_fp,new_arr)
+    else:
+        tifffile.imsave(auto_contrast_fp,new_arr)
+    logger.log("Saved auto contrast pic as {}".format(auto_contrast_fp))
+
+
+def auto_contrast_tiffs(
+    source_dir,
+    target_dir,
+    max_cutoff_percent,
+    min_cutoff_percent,
+    workers_num,
+    logger=PrintLogger,
+    ):
     source_tifs = [filename for filename in os.listdir(source_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
     source_tifs.sort()
 
@@ -36,34 +83,20 @@ def auto_contrast_tiffs(source_dir,target_dir,max_cutoff_percent,min_cutoff_perc
 
     logger.log("Data type {} with max value {}".format(first_tiff_arr.dtype, new_max))
 
+    contrast_arg_dicts = []
+
     for tiff_fn in source_tifs:
-        tiff_fp = os.path.join(source_dir,tiff_fn)
-        auto_contrast_fp = os.path.join(target_dir, "auto_contrast_" + tiff_fn)
+        contrast_arg_dicts.append({
+            "source_dir": source_dir,
+            "tiff_fn": tiff_fn,
+            "target_dir": target_dir,
+            "max_cutoff": max_cutoff,
+            "min_cutoff": min_cutoff,
+            "scale_factor": scale_factor,
+            "new_max": new_max,
+        })
 
-        pil_img = Image.open(tiff_fp)
-        # If 2D
-        if getattr(pil_img, "n_frames", 1) == 1:
-            image_arr = np.array(pil_img)
-        # if 3D
-        else:
-            image_arr = pil_img_3d_to_np_arr(pil_img)
-
-        over_max_places = image_arr >= max_cutoff
-        under_min_places = image_arr <= min_cutoff
-
-        # float_arr = image_arr.astype(np.float64)
-        new_arr = (image_arr - min_cutoff)* scale_factor
-
-        new_arr = new_arr.astype(image_arr.dtype)
-        new_arr[over_max_places] = new_max
-        new_arr[under_min_places] = 0
-
-        logger.log("New min:  {}".format(new_arr.min()))
-        logger.log("New max: {}".format(new_arr.max()))
-
-        if images_are_3d:
-            save_3d_tif(auto_contrast_fp,new_arr)
-        else:
-            tifffile.imsave(auto_contrast_fp,new_arr)
-        logger.log("Saved auto contrast pic as {}".format(auto_contrast_fp))
-
+    with ThreadPool(workers_num) as pool:
+        logger.log("Making future")
+        future = pool.map(auto_contrast_instance, contrast_arg_dicts)
+        logger.log("Future finished")

@@ -64,6 +64,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_auto_contrast_settings["target_tiff_dir"],
             parsed_auto_contrast_settings["max_cutoff_percent"],
             parsed_auto_contrast_settings["min_cutoff_percent"],
+            parsed_auto_contrast_settings["workers_num"],
             logger=logger,
         )
     elif action_name == "section_tiffs":

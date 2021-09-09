@@ -429,6 +429,10 @@ class AutoContrastSetupForm(SetupForm):
             "id": "max_cutoff_percent",
             "type": "percentage",
         },
+        {
+            "id": "workers_num",
+            "type": "pos_int",
+        },
     ]
 
     app_done_func_name = "autoContrastSetupDone"
@@ -813,6 +817,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.auto_contrast_settings = {
             "max_cutoff_percent": "95.5",
             "min_cutoff_percent": "0.1",
+            "workers_num": "1",
             "source_tiff_dir": "",
             "target_tiff_dir": "./AutoContrastedTIFFs",
         }
@@ -908,12 +913,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.bead_piv_auto_contrast_settings = {
             "max_cutoff_percent": "95.5",
             "min_cutoff_percent": "0.1",
+            "workers_num": "1",
             "source_tiff_dir": "",
             "target_tiff_dir": "./AutoContrastedBeadTIFFsForPIV",
         }
         self.tube_piv_auto_contrast_settings = {
             "max_cutoff_percent": "95.5",
             "min_cutoff_percent": "0.1",
+            "workers_num": "1",
             "source_tiff_dir": "",
             "target_tiff_dir": "./AutoContrastedTubeTIFFsForPIV",
         }
