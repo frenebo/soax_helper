@@ -6,13 +6,13 @@ import json
 def rescale_json_snake_file(
     source_json_fp,
     target_json_fp,
-    x_y_pixel_size,
+    x_y_pixel_size_um,
     x_y_image_scale_factor,
-    z_stack_spacing,
+    z_stack_spacing_um,
     snakes_are_3d,
     logger,
 ):
-    if snakes_are_3d and z_stack_spacing is None:
+    if snakes_are_3d and z_stack_spacing_um is None:
         logger.FAIL("Need z-stack spacing for scaling 3D snakes to units")
 
     with open(source_json_fp, "r") as f:
@@ -25,14 +25,14 @@ def rescale_json_snake_file(
             orig_pos = orig_snake["pos"]
             if snakes_are_3d:
                 rescaled_pos = [
-                    orig_pos[0] * x_y_pixel_size / x_y_image_scale_factor,
-                    orig_pos[1] * x_y_pixel_size / x_y_image_scale_factor,
-                    orig_pos[2] * z_stack_spacing,
+                    orig_pos[0] * x_y_pixel_size_um / x_y_image_scale_factor,
+                    orig_pos[1] * x_y_pixel_size_um / x_y_image_scale_factor,
+                    orig_pos[2] * z_stack_spacing_um,
                 ]
             else:
                 rescaled_pos = [
-                    orig_pos[0] * x_y_pixel_size / x_y_image_scale_factor,
-                    orig_pos[1] * x_y_pixel_size / x_y_image_scale_factor,
+                    orig_pos[0] * x_y_pixel_size_um / x_y_image_scale_factor,
+                    orig_pos[1] * x_y_pixel_size_um / x_y_image_scale_factor,
                 ]
             rescaled_snake.append({
                 "pos": rescaled_pos,
@@ -48,9 +48,9 @@ def scale_json_snakes_to_units(
     source_json_dir,
     source_jsons_depth,
     target_json_dir,
-    x_y_pixel_size,
+    x_y_pixel_size_um,
     x_y_image_scale_factor,
-    z_stack_spacing,
+    z_stack_spacing_um,
     unit_abbreviation,
     logger=PrintLogger,
     ):
@@ -72,7 +72,7 @@ def scale_json_snakes_to_units(
             snakes_are_3d = False
         elif snake_fn.startswith("3D"):
             snakes_are_3d = True
-            if z_stack_spacing is None:
+            if z_stack_spacing_um is None:
                 logger.FAIL("'{}' contains 3D snakes - must provide z stack spacing".format(source_json_fp))
         else:
             logger.FAIL("Could not determine if '{}' is 3D, filename does not start with '2D' or '3D'".format(source_json_fp))
@@ -80,9 +80,9 @@ def scale_json_snakes_to_units(
         rescale_json_snake_file(
             source_json_fp,
             target_json_fp,
-            x_y_pixel_size,
+            x_y_pixel_size_um,
             x_y_image_scale_factor,
-            z_stack_spacing,
+            z_stack_spacing_um,
             snakes_are_3d,
             logger,
         )

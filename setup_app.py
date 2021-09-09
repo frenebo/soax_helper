@@ -609,9 +609,9 @@ class ScaleJsonSnakesToUnitsSetupForm(SetupForm):
             "type": "non_neg_int"
         },
         {
-            "id": "x_y_pixel_size",
+            "id": "x_y_pixel_size_um",
             "type": "pos_float",
-            "help": "x_y_pixel_size is the size of a single pixel in the original TIFF image",
+            "help": "x_y_pixel_size_um is the size of a single pixel in the original TIFF image",
         },
         {
             "id": "x_y_image_scale_factor",
@@ -622,8 +622,8 @@ class ScaleJsonSnakesToUnitsSetupForm(SetupForm):
             ],
         },
         {
-            "id": "z_stack_spacing",
-            "name": "z_stack_spacing (if applicable)",
+            "id": "z_stack_spacing_um",
+            "name": "z_stack_spacing_um (if applicable)",
             "type": "optional_pos_float",
             "help": "The distance between z stacks in source TIFF images",
         },
@@ -775,23 +775,18 @@ class BeadPIVSetupForm(SetupForm):
             "type": "dir",
         },
         {
-            "id": "x_y_pixel_size",
+            "id": "x_y_pixel_size_um",
             "type": "pos_float",
-            "help": "x_y_pixel_size is the size of a single pixel in the original TIFF image",
+            "help": "x_y_pixel_size_um is the size of a single pixel in the original TIFF image",
         },
         {
-            "id": "z_stack_spacing",
-            "name": "z_stack_spacing (if applicable)",
-            "type": "optional_pos_float",
+            "id": "z_stack_spacing_um",
+            "type": "pos_float",
             "help": "The distance between z stacks in source TIFF images",
         },
         {
-            "id": "bead_size",
+            "id": "bead_diameter_um",
             "type": "pos_float",
-        },
-        {
-            "id": "unit_abbreviation",
-            "type": "text",
         },
     ]
 
@@ -875,9 +870,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_json_dir": "",
             "target_json_dir": "./UnitScaledJsonSnakes",
             "source_jsons_depth": "",
-            "x_y_pixel_size": "",
+            "x_y_pixel_size_um": "",
             "x_y_image_scale_factor": "",
-            "z_stack_spacing": "",
+            "z_stack_spacing_um": "",
             "unit_abbreviation": "",
         }
         self.make_snake_images_settings = {
@@ -926,10 +921,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_tiff_dir": "",
             "tiff_fn_letter_before_frame_num": "",
             "target_piv_data_dir": "./BeadPIVsData",
-            "x_y_pixel_size": "",
-            "z_stack_spacing": "",
-            "bead_size": "",
-            "unit_abbreviation": "",
+            "x_y_pixel_size_um": "",
+            "z_stack_spacing_um": "",
+            "bead_diameter_um": "",
         }
         self.tube_PIV_settings = {
             "source_tiff_dir": "",

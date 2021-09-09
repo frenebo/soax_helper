@@ -12,10 +12,9 @@ def do_bead_piv(
     source_tiff_dir,
     tiff_fn_letter_before_frame_num,
     target_piv_data_dir,
-    x_y_pixel_size,
-    z_stack_spacing,
-    bead_size,
-    unit_abbreviation,
+    x_y_pixel_size_um,
+    z_stack_spacing_um,
+    bead_diameter_um,
     logger=PrintLogger,
     ):
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num])
@@ -24,14 +23,13 @@ def do_bead_piv(
     # PIMS gives the time axis the name of identifier letter
     frames.iter_axes = [tiff_fn_letter_before_frame_num]
 
-    float_search_diameter_x_y = bead_size / x_y_pixel_size
-    float_search_diameter_z = bead_size / z_stack_spacing
+    float_search_diameter_x_y = bead_diametex_y_pixel_size_umel_size
+    float_search_diameter_z = bead_diameter_um / z_stack_spacing_um
 
-    logger.log("Using x_y_pixel size {x_y_size} {unit}, z_spacing {z_size} {unit}, bead size {bead_size} {unit}".format(
-        x_y_size = x_y_pixel_size,
-        z_size = z_stack_spacing,
-        bead_size = bead_size,
-        unit = unit_abbreviation,
+    logger.log("Using x_y_pixel size {x_y_size} um, z_spacing {z_size} um, bead size {bead_diameter_um} um".format(
+        x_y_size = x_y_pixel_size_um,
+        z_size = z_stack_spacing_um,
+        bead_diameter_um = bead_diameter_um,
         ))
     logger.log("In x y dimension we expect beads to be {} pixels large".format(float_search_diameter_x_y))
     logger.log("In z dimension we expect beads to be {} stacks large".format(float_search_diameter_z))
@@ -44,4 +42,5 @@ def do_bead_piv(
     diameter = (search_diameter_x_y, search_diameter_x_y, search_diameter_z)
     logger.log("Finding features with diameter {}".format(diameter))
 
-    features = tp.batch(frames, diameter=diameter)
+    f = tp.batch(frames, diameter=diameter)
+    f
