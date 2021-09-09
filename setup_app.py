@@ -131,6 +131,8 @@ class PIVStepsSelectForm(npyscreen.Form):
             value = [],
             name="Pick PIV Steps (spacebar to toggle)",
             values = [
+                "Auto Contrast Bead TIFFs for PIV",
+                "Auto Contrast Tube TIFFs for PIV",
                 "Bead PIV",
                 "Tube PIV",
             ],
@@ -138,10 +140,14 @@ class PIVStepsSelectForm(npyscreen.Form):
         )
 
     def afterEditing(self):
-        do_bead_PIV = 0 in self.select_steps.value
-        do_tube_PIV = 1 in self.select_steps.value
+        do_bead_piv_auto_contrast = 0 in self.select_steps.value
+        do_tube_piv_auto_contrast = 1 in self.select_steps.value
+        do_bead_PIV               = 2 in self.select_steps.value
+        do_tube_PIV               = 3 in self.select_steps.value
 
         self.parentApp.PIVStepsSelectDone(
+            do_bead_piv_auto_contrast,
+            do_tube_piv_auto_contrast,
             do_bead_PIV,
             do_tube_PIV,
         )
@@ -744,6 +750,12 @@ class MakeCindyMatricesFromSnakesSetupForm(SetupForm):
 
     app_done_func_name = "makeCindyMatricesFromSnakesSetupDone"
 
+class BeadPivAutoContrastSetupForm(AutoContrastSetupForm):
+    app_done_func_name = "beadAutoContrastSetupDone"
+
+class TubePivAutoContrastSetupForm(AutoContrastSetupForm):
+    app_done_func_name = "tubeAutoContrastSetupDone"
+
 class BeadPIVSetupForm(SetupForm):
     field_infos = [
         {
@@ -755,7 +767,7 @@ class BeadPIVSetupForm(SetupForm):
             "type": "letter",
             "help": [
                 "The source TIFF files should have names like fileName0.tif, fileName1.tif, etc. The library that trackpy uses to read the TIFFs in sequence requires the letter that comes",
-                "before the number in each tiff filename. For 'fileNamexx.tif', the letter would be 'e' since that's the last letter in 'fileName' before the number starts."
+                "before the number in each tiff filename. For 'fileName##.tif', the letter would be 'e' since that's the last letter in 'fileName' before the number starts."
             ],
         },
         {
@@ -898,6 +910,18 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         }
 
         #PIV settings
+        self.bead_piv_auto_contrast_settings = {
+            "max_cutoff_percent": "95.5",
+            "min_cutoff_percent": "0.1",
+            "source_tiff_dir": "",
+            "target_tiff_dir": "./AutoContrastedBeadTIFFsForPIV",
+        }
+        self.tube_piv_auto_contrast_settings = {
+            "max_cutoff_percent": "95.5",
+            "min_cutoff_percent": "0.1",
+            "source_tiff_dir": "",
+            "target_tiff_dir": "./AutoContrastedTubeTIFFsForPIV",
+        }
         self.bead_PIV_settings = {
             "source_tiff_dir": "",
             "tiff_fn_letter_before_frame_num": "",
@@ -990,6 +1014,16 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             action_configs.append({
                 "action": "make_cindy_matrices_from_snakes",
                 "settings": self.make_cindy_matrices_from_snakes_settings,
+            })
+        if self.do_bead_piv_auto_contrast:
+            action_configs.append({
+                "action": "auto_contrast_tiffs",
+                "settings": self.bead_piv_auto_contrast_settings,
+            })
+        if self.do_tube_piv_auto_contrast:
+            action_configs.append({
+                "action": "auto_contrast_tiffs",
+                "settings": self.tube_piv_auto_contrast_settings,
             })
         if self.do_bead_PIV:
             action_configs.append({
@@ -1118,12 +1152,20 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('PIV_STEPS_SELECT')
 
     def PIVStepsSelectDone(self,
+        do_bead_piv_auto_contrast,
+        do_tube_piv_auto_contrast,
         do_bead_PIV,
         do_tube_PIV,
         ):
+        self.do_bead_piv_auto_contrast = do_bead_piv_auto_contrast
+        self.do_tube_piv_auto_contrast = do_tube_piv_auto_contrast
         self.do_bead_PIV = do_bead_PIV
         self.do_tube_PIV = do_tube_PIV
 
+        if self.do_bead_piv_auto_contrast:
+            self.menu_functions.append(self.startBeadPivAutoContrastSetup)
+        if self.do_tube_piv_auto_contrast:
+            self.menu_functions.append(self.startTubePivAutoContrastSetup)
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIVSetup)
         if self.do_tube_PIV:
@@ -1375,6 +1417,30 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def makeCindyMatricesFromSnakesSetupDone(self, make_cindy_matrices_from_snakes_settings):
         self.make_cindy_matrices_from_snakes_settings = make_cindy_matrices_from_snakes_settings
+        self.goToNextMenu()
+
+    def startBeadPivAutoContrastSetup(self):
+        self.addForm('BEAD_PIV_AUTO_CONTRAST_SETUP', BeadPivAutoContrastSetupForm, name="Bead PIV Auto Contrast")
+        self.getForm('BEAD_PIV_AUTO_CONTRAST_SETUP').configure(self.bead_piv_auto_contrast_settings)
+        self.setNextForm('BEAD_PIV_AUTO_CONTRAST_SETUP')
+
+    def beadPivAutoContrastSetupDone(self, bead_piv_auto_contrast_settings):
+        self.bead_piv_auto_contrast_settings = bead_piv_auto_contrast_settings
+
+        self.bead_PIV_settings["source_tiff_dir"] = bead_piv_auto_contrast_settings["target_tiff_dir"]
+
+        self.goToNextMenu()
+
+    def startTubePivAutoContrastSetup(self):
+        self.addForm('TUBE_PIV_AUTO_CONTRAST_SETUP', TubePivAutoContrastSetupForm, name="Tube PIV Auto Contrast")
+        self.getForm('TUBE_PIV_AUTO_CONTRAST_SETUP').configure(self.tube_piv_auto_contrast_settings)
+        self.setNextForm('TUBE_PIV_AUTO_CONTRAST_SETUP')
+
+    def tubePivAutoContrastSetupDone(self, tube_piv_auto_contrast_settings):
+        self.tube_piv_auto_contrast_settings = tube_piv_auto_contrast_settings
+
+        self.tube_PIV_settings["source_tiff_dir"] = tube_piv_auto_contrast_settings["target_tiff_dir"]
+
         self.goToNextMenu()
 
     def startBeadPIVSetup(self):
