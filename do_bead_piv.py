@@ -24,7 +24,7 @@ def do_bead_piv(
     # PIMS gives the time axis the name of identifier letter
     frames.iter_axes = [tiff_fn_letter_before_frame_num]
 
-    float_search_diameter_x_y = bead_diametex_y_pixel_size_umel_size
+    float_search_diameter_x_y = bead_diameter_um / x_y_pixel_size_um
     float_search_diameter_z = bead_diameter_um / z_stack_spacing_um
 
     logger.log("Using x_y_pixel size {x_y_size} um, z_spacing {z_size} um, bead size {bead_diameter_um} um".format(
