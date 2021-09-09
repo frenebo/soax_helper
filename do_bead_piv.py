@@ -40,7 +40,7 @@ def do_bead_piv(
 
     logger.log("Rounding up x,y bead pixel diameter to nearest odd int, {} -> {}".format(float_search_diameter_x_y, search_diameter_x_y))
     logger.log("Rounding up z bead stack diameter to nearest odd int, {} -> {}".format(float_search_diameter_z, search_diameter_z))
-    diameter = (search_diameter_x_y, search_diameter_x_y, search_diameter_z)
+    diameter = (search_diameter_z, search_diameter_x_y, search_diameter_x_y)
     logger.log("Finding features with diameter {}".format(diameter))
 
     f = tp.batch(frames, diameter=diameter)
