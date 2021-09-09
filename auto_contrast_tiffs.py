@@ -17,6 +17,7 @@ def auto_contrast_instance(arg_dict):
     min_cutoff   = arg_dict["min_cutoff"]
     scale_factor = arg_dict["scale_factor"]
     new_max      = arg_dict["new_max"]
+    logger       = arg_dict["logger"]
 
     tiff_fp = os.path.join(source_dir,tiff_fn)
     auto_contrast_fp = os.path.join(target_dir, "auto_contrast_" + tiff_fn)
@@ -94,9 +95,11 @@ def auto_contrast_tiffs(
             "min_cutoff": min_cutoff,
             "scale_factor": scale_factor,
             "new_max": new_max,
+            "logger": logger,
         })
+        auto_contrast_instance(contrast_arg_dicts[-1])
 
-    with ThreadPool(workers_num) as pool:
-        logger.log("Making future")
-        future = pool.map(auto_contrast_instance, contrast_arg_dicts)
-        logger.log("Future finished")
+    # with ThreadPool(workers_num) as pool:
+    #     logger.log("Making future")
+    #     future = pool.map(auto_contrast_instance, contrast_arg_dicts)
+    #     logger.log("Future finished")
