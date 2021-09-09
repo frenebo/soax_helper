@@ -208,10 +208,10 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Soax Helper')
-    parser.add_argument('--load_settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
-    parser.add_argument('--save_settings',default=None,help="Save settings from GUI menu to JSON file")
-    parser.add_argument('--do_not_run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
-    parser.add_argument('--make_dirs',default=False,action='store_true', help='If --load_settings, whether program should make directories in settings file is the directories don\'t exist already.')
+    parser.add_argument('--load-settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
+    parser.add_argument('--save-settings',default=None,help="Save settings from GUI menu to JSON file")
+    parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
+    parser.add_argument('--make-dirs',default=False,action='store_true', help='If --load_settings, whether program should make directories in settings file is the directories don\'t exist already.')
 
     args = parser.parse_args()
     if args.load_settings is not None and args.save_settings is not None:
