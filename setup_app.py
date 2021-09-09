@@ -751,10 +751,10 @@ class MakeCindyMatricesFromSnakesSetupForm(SetupForm):
     app_done_func_name = "makeCindyMatricesFromSnakesSetupDone"
 
 class BeadPivAutoContrastSetupForm(AutoContrastSetupForm):
-    app_done_func_name = "beadAutoContrastSetupDone"
+    app_done_func_name = "beadPivAutoContrastSetupDone"
 
 class TubePivAutoContrastSetupForm(AutoContrastSetupForm):
-    app_done_func_name = "tubeAutoContrastSetupDone"
+    app_done_func_name = "tubePivAutoContrastSetupDone"
 
 class BeadPIVSetupForm(SetupForm):
     field_infos = [
