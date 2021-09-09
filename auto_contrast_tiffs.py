@@ -18,6 +18,7 @@ def auto_contrast_instance(arg_dict):
     scale_factor = arg_dict["scale_factor"]
     new_max      = arg_dict["new_max"]
     logger       = arg_dict["logger"]
+    images_are_3d = arg_dict["images_are_3d"]
 
     tiff_fp = os.path.join(source_dir,tiff_fn)
     auto_contrast_fp = os.path.join(target_dir, "auto_contrast_" + tiff_fn)
@@ -96,6 +97,7 @@ def auto_contrast_tiffs(
             "scale_factor": scale_factor,
             "new_max": new_max,
             "logger": logger,
+            "images_are_3d": images_are_3d,
         })
         auto_contrast_instance(contrast_arg_dicts[-1])
 
