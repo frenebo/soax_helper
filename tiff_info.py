@@ -39,14 +39,25 @@ def get_single_tiff_info(tiff_path):
     stack_height = data.n_frames
     arr = np.array(data)
     dtype = str(arr.dtype)
+    min_val = arr.min()
+    max_val = arr.max()
+    avg = np.average(arr)
 
-    return shape, stack_height, dtype
+    return shape, stack_height, dtype, min_val, max_val, avg
 
 def tiff_info(tiff_paths,logger=PrintLogger):
     for tiff_path in tiff_paths:
-        shape, stack_height, dtype = get_single_tiff_info(tiff_path)
+        data = Image.open(tiff_path)
+        shape = data.size
+        stack_height = data.n_frames
+        arr = np.array(data)
+        dtype = str(arr.dtype)
+        min_val = arr.min()
+        max_val = arr.max()
+        avg = np.average(arr)
+
         logger.log("{}:".format(tiff_path))
-        logger.log(" shape: {}, stack frames: {}, dtype: {}".format(shape,stack_height,dtype))
+        logger.log(" shape: {}, stack frames: {}, dtype: {}, min: {}, max: {}, avg: {}".format(shape,stack_height,dtype, min_val, max_val, avg))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Get info from tif file or directory of tif files')
