@@ -121,7 +121,7 @@ def create_soax_param_files(
     snake_point_spacings = create_range(**snake_point_spacing_start_stop_step)
     external_factors = create_range(**external_factor_start_stop_step)
     intensity_scalings = create_range(**intensity_scaling_start_stop_step)
-    strech_factors = create_range(**stretch_factor_start_stop_step)
+    stretch_factors = create_range(**stretch_factor_start_stop_step)
 
     alpha_form_settings = param_form_settings(**alpha_start_stop_step)
     beta_form_settings = param_form_settings(**beta_start_stop_step)
