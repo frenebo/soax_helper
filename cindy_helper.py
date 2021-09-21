@@ -94,6 +94,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             snake_point_spacing_start_stop_step=parsed_params_settings["snake_point_spacing"],
             external_factor_start_stop_step=parsed_params_settings["external_factor"],
             intensity_scaling_start_stop_step=parsed_params_settings["intensity_scaling"],
+            stretch_factor_start_stop_step=parsed_params_settings["stretch_factor"],
             logger=logger,
         )
     elif action_name == "run_soax":

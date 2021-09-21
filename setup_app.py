@@ -519,6 +519,10 @@ class SoaxParamsSetupPage2Form(SetupForm):
                 "before sectioning, so all sections have same contrast setting",
             ],
         },
+        {
+            "id": "stretch_factor",
+            "type": "arg_or_range",
+        },
     ]
 
     app_done_func_name = "soaxParamsSetupPage2Done"

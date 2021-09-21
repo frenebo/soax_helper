@@ -10,6 +10,7 @@ def create_params(
     snake_point_spacing=5,
     external_factor=1,
     intensity_scaling=0.0, # Should be equal to one to skip auto intensity scaling
+    stretch_factor=0.2,
     ):
     params = """intensity-scaling	{intensity_scaling}
 gaussian-std	{gaussian_std}
@@ -26,7 +27,7 @@ alpha	{alpha}
 beta	{beta}
 gamma	{gamma}
 external-factor	{external_factor}
-stretch-factor	0.2
+stretch-factor	{stretch_factor}
 number-of-background-radial-sectors	8
 background-z-xy-ratio	2.88
 radial-near	4
@@ -47,5 +48,6 @@ damp-z	false""".format(
         snake_point_spacing=snake_point_spacing,
         external_factor=external_factor,
         intensity_scaling=intensity_scaling,
+        stretch_factor=stretch_factor,
         )
     return params

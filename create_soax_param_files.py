@@ -88,11 +88,12 @@ param_abbreviations = {
     "gamma": "g",
     "min_foreground": "mf",
     "ridge_threshold": "rt",
-    "min_snake_length": "msl",
-    "gaussian_std": "gstd",
+    "min_snake_length": "minsnakelen",
+    "gaussian_std": "gaussstd",
     "snake_point_spacing": "sps",
-    "external_factor": "exfac",
+    "external_factor": "extfac",
     "intensity_scaling": "intscale",
+    "stretch_factor": "stretchfac",
 }
 
 def create_soax_param_files(
@@ -107,6 +108,7 @@ def create_soax_param_files(
     snake_point_spacing_start_stop_step,
     external_factor_start_stop_step,
     intensity_scaling_start_stop_step,
+    stretch_factor_start_stop_step,
     logger=PrintLogger
     ):
     alphas = create_range(**alpha_start_stop_step)
@@ -119,6 +121,7 @@ def create_soax_param_files(
     snake_point_spacings = create_range(**snake_point_spacing_start_stop_step)
     external_factors = create_range(**external_factor_start_stop_step)
     intensity_scalings = create_range(**intensity_scaling_start_stop_step)
+    strech_factors = create_range(**stretch_factor_start_stop_step)
 
     alpha_form_settings = param_form_settings(**alpha_start_stop_step)
     beta_form_settings = param_form_settings(**beta_start_stop_step)
@@ -130,6 +133,7 @@ def create_soax_param_files(
     snake_point_spacing_settings = param_form_settings(**snake_point_spacing_start_stop_step)
     external_factor_settings = param_form_settings(**external_factor_start_stop_step)
     intensity_scaling_settings = param_form_settings(**intensity_scaling_start_stop_step)
+    stretch_factor_settings = create_range(**stretch_factor_start_stop_step)
 
     filename_template = "params"
     # For varied param settings we name param files to tell them part
@@ -195,6 +199,12 @@ def create_soax_param_files(
             str_length=intensity_scaling_settings["str_length"],
             decimals=intensity_scaling_settings["decimal_places"],
         )
+    if len(stretch_factors) > 1:
+        filename_template += "_{abbreviation}{{stretch_factor:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["stretch_factor"],
+            str_length=stretch_factor_settings["str_length"],
+            decimals=stretch_factor_settings["decimal_places"],
+        )
 
     filename_template += ".txt"
 
@@ -212,6 +222,7 @@ def create_soax_param_files(
         snake_point_spacings,
         external_factors,
         intensity_scalings,
+        stretch_factors,
     )
     # logger.log("Creating {} different param combinations".format(len(list(param_combinations))))
 
@@ -226,6 +237,7 @@ def create_soax_param_files(
         snake_point_spacing,
         external_factor,
         intensity_scaling,
+        stretch_factor,
     ) in param_combinations:
         params_filename = filename_template.format(
             alpha=alpha,
@@ -238,6 +250,7 @@ def create_soax_param_files(
             snake_point_spacing=snake_point_spacing,
             external_factor=external_factor,
             intensity_scaling=intensity_scaling,
+            stretch_factor=stretch_factor,
         )
 
 
@@ -254,6 +267,7 @@ def create_soax_param_files(
             snake_point_spacing=snake_point_spacing,
             external_factor=external_factor,
             intensity_scaling=intensity_scaling,
+            stretch_factor=stretch_factor
         )
 
         with open(fp,"w") as file:
