@@ -133,7 +133,7 @@ def create_soax_param_files(
     snake_point_spacing_settings = param_form_settings(**snake_point_spacing_start_stop_step)
     external_factor_settings = param_form_settings(**external_factor_start_stop_step)
     intensity_scaling_settings = param_form_settings(**intensity_scaling_start_stop_step)
-    stretch_factor_settings = create_range(**stretch_factor_start_stop_step)
+    stretch_factor_settings = param_form_settings(**stretch_factor_start_stop_step)
 
     filename_template = "params"
     # For varied param settings we name param files to tell them part
