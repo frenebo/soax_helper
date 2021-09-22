@@ -855,6 +855,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "snake_point_spacing":"5",
             "external_factor":"1",
             "intensity_scaling": "0",
+            "stretch_factor": "0.2",
         }
         self.soax_run_settings = {
             "workers": "1",
