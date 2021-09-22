@@ -43,7 +43,7 @@ def get_single_tiff_info(tiff_path):
     max_val = arr.max()
     avg = np.average(arr)
 
-    return shape, stack_height, dtype, min_val, max_val, avg
+    return shape, stack_height, dtype
 
 def tiff_info(tiff_paths,logger=PrintLogger):
     for tiff_path in tiff_paths:
