@@ -96,8 +96,9 @@ def extract_snakes(snake_file):
                 break
 
             line = lines[line_idx]
+            split_line = line.strip().split()
             #reached junction point section
-            if len(line) == 3:
+            if len(split_line) == 3:
                 break
 
             snake_name = line[0]
@@ -107,8 +108,9 @@ def extract_snakes(snake_file):
             end_of_snakes = True
         else:
             line = lines[line_idx]
+            split_line = line.strip().split()
             #reached junction section
-            if len(line) == 3:
+            if len(split_line) == 3:
                 end_of_snakes = True
             else:
                 end_of_snakes = False
@@ -119,7 +121,7 @@ def extract_snakes(snake_file):
             break
 
         # if reached a new label for snake
-        if len(line) == 1 :
+        if len(split_line) == 1 :
             snake_dict[snake_name] = snake_points
             snake_name = None
             snake_points = None
@@ -132,29 +134,23 @@ def extract_snakes(snake_file):
                 break
 
             continue
-        # this number of items means s,p,x,y,fg_int,bg_int
-        elif len(line) == 6:
-            x = float(line[2])
-            y = float(line[3])
-            fg = float(line[4])
-            bg = float(line[5])
-            snake_points.append({"pos": [x,y], "fg": fg, "bg": bg})
 
-            line_idx += 1
-            continue
-        # this number of items means s,p,x,y,z,fg_int,bg_int
-        elif len(line) == 7:
-            x = float(line[2])
-            y = float(line[3])
-            z = float(line[4])
-            fg = float(line[5])
-            bg = float(line[6])
-            snake_points.append({"pos": [x,y,z], "fg": fg, "bg": bg})
+        # Example line:
+        #49           1     41.7002     55.7912     0.69079     49396.2     7611.91
+        x_coord_start = 14
+        x_str = line[x_coord_start:x_coord_start + 12]
+        y_str = line[x_coord_start + 12:x_coord_start + 12*2]
+        z_str = line[x_coord_start + 12*2:x_coord_start + 12*3]
+        fg_str = line[x_coord_start + 12*3:x_coord_start + 12*4]
+        bg_str = line[x_coord_start + 12*4:x_coord_start + 12*5]
 
-            line_idx += 1
-            continue
-        else:
-            raise Exception("Found line with {} items - unfamiliar number of line items. line:\n{}".format(len(line),line))
+        x = float(x_str)
+        y = float(y_str)
+        z = float(z_str)
+        fg = float(fg_str)
+        bg = float(bg_str)
+
+        snake_points.append({"pos": [x,y,z], "fg": fg, "bg": bg})
 
     snake_arr = []
 
