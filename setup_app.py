@@ -87,7 +87,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
                 "Make images of snakes",
                 "Make videos from snake images",
                 "Make Orientation Fields",
-                "Make CINDy Matrices From JSON Snakes",
+                # "Make CINDy Matrices From JSON Snakes",
             ],
             scroll_exit=True,
         )
