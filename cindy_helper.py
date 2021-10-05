@@ -14,8 +14,6 @@ from snakeutils.logger import RecordLogger, PrintLogger
 from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
 from scale_json_snakes_to_units import scale_json_snakes_to_units
-from make_snake_images import make_snake_images
-from make_videos import make_videos
 from make_orientation_fields import make_orientation_fields
 from cindy_matrices_from_snakes import cindy_matrices_from_snakes
 from do_bead_piv import do_bead_piv
@@ -139,28 +137,6 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_scale_json_snakes_to_units["x_y_image_scale_factor"],
             parsed_scale_json_snakes_to_units["z_stack_spacing_um"],
             parsed_scale_json_snakes_to_units["unit_abbreviation"],
-            logger=logger,
-        )
-    elif action_name == "make_snake_images":
-        parsed_make_snake_images_settings = MakeSnakeImagesSetupForm.parseSettings(setting_strings, make_dirs)
-
-        make_snake_images(
-            parsed_make_snake_images_settings["source_json_dir"],
-            parsed_make_snake_images_settings["target_jpeg_dir"],
-            parsed_make_snake_images_settings["width"],
-            parsed_make_snake_images_settings["height"],
-            parsed_make_snake_images_settings["source_jsons_depth"],
-            parsed_make_snake_images_settings["use_colors"],
-            parsed_make_snake_images_settings["background_images_dir"],
-            logger=logger,
-        )
-    elif action_name == "make_videos":
-        parsed_make_snake_videos_settings = MakeSnakeVideosSetupForm.parseSettings(setting_strings, make_dirs)
-
-        make_videos(
-            parsed_make_snake_videos_settings["source_jpeg_dir"],
-            parsed_make_snake_videos_settings["target_mp4_dir"],
-            parsed_make_snake_videos_settings["source_images_depth"],
             logger=logger,
         )
     elif action_name == "make_orientation_fields":

@@ -76,8 +76,8 @@ class SoaxStepsSelectForm(npyscreen.Form):
             name="Pick SOAX Steps (spacebar to toggle)",
             values = [
                 "Auto Contrast Raw TIFFs",
-                "Rescale TIFFs in Z",
-                "Rescale TIFFs in X and Y",
+                "Rescale TIFFs in X,Y,Z",
+                # "Rescale TIFFs in X and Y",
                 "Section TIFFs before running SOAX",
                 "Create Parameter Files",
                 "Run SOAX",
@@ -91,20 +91,18 @@ class SoaxStepsSelectForm(npyscreen.Form):
 
     def afterEditing(self):
         do_auto_contrast                   = 0  in self.select_steps.value
-        do_z_rescale                       = 1  in self.select_steps.value
-        do_xy_rescale                      = 2  in self.select_steps.value
-        do_section                         = 3  in self.select_steps.value
-        do_create_soax_params              = 4  in self.select_steps.value
-        do_run_soax                        = 5  in self.select_steps.value
-        do_snakes_to_json                  = 6  in self.select_steps.value
-        do_join_sectioned_snakes           = 7  in self.select_steps.value
-        do_scale_json_snakes_to_units      = 8  in self.select_steps.value
-        do_make_orientation_fields         = 9  in self.select_steps.value
+        do_rescale                         = 1  in self.select_steps.value
+        do_section                         = 2  in self.select_steps.value
+        do_create_soax_params              = 3  in self.select_steps.value
+        do_run_soax                        = 4  in self.select_steps.value
+        do_snakes_to_json                  = 5  in self.select_steps.value
+        do_join_sectioned_snakes           = 6  in self.select_steps.value
+        do_scale_json_snakes_to_units      = 7  in self.select_steps.value
+        do_make_orientation_fields         = 8  in self.select_steps.value
 
         self.parentApp.soaxStepsSelectDone(
             do_auto_contrast,
-            do_z_rescale,
-            do_xy_rescale,
+            do_rescale,
             do_section,
             do_create_soax_params,
             do_run_soax,
@@ -263,10 +261,10 @@ class SetupForm(npyscreen.Form):
         else:
             raise Exception("Unknown type '{}' for field '{}'".format(field_type, field_id))
 
-    def configure(self, field_defaults):
+    def configure(self, field_defaults, make_dirs_if_not_present):
         self.npy_fields = {}
+        self.make_dirs_if_not_present = make_dirs_if_not_present
 
-        has_dir_field = False
         for field_info in self.field_infos:
             if "help" in field_info:
                 if type(field_info["help"]) == list:
@@ -283,20 +281,8 @@ class SetupForm(npyscreen.Form):
             field_str = field_defaults[field_id]
             field_type = field_info["type"]
 
-            if field_type in ["dir", "optional_dir"]:
-                has_dir_field = True
-
             self.add_field(field_id, field_name, field_str, field_type)
 
-        if has_dir_field:
-            self.create_if_not_present = self.add(
-                npyscreen.TitleSelectOne,
-                name="Create dirs if not present",
-                values=["yes", "no"],
-                value=[1],
-                scroll_exit=True)
-        else:
-            self.create_if_not_present = None
 
     def getFieldString(self, field_type, field_id, field_details):
         if field_type in [
@@ -331,14 +317,8 @@ class SetupForm(npyscreen.Form):
 
 
     def afterEditing(self):
-        if self.create_if_not_present is not None:
-            # option zero is "yes"
-            make_dirs_if_not_present = 0 in self.create_if_not_present.value
-        else:
-            make_dirs_if_not_present = False
-
         try:
-            self.parseSettings(self.getFieldStrings(), make_dirs_if_not_present)
+            self.parseSettings(self.getFieldStrings(), self.make_dirs_if_not_present)
         except ParseException as e:
             npyscreen.notify_confirm(str(e),editw=1)
             return
@@ -350,7 +330,7 @@ class SetupForm(npyscreen.Form):
 
         setup_done_func(self.getFieldStrings())
 
-class ZRescaleSetupForm(SetupForm):
+class RescaleSetupForm(SetupForm):
     field_infos = [
         {
             "id": "batch_resample_path",
@@ -366,34 +346,17 @@ class ZRescaleSetupForm(SetupForm):
             "type": "dir",
         },
         {
-            "id": "rescale_factor",
+            "id": "xy_factor",
             "type": "pos_float",
-        }
-    ]
-
-    app_done_func_name = "ZRescaleSetupDone"
-
-class XYRescaleSetupForm(SetupForm):
-    field_infos = [
-        {
-            "id": "source_tiff_dir",
-            "type": "dir",
-            "help": [
-                "Rescale x and y width/height of images in source directory by factor (depth dimension unaffected for 3D images)",
-                "Ex. rescale factor 0.5 would make images half as tall and wide",
-            ],
         },
         {
-            "id": "target_tiff_dir",
-            "type": "dir",
-        },
-        {
-            "id": "rescale_factor",
-            "type": "pos_float"
+            "id": "z_factor",
+            "type": "pos_float",
         },
     ]
 
-    app_done_func_name = "XYRescaleSetupDone"
+    app_done_func_name = "RescaleSetupDone"
+
 
 class AutoContrastSetupForm(SetupForm):
     field_infos = [
@@ -718,8 +681,9 @@ class TubePIVSetupForm(SetupForm):
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
-        # Default settings to show in forms
-        # Not all of these will necessarily be used if self.do_xy_rescale, self.do_auto_contrast, self.do_section, etc are False
+        # Default settings to show in forms. Updated by user and by setup app,
+        # like automatically setting source_tiff_dir of rescale_settings to target_tiff_ddir of auto contrast
+        # if user configures auto contrast
         self.auto_contrast_settings = {
             "max_cutoff_percent": "95.5",
             "min_cutoff_percent": "0.1",
@@ -727,16 +691,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_tiff_dir": "",
             "target_tiff_dir": "./AutoContrastedTIFFs",
         }
-        self.z_rescale_settings = {
+        self.rescale_settings = {
             "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_resample",
             "source_tiff_dir": "",
-            "target_tiff_dir": "./ZRescaledTIFFs",
-            "rescale_factor": "1.0",
-        }
-        self.xy_rescale_settings = {
-            "source_tiff_dir": "",
-            "target_tiff_dir": "./XYRescaledTIFFs",
-            "rescale_factor": "1.0",
+            "target_tiff_dir": "RescaledTIFFs",
+            "xy_factor": "1.0",
+            "z_factor": "1.0",
         }
         self.sectioning_settings = {
             "source_tiff_dir": "",
@@ -838,15 +798,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "auto_contrast_tiffs",
                 "settings": self.auto_contrast_settings,
             })
-        if self.do_z_rescale:
+        if self.do_rescale:
             action_configs.append({
-                "action": "z_rescale_tiffs",
-                "settings": self.z_rescale_settings,
-            })
-        if self.do_xy_rescale:
-            action_configs.append({
-                "action": "xy_rescale_tiffs",
-                "settings": self.xy_rescale_settings,
+                "action": "rescale_tiffs",
+                "settings": self.rescale_settings,
             })
         if self.do_section:
             action_configs.append({
@@ -933,21 +888,21 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
         return np.iinfo(dtype).max
 
-    def auto_set_width_height_images_settings(self, tiff_dir, img_depth, rescale_factor=None):
-        first_img_fp = self.first_img_fp(tiff_dir, img_depth)
-        if first_img_fp is None:
-            npyscreen.notify_confirm(
-                "Cannot determine width and height of images, you'll have to set those manually if needed later. No images found in {} at depth {}".format(tiff_dir, img_depth),
-                editw=1,
-            )
-            return
-        shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
-        width, height = shape
-        if rescale_factor is not None:
-            width = int(width * rescale_factor)
-            height = int(height * rescale_factor)
-        self.make_snake_images_settings["width"] = str(width)
-        self.make_snake_images_settings["height"] = str(height)
+    # def auto_set_width_height_images_settings(self, tiff_dir, img_depth, rescale_factor=None):
+    #     first_img_fp = self.first_img_fp(tiff_dir, img_depth)
+    #     if first_img_fp is None:
+    #         npyscreen.notify_confirm(
+    #             "Cannot determine width and height of images, you'll have to set those manually if needed later. No images found in {} at depth {}".format(tiff_dir, img_depth),
+    #             editw=1,
+    #         )
+    #         return
+    #     shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
+    #     width, height = shape
+    #     if rescale_factor is not None:
+    #         width = int(width * rescale_factor)
+    #         height = int(height * rescale_factor)
+    #     self.make_snake_images_settings["width"] = str(width)
+    #     self.make_snake_images_settings["height"] = str(height)
 
     def goToNextMenu(self):
         self.form_index += 1
@@ -965,8 +920,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def soaxStepsSelectDone(self,
         do_auto_contrast,
-        do_z_rescale,
-        do_xy_rescale,
+        do_rescale,
         do_section,
         do_create_soax_params,
         do_run_soax,
@@ -976,8 +930,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_make_orientation_fields,
         ):
         self.do_auto_contrast = do_auto_contrast
-        self.do_z_rescale = do_z_rescale
-        self.do_xy_rescale = do_xy_rescale
+        self.do_rescale = do_rescale
         self.do_section = do_section
         self.do_create_soax_params = do_create_soax_params
         self.do_run_soax = do_run_soax
@@ -988,10 +941,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         if self.do_auto_contrast:
             self.menu_functions.append(self.startAutoContrastSetup)
-        if self.do_z_rescale:
-            self.menu_functions.append(self.startZRescaleSetup)
-        if self.do_xy_rescale:
-            self.menu_functions.append(self.startXYRescaleSetup)
+        if self.do_rescale:
+            self.menu_functions.append(self.startRescaleSetup)
         if self.do_section:
             self.menu_functions.append(self.startSectioningSetup)
         if self.do_create_soax_params:
@@ -1042,13 +993,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startAutoContrastSetup(self):
         self.addForm('AUTO_CONTRAST_SETUP', AutoContrastSetupForm, name='Auto Contrasting Setup')
-        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_settings)
+        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_settings, self.make_dirs)
         self.setNextForm('AUTO_CONTRAST_SETUP')
 
     def autoContrastSetupDone(self, auto_contrast_settings):
         self.auto_contrast_settings = auto_contrast_settings
-        self.xy_rescale_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
-        self.z_rescale_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
+        self.rescale_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
         self.sectioning_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
         self.soax_run_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
         # If input TIFFs have been rescaled to range from 0 to 65535,
@@ -1068,79 +1018,36 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         else:
             self.soax_params_page2_settings["intensity_scaling"] = format(1/tif_max_level, '.9f')
 
-        if self.make_snake_images_settings["width"] == "":
-            self.auto_set_width_height_images_settings(
-                auto_contrast_settings["source_tiff_dir"],
-                img_search_depth,
-            )
-        if self.make_snake_images_settings["background_images_dir"] == "":
-            self.make_snake_images_settings["background_images_dir"] = auto_contrast_settings["target_tiff_dir"]
-
         self.goToNextMenu()
 
-    def startZRescaleSetup(self):
-        self.addForm('Z_RESCALE_SETUP', ZRescaleSetupForm, name='Z Rescale Setup')
-        self.getForm('Z_RESCALE_SETUP').configure(self.z_rescale_settings)
-        self.setNextForm('Z_RESCALE_SETUP')
+    def startRescaleSetup(self):
+        self.addForm('RESCALE_SETUP', RescaleSetupForm, name='Rescale Setup')
+        self.getForm('RESCALE_SETUP').configure(self.rescale_settings, self.make_dirs)
+        self.setNextForm('RESCALE_SETUP')
 
-    def ZRescaleSetupDone(self, z_rescale_settings):
-        self.z_rescale_settings = z_rescale_settings
-        self.xy_rescale_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
-        # self.auto_contrast_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
-        self.sectioning_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
-        self.soax_run_settings["source_tiff_dir"] = z_rescale_settings["target_tiff_dir"]
+    def RescaleSetupDone(self, rescale_settings):
+        self.rescale_settings = rescale_settings
 
-        self.goToNextMenu()
-
-    def startXYRescaleSetup(self):
-        self.addForm('XY_RESCALE_SETUP', XYRescaleSetupForm, name='Rescale Setup')
-        self.getForm('XY_RESCALE_SETUP').configure(self.xy_rescale_settings)
-        self.setNextForm('XY_RESCALE_SETUP')
-
-    def XYRescaleSetupDone(self, xy_rescale_settings):
-        self.xy_rescale_settings = xy_rescale_settings
-
-        # self.auto_contrast_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
-        self.sectioning_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
-        self.soax_run_settings["source_tiff_dir"] = xy_rescale_settings["target_tiff_dir"]
-        if self.make_snake_images_settings["width"] == "":
-            if self.do_z_rescale:
-                img_source_dir = self.z_rescale_settings["source_tiff_dir"]
-            else:
-                img_source_dir = xy_rescale_settings["source_tiff_dir"]
-
-            self.auto_set_width_height_images_settings(
-                img_source_dir,
-                0,
-                rescale_factor=float(xy_rescale_settings["rescale_factor"]),
-            )
-
-        if self.make_snake_images_settings["background_images_dir"] == "":
-            self.make_snake_images_settings["background_images_dir"] = xy_rescale_settings["target_tiff_dir"]
+        self.sectioning_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
+        self.soax_run_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
 
         self.goToNextMenu()
 
     def startSectioningSetup(self):
         self.addForm('SECTIONING_SETUP', SectioningSetupForm, name='Sectioning Setup')
-        self.getForm('SECTIONING_SETUP').configure(self.sectioning_settings)
+        self.getForm('SECTIONING_SETUP').configure(self.sectioning_settings, self.make_dirs)
         self.setNextForm('SECTIONING_SETUP')
 
     def sectioningSetupDone(self, sectioning_settings):
         self.sectioning_settings = sectioning_settings
         self.soax_run_settings["source_tiff_dir"] = sectioning_settings["target_sectioned_tiff_dir"]
         self.soax_run_settings["use_subdirs"] = "yes"
-        # self.snakes_to_json_settings["source_snakes_depth"] = "2"
-        # self.join_sectioned_snakes_settings["source_jsons_depth"] = "2"
-        if self.make_snake_images_settings["width"] == "":
-            self.auto_set_width_height_images_settings(
-                self.sectioning_settings["source_tiff_dir"],
-                0,
-            )
+
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage1(self):
         self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/2")
-        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_settings)
+        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_settings, self.make_dirs)
         self.setNextForm('PARAM_SETUP_PAGE_1')
 
     def soaxParamsSetupPage1Done(self, soax_params_page1_settings):
@@ -1150,7 +1057,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startSoaxParamsSetupPage2(self):
         self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/2")
-        self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_settings)
+        self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_settings, self.make_dirs)
         self.setNextForm('PARAM_SETUP_PAGE_2')
 
     def soaxParamsSetupPage2Done(self, soax_params_page2_settings):
@@ -1159,7 +1066,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startSoaxRunSetup(self):
         self.addForm('SOAX_RUN_SETUP', SoaxRunSetupForm, name="SOAX Run Setup")
-        self.getForm('SOAX_RUN_SETUP').configure(self.soax_run_settings)
+        self.getForm('SOAX_RUN_SETUP').configure(self.soax_run_settings, self.make_dirs)
         self.setNextForm('SOAX_RUN_SETUP')
 
     def soaxRunSetupDone(self, soax_run_settings):
@@ -1172,21 +1079,21 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.snakes_to_json_settings["source_snakes_depth"] = "1"
 
         # Only want to do this if we know soax is getting the original shaped images
-        if self.make_snake_images_settings["width"] == "" and not soax_run_settings["use_subdirs"]:
-            # Set width and height for make images step
-            img_depth = 0
-            self.auto_set_width_height_images_settings(
-                soax_run_settings["source_tiff_dir"],
-                img_depth)
+        # if self.make_snake_images_settings["width"] == "" and not soax_run_settings["use_subdirs"]:
+        #     # Set width and height for make images step
+        #     img_depth = 0
+        #     self.auto_set_width_height_images_settings(
+        #         soax_run_settings["source_tiff_dir"],
+        #         img_depth)
 
-        if self.make_snake_images_settings["background_images_dir"] == "":
-            self.make_snake_images_settings["background_images_dir"] = soax_run_settings["source_tiff_dir"]
+        # if self.make_snake_images_settings["background_images_dir"] == "":
+        #     self.make_snake_images_settings["background_images_dir"] = soax_run_settings["source_tiff_dir"]
 
         self.goToNextMenu()
 
     def startSnakesToJsonSetup(self):
         self.addForm('SNAKES_TO_JSON_SETUP', SnakesToJsonSetupForm, name="Snakes to JSON Setup")
-        self.getForm('SNAKES_TO_JSON_SETUP').configure(self.snakes_to_json_settings)
+        self.getForm('SNAKES_TO_JSON_SETUP').configure(self.snakes_to_json_settings, self.make_dirs)
         self.setNextForm('SNAKES_TO_JSON_SETUP')
 
     def snakesToJsonSetupDone(self, snakes_to_json_settings):
@@ -1194,14 +1101,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         target_json_dir = snakes_to_json_settings["target_json_dir"]
         self.join_sectioned_snakes_settings["source_json_dir"] = target_json_dir
-        self.make_snake_images_settings["source_json_dir"] = target_json_dir
+        # self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
         # self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
         self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
 
         output_jsons_depth = snakes_to_json_settings["source_snakes_depth"]
         self.join_sectioned_snakes_settings["source_jsons_depth"] = output_jsons_depth
-        self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
+        # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
         # self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
         self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
@@ -1210,7 +1117,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startJoinSectionedSnakesSetup(self):
         self.addForm('JOIN_SECTIONED_SNAKES_SETUP', JoinSectionedSnakesSetupForm, name="Join Sectioned Snakes Setup")
-        self.getForm('JOIN_SECTIONED_SNAKES_SETUP').configure(self.join_sectioned_snakes_settings)
+        self.getForm('JOIN_SECTIONED_SNAKES_SETUP').configure(self.join_sectioned_snakes_settings, self.make_dirs)
         self.setNextForm('JOIN_SECTIONED_SNAKES_SETUP')
 
     def joinSectionedSnakesSetupDone(self, join_sectioned_snakes_settings):
@@ -1218,14 +1125,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         target_json_dir = join_sectioned_snakes_settings["target_json_dir"]
         self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
-        self.make_snake_images_settings["source_json_dir"] = target_json_dir
+        # self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
         # self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
 
         # Output jsons are one directory less deep since they've been joined
         output_jsons_depth = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
         self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
-        self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
+        # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
         # self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
 
@@ -1233,26 +1140,26 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startScaleJsonSnakesToUnitsSetup(self):
         self.addForm('SCALE_JSON_SNAKES_TO_UNITS', ScaleJsonSnakesToUnitsSetupForm, name="Scale JSON Snakes to Units")
-        self.getForm('SCALE_JSON_SNAKES_TO_UNITS').configure(self.scale_json_snakes_to_units_settings)
+        self.getForm('SCALE_JSON_SNAKES_TO_UNITS').configure(self.scale_json_snakes_to_units_settings, self.make_dirs)
         self.setNextForm('SCALE_JSON_SNAKES_TO_UNITS')
 
     def scaleJsonSnakesToUnitsSetupDone(self, scale_json_snakes_to_units_settings):
         self.scale_json_snakes_to_units_settings = scale_json_snakes_to_units_settings
 
         target_json_dir = scale_json_snakes_to_units_settings["target_json_dir"]
-        self.make_snake_images_settings["source_json_dir"] = target_json_dir
+        # self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
         # self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
 
         output_jsons_depth = self.scale_json_snakes_to_units_settings["source_jsons_depth"]
-        self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
+        # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
         # self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
 
 
     def startMakeOrientationFieldsSetup(self):
         self.addForm('MAKE_ORIENTATION_FIELDS', MakeOrientationFieldsSetupForm, name="Make Orientation Fields Setup")
-        self.getForm('MAKE_ORIENTATION_FIELDS').configure(self.make_orientation_fields_settings)
+        self.getForm('MAKE_ORIENTATION_FIELDS').configure(self.make_orientation_fields_settings, self.make_dirs)
         self.setNextForm('MAKE_ORIENTATION_FIELDS')
 
     def makeOrientationFieldsSetupDone(self, make_orientation_fields_settings):
@@ -1261,7 +1168,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startBeadPivAutoContrastSetup(self):
         self.addForm('BEAD_PIV_AUTO_CONTRAST_SETUP', BeadPivAutoContrastSetupForm, name="Bead PIV Auto Contrast")
-        self.getForm('BEAD_PIV_AUTO_CONTRAST_SETUP').configure(self.bead_piv_auto_contrast_settings)
+        self.getForm('BEAD_PIV_AUTO_CONTRAST_SETUP').configure(self.bead_piv_auto_contrast_settings, self.make_dirs)
         self.setNextForm('BEAD_PIV_AUTO_CONTRAST_SETUP')
 
     def beadPivAutoContrastSetupDone(self, bead_piv_auto_contrast_settings):
@@ -1273,7 +1180,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startTubePivAutoContrastSetup(self):
         self.addForm('TUBE_PIV_AUTO_CONTRAST_SETUP', TubePivAutoContrastSetupForm, name="Tube PIV Auto Contrast")
-        self.getForm('TUBE_PIV_AUTO_CONTRAST_SETUP').configure(self.tube_piv_auto_contrast_settings)
+        self.getForm('TUBE_PIV_AUTO_CONTRAST_SETUP').configure(self.tube_piv_auto_contrast_settings, self.make_dirs)
         self.setNextForm('TUBE_PIV_AUTO_CONTRAST_SETUP')
 
     def tubePivAutoContrastSetupDone(self, tube_piv_auto_contrast_settings):
@@ -1285,7 +1192,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startBeadPIVSetup(self):
         self.addForm('BEAD_PIV_SETUP', BeadPIVSetupForm, name="Bead PIV Setup")
-        self.getForm('BEAD_PIV_SETUP').configure(self.bead_PIV_settings)
+        self.getForm('BEAD_PIV_SETUP').configure(self.bead_PIV_settings, self.make_dirs)
         self.setNextForm('BEAD_PIV_SETUP')
 
     def beadPIVSetupDone(self, bead_PIV_settings):
@@ -1294,7 +1201,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startTubePIVSetup(self):
         self.addForm('TUBE_PIV_SETUP', TubePIVSetupForm, name="Tube PIV Setup")
-        self.getForm('TUBE_PIV_SETUP').configure(self.tube_PIV_settings)
+        self.getForm('TUBE_PIV_SETUP').configure(self.tube_PIV_settings, self.make_dirs)
         self.setNextForm('TUBE_PIV_SETUP')
 
     def tubePIVSetupDone(self, tube_PIV_settings):
