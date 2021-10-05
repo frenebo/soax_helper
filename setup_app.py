@@ -84,10 +84,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
                 "Convert Snake files to JSON",
                 "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
                 "Scale JSON snakes to real length units",
-                "Make images of snakes",
-                "Make videos from snake images",
                 "Make Orientation Fields",
-                # "Make CINDy Matrices From JSON Snakes",
             ],
             scroll_exit=True,
         )
@@ -102,10 +99,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
         do_snakes_to_json                  = 6  in self.select_steps.value
         do_join_sectioned_snakes           = 7  in self.select_steps.value
         do_scale_json_snakes_to_units      = 8  in self.select_steps.value
-        do_make_snake_images               = 9  in self.select_steps.value
-        do_make_snake_videos               = 10 in self.select_steps.value
-        do_make_orientation_fields         = 11 in self.select_steps.value
-        # do_make_cindy_matrices_from_snakes = 12 in self.select_steps.value
+        do_make_orientation_fields         = 9  in self.select_steps.value
 
         self.parentApp.soaxStepsSelectDone(
             do_auto_contrast,
@@ -117,10 +111,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
             do_snakes_to_json,
             do_join_sectioned_snakes,
             do_scale_json_snakes_to_units,
-            do_make_snake_images,
-            do_make_snake_videos,
             do_make_orientation_fields,
-            # do_make_cindy_matrices_from_snakes,
         )
 
 class PIVStepsSelectForm(npyscreen.Form):
@@ -643,61 +634,6 @@ class ScaleJsonSnakesToUnitsSetupForm(SetupForm):
 
     app_done_func_name = "scaleJsonSnakesToUnitsSetupDone"
 
-class MakeSnakeImagesSetupForm(SetupForm):
-    field_infos = [
-        {
-            "id": "source_json_dir",
-            "type": "dir",
-            "help": "Make images from json files in directories",
-        },
-        {
-            "id": "target_jpeg_dir",
-            "type": "dir",
-        },
-        {
-            "id": "background_images_dir",
-            "name": "(Optional) background_images_dir",
-            "type": "optional_dir",
-        },
-        {
-            "id": "source_jsons_depth",
-            "type": "non_neg_int",
-        },
-        {
-            "id": "height",
-            "type": "pos_int",
-        },
-        {
-            "id": "width",
-            "type": "pos_int",
-        },
-        {
-            "id": "use_colors",
-            "name": "Graph snakes with different colors",
-            "type": "yes_no",
-        },
-    ]
-    app_done_func_name = "makeSnakeImagesSetupDone"
-
-class MakeSnakeVideosSetupForm(SetupForm):
-    field_infos = [
-        {
-            "id": "source_jpeg_dir",
-            "type": "dir",
-            "help": "Make videos from images in directories"
-        },
-        {
-            "id": "target_mp4_dir",
-            "type": "dir",
-        },
-        {
-            "id": "source_images_depth",
-            "type": "non_neg_int"
-        }
-    ]
-
-    app_done_func_name = "makeSnakeVideosSetupDone"
-
 class MakeOrientationFieldsSetupForm(SetupForm):
     field_infos = [
         {
@@ -723,40 +659,6 @@ class MakeOrientationFieldsSetupForm(SetupForm):
     ]
 
     app_done_func_name = "makeOrientationFieldsSetupDone"
-
-# class MakeCindyMatricesFromSnakesSetupForm(SetupForm):
-#     field_infos = [
-#         {
-#             "id": "source_json_dir",
-#             "type": "dir",
-#         },
-#         {
-#             "id": "orientation_matrix_dir",
-#             "type": "dir",
-#         },
-#         {
-#             "id": "position_matrix_dir",
-#             "type": "dir",
-#         },
-#         {
-#             "id": "source_jsons_depth",
-#             "type": "non_neg_int",
-#         },
-#         {
-#             "id": "width",
-#             "type": "pos_float",
-#         },
-#         {
-#             "id": "height",
-#             "type": "pos_float",
-#         },
-#         {
-#             "id": "depth",
-#             "type": "optional_pos_float"
-#         }
-#     ]
-
-#     app_done_func_name = "makeCindyMatricesFromSnakesSetupDone"
 
 class BeadPivAutoContrastSetupForm(AutoContrastSetupForm):
     app_done_func_name = "beadPivAutoContrastSetupDone"
@@ -885,21 +787,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "z_stack_spacing_um": "",
             "unit_abbreviation": "",
         }
-        self.make_snake_images_settings = {
-            "source_json_dir": "",
-            "source_jsons_depth": "1",
-            "target_jpeg_dir": "./SnakeImages",
-            "width": "",
-            "height": "",
-            "source_jsons_depth": "",
-            "use_colors": "no",
-            "background_images_dir": "",
-        }
-        self.make_snake_videos_settings = {
-            "source_jpeg_dir": "",
-            "target_mp4_dir": "./SnakeVideos",
-            "source_images_depth": "",
-        }
         self.make_orientation_fields_settings = {
             "source_json_dir": "",
             "source_jsons_depth": "",
@@ -907,12 +794,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "image_width": "",
             "image_height": "",
         }
-        # self.make_cindy_matrices_from_snakes_settings = {
-        #     "source_json_dir": "",
-        #     "source_jsons_depth": "",
-        #     "orientation_matrix_dir": "./CindyData/Orientations",
-        #     "position_matrix_dir": "./CindyData/Positions",
-        # }
 
         #PIV settings
         self.bead_piv_auto_contrast_settings = {
@@ -1000,16 +881,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             action_configs.append({
                 "action": "scale_json_snakes_to_units",
                 "settings": self.scale_json_snakes_to_units_settings,
-            })
-        if self.do_make_snake_images:
-            action_configs.append({
-                "action": "make_snake_images",
-                "settings": self.make_snake_images_settings,
-            })
-        if self.do_make_snake_videos:
-            action_configs.append({
-                "action": "make_videos",
-                "settings": self.make_snake_videos_settings,
             })
         if self.do_make_orientation_fields:
             action_configs.append({
@@ -1102,10 +973,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_snakes_to_json,
         do_join_sectioned_snakes,
         do_scale_json_snakes_to_units,
-        do_make_snake_images,
-        do_make_snake_videos,
         do_make_orientation_fields,
-        # do_make_cindy_matrices_from_snakes,
         ):
         self.do_auto_contrast = do_auto_contrast
         self.do_z_rescale = do_z_rescale
@@ -1116,10 +984,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_snakes_to_json = do_snakes_to_json
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
         self.do_scale_json_snakes_to_units = do_scale_json_snakes_to_units
-        self.do_make_snake_images = do_make_snake_images
-        self.do_make_snake_videos = do_make_snake_videos
         self.do_make_orientation_fields = do_make_orientation_fields
-        # self.do_make_cindy_matrices_from_snakes = do_make_cindy_matrices_from_snakes
 
         if self.do_auto_contrast:
             self.menu_functions.append(self.startAutoContrastSetup)
@@ -1140,10 +1005,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startJoinSectionedSnakesSetup)
         if self.do_scale_json_snakes_to_units:
             self.menu_functions.append(self.startScaleJsonSnakesToUnitsSetup)
-        if self.do_make_snake_images:
-            self.menu_functions.append(self.startMakeSnakeImagesSetup)
-        if self.do_make_snake_videos:
-            self.menu_functions.append(self.startVideoSetup)
         if self.do_make_orientation_fields:
             self.menu_functions.append(self.startMakeOrientationFieldsSetup)
         # if self.do_make_cindy_matrices_from_snakes:
@@ -1388,15 +1249,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
         # self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
 
-    def startMakeSnakeImagesSetup(self):
-        self.addForm('MAKE_SNAKE_IMAGES_SETUP', MakeSnakeImagesSetupForm, name="Make Snake Images Setup")
-        self.getForm('MAKE_SNAKE_IMAGES_SETUP').configure(self.make_snake_images_settings)
-        self.setNextForm('MAKE_SNAKE_IMAGES_SETUP')
-
-    def makeSnakeImagesSetupDone(self, make_snake_images_settings):
-        self.make_snake_images_settings = make_snake_images_settings
-        self.make_snake_videos_settings["source_jpeg_dir"] = make_snake_images_settings["target_jpeg_dir"]
-        self.goToNextMenu()
 
     def startMakeOrientationFieldsSetup(self):
         self.addForm('MAKE_ORIENTATION_FIELDS', MakeOrientationFieldsSetupForm, name="Make Orientation Fields Setup")
@@ -1406,24 +1258,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def makeOrientationFieldsSetupDone(self, make_orientation_fields_settings):
         self.make_orientation_fields_settings = make_orientation_fields_settings
         self.goToNextMenu()
-
-    def startVideoSetup(self):
-        self.addForm('MAKE_SNAKE_VIDEOS', MakeSnakeVideosSetupForm, name="Make Snake Videos Setup")
-        self.getForm('MAKE_SNAKE_VIDEOS').configure(self.make_snake_videos_settings)
-        self.setNextForm('MAKE_SNAKE_VIDEOS')
-
-    def makeSnakeVideosSetupDone(self, make_snake_videos_settings):
-        self.make_snake_videos_settings = make_snake_videos_settings
-        self.goToNextMenu()
-
-    # def startMakeCindyMatricesFromSnakesSetup(self):
-    #     self.addForm('MAKE_CINDY_MATRICES_FROM_SNAKES', MakeCindyMatricesFromSnakesSetupForm, name="Make CINDy Matrices From Snakes Setup")
-    #     self.getForm('MAKE_CINDY_MATRICES_FROM_SNAKES').configure(self.make_cindy_matrices_from_snakes_settings)
-    #     self.setNextForm('MAKE_CINDY_MATRICES_FROM_SNAKES')
-
-    # def makeCindyMatricesFromSnakesSetupDone(self, make_cindy_matrices_from_snakes_settings):
-    #     self.make_cindy_matrices_from_snakes_settings = make_cindy_matrices_from_snakes_settings
-    #     self.goToNextMenu()
 
     def startBeadPivAutoContrastSetup(self):
         self.addForm('BEAD_PIV_AUTO_CONTRAST_SETUP', BeadPivAutoContrastSetupForm, name="Bead PIV Auto Contrast")
