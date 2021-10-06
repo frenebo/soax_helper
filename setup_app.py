@@ -680,6 +680,9 @@ class TubePIVSetupForm(SetupForm):
     app_done_func_name = "tubePIVSetupDone"
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
+    def __init__(self, make_dirs=False, **kwargs):
+        super().__init__(**kwargs)
+
     def onStart(self):
         # Default settings to show in forms. Updated by user and by setup app,
         # like automatically setting source_tiff_dir of rescale_settings to target_tiff_ddir of auto contrast

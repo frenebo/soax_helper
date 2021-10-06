@@ -202,7 +202,7 @@ if __name__ == "__main__":
                 raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(args.save_settings))
             if os.path.exists(args.save_settings):
                 raise Exception("Cannot save settings as '{}', already exists".format(args.save_settings))
-        app = SoaxSetupApp()
+        app = SoaxSetupApp(make_dirs=args.make_dirs)
         app.run()
 
         action_configs = app.getActionConfigs()
