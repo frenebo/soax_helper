@@ -1,1 +1,1 @@
-# Cindy Helper App
+# Sindy Helper App

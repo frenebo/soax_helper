@@ -5,8 +5,9 @@ import json
 import time
 
 from create_soax_param_files import error_string_or_parse_arg_or_range, create_soax_param_files
-from xy_rescale_tiffs import xy_rescale_tiffs
-from z_rescale_tiffs import z_rescale_tiffs
+# from xy_rescale_tiffs import xy_rescale_tiffs
+# from z_rescale_tiffs import z_rescale_tiffs
+from rescale_tiffs import rescale_tiffs
 from auto_contrast_tiffs import auto_contrast_tiffs
 from section_tiffs import section_tiffs
 from run_soax import run_soax
@@ -15,13 +16,12 @@ from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
 from scale_json_snakes_to_units import scale_json_snakes_to_units
 from make_orientation_fields import make_orientation_fields
-from cindy_matrices_from_snakes import cindy_matrices_from_snakes
+from sindy_matrices_from_snakes import sindy_matrices_from_snakes
 from do_bead_piv import do_bead_piv
 
 from setup_app import (
     SoaxSetupApp,
-    ZRescaleSetupForm,
-    XYRescaleSetupForm,
+    RescaleSetupForm,
     AutoContrastSetupForm,
     SectioningSetupForm,
     SoaxParamsSetupPage1Form,
@@ -46,6 +46,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_z_rescale_settings["target_tiff_dir"],
             parsed_z_rescale_settings["xy_factor"],
             parsed_z_rescale_settings["z_factor"],
+            logger=logger,
         )
     elif action_name == "auto_contrast_tiffs":
         parsed_auto_contrast_settings = AutoContrastSetupForm.parseSettings(setting_strings, make_dirs)
@@ -142,14 +143,14 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_make_orientation_fields_settings["image_height"],
             logger=logger,
         )
-    elif action_name == "make_cindy_matrices_from_snakes":
-        parsed_make_cindy_matrices_from_snakes_settings = MakeCindyMatricesFromSnakesSetupForm.parseSettings(setting_strings, make_dirs)
+    elif action_name == "make_sindy_matrices_from_snakes":
+        parsed_make_sindy_matrices_from_snakes_settings = MakeSindyMatricesFromSnakesSetupForm.parseSettings(setting_strings, make_dirs)
 
-        make_cindy_matrices_from_snakes(
-            parsed_make_cindy_matrices_from_snakes_settings["source_json_dir"],
-            parsed_make_cindy_matrices_from_snakes_settings["source_jsons_depth"],
-            parsed_make_cindy_matrices_from_snakes_settings["orientation_matrix_dir"],
-            parsed_make_cindy_matrices_from_snakes_settings["position_matrix_dir"],
+        make_sindy_matrices_from_snakes(
+            parsed_make_sindy_matrices_from_snakes_settings["source_json_dir"],
+            parsed_make_sindy_matrices_from_snakes_settings["source_jsons_depth"],
+            parsed_make_sindy_matrices_from_snakes_settings["orientation_matrix_dir"],
+            parsed_make_sindy_matrices_from_snakes_settings["position_matrix_dir"],
             logger=logger,
         )
     elif action_name == "do_bead_PIV":

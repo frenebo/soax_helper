@@ -132,7 +132,7 @@ def paint_vector_on_3D_arr_with_dyadic_vec_channel(
 
 def orientation_np_array_from_snakes(snakes, width, height, depth, snakes_are_3d, logger):
     if not snakes_are_3d:
-        logger.FAIL("2D unsupported so far for CINDy matrices")
+        logger.FAIL("2D unsupported so far for SINDy matrices")
 
     if snakes_are_3d:
         orientation_vec_arr = np.zeros((width, height, depth, 3, 3), dtype=np.float64)
@@ -171,9 +171,9 @@ def orientation_np_array_from_snakes(snakes, width, height, depth, snakes_are_3d
 
 def position_np_array_from_snakes(snakes, width, height, depth, snakes_are_3d, logger):
     if not snakes_are_3d:
-        logger.FAIL("2D unsupported so far for CINDy matrices")
+        logger.FAIL("2D unsupported so far for SINDy matrices")
 
-def cindy_matrices_from_snakes(
+def sindy_matrices_from_snakes(
     source_json_dir,
     source_jsons_depth,
     width,

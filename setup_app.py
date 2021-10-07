@@ -845,10 +845,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "make_orientation_fields",
                 "settings": self.make_orientation_fields_settings,
             })
-        # if self.do_make_cindy_matrices_from_snakes:
+        # if self.do_make_sindy_matrices_from_snakes:
         #     action_configs.append({
-        #         "action": "make_cindy_matrices_from_snakes",
-        #         "settings": self.make_cindy_matrices_from_snakes_settings,
+        #         "action": "make_sindy_matrices_from_snakes",
+        #         "settings": self.make_sindy_matrices_from_snakes_settings,
         #     })
         if self.do_bead_piv_auto_contrast:
             action_configs.append({
@@ -961,8 +961,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startScaleJsonSnakesToUnitsSetup)
         if self.do_make_orientation_fields:
             self.menu_functions.append(self.startMakeOrientationFieldsSetup)
-        # if self.do_make_cindy_matrices_from_snakes:
-        #     self.menu_functions.append(self.startMakeCindyMatricesFromSnakesSetup)
+        # if self.do_make_sindy_matrices_from_snakes:
+        #     self.menu_functions.append(self.startMakeSindyMatricesFromSnakesSetup)
 
         # Move onto next index
         self.goToNextMenu()
@@ -1106,14 +1106,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.join_sectioned_snakes_settings["source_json_dir"] = target_json_dir
         # self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
-        # self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
+        # self.make_sindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
         self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
 
         output_jsons_depth = snakes_to_json_settings["source_snakes_depth"]
         self.join_sectioned_snakes_settings["source_jsons_depth"] = output_jsons_depth
         # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
-        # self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
+        # self.make_sindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
         self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
 
         self.goToNextMenu()
@@ -1130,14 +1130,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
         # self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
-        # self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
+        # self.make_sindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
 
         # Output jsons are one directory less deep since they've been joined
         output_jsons_depth = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
         self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
         # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
-        # self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
+        # self.make_sindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
 
         self.goToNextMenu()
 
@@ -1152,12 +1152,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         target_json_dir = scale_json_snakes_to_units_settings["target_json_dir"]
         # self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
-        # self.make_cindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
+        # self.make_sindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
 
         output_jsons_depth = self.scale_json_snakes_to_units_settings["source_jsons_depth"]
         # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
-        # self.make_cindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
+        # self.make_sindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
 
 
     def startMakeOrientationFieldsSetup(self):
