@@ -21,3 +21,5 @@ def rescale_tiffs(
     z_factor,
     logger=PrintLogger,
     ):
+    raise Exception("Not Implemented")
+    # pass

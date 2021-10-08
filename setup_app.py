@@ -682,6 +682,7 @@ class TubePIVSetupForm(SetupForm):
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def __init__(self, make_dirs=False, **kwargs):
         super().__init__(**kwargs)
+        self.make_dirs = make_dirs
 
     def onStart(self):
         # Default settings to show in forms. Updated by user and by setup app,
@@ -1158,6 +1159,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
         # self.make_sindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
+        self.goToNextMenu()
 
 
     def startMakeOrientationFieldsSetup(self):
