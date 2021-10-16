@@ -786,11 +786,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "make_orientation_fields",
                 "settings": self.make_orientation_fields_settings,
             })
-        # if self.do_make_sindy_matrices_from_snakes:
-        #     action_configs.append({
-        #         "action": "make_sindy_matrices_from_snakes",
-        #         "settings": self.make_sindy_matrices_from_snakes_settings,
-        #     })
         if self.do_bead_piv_auto_contrast:
             action_configs.append({
                 "action": "auto_contrast_tiffs",
@@ -882,8 +877,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startJoinSectionedSnakesSetup)
         if self.do_make_orientation_fields:
             self.menu_functions.append(self.startMakeOrientationFieldsSetup)
-        # if self.do_make_sindy_matrices_from_snakes:
-        #     self.menu_functions.append(self.startMakeSindyMatricesFromSnakesSetup)
 
         # Move onto next index
         self.goToNextMenu()
