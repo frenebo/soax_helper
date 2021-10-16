@@ -1,5 +1,5 @@
 from snakeutils.logger import PrintLogger
-import json
+from snakeutils.snakejson import load_json_snakes
 import os
 import numpy as np
 import math
@@ -207,8 +207,7 @@ def sindy_matrices_from_snakes(
         else:
             logger.FAIL("Could not determine if '{}' is 3D, filename does not start with '2D' or '3D'".format(source_json_fp))
 
-        with open(source_json_fp, "r") as f:
-            snakes = json.load(f)
+        snakes = load_json_snakes(source_json_fp)
 
         orientation_np_arr = orientation_np_array_from_snakes(
             snakes,

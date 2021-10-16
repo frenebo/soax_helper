@@ -1,10 +1,10 @@
 import os
 from snakeutils.logger import PrintLogger
 from snakeutils.files import find_files_or_folders_at_depth
+from snakeutils.snakejson import load_json_snakes
 
 def make_field_for_json(json_fp, data_fp, logger):
-    with open(json_fp, "r") as f:
-        snakes_data = json.load(f)
+    snakes_data = load_json_snakes(json_fp)
 
     raise Exception("unimplemented")
 

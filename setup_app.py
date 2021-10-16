@@ -892,22 +892,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
         return np.iinfo(dtype).max
 
-    # def auto_set_width_height_images_settings(self, tiff_dir, img_depth, rescale_factor=None):
-    #     first_img_fp = self.first_img_fp(tiff_dir, img_depth)
-    #     if first_img_fp is None:
-    #         npyscreen.notify_confirm(
-    #             "Cannot determine width and height of images, you'll have to set those manually if needed later. No images found in {} at depth {}".format(tiff_dir, img_depth),
-    #             editw=1,
-    #         )
-    #         return
-    #     shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
-    #     width, height = shape
-    #     if rescale_factor is not None:
-    #         width = int(width * rescale_factor)
-    #         height = int(height * rescale_factor)
-    #     self.make_snake_images_settings["width"] = str(width)
-    #     self.make_snake_images_settings["height"] = str(height)
-
     def goToNextMenu(self):
         self.form_index += 1
         if self.form_index >= len(self.menu_functions):
@@ -1082,17 +1066,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         else:
             self.snakes_to_json_settings["source_snakes_depth"] = "1"
 
-        # Only want to do this if we know soax is getting the original shaped images
-        # if self.make_snake_images_settings["width"] == "" and not soax_run_settings["use_subdirs"]:
-        #     # Set width and height for make images step
-        #     img_depth = 0
-        #     self.auto_set_width_height_images_settings(
-        #         soax_run_settings["source_tiff_dir"],
-        #         img_depth)
-
-        # if self.make_snake_images_settings["background_images_dir"] == "":
-        #     self.make_snake_images_settings["background_images_dir"] = soax_run_settings["source_tiff_dir"]
-
         self.goToNextMenu()
 
     def startSnakesToJsonSetup(self):
@@ -1105,16 +1078,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         target_json_dir = snakes_to_json_settings["target_json_dir"]
         self.join_sectioned_snakes_settings["source_json_dir"] = target_json_dir
-        # self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
-        # self.make_sindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
         self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
 
         output_jsons_depth = snakes_to_json_settings["source_snakes_depth"]
         self.join_sectioned_snakes_settings["source_jsons_depth"] = output_jsons_depth
-        # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
-        # self.make_sindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
         self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
 
         self.goToNextMenu()
@@ -1129,16 +1098,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         target_json_dir = join_sectioned_snakes_settings["target_json_dir"]
         self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
-        # self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
-        # self.make_sindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
 
         # Output jsons are one directory less deep since they've been joined
         output_jsons_depth = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
         self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
-        # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
-        # self.make_sindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
 
         self.goToNextMenu()
 
@@ -1151,14 +1116,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.scale_json_snakes_to_units_settings = scale_json_snakes_to_units_settings
 
         target_json_dir = scale_json_snakes_to_units_settings["target_json_dir"]
-        # self.make_snake_images_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
-        # self.make_sindy_matrices_from_snakes_settings["source_json_dir"] = target_json_dir
 
         output_jsons_depth = self.scale_json_snakes_to_units_settings["source_jsons_depth"]
-        # self.make_snake_images_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
-        # self.make_sindy_matrices_from_snakes_settings["source_jsons_depth"] = output_jsons_depth
         self.goToNextMenu()
 
 

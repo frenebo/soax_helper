@@ -1,4 +1,3 @@
-import json
 import argparse
 
 from mpl_toolkits import mplot3d
@@ -6,14 +5,15 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
 
+from snakeutils.snakejson import load_json_snakes
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='JSON snake viewer')
     parser.add_argument("json_path")
 
     args = parser.parse_args()
 
-    with open(args.json_path, "r") as f:
-        snakes = json.load(f)
+    snakes = load_json_snakes(args.json_path)
 
     fig = plt.figure()
     ax = plt.axes(projection="3d")

@@ -1,7 +1,7 @@
 from snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
 import os
-import json
 from snakeutils.logger import PrintLogger
+from snakeutils.snakejson import load_json_snakes, save_json_snakes
 
 # Given image slice dimensions, finds the highest width height (and depth if 3D) indices in names
 # and retuns the width height and depth the orig image must have had
@@ -42,8 +42,8 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, snak
     shifted_snakes = []
     for snakes_fn in source_filenames:
         snakes_fp = os.path.join(source_dir, snakes_fn)
-        with open(snakes_fp, "r") as f:
-            section_snakes = json.load(f)
+
+        section_snakes = load_json_snakes(snakes_fp)
 
         sec_bounds = get_section_bounds(snakes_fn, snakes_are_3d)
         if snakes_are_3d:
@@ -74,8 +74,7 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, snak
                 })
             shifted_snakes.append(shifted_snake)
 
-    with open(target_json_fp, "w") as f:
-        json.dump(shifted_snakes, f)
+    save_json_snakes(target_json_fp, shifted_snakes)
 
 def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,logger=PrintLogger):
     if source_jsons_depth < 1:

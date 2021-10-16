@@ -1,7 +1,7 @@
 from snakeutils.files import find_files_or_folders_at_depth, extract_snakes
 import os
-import json
 from snakeutils.logger import PrintLogger
+from  snakeutils.snakejson import save_json_snakes
 
 def convert_snakes_to_json(source_snakes_dir, target_json_dir, source_snakes_depth=0, logger=PrintLogger):
     snakes_ext = ".txt"
@@ -21,11 +21,9 @@ def convert_snakes_to_json(source_snakes_dir, target_json_dir, source_snakes_dep
         with open(snakes_fp) as f:
             snakes = extract_snakes(f)
 
-        json_str = json.dumps(snakes)
-
         json_fn = snake_filename[:-len(snakes_ext)] + ".json"
         json_fp = os.path.join(target_folder_path, json_fn)
         logger.log("  Writing JSON snakes to {}".format(json_fp))
-        with open(json_fp, 'w') as f:
-            f.write(json_str)
+
+        save_json_snakes(json_fp, snakes)
 

@@ -1,7 +1,7 @@
 from snakeutils.files import find_files_or_folders_at_depth
 from snakeutils.logger import PrintLogger
+from snakeutils.snakejson import load_json_snakes, save_json_snakes
 import os
-import json
 
 def rescale_json_snake_file(
     source_json_fp,
@@ -15,8 +15,7 @@ def rescale_json_snake_file(
     if snakes_are_3d and z_stack_spacing_um is None:
         logger.FAIL("Need z-stack spacing for scaling 3D snakes to units")
 
-    with open(source_json_fp, "r") as f:
-        orig_snakes = json.load(source_json_fp)
+    orig_snakes = load_json_snakes(source_json_fp)
 
     rescaled_snakes = []
     for orig_snake in orig_snakes:
@@ -41,8 +40,7 @@ def rescale_json_snake_file(
             })
         rescaled_snakes.append(rescaled_snake)
 
-    with open(target_json_fp, "w") as f:
-        json.dump(rescaled_snakes, f)
+    save_json_snakes(target_json_fp, rescaled_snakes)
 
 def scale_json_snakes_to_units(
     source_json_dir,

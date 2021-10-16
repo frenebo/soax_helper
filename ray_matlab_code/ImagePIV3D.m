@@ -11,8 +11,9 @@
 %   Modified to 3d by: Le Yan, KITP, August 6, 2016
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-addpath(genpath('/Users/raymondadkins/Desktop/drive-download-20191011T235916Z-001/'));
-Name   = 'TP%01d_Ch2_Ill0_Ang0,90,180,270.tif';
+addpath(genpath('/Users/paulkreymborg/Documents/sindy_helper/data/first_9_tubes/'));
+Name   = 'MTsAndBeads_40x_2umStep_20s_image_T000%d_DA_FI_TR_Cy5_Cy7.tif';
+
 
 velfolder='PIV/'; %director folder
 if isfolder(velfolder)~=1
@@ -21,24 +22,36 @@ end
  
 NTimes   = 4;
 timestart = 1;
-EdgeLength  = 12;   % Length of box edges in pixels; 
+EdgeLength  = 6;   % Length of box edges in pixels; 
 %EdgeLength2 = 1;    % Length of box edges in interpolated field
 isf         = 1;   % image scaling factor. 
 step        = 1;    % step in timeframes.
 smooth      = 0;    % setto 1 if gaussian smoothing is desired
-KernelSize  = 7;    % Smoothing kernel size
+KernelSize  = 4;    % Smoothing kernel size
 sigma       = .8;  % standard deviation of gaussian kernel
-im1 = imread(sprintf(Name,timestart));
+im1 = double(imread(sprintf(Name,timestart)));
+% im2 = double(im1);
 im1 = imresize(im1,isf,'bicubic');
+
 stackSize = length(imfinfo(sprintf(Name,timestart)));
 slice_index = 1 : stackSize;
 for slice = 1 : 1: length(slice_index)
     temp_im = imread(sprintf(Name,timestart),slice_index(slice));
     im1(:,:,slice)     = imresize(temp_im,isf,'bicubic'); % rescale image if desired
 end
+% we just want im2 to be same data type, double as im1
+%im2(:,:,:) = double(im1);
+im1dims = size(im1);
+im2 = double.empty(im1dims(1),im1dims(2),0);
+
+
+
+% return;
 % define the grid on which to compute the flow field
 [X1,Y1,Z1] = meshgrid(EdgeLength/2:EdgeLength:size(im1,1)-EdgeLength/2,EdgeLength/2:EdgeLength:size(im1,2)-EdgeLength/2,EdgeLength/2:EdgeLength/1:size(im1,3)-EdgeLength/2); 
 %% 
+disp([X1,Y1,Z1]);
+
 for time = timestart: timestart+NTimes
     % read the image and scale
     
@@ -49,6 +62,9 @@ for time = timestart: timestart+NTimes
     if time == 0
         stackSize = length(imfinfo(tp_1_name));
     end
+    disp("Stack size: ");
+    disp(stackSize);
+    %return;
     slice_index = 1 : isf : stackSize;
     for slice = 1 : length(slice_index)
         temp_im = imread(tp_1_name,slice_index(slice));
@@ -58,8 +74,19 @@ for time = timestart: timestart+NTimes
         im2(:,:,slice)     = imresize(temp_im,isf,'bicubic'); % rescale image if desired
     end
 
+    
+    disp("IM1: ");
+    disp(class(im1));
+    disp(size(im1));
+    disp("IM2: ");
+    disp(class(im2));
+    disp(size(im2));
+    %return;
+
     % compute the piv flow field
     [VY,VX,VZ] = GetPIV3d(im1,im2,X1,Y1,Z1,EdgeLength); 
+    disp(VX);
+    %return;
 
     % smooth if desired
 %     if smooth == 1
