@@ -3,40 +3,28 @@ import os
 from snakeutils.logger import PrintLogger
 from snakeutils.snakejson import load_json_snakes, save_json_snakes
 
-# Given image slice dimensions, finds the highest width height (and depth if 3D) indices in names
+# Given image slice dimensions, finds the highest width height depth indices in names
 # and retuns the width height and depth the orig image must have had
-def get_section_bounds(fn, img_is_3d):
-    # remove "?Dsec_" and ".json"
-    section_info = fn[6:-5]
+def get_section_bounds(fn):
+    # remove "sec_" and ".json"
+    section_info = fn[4:-5]
 
-    if img_is_3d:
-        height_bounds,width_bounds,depth_bounds = section_info.split("_")
-    else:
-        height_bounds,width_bounds = section_info.split("_")
+    height_bounds,width_bounds,depth_bounds = section_info.split("_")
 
     sec_height_lower,sec_height_upper = height_bounds.split("-")
     sec_width_lower,sec_width_upper = width_bounds.split("-")
-    if img_is_3d:
-        sec_depth_lower,sec_depth_upper = depth_bounds.split("-")
+    sec_depth_lower,sec_depth_upper = depth_bounds.split("-")
 
-    if img_is_3d:
-        return (
-            int(sec_height_lower),
-            int(sec_height_upper),
-            int(sec_width_lower),
-            int(sec_width_upper),
-            int(sec_depth_lower),
-            int(sec_depth_upper),
-        )
-    else:
-        return (
-            int(sec_height_lower),
-            int(sec_height_upper),
-            int(sec_width_lower),
-            int(sec_width_upper),
-        )
+    return (
+        int(sec_height_lower),
+        int(sec_height_upper),
+        int(sec_width_lower),
+        int(sec_width_upper),
+        int(sec_depth_lower),
+        int(sec_depth_upper),
+    )
 
-def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, snakes_are_3d, logger):
+def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logger):
     new_snakes = []
 
     shifted_snakes = []
@@ -45,27 +33,20 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, snak
 
         section_snakes = load_json_snakes(snakes_fp)
 
-        sec_bounds = get_section_bounds(snakes_fn, snakes_are_3d)
-        if snakes_are_3d:
-            sec_height_lower,sec_height_upper,sec_width_lower,sec_width_upper,sec_depth_lower,sec_depth_upper = sec_bounds
-        else:
-            sec_height_lower,sec_height_upper,sec_width_lower,sec_width_upper = sec_bounds
+        sec_bounds = get_section_bounds(snakes_fn)
+
+        sec_height_lower,sec_height_upper,sec_width_lower,sec_width_upper,sec_depth_lower,sec_depth_upper = sec_bounds
 
         for snake in section_snakes:
             shifted_snake = []
             for snake_part in snake:
                 orig_pos = snake_part["pos"]
-                if snakes_are_3d:
-                    shifted_pos = [
-                        orig_pos[0] + sec_width_lower,
-                        orig_pos[1] + sec_height_lower,
-                        orig_pos[2] + sec_depth_lower,
-                    ]
-                else:
-                    shifted_pos = [
-                        orig_pos[0] + sec_width_lower,
-                        orig_pos[1] + sec_height_lower
-                    ]
+
+                shifted_pos = [
+                    orig_pos[0] + sec_width_lower,
+                    orig_pos[1] + sec_height_lower,
+                    orig_pos[2] + sec_depth_lower,
+                ]
 
                 shifted_snake.append({
                     "pos": shifted_pos,
@@ -99,19 +80,10 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
         source_jsons.sort()
         if len(source_jsons) == 0:
             logger.FAIL("No snake .json sections found in {}".format(source_folder_path))
-        if source_jsons[0].startswith("2D"):
-            snakes_are_3d = False
-        elif source_jsons[0].startswith("3D"):
-            snakes_are_3d = True
-        else:
-            logger.FAIL("Could not determine if snake sections are 3D. filename '{}' does not start with '2D' or '3D'".format(source_jsons[0]))
 
-        if snakes_are_3d:
-            target_json_fn = "3D_" + source_folder_name + ".json"
-        else:
-            target_json_fn = "2D_" + source_folder_name + ".json"
+        target_json_fn =source_folder_name + ".json"
         target_json_fp = os.path.join(target_dir_path, target_json_fn)
 
         logger.log("Joining snake jsons in {}".format(source_folder_path))
-        join_snake_files_and_save(source_folder_path, source_jsons, target_json_fp, snakes_are_3d, logger)
+        join_snake_files_and_save(source_folder_path, source_jsons, target_json_fp, logger)
         logger.log("  Saved joined snakes to {}".format(target_json_fp))

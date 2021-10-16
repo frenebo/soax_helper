@@ -130,14 +130,8 @@ def paint_vector_on_3D_arr_with_dyadic_vec_channel(
         window_low_corner[2]:window_high_corner[2],
     ] += matrix_convolved_line
 
-def orientation_np_array_from_snakes(snakes, width, height, depth, snakes_are_3d, logger):
-    if not snakes_are_3d:
-        logger.FAIL("2D unsupported so far for SINDy matrices")
-
-    if snakes_are_3d:
-        orientation_vec_arr = np.zeros((width, height, depth, 3, 3), dtype=np.float64)
-    else:
-        orientation_vec_arr = np.zeros((width, height, 1, 3, 3), dtype=np.float64)
+def orientation_np_array_from_snakes(snakes, width, height, depth, logger):
+    orientation_vec_arr = np.zeros((width, height, depth, 3, 3), dtype=np.float64)
 
     kernel_size = 4
     kernel_3d = sphere_kernel_monochrome_arr(kernel_size)
@@ -169,9 +163,8 @@ def orientation_np_array_from_snakes(snakes, width, height, depth, snakes_are_3d
     return orientation_vec_arr
 
 
-def position_np_array_from_snakes(snakes, width, height, depth, snakes_are_3d, logger):
-    if not snakes_are_3d:
-        logger.FAIL("2D unsupported so far for SINDy matrices")
+def position_np_array_from_snakes(snakes, width, height, depth, logger):
+    raise NotImplementedError()
 
 def sindy_matrices_from_snakes(
     source_json_dir,
@@ -198,15 +191,6 @@ def sindy_matrices_from_snakes(
                 else:
                     os.makedirs(target_folder_path)
 
-        if snake_fn.startswith("3D"):
-            snakes_are_3d = True
-            if depth is None:
-                logger.FAIL("Snake file '{}' is 3D, require depth parameter".format(source_json_fp))
-        elif snake_fn.startswith("2D"):
-            snakes_are_2d = False
-        else:
-            logger.FAIL("Could not determine if '{}' is 3D, filename does not start with '2D' or '3D'".format(source_json_fp))
-
         snakes = load_json_snakes(source_json_fp)
 
         orientation_np_arr = orientation_np_array_from_snakes(
@@ -214,7 +198,6 @@ def sindy_matrices_from_snakes(
             width,
             height,
             depth,
-            snakes_are_3d,
             logger,
         )
 
@@ -223,6 +206,5 @@ def sindy_matrices_from_snakes(
             width,
             height,
             depth,
-            snakes_are_3d,
             logger,
         )

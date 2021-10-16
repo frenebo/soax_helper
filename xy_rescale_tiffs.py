@@ -24,14 +24,8 @@ def resize_frame(frame_arr, new_dims):
     print("RESIZED ORIG type min: {}, max: {}".format(np.min(resized_orig_type_arr), np.max(resized_orig_type_arr)))
     return resized_orig_type_arr
 
-def rescale_multi_dim_arr(arr,rescale_factor,logger):
-    if len(arr.shape) > 3:
-        logger.FAIL("Can't resize array with more than three dimensions")
-
-    if len(arr.shape) == 3:
-        depth = arr.shape[2]
-    else:
-        depth = None
+def xy_rescale_3D_arr(arr,rescale_factor,logger):
+    depth = arr.shape[2]
 
 
     dims = arr.shape[:2]
@@ -48,15 +42,13 @@ def rescale_multi_dim_arr(arr,rescale_factor,logger):
     new_height = new_dims[0]
     new_width = new_dims[1]
 
-    if depth is not None:
-        logger.log("  Resizing {}x{}, depth {} to {}x{}, depth {}".format(old_width,old_height,depth,new_width,new_height,depth))
+    logger.log("  Resizing {}x{}, depth {} to {}x{}, depth {}".format(
+        old_width,old_height,depth,new_width,new_height,depth))
 
-        new_arr = np.zeros((new_height,new_width,depth),dtype=arr.dtype)
-        for i in range(depth):
-            new_arr[:,:,i] = resize_fame(arr[:,:,i],(new_width,new_height))
-    else:
-        logger.log("  Resizing {}x{} to {}x{}".format(old_width,old_height,new_width,new_height))
-        new_arr = resize_frame(arr,(new_width,new_height))
+    new_arr = np.zeros((new_height,new_width,depth),dtype=arr.dtype)
+    for i in range(depth):
+        new_arr[:,:,i] = resize_fame(arr[:,:,i],(new_width,new_height))
+
 
     return new_arr
 
@@ -73,18 +65,14 @@ def xy_rescale_tiffs(source_dir,target_dir,rescale_factor,logger=PrintLogger):
         # 3D tif images have attribute n_frames with non-zero value
         img_is_3d = getattr(pil_img, "n_frames", 1) != 1
 
-        if img_is_3d:
-            arr = tiff_img_3d_to_arr(pil_img)
-        else:
-            arr = np.array(pil_img)
+        if not img_is_3d:
+            logger.FAIL("2D image rescaling not supported")
+
         logger.log("Orig shape: {}".format(arr.shape))
-        resized_img = rescale_multi_dim_arr(arr,rescale_factor,logger)
+        resized_img = xy_rescale_3D_arr(arr,rescale_factor,logger)
         logger.log("New shape: {}".format(resized_img.shape))
         new_fn = "{}resized_".format(rescale_factor) + src_filename
         new_fp = os.path.join(target_dir, new_fn)
         logger.log("  Saving rescaled image as {}".format(new_fp))
 
-        if img_is_3d:
-            save_3d_tif(new_fp,resized_img)
-        else:
-            tifffile.imsave(new_fp, resized_img)
+        save_3d_tif(new_fp,resized_img)

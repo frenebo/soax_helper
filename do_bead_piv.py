@@ -50,5 +50,7 @@ def do_bead_piv(
 
     print(f)
 
-    if show_things:
-        pass
+    raise NotImplementedError()
+
+    # if show_things:
+    #     pass

@@ -585,8 +585,7 @@ class ScaleJsonSnakesToUnitsSetupForm(SetupForm):
         },
         {
             "id": "z_stack_spacing_um",
-            "name": "z_stack_spacing_um (if applicable)",
-            "type": "optional_pos_float",
+            "type": "pos_float",
             "help": "The distance between z stacks in source TIFF images",
         },
         {

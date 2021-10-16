@@ -12,98 +12,63 @@ def section_tiff(tiff_filepath,sectioned_dir,section_max_size,logger):
     pil_img = Image.open(tiff_filepath)
 
     tiff_is_3d = getattr(pil_img, "n_frames", 1) != 1
+    if not tiff_is_3d:
+        logger.FAIL("Cannot process TIF '{}', is not 3 dimensional, has only one frame".format(tiff_filepath))
 
     width = pil_img.width
     height = pil_img.height
-    if tiff_is_3d:
-        depth = pil_img.n_frames
-        img_arr = tiff_img_3d_to_arr(pil_img)
-    else:
-        img_arr = np.array(pil_img)
+    depth = pil_img.n_frames
+    img_arr = tiff_img_3d_to_arr(pil_img)
 
     # Ceil because we want to have slices on the smaller size if width/height/depth is not
     # exactly divisible by section_size
     height_slices = math.ceil(height / section_max_size)
     width_slices = math.ceil(width / section_max_size)
-    if tiff_is_3d:
-        depth_slices = math.ceil(depth / section_max_size)
+    depth_slices = math.ceil(depth / section_max_size)
 
     section_height = math.floor(height / height_slices)
     section_width = math.floor(width / width_slices)
-    if tiff_is_3d:
-        section_depth = math.floor(depth / depth_slices)
+    section_depth = math.floor(depth / depth_slices)
 
     height_boundaries = [i*section_height for i in range(height_slices)] + [height]
     width_boundaries = [i*section_width for i in range(width_slices)] + [width]
-    if tiff_is_3d:
-        depth_boundaries = [i*section_depth for i in range(depth_slices)] + [depth]
+    depth_boundaries = [i*section_depth for i in range(depth_slices)] + [depth]
 
-    if tiff_is_3d:
-        for width_idx in range(width_slices):
-            for height_idx in range(height_slices):
-                for depth_idx in range(depth_slices):
-                    height_lower = height_boundaries[height_idx]
-                    height_upper = height_boundaries[height_idx + 1]
-                    width_lower = width_boundaries[width_idx]
-                    width_upper = width_boundaries[width_idx + 1]
-                    depth_lower = depth_boundaries[depth_idx]
-                    depth_upper = depth_boundaries[depth_idx + 1]
+    for width_idx in range(width_slices):
+        for height_idx in range(height_slices):
+            for depth_idx in range(depth_slices):
+                height_lower = height_boundaries[height_idx]
+                height_upper = height_boundaries[height_idx + 1]
+                width_lower = width_boundaries[width_idx]
+                width_upper = width_boundaries[width_idx + 1]
+                depth_lower = depth_boundaries[depth_idx]
+                depth_upper = depth_boundaries[depth_idx + 1]
 
-                    # section filenames should be padded with zeros so they're same length.
-                    # ex. 3Dsec_0010-0020_0000-015_0990-1005.tif
-                    height_str_len = len(str(height))
-                    width_str_len = len(str(width))
-                    depth_str_len = len(str(depth))
+                # section filenames should be padded with zeros so they're same length.
+                # ex. sec_0010-0020_0000-015_0990-1005.tif
+                height_str_len = len(str(height))
+                width_str_len = len(str(width))
+                depth_str_len = len(str(depth))
 
-                    section_arr = img_arr[
-                        height_lower:height_upper,
-                        width_lower:width_upper,
-                        depth_lower:depth_upper,
-                    ]
+                section_arr = img_arr[
+                    height_lower:height_upper,
+                    width_lower:width_upper,
+                    depth_lower:depth_upper,
+                ]
 
-                    section_filename = "3Dsec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}.tif".format(
-                        height_lower=str(height_lower).zfill(height_str_len),
-                        height_upper=str(height_upper).zfill(height_str_len),
-                        width_lower=str(width_lower).zfill(width_str_len),
-                        width_upper=str(width_upper).zfill(width_str_len),
-                        depth_lower=str(depth_lower).zfill(depth_str_len),
-                        depth_upper=str(depth_upper).zfill(depth_str_len),
-                    )
-                    section_filepath = os.path.join(sectioned_dir,section_filename)
+                section_filename = "sec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}.tif".format(
+                    height_lower=str(height_lower).zfill(height_str_len),
+                    height_upper=str(height_upper).zfill(height_str_len),
+                    width_lower=str(width_lower).zfill(width_str_len),
+                    width_upper=str(width_upper).zfill(width_str_len),
+                    depth_lower=str(depth_lower).zfill(depth_str_len),
+                    depth_upper=str(depth_upper).zfill(depth_str_len),
+                )
+                section_filepath = os.path.join(sectioned_dir,section_filename)
 
-                    save_3d_tif(section_filepath,section_arr)
-    else:
-        for width_idx in range(width_slices):
-            for height_idx in range(height_slices):
-                    height_lower = height_boundaries[height_idx]
-                    height_upper = height_boundaries[height_idx + 1]
-                    width_lower = width_boundaries[width_idx]
-                    width_upper = width_boundaries[width_idx + 1]
+                save_3d_tif(section_filepath,section_arr)
 
-                    # section filenames should be padded with zeros so they're same length.
-                    # ex. 2Dsec_0010-0020_0000-015.tif
-                    height_str_len = len(str(height))
-                    width_str_len = len(str(width))
-
-                    section_arr = img_arr[
-                        height_lower:height_upper,
-                        width_lower:width_upper,
-                    ]
-
-                    section_filename = "2Dsec_{height_lower}-{height_upper}_{width_lower}-{width_upper}.tif".format(
-                        height_lower=str(height_lower).zfill(height_str_len),
-                        height_upper=str(height_upper).zfill(height_str_len),
-                        width_lower=str(width_lower).zfill(width_str_len),
-                        width_upper=str(width_upper).zfill(width_str_len),
-                    )
-                    section_filepath = os.path.join(sectioned_dir,section_filename)
-
-                    tifffile.imsave(section_filepath,section_arr)
-
-    if tiff_is_3d:
-        section_num = width_slices*height_slices*depth_slices
-    else:
-        section_num = width_slices*height_slices
+    section_num = width_slices*height_slices*depth_slices
 
     logger.log("  Split {} into {} sections in {}".format(
         tiff_filepath,

@@ -25,12 +25,12 @@ def auto_contrast_instance(arg_dict):
     auto_contrast_fp = os.path.join(target_dir, "auto_contrast_" + tiff_fn)
 
     pil_img = Image.open(tiff_fp)
-    # If 2D
-    if getattr(pil_img, "n_frames", 1) == 1:
-        image_arr = np.array(pil_img)
-    # if 3D
-    else:
-        image_arr = pil_img_3d_to_np_arr(pil_img)
+
+    # if 2D
+    if not getattr(pil_img, "n_frames", 1) == 1:
+        logger.FAIL("Cannot auto-contrast '{}', image is 2D but this tool only supports 3D tiff stacks".format(tiff_fp))
+
+    image_arr = pil_img_3d_to_np_arr(pil_img)
 
     over_max_places = image_arr >= max_cutoff
     under_min_places = image_arr <= min_cutoff
