@@ -191,7 +191,7 @@ def sindy_matrices_from_snakes(
                 else:
                     os.makedirs(target_folder_path)
 
-        snakes = load_json_snakes(source_json_fp)
+        snakes, snakes_metadata = load_json_snakes(source_json_fp)
 
         orientation_np_arr = orientation_np_array_from_snakes(
             snakes,

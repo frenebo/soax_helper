@@ -77,13 +77,11 @@ class SoaxStepsSelectForm(npyscreen.Form):
             values = [
                 "Auto Contrast Raw TIFFs",
                 "Rescale TIFFs in X,Y,Z",
-                # "Rescale TIFFs in X and Y",
                 "Section TIFFs before running SOAX",
                 "Create Parameter Files",
                 "Run SOAX",
                 "Convert Snake files to JSON",
                 "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
-                "Scale JSON snakes to real length units",
                 "Make Orientation Fields",
             ],
             scroll_exit=True,
@@ -97,8 +95,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
         do_run_soax                        = 4  in self.select_steps.value
         do_snakes_to_json                  = 5  in self.select_steps.value
         do_join_sectioned_snakes           = 6  in self.select_steps.value
-        do_scale_json_snakes_to_units      = 7  in self.select_steps.value
-        do_make_orientation_fields         = 8  in self.select_steps.value
+        do_make_orientation_fields         = 7  in self.select_steps.value
 
         self.parentApp.soaxStepsSelectDone(
             do_auto_contrast,
@@ -108,7 +105,6 @@ class SoaxStepsSelectForm(npyscreen.Form):
             do_run_soax,
             do_snakes_to_json,
             do_join_sectioned_snakes,
-            do_scale_json_snakes_to_units,
             do_make_orientation_fields,
         )
 
@@ -555,47 +551,6 @@ class JoinSectionedSnakesSetupForm(SetupForm):
 
     app_done_func_name = "joinSectionedSnakesSetupDone"
 
-class ScaleJsonSnakesToUnitsSetupForm(SetupForm):
-    field_infos = [
-        {
-            "id": "source_json_dir",
-            "type": "dir",
-            "help": "Take json snakes with pixel coordinate values and convert to real length units",
-        },
-        {
-            "id": "target_json_dir",
-            "type": "dir",
-        },
-        {
-            "id": "source_jsons_depth",
-            "type": "non_neg_int"
-        },
-        {
-            "id": "x_y_pixel_size_um",
-            "type": "pos_float",
-            "help": "x_y_pixel_size_um is the size of a single pixel in the original TIFF image",
-        },
-        {
-            "id": "x_y_image_scale_factor",
-            "type": "pos_float",
-            "help": [
-                "If image was rescaled in x and y before being run to soax, enter scale factor here",
-                "(ex. 0.5 for half sized image scale) to account for changed pixel size when calculating real length",
-            ],
-        },
-        {
-            "id": "z_stack_spacing_um",
-            "type": "pos_float",
-            "help": "The distance between z stacks in source TIFF images",
-        },
-        {
-            "id": "unit_abbreviation",
-            "type": "text"
-        }
-    ]
-
-    app_done_func_name = "scaleJsonSnakesToUnitsSetupDone"
-
 class MakeOrientationFieldsSetupForm(SetupForm):
     field_infos = [
         {
@@ -741,15 +696,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "target_json_dir": "./JoinedJsonSnakes",
             "source_jsons_depth": "",
         }
-        self.scale_json_snakes_to_units_settings = {
-            "source_json_dir": "",
-            "target_json_dir": "./UnitScaledJsonSnakes",
-            "source_jsons_depth": "",
-            "x_y_pixel_size_um": "",
-            "x_y_image_scale_factor": "",
-            "z_stack_spacing_um": "",
-            "unit_abbreviation": "",
-        }
         self.make_orientation_fields_settings = {
             "source_json_dir": "",
             "source_jsons_depth": "",
@@ -835,11 +781,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "join_sectioned_snakes",
                 "settings": self.join_sectioned_snakes_settings,
             })
-        if self.do_scale_json_snakes_to_units:
-            action_configs.append({
-                "action": "scale_json_snakes_to_units",
-                "settings": self.scale_json_snakes_to_units_settings,
-            })
         if self.do_make_orientation_fields:
             action_configs.append({
                 "action": "make_orientation_fields",
@@ -913,7 +854,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_run_soax,
         do_snakes_to_json,
         do_join_sectioned_snakes,
-        do_scale_json_snakes_to_units,
         do_make_orientation_fields,
         ):
         self.do_auto_contrast = do_auto_contrast
@@ -923,7 +863,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_run_soax = do_run_soax
         self.do_snakes_to_json = do_snakes_to_json
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
-        self.do_scale_json_snakes_to_units = do_scale_json_snakes_to_units
         self.do_make_orientation_fields = do_make_orientation_fields
 
         if self.do_auto_contrast:
@@ -941,8 +880,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startSnakesToJsonSetup)
         if self.do_join_sectioned_snakes:
             self.menu_functions.append(self.startJoinSectionedSnakesSetup)
-        if self.do_scale_json_snakes_to_units:
-            self.menu_functions.append(self.startScaleJsonSnakesToUnitsSetup)
         if self.do_make_orientation_fields:
             self.menu_functions.append(self.startMakeOrientationFieldsSetup)
         # if self.do_make_sindy_matrices_from_snakes:
@@ -1078,12 +1015,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         target_json_dir = snakes_to_json_settings["target_json_dir"]
         self.join_sectioned_snakes_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
-        self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
 
         output_jsons_depth = snakes_to_json_settings["source_snakes_depth"]
         self.join_sectioned_snakes_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
-        self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
 
         self.goToNextMenu()
 
@@ -1096,31 +1031,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.join_sectioned_snakes_settings = join_sectioned_snakes_settings
 
         target_json_dir = join_sectioned_snakes_settings["target_json_dir"]
-        self.scale_json_snakes_to_units_settings["source_json_dir"] = target_json_dir
         self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
 
         # Output jsons are one directory less deep since they've been joined
         output_jsons_depth = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
-        self.scale_json_snakes_to_units_settings["source_jsons_depth"] = output_jsons_depth
         self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
 
         self.goToNextMenu()
-
-    def startScaleJsonSnakesToUnitsSetup(self):
-        self.addForm('SCALE_JSON_SNAKES_TO_UNITS', ScaleJsonSnakesToUnitsSetupForm, name="Scale JSON Snakes to Units")
-        self.getForm('SCALE_JSON_SNAKES_TO_UNITS').configure(self.scale_json_snakes_to_units_settings, self.make_dirs)
-        self.setNextForm('SCALE_JSON_SNAKES_TO_UNITS')
-
-    def scaleJsonSnakesToUnitsSetupDone(self, scale_json_snakes_to_units_settings):
-        self.scale_json_snakes_to_units_settings = scale_json_snakes_to_units_settings
-
-        target_json_dir = scale_json_snakes_to_units_settings["target_json_dir"]
-        self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
-
-        output_jsons_depth = self.scale_json_snakes_to_units_settings["source_jsons_depth"]
-        self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
-        self.goToNextMenu()
-
 
     def startMakeOrientationFieldsSetup(self):
         self.addForm('MAKE_ORIENTATION_FIELDS', MakeOrientationFieldsSetupForm, name="Make Orientation Fields Setup")

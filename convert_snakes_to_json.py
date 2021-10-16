@@ -3,7 +3,14 @@ import os
 from snakeutils.logger import PrintLogger
 from  snakeutils.snakejson import save_json_snakes
 
-def convert_snakes_to_json(source_snakes_dir, target_json_dir, source_snakes_depth=0, logger=PrintLogger):
+def convert_snakes_to_json(
+    source_snakes_dir,
+    target_json_dir,
+    source_snakes_depth=0,
+    offset_pixels, # {"type": "sec_fn_infer"} or {"type": "exact", "value": [x,y,z]}
+    dims_pixels, # {"type": "sec_fn_infer"} or {"type": "exact", "value": [0,0,0]}
+    pixel_size_um, # [dx,dy,dz] pixel spacing in micrometers
+    logger=PrintLogger):
     snakes_ext = ".txt"
     snake_folders_and_filenames = find_files_or_folders_at_depth(source_snakes_dir,source_snakes_depth,snakes_ext)
 
@@ -19,11 +26,10 @@ def convert_snakes_to_json(source_snakes_dir, target_json_dir, source_snakes_dep
         logger.log("Reading snakes from {}".format(snakes_fp))
 
         with open(snakes_fp) as f:
-            snakes = extract_snakes(f)
+            snake_list = extract_snakes(f)
 
         json_fn = snake_filename[:-len(snakes_ext)] + ".json"
         json_fp = os.path.join(target_folder_path, json_fn)
         logger.log("  Writing JSON snakes to {}".format(json_fp))
 
-        save_json_snakes(json_fp, snakes)
-
+        save_json_snakes(fp, snake_list, offset_pixels, dims_pixels, pixel_size_um)

@@ -13,7 +13,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    snakes = load_json_snakes(args.json_path)
+    snakes, snakes_metadata = load_json_snakes(args.json_path)
 
     fig = plt.figure()
     ax = plt.axes(projection="3d")

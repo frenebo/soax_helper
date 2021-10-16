@@ -14,7 +14,6 @@ from run_soax import run_soax
 from snakeutils.logger import RecordLogger, PrintLogger
 from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
-from scale_json_snakes_to_units import scale_json_snakes_to_units
 from make_orientation_fields import make_orientation_fields
 from sindy_matrices_from_snakes import sindy_matrices_from_snakes
 from do_bead_piv import do_bead_piv
@@ -117,19 +116,6 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_join_sectioned_snakes_settings["source_json_dir"],
             parsed_join_sectioned_snakes_settings["target_json_dir"],
             source_jsons_depth=parsed_join_sectioned_snakes_settings["source_jsons_depth"],
-            logger=logger,
-        )
-    elif action_name == "scale_json_snakes_to_units":
-        parsed_scale_json_snakes_to_units = ScaleJsonSnakesToUnitsSetupForm.parseSettings(setting_strings, make_dir_if_not_present=make_dirs)
-
-        scale_json_snakes_to_units(
-            parsed_scale_json_snakes_to_units["source_json_dir"],
-            parsed_scale_json_snakes_to_units["source_jsons_depth"],
-            parsed_scale_json_snakes_to_units["target_json_dir"],
-            parsed_scale_json_snakes_to_units["x_y_pixel_size_um"],
-            parsed_scale_json_snakes_to_units["x_y_image_scale_factor"],
-            parsed_scale_json_snakes_to_units["z_stack_spacing_um"],
-            parsed_scale_json_snakes_to_units["unit_abbreviation"],
             logger=logger,
         )
     elif action_name == "make_orientation_fields":

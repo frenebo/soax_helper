@@ -31,7 +31,7 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
     for snakes_fn in source_filenames:
         snakes_fp = os.path.join(source_dir, snakes_fn)
 
-        section_snakes = load_json_snakes(snakes_fp)
+        section_snakes, sec_metadata = load_json_snakes(snakes_fp)
 
         sec_bounds = get_section_bounds(snakes_fn)
 
