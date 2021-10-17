@@ -56,11 +56,11 @@ def section_tiff(tiff_filepath,sectioned_dir,section_max_size,logger):
                     depth_lower:depth_upper,
                 ]
 
-                section_filename = "sec_{height_lower}-{height_upper}_{width_lower}-{width_upper}_{depth_lower}-{depth_upper}.tif".format(
-                    height_lower=str(height_lower).zfill(height_str_len),
-                    height_upper=str(height_upper).zfill(height_str_len),
+                section_filename = "sec_x{width_lower}-{width_upper}_y{height_lower}-{height_upper}_z{depth_lower}-{depth_upper}.tif".format(
                     width_lower=str(width_lower).zfill(width_str_len),
                     width_upper=str(width_upper).zfill(width_str_len),
+                    height_lower=str(height_lower).zfill(height_str_len),
+                    height_upper=str(height_upper).zfill(height_str_len),
                     depth_lower=str(depth_lower).zfill(depth_str_len),
                     depth_upper=str(depth_upper).zfill(depth_str_len),
                 )

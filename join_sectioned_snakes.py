@@ -3,39 +3,43 @@ import os
 from snakeutils.logger import PrintLogger
 from snakeutils.snakejson import load_json_snakes, save_json_snakes
 
-# Given image slice dimensions, finds the highest width height depth indices in names
-# and retuns the width height and depth the orig image must have had
-def get_section_bounds(fn):
-    # remove "sec_" and ".json"
-    section_info = fn[4:-5]
-
-    height_bounds,width_bounds,depth_bounds = section_info.split("_")
-
-    sec_height_lower,sec_height_upper = height_bounds.split("-")
-    sec_width_lower,sec_width_upper = width_bounds.split("-")
-    sec_depth_lower,sec_depth_upper = depth_bounds.split("-")
-
-    return (
-        int(sec_height_lower),
-        int(sec_height_upper),
-        int(sec_width_lower),
-        int(sec_width_upper),
-        int(sec_depth_lower),
-        int(sec_depth_upper),
-    )
-
 def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logger):
     new_snakes = []
 
     shifted_snakes = []
+
+    if len(source_filenames) == 0:
+        logger.FAIL("Cannot join snake files, source dir '{}' contains no snake jsons.".format(sourcec_dir))
+
+    # Make sure all sections have same units,
+    # also keep track of size of the region that all of the sections cover
+    first_sec_fp =  os.path.join(source_dir, source_filenames[0])
+    __, first_sec_metadata = load_json_snakes(first_sec_fp)
+    pixel_size_um_xyz = first_sec_metadata["pixel_size_um_xyz"]
+    first_sec_dims_xyz = first_sec_metadata["dims_pixels_xyz"]
+    first_sec_offset_pixels_xyz = first_sec_metadata["offset_pixels_xyz"]
+    max_x = first_sec_dims_xyz[0] + first_sec_offset_pixels_xyz[0]
+    max_y = first_sec_dims_xyz[1] + first_sec_offset_pixels_xyz[1]
+    max_z = first_sec_dims_xyz[2] + first_sec_offset_pixels_xyz[2]
+
     for snakes_fn in source_filenames:
         snakes_fp = os.path.join(source_dir, snakes_fn)
 
         section_snakes, sec_metadata = load_json_snakes(snakes_fp)
+        if sec_metadata["pixel_size_um_xyz"] != pixel_size_um_xyz:
+            logger.FAIL("Pixel spacing ")
 
-        sec_bounds = get_section_bounds(snakes_fn)
-
-        sec_height_lower,sec_height_upper,sec_width_lower,sec_width_upper,sec_depth_lower,sec_depth_upper = sec_bounds
+        sec_x_lower, sec_y_lower, sec_z_lower = sec_metadata["offset_pixels_xyz"]
+        sec_dims = sec_metadata["dims_pixels_xyz"]
+        sec_x_upper = sec_x_lower + sec_dims[0]
+        sec_y_upper = sec_y_lower + sec_dims[1]
+        sec_z_upper = sec_z_lower + sec_dims[2]
+        if sec_x_upper > max_x:
+            max_x = sec_x_upper
+        if sec_y_upper > max_y:
+            max_y = sec_y_upper
+        if sec_z_upper > max_z:
+            max_z = sec_z_upper
 
         for snake in section_snakes:
             shifted_snake = []
@@ -43,9 +47,9 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
                 orig_pos = snake_part["pos"]
 
                 shifted_pos = [
-                    orig_pos[0] + sec_width_lower,
-                    orig_pos[1] + sec_height_lower,
-                    orig_pos[2] + sec_depth_lower,
+                    orig_pos[0] + sec_x_lower,
+                    orig_pos[1] + sec_y_lower,
+                    orig_pos[2] + sec_z_lower,
                 ]
 
                 shifted_snake.append({
@@ -54,8 +58,12 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
                     "bg": snake_part["bg"],
                 })
             shifted_snakes.append(shifted_snake)
+    # We correct for the offset of all snake points, so the origin for snake coords is now
+    # the origin of the original image
+    pixels_offset = [0,0,0]
+    dims_pixels_xyz = [max_x,max_y,max_z]
 
-    save_json_snakes(target_json_fp, shifted_snakes)
+    save_json_snakes(target_json_fp, shifted_snakes, pixels_offset, dims_pixels_xyz, pixel_size_um_xyz):
 
 def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,logger=PrintLogger):
     if source_jsons_depth < 1:
@@ -63,8 +71,7 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
     # The folders containing the source json files to be joined are one level less deep
     section_folder_depth = source_jsons_depth - 1
     source_folder_info = find_files_or_folders_at_depth(source_json_dir, section_folder_depth, folders_not_files=True)
-    # info_strs = "    ".join(["({},{})".format(fol,fol2) for fol, fol2 in source_folder_info])
-    # raise Exception("Source dir {}, target dir {}, depth {}, source info {}".format(source_json_dir, target_json_dir, section_folder_depth, info_strs))
+
     for containing_folder, source_folder_name in source_folder_info:
 
         relative_dir_path = os.path.relpath(containing_folder, source_json_dir)

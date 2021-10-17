@@ -107,7 +107,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_snakes_to_json_settings["source_snakes_depth"],
             parsed_snakes_to_json_settings["offset_pixels"],
             parsed_snakes_to_json_settings["dims_pixels"],
-            parsed_snakes_to_json_settings["pixel_size_um"],
+            parsed_snakes_to_json_settings["pixel_size_um_xyz"],
             logger=logger,
         )
     elif action_name == "join_sectioned_snakes":

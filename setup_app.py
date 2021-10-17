@@ -67,7 +67,7 @@ def parse_pos_float(field_name, field_str):
 
     return val_float
 
-def parse_infer_or_xyz_ints(field_name, field_str):
+def parse_infer_or_int_coords(field_name, field_str):
     if len(field_str.strip()) == 0:
         raise ParseException("Invalid field '{}' value '{}': value is empty".format(field_name, field_str))
 
@@ -99,9 +99,9 @@ def parse_infer_or_xyz_ints(field_name, field_str):
             raise ParseException("Invalid field '{}' value '{}': list item '{}' is negative".format(field_name, field_str, item_str))
         val.append(item_int)
 
-    return {"type": "xyz_ints", "val": val}
+    return {"type": "int_coords", "val": val}
 
-def parse_xyz_floats(field_name, field_str):
+def parse_float_coords(field_name, field_str):
     if len(field_str.strip()) == 0:
         raise ParseException("Invalid field '{}' value '{}': value is empty".format(field_name, field_str))
     # if "," not in field_str:
@@ -255,10 +255,10 @@ class SetupForm(npyscreen.Form):
             if len(field_str) != 1:
                 raise ParseException("Invalid letter field '{}' value '{}': Expected one character, got".format(field_id, field_str, len(field_str)))
             return field_str
-        elif field_type == "infer_or_xyz_ints":
-            return parse_infer_or_xyz_ints(field_id, field_str)
-        elif field_type == "xyz_float":
-            return parse_xyz_floats(field_id, field_str)
+        elif field_type == "infer_or_int_coords":
+            return parse_infer_or_int_coords(field_id, field_str)
+        elif field_type == "float_coords":
+            return parse_float_coords(field_id, field_str)
         else:
             raise Exception("Unknown field type '{}'".format(field_type))
 
@@ -585,15 +585,15 @@ class SnakesToJsonSetupForm(SetupForm):
         },
         {
             "id": "offset_pixels",
-            "type": "infer_or_xyz_ints",
+            "type": "infer_or_int_coords",
         },
         {
             "id": "dims_pixels",
-            "type": "infer_or_xyz_ints",
+            "type": "infer_or_int_coords",
         },
         {
-            "id": "pixel_size_um",
-            "type": "xyz_floats",
+            "id": "pixel_size_um_xyz",
+            "type": "float_coords",
         },
     ]
 
@@ -670,16 +670,6 @@ class BeadPIVSetupForm(SetupForm):
         {
             "id":"target_piv_data_dir",
             "type": "dir",
-        },
-        {
-            "id": "x_y_pixel_size_um",
-            "type": "pos_float",
-            "help": "x_y_pixel_size_um is the size of a single pixel in the original TIFF image",
-        },
-        {
-            "id": "z_stack_spacing_um",
-            "type": "pos_float",
-            "help": "The distance between z stacks in source TIFF images",
         },
         {
             "id": "bead_diameter_um",
@@ -762,7 +752,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_snakes_depth": "",
             "offset_pixels": "",
             "dims_pixels": "",
-            "pixel_size_um": "",
+            "pixel_size_um_xyz": "",
         }
         self.join_sectioned_snakes_settings = {
             "source_json_dir": "",
@@ -796,8 +786,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_tiff_dir": "",
             "tiff_fn_letter_before_frame_num": "",
             "target_piv_data_dir": "./BeadPIVsData",
-            "x_y_pixel_size_um": "",
-            "z_stack_spacing_um": "",
             "bead_diameter_um": "",
         }
         self.tube_PIV_settings = {

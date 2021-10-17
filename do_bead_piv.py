@@ -12,7 +12,7 @@ def do_bead_piv(
     source_tiff_dir,
     tiff_fn_letter_before_frame_num,
     target_piv_data_dir,
-    x_y_pixel_size_um,
+    x_y_pixel_spacing_um,
     z_stack_spacing_um,
     bead_diameter_um,
     logger=PrintLogger,
@@ -24,11 +24,11 @@ def do_bead_piv(
     # PIMS gives the time axis the name of identifier letter
     frames.iter_axes = [tiff_fn_letter_before_frame_num]
 
-    float_search_diameter_x_y = bead_diameter_um / x_y_pixel_size_um
+    float_search_diameter_x_y = bead_diameter_um / x_y_pixel_spacing_um
     float_search_diameter_z = bead_diameter_um / z_stack_spacing_um
 
     logger.log("Using x_y_pixel size {x_y_size} um, z_spacing {z_size} um, bead size {bead_diameter_um} um".format(
-        x_y_size = x_y_pixel_size_um,
+        x_y_size = x_y_pixel_spacing_um,
         z_size = z_stack_spacing_um,
         bead_diameter_um = bead_diameter_um,
         ))
@@ -44,8 +44,8 @@ def do_bead_piv(
     logger.log("Finding features with diameter {}".format(diameter))
 
     f = tp.batch(frames, diameter=diameter)
-    f['xum'] = f['x'] * x_y_pixel_size_um
-    f['yum'] = f['y'] * x_y_pixel_size_um
+    f['xum'] = f['x'] * x_y_pixel_spacing_um
+    f['yum'] = f['y'] * x_y_pixel_spacing_um
     f['zum'] = f['z'] * z_stack_spacing_um
 
     print(f)
