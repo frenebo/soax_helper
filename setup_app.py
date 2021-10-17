@@ -39,7 +39,7 @@ def parse_int(field_name, field_str):
     try:
         field_val = int(field_str)
     except ValueError as e:
-        raise ParseException("Cannot parse '{}' value '{}' as integer".format(field_name,field_str))
+        raise ParseException("Cannot parse '{}' value '{}' as integer: {}".format(field_name,field_str, str(e)))
     return field_val
 
 def parse_pos_int(field_name, field_str):
@@ -59,13 +59,67 @@ def parse_pos_float(field_name, field_str):
         raise ParseException("'{}' is a required field".format(field_name))
     try:
         val_float = float(field_str)
-    except ValueError:
-        raise ParseException("'{}' value '{}' is not a float".format(field_name, field_str))
+    except ValueError as e:
+        raise ParseException("Cannot parse '{}' value '{}' as a positive float: {}".format(field_name, field_str, str(e)))
 
     if val_float <= 0:
         raise ParseException("Invalid '{}' value '{}': Should be positive value".format(field_name, str(val_float)))
 
     return val_float
+
+def parse_infer_or_xyz_ints(field_name, field_str):
+    if len(field_str.strip()) == 0:
+        raise ParseException("Invalid field '{}' value '{}': value is empty".format(field_name, field_str))
+
+    if field_str.strip().lower() == "infer":
+        return {"type": "infer"}
+
+    if "," not in field_str:
+        raise ParseException("Invalid field '{}' value '{}': expected string 'infer' or three comma-separated integer (ex. '1,2,3')".format(field_name, field_str))
+
+    comma_split = field_str.split(",")
+    if len(comma_split) != 3:
+        raise ParseException("Could not parse field '{}' value '{}' as three comma-separated integers. Expected 3 items, got {}: {}".format(field_name, field_str, len(comma_split), comma_split))
+
+    val = []
+    for item_str in comma_split:
+        try:
+            item_int = int(item_str)
+        except ValueError as int_err:
+            try:
+                float(item_str)
+                is_float = True
+            except ValueError:
+                is_float = False
+            if is_float:
+                raise ParseException("Could not parse field '{}' value '{}' as list of integers, list item '{}' is non integer".format(field_name, field_str, item_str))
+            else:
+                raise ParseException("Could not parse field '{}' value '{}' as list of integers, could not parse list item '{}' as integer: {}".format(field_name, field_str, item_str, str(int_err)))
+        if item_int < 0:
+            raise ParseException("Invalid field '{}' value '{}': list item '{}' is negative".format(field_name, field_str, item_str))
+        val.append(item_int)
+
+    return {"type": "xyz_ints", "val": val}
+
+def parse_xyz_floats(field_name, field_str):
+    if len(field_str.strip()) == 0:
+        raise ParseException("Invalid field '{}' value '{}': value is empty".format(field_name, field_str))
+    # if "," not in field_str:
+    #     raise ParseException("Invalid field '{}' value '{}': expected three float values separated by commas".format(field_name, field_str))
+    comma_split = field_str.split(",")
+    if len(comma_split) != 3:
+        raise ParseException("Could not parse field '{}' value '{}' as three comma-separated floats. Expected 3 items, got {}: {}".format(field_name, field_str, len(comma_split), comma_split))
+
+    val = []
+    for item_str in comma_split:
+        try:
+            item_float = float(item_str)
+        except ValueError as float_err:
+            raise ParseException("Could not parse field '{}' value '{}' as list of floats. Could not parse list item '{}' as float.".format(field_name, field_str, item_str))
+        if item_float < 0:
+            raise ParseException("Invalid field '{}' value '{}': list item '{}' is negative".format(field_name, field_str, item_str))
+        val.append(item_float)
+    return val
 
 class SoaxStepsSelectForm(npyscreen.Form):
     def configure(self):
@@ -161,8 +215,8 @@ class SetupForm(npyscreen.Form):
                 raise ParseException("'{}' is a required field".format(field_id))
             try:
                 perc = float(field_str)
-            except ValueError:
-                raise ParseException("'{}' value '{}' is not a number".format(field_id,field_str))
+            except ValueError as e:
+                raise ParseException("Could not parse '{}' value '{}' as number: {}".format(field_id,field_str, str(e)))
 
             if perc < 0 or perc > 100:
                 raise ParseException("Invalid '{}' value '{}': should be between 0 and 100".format(field_id,str(perc)))
@@ -201,6 +255,10 @@ class SetupForm(npyscreen.Form):
             if len(field_str) != 1:
                 raise ParseException("Invalid letter field '{}' value '{}': Expected one character, got".format(field_id, field_str, len(field_str)))
             return field_str
+        elif field_type == "infer_or_xyz_ints":
+            return parse_infer_or_xyz_ints(field_id, field_str)
+        elif field_type == "xyz_float":
+            return parse_xyz_floats(field_id, field_str)
         else:
             raise Exception("Unknown field type '{}'".format(field_type))
 
@@ -524,7 +582,19 @@ class SnakesToJsonSetupForm(SetupForm):
         {
             "id": "source_snakes_depth",
             "type": "non_neg_int",
-        }
+        },
+        {
+            "id": "offset_pixels",
+            "type": "infer_or_xyz_ints",
+        },
+        {
+            "id": "dims_pixels",
+            "type": "infer_or_xyz_ints",
+        },
+        {
+            "id": "pixel_size_um",
+            "type": "xyz_floats",
+        },
     ]
 
     app_done_func_name = "snakesToJsonSetupDone"
@@ -690,6 +760,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_snakes_dir": "",
             "target_json_dir": "./JsonSnakes",
             "source_snakes_depth": "",
+            "offset_pixels": "",
+            "dims_pixels": "",
+            "pixel_size_um": "",
         }
         self.join_sectioned_snakes_settings = {
             "source_json_dir": "",

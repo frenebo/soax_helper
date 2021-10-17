@@ -4,9 +4,7 @@ import argparse
 import json
 import time
 
-from create_soax_param_files import error_string_or_parse_arg_or_range, create_soax_param_files
-# from xy_rescale_tiffs import xy_rescale_tiffs
-# from z_rescale_tiffs import z_rescale_tiffs
+from create_soax_param_files import error_string_or_parse_arg_or_range, create_soax_param_file
 from rescale_tiffs import rescale_tiffs
 from auto_contrast_tiffs import auto_contrast_tiffs
 from section_tiffs import section_tiffs
@@ -107,6 +105,9 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_snakes_to_json_settings["source_snakes_dir"],
             parsed_snakes_to_json_settings["target_json_dir"],
             parsed_snakes_to_json_settings["source_snakes_depth"],
+            parsed_snakes_to_json_settings["offset_pixels"],
+            parsed_snakes_to_json_settings["dims_pixels"],
+            parsed_snakes_to_json_settings["pixel_size_um"],
             logger=logger,
         )
     elif action_name == "join_sectioned_snakes":

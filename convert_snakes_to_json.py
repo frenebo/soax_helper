@@ -6,9 +6,9 @@ from  snakeutils.snakejson import save_json_snakes
 def convert_snakes_to_json(
     source_snakes_dir,
     target_json_dir,
-    source_snakes_depth=0,
-    offset_pixels, # {"type": "sec_fn_infer"} or {"type": "exact", "value": [x,y,z]}
-    dims_pixels, # {"type": "sec_fn_infer"} or {"type": "exact", "value": [0,0,0]}
+    source_snakes_depth,
+    offset_pixels, # {"type": "infer"} or {"type": "xyz_ints", "value": [x,y,z]}
+    dims_pixels, # {"type": "infer"} or {"type": "xyz_ints", "value": [0,0,0]}
     pixel_size_um, # [dx,dy,dz] pixel spacing in micrometers
     logger=PrintLogger):
     snakes_ext = ".txt"
