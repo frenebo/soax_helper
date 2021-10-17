@@ -586,13 +586,24 @@ class SnakesToJsonSetupForm(SetupForm):
         {
             "id": "offset_pixels",
             "type": "infer_or_int_coords",
+            "help": [
+                "Offset pixels is useful if the snakes from SOAX are for a section of the original TIF image. If the snakes were",
+                "calculated from a TIF section that went from x=100 to x=200, y=150 to y=300, z=30 to z=80, then the offset pixels",
+                "would be 100,150,30. If the snakes are for the entire image, input '0,0,0'. If the input images were cut up in the",
+                "sectioning step, then the image filenames and SOAX snake filenames should contain the coordinates of each section,",
+                "and the snakes to JSON converter can infer offset from filename. In that case input '0,0,0'",
+            ],
         },
         {
             "id": "dims_pixels",
             "type": "infer_or_int_coords",
+            "help": [
+                "The x,y,z dimensions of the input TIF (or TIF section). Ex. '100,200,40'",
+                "Similar to offset_pixels, enter 'infer' if processing TIF section snakes."
+            ],
         },
         {
-            "id": "pixel_size_um_xyz",
+            "id": "pixel_spacing_um_xyz",
             "type": "float_coords",
         },
     ]
@@ -709,6 +720,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_tiff_dir": "",
             "target_tiff_dir": "./AutoContrastedTIFFs",
         }
+        self.auto_contrast_metadata = {
+            "output_dims": None,
+            "output_pixel_spacing": None,
+        }
+
         self.rescale_settings = {
             "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_resample",
             "source_tiff_dir": "",
@@ -750,9 +766,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "source_snakes_dir": "",
             "target_json_dir": "./JsonSnakes",
             "source_snakes_depth": "",
-            "offset_pixels": "",
+            "offset_pixels": "0,0,0",
             "dims_pixels": "",
-            "pixel_size_um_xyz": "",
+            "pixel_size_um_spacing": "",
         }
         self.join_sectioned_snakes_settings = {
             "source_json_dir": "",

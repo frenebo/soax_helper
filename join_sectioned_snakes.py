@@ -15,7 +15,7 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
     # also keep track of size of the region that all of the sections cover
     first_sec_fp =  os.path.join(source_dir, source_filenames[0])
     __, first_sec_metadata = load_json_snakes(first_sec_fp)
-    pixel_size_um_xyz = first_sec_metadata["pixel_size_um_xyz"]
+    pixel_spacing_um_xyz = first_sec_metadata["pixel_spacing_um_xyz"]
     first_sec_dims_xyz = first_sec_metadata["dims_pixels_xyz"]
     first_sec_offset_pixels_xyz = first_sec_metadata["offset_pixels_xyz"]
     max_x = first_sec_dims_xyz[0] + first_sec_offset_pixels_xyz[0]
@@ -26,7 +26,7 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
         snakes_fp = os.path.join(source_dir, snakes_fn)
 
         section_snakes, sec_metadata = load_json_snakes(snakes_fp)
-        if sec_metadata["pixel_size_um_xyz"] != pixel_size_um_xyz:
+        if sec_metadata["pixel_spacing_um_xyz"] != pixel_spacing_um_xyz:
             logger.FAIL("Pixel spacing ")
 
         sec_x_lower, sec_y_lower, sec_z_lower = sec_metadata["offset_pixels_xyz"]
@@ -63,7 +63,7 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
     pixels_offset = [0,0,0]
     dims_pixels_xyz = [max_x,max_y,max_z]
 
-    save_json_snakes(target_json_fp, shifted_snakes, pixels_offset, dims_pixels_xyz, pixel_size_um_xyz):
+    save_json_snakes(target_json_fp, shifted_snakes, pixels_offset, dims_pixels_xyz, pixel_spacing_um_xyz):
 
 def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,logger=PrintLogger):
     if source_jsons_depth < 1:

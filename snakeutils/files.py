@@ -18,7 +18,7 @@ def has_one_of_extensions(filename, file_extensions):
 
 def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, file_extensions=None, folders_not_files=False):
     if file_extensions is None and file_extension is None and not folders_not_files:
-        raise Exception("If looking for a file, must ")
+        raise Exception("Bad function call, must specificy searching for folders, or specify file extension(s)")
 
     # if user provided one extension
     if (not folders_not_files) and file_extensions is None:
