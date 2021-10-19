@@ -939,7 +939,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "tif_name": first_img_fn,
             "tif_path": first_img_fp,
             "dims": [x_size,y_size,z_size],
-            "tif_max_value": np.iinffo(dtype).max,
+            "tif_max_value": np.iinfo(dtype).max,
         }
 
     def goToNextMenu(self):
