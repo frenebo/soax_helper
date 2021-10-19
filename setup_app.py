@@ -1,4 +1,4 @@
-from create_soax_param_files import error_string_or_parse_arg_or_range, create_soax_param_files
+from create_soax_param_files import error_string_or_parse_arg_or_range
 import npyscreen
 import os
 from tiff_info import get_single_tiff_info
@@ -1025,7 +1025,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startAutoContrastSetup(self):
         self.addForm('AUTO_CONTRAST_SETUP', AutoContrastSetupForm, name='Auto Contrasting Setup')
-        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_config, self.make_dirs)
+        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_config, self.make_dirs)
         self.setNextForm('AUTO_CONTRAST_SETUP')
 
     def autoContrastSetupDone(self, fields):
@@ -1038,7 +1038,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # We can't have 0.0 to 1.0 scale in original TIFFs because TIFFs have only integer brightness
         # levels
         img_search_depth = 0
-        tif_metadata = try_find_dir_first_tif_metadata(
+        tif_metadata = self.try_find_dir_first_tif_metadata(
             fields["source_tiff_dir"],
             img_search_depth,
         )

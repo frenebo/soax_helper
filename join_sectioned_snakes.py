@@ -63,7 +63,7 @@ def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logg
     pixels_offset = [0,0,0]
     dims_pixels_xyz = [max_x,max_y,max_z]
 
-    save_json_snakes(target_json_fp, shifted_snakes, pixels_offset, dims_pixels_xyz, pixel_spacing_um_xyz):
+    save_json_snakes(target_json_fp, shifted_snakes, pixels_offset, dims_pixels_xyz, pixel_spacing_um_xyz)
 
 def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,logger=PrintLogger):
     if source_jsons_depth < 1:
