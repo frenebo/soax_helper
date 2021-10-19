@@ -722,6 +722,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_tiff_dir": "./AutoContrastedTIFFs",
             },
             "notes": {},
+            "metadata": {},
         }
         self.rescale_config = {
             "fields": {
@@ -732,6 +733,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "z_factor": "1.0",
             },
             "notes": {},
+            "metadata": {
+                "input_dims": None,
+            },
         }
         self.sectioning_config = {
             "fields": {
@@ -740,6 +744,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "section_max_size": "200",
             },
             "notes": {},
+            "metadata": {
+                "input_dims": None,
+            },
         }
         self.soax_params_page1_config =  {
             "fields": {
@@ -752,6 +759,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "min_snake_length":"20",
             },
             "notes": {},
+            "metadata": {},
         }
         self.soax_params_page2_config = {
             "fields": {
@@ -762,6 +770,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "stretch_factor": "0.2",
             },
             "notes": {},
+            "metadata": {},
         }
         self.soax_run_config = {
             "fields":  {
@@ -774,6 +783,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "soax_log_dir": "./SoaxLogs",
             },
             "notes": {},
+            "metadata": {
+                "input_dims": None,
+            },
         }
         self.snakes_to_json_config = {
             "fields": {
@@ -785,6 +797,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "pixel_size_um_spacing": "",
             },
             "notes": {},
+            "metadata": {},
         }
         self.join_sectioned_snakes_config = {
             "fields": {
@@ -793,6 +806,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "source_jsons_depth": "",
             },
             "notes": {},
+            "metadata": {},
         }
         self.make_orientation_fields_config = {
             "fields": {
@@ -803,6 +817,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "image_height": "",
             },
             "notes": {},
+            "metadata": {
+                "input_dims": None,
+            },
         }
 
         #PIV settings
@@ -815,6 +832,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_tiff_dir": "./AutoContrastedBeadTIFFsForPIV",
             },
             "notes": {},
+            "metadata": {},
         }
         self.tube_piv_auto_contrast_config = {
             "fields": {
@@ -825,6 +843,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_tiff_dir": "./AutoContrastedTubeTIFFsForPIV",
             },
             "notes": {},
+            "metadata": {},
         }
         self.bead_PIV_config = {
             "fields": {
@@ -834,6 +853,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "bead_diameter_um": "",
             },
             "notes": {},
+            "metadata": {},
         }
         self.tube_PIV_config = {
             "fields": {
@@ -841,6 +861,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_piv_data_dir": "./TubePIVData",
             },
             "notes": {},
+            "metadata": {},
         }
 
         self.menu_functions = [
@@ -1043,7 +1064,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             img_search_depth,
         )
 
-        raise Exception("Not implemented all stuff needed yet")
         if tif_metadata is None:
             npyscreen.notify_confirm(
                 "In soax run stage intensity_scaling will need to be set manually, could not find TIFF files in {} at depth {} to set intensity to 1 / tiff data type max value".format(fields["source_tiff_dir"], img_search_depth),
@@ -1056,6 +1076,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 max_lev=tif_max_level,
                 tif_name=tif_metadata["tif_name"],
             )
+            self.rescale_config["metadata"]["input_dims"] = tif_metadata["dims"]
 
         self.goToNextMenu()
 
