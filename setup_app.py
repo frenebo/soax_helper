@@ -315,7 +315,8 @@ class SetupForm(npyscreen.Form):
         else:
             raise Exception("Unknown type '{}' for field '{}'".format(field_type, field_id))
 
-    def configure(self, field_defaults, make_dirs_if_not_present):
+    def configure(self, menu_config, make_dirs_if_not_present):
+        field_defaults = menu_config["fields"]
         self.npy_fields = {}
         self.make_dirs_if_not_present = make_dirs_if_not_present
 
@@ -409,7 +410,7 @@ class RescaleSetupForm(SetupForm):
         },
     ]
 
-    app_done_func_name = "RescaleSetupDone"
+    app_done_func_name = "rescaleSetupDone"
 
 
 class AutoContrastSetupForm(SetupForm):
@@ -710,103 +711,136 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_dirs = make_dirs
 
     def onStart(self):
-        # Default settings to show in forms. Updated by user and by setup app,
-        # like automatically setting source_tiff_dir of rescale_settings to target_tiff_ddir of auto contrast
-        # if user configures auto contrast
-        self.auto_contrast_settings = {
-            "max_cutoff_percent": "95.5",
-            "min_cutoff_percent": "0.1",
-            "workers_num": "1",
-            "source_tiff_dir": "",
-            "target_tiff_dir": "./AutoContrastedTIFFs",
+        # Info for forms, including default fields to show in forms. Updated by user and by setup app,
+        # like automatically setting source_tiff_dir of rescale to target_tiff_dir of auto contrast (if user configures auto contrast)
+        self.auto_contrast_config = {
+            "fields": {
+                "max_cutoff_percent": "95.5",
+                "min_cutoff_percent": "0.1",
+                "workers_num": "1",
+                "source_tiff_dir": "",
+                "target_tiff_dir": "./AutoContrastedTIFFs",
+            },
+            "notes": {},
         }
-        self.auto_contrast_metadata = {
-            "output_dims": None,
-            "output_pixel_spacing": None,
+        self.rescale_config = {
+            "fields": {
+                "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_resample",
+                "source_tiff_dir": "",
+                "target_tiff_dir": "RescaledTIFFs",
+                "xy_factor": "1.0",
+                "z_factor": "1.0",
+            },
+            "notes": {},
         }
-
-        self.rescale_settings = {
-            "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_resample",
-            "source_tiff_dir": "",
-            "target_tiff_dir": "RescaledTIFFs",
-            "xy_factor": "1.0",
-            "z_factor": "1.0",
+        self.sectioning_config = {
+            "fields": {
+                "source_tiff_dir": "",
+                "target_sectioned_tiff_dir": "./SectionedTIFFs",
+                "section_max_size": "200",
+            },
+            "notes": {},
         }
-        self.sectioning_settings = {
-            "source_tiff_dir": "",
-            "target_sectioned_tiff_dir": "./SectionedTIFFs",
-            "section_max_size": "200",
+        self.soax_params_page1_config =  {
+            "fields": {
+                "params_save_dir": "./Params",
+                "alpha": "0.01",
+                "beta": "0.1",
+                "gamma": "2",
+                "min_foreground":"10",
+                "ridge_threshold":"0.01",
+                "min_snake_length":"20",
+            },
+            "notes": {},
         }
-        self.soax_params_page1_settings = {
-            "params_save_dir": "./Params",
-            "alpha": "0.01",
-            "beta": "0.1",
-            "gamma": "2",
-            "min_foreground":"10",
-            "ridge_threshold":"0.01",
-            "min_snake_length":"20",
+        self.soax_params_page2_config = {
+            "fields": {
+                "gaussian_std":"0",
+                "snake_point_spacing":"5",
+                "external_factor":"1",
+                "intensity_scaling": "0",
+                "stretch_factor": "0.2",
+            },
+            "notes": {},
         }
-        self.soax_params_page2_settings = {
-            "gaussian_std":"0",
-            "snake_point_spacing":"5",
-            "external_factor":"1",
-            "intensity_scaling": "0",
-            "stretch_factor": "0.2",
+        self.soax_run_config = {
+            "fields":  {
+                "workers": "1",
+                "use_subdirs": "no",
+                "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_soax",
+                "source_tiff_dir": "",
+                "target_snakes_dir": "./Snakes",
+                "param_files_dir": "",
+                "soax_log_dir": "./SoaxLogs",
+            },
+            "notes": {},
         }
-        self.soax_run_settings = {
-            "workers": "1",
-            "use_subdirs": "no",
-            "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_soax",
-            "source_tiff_dir": "",
-            "target_snakes_dir": "./Snakes",
-            "param_files_dir": "",
-            "soax_log_dir": "./SoaxLogs",
+        self.snakes_to_json_config = {
+            "fields": {
+                "source_snakes_dir": "",
+                "target_json_dir": "./JsonSnakes",
+                "source_snakes_depth": "",
+                "offset_pixels": "0,0,0",
+                "dims_pixels": "",
+                "pixel_size_um_spacing": "",
+            },
+            "notes": {},
         }
-        self.snakes_to_json_settings = {
-            "source_snakes_dir": "",
-            "target_json_dir": "./JsonSnakes",
-            "source_snakes_depth": "",
-            "offset_pixels": "0,0,0",
-            "dims_pixels": "",
-            "pixel_size_um_spacing": "",
+        self.join_sectioned_snakes_config = {
+            "fields": {
+                "source_json_dir": "",
+                "target_json_dir": "./JoinedJsonSnakes",
+                "source_jsons_depth": "",
+            },
+            "notes": {},
         }
-        self.join_sectioned_snakes_settings = {
-            "source_json_dir": "",
-            "target_json_dir": "./JoinedJsonSnakes",
-            "source_jsons_depth": "",
-        }
-        self.make_orientation_fields_settings = {
-            "source_json_dir": "",
-            "source_jsons_depth": "",
-            "target_data_dir": "./OrientationFields",
-            "image_width": "",
-            "image_height": "",
+        self.make_orientation_fields_config = {
+            "fields": {
+                "source_json_dir": "",
+                "source_jsons_depth": "",
+                "target_data_dir": "./OrientationFields",
+                "image_width": "",
+                "image_height": "",
+            },
+            "notes": {},
         }
 
         #PIV settings
-        self.bead_piv_auto_contrast_settings = {
-            "max_cutoff_percent": "95.5",
-            "min_cutoff_percent": "0.1",
-            "workers_num": "1",
-            "source_tiff_dir": "",
-            "target_tiff_dir": "./AutoContrastedBeadTIFFsForPIV",
+        self.bead_piv_auto_contrast_config = {
+            "fields": {
+                "max_cutoff_percent": "95.5",
+                "min_cutoff_percent": "0.1",
+                "workers_num": "1",
+                "source_tiff_dir": "",
+                "target_tiff_dir": "./AutoContrastedBeadTIFFsForPIV",
+            },
+            "notes": {},
         }
-        self.tube_piv_auto_contrast_settings = {
-            "max_cutoff_percent": "95.5",
-            "min_cutoff_percent": "0.1",
-            "workers_num": "1",
-            "source_tiff_dir": "",
-            "target_tiff_dir": "./AutoContrastedTubeTIFFsForPIV",
+        self.tube_piv_auto_contrast_config = {
+            "fields": {
+                "max_cutoff_percent": "95.5",
+                "min_cutoff_percent": "0.1",
+                "workers_num": "1",
+                "source_tiff_dir": "",
+                "target_tiff_dir": "./AutoContrastedTubeTIFFsForPIV",
+            },
+            "notes": {},
         }
-        self.bead_PIV_settings = {
-            "source_tiff_dir": "",
-            "tiff_fn_letter_before_frame_num": "",
-            "target_piv_data_dir": "./BeadPIVsData",
-            "bead_diameter_um": "",
+        self.bead_PIV_config = {
+            "fields": {
+                "source_tiff_dir": "",
+                "tiff_fn_letter_before_frame_num": "",
+                "target_piv_data_dir": "./BeadPIVsData",
+                "bead_diameter_um": "",
+            },
+            "notes": {},
         }
-        self.tube_PIV_settings = {
-            "source_tiff_dir": "",
-            "target_piv_data_dir": "./TubePIVData",
+        self.tube_PIV_config = {
+            "fields": {
+                "source_tiff_dir": "",
+                "target_piv_data_dir": "./TubePIVData",
+            },
+            "notes": {},
         }
 
         self.menu_functions = [
@@ -822,87 +856,91 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.do_auto_contrast:
             action_configs.append({
                 "action": "auto_contrast_tiffs",
-                "settings": self.auto_contrast_settings,
+                "settings": self.auto_contrast_config["fields"],
             })
         if self.do_rescale:
             action_configs.append({
                 "action": "rescale_tiffs",
-                "settings": self.rescale_settings,
+                "settings": self.rescale_config["fields"],
             })
         if self.do_section:
             action_configs.append({
                 "action": "section_tiffs",
-                "settings": self.sectioning_settings,
+                "settings": self.sectioning_config["fields"],
             })
         if self.do_create_soax_params:
             action_configs.append({
                 "action": "create_soax_param_files",
                 # Combine page 1 and page 2 settings
                 "settings": {
-                    **self.soax_params_page1_settings,
-                    **self.soax_params_page2_settings,
+                    **self.soax_params_page1_config["fields"],
+                    **self.soax_params_page2_config["fields"],
                 },
             })
         if self.do_run_soax:
             action_configs.append({
                 "action": "run_soax",
-                "settings": self.soax_run_settings,
+                "settings": self.soax_run_config["fields"],
             })
         if self.do_snakes_to_json:
             action_configs.append({
                 "action": "convert_snakes_to_json",
-                "settings": self.snakes_to_json_settings,
+                "settings": self.snakes_to_json_config["fields"],
             })
         if self.do_join_sectioned_snakes:
             action_configs.append({
                 "action": "join_sectioned_snakes",
-                "settings": self.join_sectioned_snakes_settings,
+                "settings": self.join_sectioned_snakes_config["fields"],
             })
         if self.do_make_orientation_fields:
             action_configs.append({
                 "action": "make_orientation_fields",
-                "settings": self.make_orientation_fields_settings,
+                "settings": self.make_orientation_fields_config["fields"],
             })
         if self.do_bead_piv_auto_contrast:
             action_configs.append({
                 "action": "auto_contrast_tiffs",
-                "settings": self.bead_piv_auto_contrast_settings,
+                "settings": self.bead_piv_auto_contrast_config["fields"],
             })
         if self.do_tube_piv_auto_contrast:
             action_configs.append({
                 "action": "auto_contrast_tiffs",
-                "settings": self.tube_piv_auto_contrast_settings,
+                "settings": self.tube_piv_auto_contrast_config["fields"],
             })
         if self.do_bead_PIV:
             action_configs.append({
                 "action": "do_bead_PIV",
-                "settings": self.bead_PIV_settings,
+                "settings": self.bead_PIV_config["fields"],
             })
         if self.do_tube_PIV:
             action_configs.append({
                 "action": "do_tube_PIV",
-                "settings": self.tube_PIV_settings,
+                "settings": self.tube_PIV_config["fields"],
             })
         return action_configs
 
-    def first_img_fp(self, tiff_dir, img_depth):
+    def try_find_dir_first_tif_metadata(self, tiff_dir, img_depth):
+        if not os.path.isdir(tiff_dir):
+            return None
+
         image_locations_info = find_files_or_folders_at_depth(tiff_dir, img_depth, file_extensions=[".tiff", ".tif"])
 
-        #If source tiff dir doesn't have anything at this depth, we won't do anything here
         if len(image_locations_info) == 0:
             return None
+
         first_img_dir = image_locations_info[0][0]
-        first_img_name = image_locations_info[0][1]
-        first_img_fp = os.path.join(first_img_dir, first_img_name)
+        first_img_fn = image_locations_info[0][1]
+        first_img_fp = os.path.join(first_img_dir, first_img_fn)
 
-        return first_img_fp
+        shape, z_size, dtype = get_single_tiff_info(first_img_fp)
+        y_size, x_size = shape
 
-    def get_first_tif_data_type_max(self, tiff_dir, img_depth):
-        first_img_fp = self.first_img_fp(tiff_dir, img_depth)
-        if first_img_fp is None:
-            return None
-        shape, stack_height, dtype = get_single_tiff_info(first_img_fp)
-        return np.iinfo(dtype).max
+        return {
+            "tif_name": first_img_fn,
+            "tif_path": first_img_fp,
+            "dims": [x_size,y_size,z_size],
+            "tif_max_value": np.iinffo(dtype).max,
+        }
 
     def goToNextMenu(self):
         self.form_index += 1
@@ -987,175 +1025,182 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startAutoContrastSetup(self):
         self.addForm('AUTO_CONTRAST_SETUP', AutoContrastSetupForm, name='Auto Contrasting Setup')
-        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_settings, self.make_dirs)
+        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_config, self.make_dirs)
         self.setNextForm('AUTO_CONTRAST_SETUP')
 
-    def autoContrastSetupDone(self, auto_contrast_settings):
-        self.auto_contrast_settings = auto_contrast_settings
-        self.rescale_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
-        self.sectioning_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
-        self.soax_run_settings["source_tiff_dir"] = auto_contrast_settings["target_tiff_dir"]
+    def autoContrastSetupDone(self, fields):
+        self.auto_contrast_config["fields"] = fields
+        self.rescale_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+        self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+        self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         # If input TIFFs have been rescaled to range from 0 to 65535,
         # When SOAX runs and converts to floats, intensities should be rescaled from 0 to 1.0
         # We can't have 0.0 to 1.0 scale in original TIFFs because TIFFs have only integer brightness
         # levels
         img_search_depth = 0
-        tif_max_level = self.get_first_tif_data_type_max(
-            auto_contrast_settings["source_tiff_dir"],
+        tif_metadata = try_find_dir_first_tif_metadata(
+            fields["source_tiff_dir"],
             img_search_depth,
         )
-        if tif_max_level is None:
+
+        raise Exception("Not implemented all stuff needed yet")
+        if tif_metadata is None:
             npyscreen.notify_confirm(
-                "In soax run stage intensity_scaling will need to be set manually, could not find TIFF files in {} at depth {} to set intensity to 1 / tiff data type max value".format(auto_contrast_settings["source_tiff_dir"], img_search_depth),
+                "In soax run stage intensity_scaling will need to be set manually, could not find TIFF files in {} at depth {} to set intensity to 1 / tiff data type max value".format(fields["source_tiff_dir"], img_search_depth),
                 wide=True,
                 editw=1)
         else:
-            self.soax_params_page2_settings["intensity_scaling"] = format(1/tif_max_level, '.9f')
+            tif_max_level = tif_metadata["tif_max_level"]
+            self.soax_params_page2_config["fields"]["intensity_scaling"] = format(1/tif_max_level, '.9f')
+            self.soax_params_page2_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tif {tif_path} is {max_lev} (From input to Auto Contrast step)".format(
+                max_lev=tif_max_level,
+                tif_name=tif_metadata["tif_name"],
+            )
 
         self.goToNextMenu()
 
     def startRescaleSetup(self):
         self.addForm('RESCALE_SETUP', RescaleSetupForm, name='Rescale Setup')
-        self.getForm('RESCALE_SETUP').configure(self.rescale_settings, self.make_dirs)
+        self.getForm('RESCALE_SETUP').configure(self.rescale_config, self.make_dirs)
         self.setNextForm('RESCALE_SETUP')
 
-    def RescaleSetupDone(self, rescale_settings):
-        self.rescale_settings = rescale_settings
+    def rescaleSetupDone(self, fields):
+        self.rescale_config["fields"] = fields
 
-        self.sectioning_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
-        self.soax_run_settings["source_tiff_dir"] = rescale_settings["target_tiff_dir"]
+        self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+        self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
 
         self.goToNextMenu()
 
     def startSectioningSetup(self):
         self.addForm('SECTIONING_SETUP', SectioningSetupForm, name='Sectioning Setup')
-        self.getForm('SECTIONING_SETUP').configure(self.sectioning_settings, self.make_dirs)
+        self.getForm('SECTIONING_SETUP').configure(self.sectioning_config, self.make_dirs)
         self.setNextForm('SECTIONING_SETUP')
 
-    def sectioningSetupDone(self, sectioning_settings):
-        self.sectioning_settings = sectioning_settings
-        self.soax_run_settings["source_tiff_dir"] = sectioning_settings["target_sectioned_tiff_dir"]
-        self.soax_run_settings["use_subdirs"] = "yes"
+    def sectioningSetupDone(self, fields):
+        self.sectioning_config["fields"] = fields
+        self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_sectioned_tiff_dir"]
+        self.soax_run_config["fields"]["use_subdirs"] = "yes"
 
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage1(self):
         self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/2")
-        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_settings, self.make_dirs)
+        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_config, self.make_dirs)
         self.setNextForm('PARAM_SETUP_PAGE_1')
 
-    def soaxParamsSetupPage1Done(self, soax_params_page1_settings):
-        self.params_page1_settings = soax_params_page1_settings
-        self.soax_run_settings["param_files_dir"] = soax_params_page1_settings["params_save_dir"]
+    def soaxParamsSetupPage1Done(self, fields):
+        self.params_page1_config["fields"] = fields
+        self.soax_run_config["fields"]["param_files_dir"] = fields["params_save_dir"]
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage2(self):
         self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/2")
-        self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_settings, self.make_dirs)
+        self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_config, self.make_dirs)
         self.setNextForm('PARAM_SETUP_PAGE_2')
 
-    def soaxParamsSetupPage2Done(self, soax_params_page2_settings):
-        self.soax_params_page2_settings = soax_params_page2_settings
+    def soaxParamsSetupPage2Done(self, fields):
+        self.soax_params_page2_config["fields"] = fields
         self.goToNextMenu()
 
     def startSoaxRunSetup(self):
         self.addForm('SOAX_RUN_SETUP', SoaxRunSetupForm, name="SOAX Run Setup")
-        self.getForm('SOAX_RUN_SETUP').configure(self.soax_run_settings, self.make_dirs)
+        self.getForm('SOAX_RUN_SETUP').configure(self.soax_run_config, self.make_dirs)
         self.setNextForm('SOAX_RUN_SETUP')
 
-    def soaxRunSetupDone(self, soax_run_settings):
-        self.soax_run_settings = soax_run_settings
-        self.snakes_to_json_settings["source_snakes_dir"] = soax_run_settings["target_snakes_dir"]
+    def soaxRunSetupDone(self, fields):
+        self.soax_run_config["fields"] = fields
+        self.snakes_to_json_config["fields"]["source_snakes_dir"] = fields["target_snakes_dir"]
 
-        if soax_run_settings["use_subdirs"] == "yes":
-            self.snakes_to_json_settings["source_snakes_depth"] = "2"
+        if fields["use_subdirs"] == "yes":
+            self.snakes_to_json_config["fields"]["source_snakes_depth"] = "2"
         else:
-            self.snakes_to_json_settings["source_snakes_depth"] = "1"
+            self.snakes_to_json_config["fields"]["source_snakes_depth"] = "1"
 
         self.goToNextMenu()
 
     def startSnakesToJsonSetup(self):
         self.addForm('SNAKES_TO_JSON_SETUP', SnakesToJsonSetupForm, name="Snakes to JSON Setup")
-        self.getForm('SNAKES_TO_JSON_SETUP').configure(self.snakes_to_json_settings, self.make_dirs)
+        self.getForm('SNAKES_TO_JSON_SETUP').configure(self.snakes_to_json_config, self.make_dirs)
         self.setNextForm('SNAKES_TO_JSON_SETUP')
 
-    def snakesToJsonSetupDone(self, snakes_to_json_settings):
-        self.snakes_to_json_settings = snakes_to_json_settings
+    def snakesToJsonSetupDone(self, config):
+        self.snakes_to_json_config["fields"] = config
 
-        target_json_dir = snakes_to_json_settings["target_json_dir"]
-        self.join_sectioned_snakes_settings["source_json_dir"] = target_json_dir
-        self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
+        target_json_dir = config["target_json_dir"]
+        self.join_sectioned_snakes_config["fields"]["source_json_dir"] = target_json_dir
+        self.make_orientation_fields_config["fields"]["source_json_dir"] = target_json_dir
 
-        output_jsons_depth = snakes_to_json_settings["source_snakes_depth"]
-        self.join_sectioned_snakes_settings["source_jsons_depth"] = output_jsons_depth
-        self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
+        output_jsons_depth = config["source_snakes_depth"]
+        self.join_sectioned_snakes_config["fields"]["source_jsons_depth"] = output_jsons_depth
+        self.make_orientation_fields_config["fields"]["source_json_dir"] = output_jsons_depth
 
         self.goToNextMenu()
 
     def startJoinSectionedSnakesSetup(self):
         self.addForm('JOIN_SECTIONED_SNAKES_SETUP', JoinSectionedSnakesSetupForm, name="Join Sectioned Snakes Setup")
-        self.getForm('JOIN_SECTIONED_SNAKES_SETUP').configure(self.join_sectioned_snakes_settings, self.make_dirs)
+        self.getForm('JOIN_SECTIONED_SNAKES_SETUP').configure(self.join_sectioned_snakes_config, self.make_dirs)
         self.setNextForm('JOIN_SECTIONED_SNAKES_SETUP')
 
-    def joinSectionedSnakesSetupDone(self, join_sectioned_snakes_settings):
-        self.join_sectioned_snakes_settings = join_sectioned_snakes_settings
+    def joinSectionedSnakesSetupDone(self, fields):
+        self.join_sectioned_snakes_config["fields"] = fields
 
-        target_json_dir = join_sectioned_snakes_settings["target_json_dir"]
-        self.make_orientation_fields_settings["source_json_dir"] = target_json_dir
+        target_json_dir = fields["target_json_dir"]
+        self.make_orientation_fields_config["fields"]["source_json_dir"] = target_json_dir
 
         # Output jsons are one directory less deep since they've been joined
-        output_jsons_depth = str(int(join_sectioned_snakes_settings["source_jsons_depth"]) - 1)
-        self.make_orientation_fields_settings["source_json_dir"] = output_jsons_depth
+        output_jsons_depth = str(int(fields["source_jsons_depth"]) - 1)
+        self.make_orientation_fields_config["fields"]["source_json_dir"] = output_jsons_depth
 
         self.goToNextMenu()
 
     def startMakeOrientationFieldsSetup(self):
         self.addForm('MAKE_ORIENTATION_FIELDS', MakeOrientationFieldsSetupForm, name="Make Orientation Fields Setup")
-        self.getForm('MAKE_ORIENTATION_FIELDS').configure(self.make_orientation_fields_settings, self.make_dirs)
+        self.getForm('MAKE_ORIENTATION_FIELDS').configure(self.make_orientation_fields_config, self.make_dirs)
         self.setNextForm('MAKE_ORIENTATION_FIELDS')
 
-    def makeOrientationFieldsSetupDone(self, make_orientation_fields_settings):
-        self.make_orientation_fields_settings = make_orientation_fields_settings
+    def makeOrientationFieldsSetupDone(self, fields):
+        self.make_orientation_fields_config = fields
         self.goToNextMenu()
 
     def startBeadPivAutoContrastSetup(self):
         self.addForm('BEAD_PIV_AUTO_CONTRAST_SETUP', BeadPivAutoContrastSetupForm, name="Bead PIV Auto Contrast")
-        self.getForm('BEAD_PIV_AUTO_CONTRAST_SETUP').configure(self.bead_piv_auto_contrast_settings, self.make_dirs)
+        self.getForm('BEAD_PIV_AUTO_CONTRAST_SETUP').configure(self.bead_piv_auto_contrast_config, self.make_dirs)
         self.setNextForm('BEAD_PIV_AUTO_CONTRAST_SETUP')
 
-    def beadPivAutoContrastSetupDone(self, bead_piv_auto_contrast_settings):
-        self.bead_piv_auto_contrast_settings = bead_piv_auto_contrast_settings
+    def beadPivAutoContrastSetupDone(self, fields):
+        self.bead_piv_auto_contrast_config["fields"] = fields
 
-        self.bead_PIV_settings["source_tiff_dir"] = bead_piv_auto_contrast_settings["target_tiff_dir"]
+        self.bead_PIV_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
 
         self.goToNextMenu()
 
     def startTubePivAutoContrastSetup(self):
         self.addForm('TUBE_PIV_AUTO_CONTRAST_SETUP', TubePivAutoContrastSetupForm, name="Tube PIV Auto Contrast")
-        self.getForm('TUBE_PIV_AUTO_CONTRAST_SETUP').configure(self.tube_piv_auto_contrast_settings, self.make_dirs)
+        self.getForm('TUBE_PIV_AUTO_CONTRAST_SETUP').configure(self.tube_piv_auto_contrast_config, self.make_dirs)
         self.setNextForm('TUBE_PIV_AUTO_CONTRAST_SETUP')
 
-    def tubePivAutoContrastSetupDone(self, tube_piv_auto_contrast_settings):
-        self.tube_piv_auto_contrast_settings = tube_piv_auto_contrast_settings
+    def tubePivAutoContrastSetupDone(self, fields):
+        self.tube_piv_auto_contrast_config["fields"] = fields
 
-        self.tube_PIV_settings["source_tiff_dir"] = tube_piv_auto_contrast_settings["target_tiff_dir"]
+        self.tube_PIV_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
 
         self.goToNextMenu()
 
     def startBeadPIVSetup(self):
         self.addForm('BEAD_PIV_SETUP', BeadPIVSetupForm, name="Bead PIV Setup")
-        self.getForm('BEAD_PIV_SETUP').configure(self.bead_PIV_settings, self.make_dirs)
+        self.getForm('BEAD_PIV_SETUP').configure(self.bead_PIV_config, self.make_dirs)
         self.setNextForm('BEAD_PIV_SETUP')
 
-    def beadPIVSetupDone(self, bead_PIV_settings):
-        self.bead_PIV_settings = bead_PIV_settings
+    def beadPIVSetupDone(self, fields):
+        self.bead_PIV_config["fields"] = fields
         self.goToNextMenu()
 
     def startTubePIVSetup(self):
         self.addForm('TUBE_PIV_SETUP', TubePIVSetupForm, name="Tube PIV Setup")
-        self.getForm('TUBE_PIV_SETUP').configure(self.tube_PIV_settings, self.make_dirs)
+        self.getForm('TUBE_PIV_SETUP').configure(self.tube_PIV_config, self.make_dirs)
         self.setNextForm('TUBE_PIV_SETUP')
 
-    def tubePIVSetupDone(self, tube_PIV_settings):
-        self.tube_PIV_settings = tube_PIV_settings
+    def tubePIVSetupDone(self, fields):
+        self.tube_PIV_config["fields"] = fields
         self.goToNextMenu()
