@@ -286,7 +286,7 @@ class SetupForm(npyscreen.Form):
             return parse_pos_int(field_id, field_str)
         elif field_type == "non_neg_int":
             return parse_non_neg_int(field_id, field_str)
-        elif field_type == "arg_or_range" or field_type == "int_arg_or_range":
+        elif (field_type == "arg_or_range") or (field_type == "int_arg_or_range"):
             require_int = (field_type == "int_arg_or_range")
 
             if field_str == "":
@@ -333,7 +333,8 @@ class SetupForm(npyscreen.Form):
             field_type = field_info["type"]
             field_str = field_strings[field_id]
             field_details = field_info["details"] if "details" in field_info else None
-
+            if field_id == "maximum_foreground":
+                raise Exception("field info: {} field strings: {}".format(field_info,field_strings))
             parsed_fields[field_id] = cls.parseField(field_id, field_str, field_type, field_details, make_dirs_if_not_present)
 
         return parsed_fields
