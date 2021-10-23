@@ -287,7 +287,7 @@ class SetupForm(npyscreen.Form):
         elif field_type == "non_neg_int":
             return parse_non_neg_int(field_id, field_str)
         elif field_type == "arg_or_range" or field_type == "int_arg_or_range":
-            require_int = field_type == "int_arg_or_range"
+            require_int = (field_type == "int_arg_or_range")
 
             if field_str == "":
                 raise ParseException("'{}' is a required field")
