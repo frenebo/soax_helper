@@ -32,17 +32,16 @@ from setup_app import (
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
-    # if action_name == "rescale_tiffs":
-    #     parsed_rescale_tiffs = RescaleSetupForm.parseSettings(setting_strings, make_dirs)
-    #     rescale_tiffs(
-    #         parsed_z_rescale_settings["batch_resample_path"],
-    #         parsed_z_rescale_settings["source_tiff_dir"],
-    #         parsed_z_rescale_settings["target_tiff_dir"],
-    #         parsed_z_rescale_settings["xy_factor"],
-    #         parsed_z_rescale_settings["z_factor"],
-    #         logger=logger,
-    #     )
-    if action_name == "auto_contrast_tiffs":
+    if action_name == "rescale_tiffs":
+        parsed_rescale_tiffs_settings = RescaleSetupForm.parseSettings(setting_strings, make_dirs)
+        rescale_tiffs(
+            parsed_rescale_tiffs_settings["source_tiff_dir"],
+            parsed_rescale_tiffs_settings["target_tiff_dir"],
+            parsed_rescale_tiffs_settings["input_dims"],
+            parsed_rescale_tiffs_settings["output_dims"],
+            logger=logger,
+        )
+    elif action_name == "auto_contrast_tiffs":
         parsed_auto_contrast_settings = AutoContrastSetupForm.parseSettings(setting_strings, make_dirs)
         auto_contrast_tiffs(
             parsed_auto_contrast_settings["source_tiff_dir"],
