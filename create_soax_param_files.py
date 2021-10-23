@@ -67,7 +67,6 @@ def create_soax_param_files(
     minimum_angle_for_soac_linking_start_stop_step,
     logger=PrintLogger
     ):
-    raise Exception("Need to create all ranges")
 
     # Fields that can have start-stop-step values have params created
     # for all possible combos of values
