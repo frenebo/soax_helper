@@ -9,7 +9,7 @@ from snakeutils.logger import PrintLogger
 from snakeutils.files import pil_img_3d_to_np_arr, has_one_of_extensions
 from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
 
-def auto_contrast_instance(arg_dict):
+def auto_contrast_single_tiff(arg_dict):
     source_dir   = arg_dict["source_dir"]
     tiff_fn      = arg_dict["tiff_fn"]
     target_dir   = arg_dict["target_dir"]
@@ -103,5 +103,5 @@ def auto_contrast_tiffs(
 
     with ThreadPool(workers_num) as pool:
         logger.log("Making future")
-        future = pool.map(auto_contrast_instance, contrast_arg_dicts)
+        future = pool.map(auto_contrast_single_tiff, contrast_arg_dicts)
         logger.log("Future finished")
