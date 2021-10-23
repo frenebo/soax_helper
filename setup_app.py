@@ -518,7 +518,7 @@ class SoaxParamsSetupPage1Form(SetupForm):
         {
             "id": "maximum_foreground",
             "type": "int_arg_or_range",
-        }
+        },
         {
             "id": "minimum_foreground",
             "type": "int_arg_or_range",
