@@ -497,7 +497,7 @@ class SectioningSetupForm(SetupForm):
 class SoaxParamsSetupPage1Form(SetupForm):
     field_infos = [
         {
-            "id": "intensity_scsaling",
+            "id": "intensity_scaling",
             "type": "arg_or_range",
             "help": [
                 "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling",
