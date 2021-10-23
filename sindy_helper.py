@@ -42,7 +42,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     #         parsed_z_rescale_settings["z_factor"],
     #         logger=logger,
     #     )
-    elif action_name == "auto_contrast_tiffs":
+    if action_name == "auto_contrast_tiffs":
         parsed_auto_contrast_settings = AutoContrastSetupForm.parseSettings(setting_strings, make_dirs)
         auto_contrast_tiffs(
             parsed_auto_contrast_settings["source_tiff_dir"],
