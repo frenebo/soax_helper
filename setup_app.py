@@ -904,14 +904,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "ridge_threshold": "0.01",
                 "maximum_foreground": "65535",
                 "minimum_foreground": "0",
+                "init_z": "true",
             },
             "notes": {},
         }
         self.soax_params_page2_config = {
             "fields": {
-                "min_snake_length": "20",
-                "init_z": "true",
                 "snake_point_spacing": "5",
+                "min_snake_length": "20",
                 "maximum_iterations": "10000",
                 "change_threshold": "0.1",
                 "check_period": "100",
