@@ -424,6 +424,8 @@ class SetupForm(npyscreen.Form):
             return self.npy_fields[field_id].value
         elif field_type in ["true_false"]:
             return "yes" if (0 in self.npy_fields[field_id].value) else "no"
+        else:
+            raise Exception("Don't know what to do with field_type {}".format(field_type))
 
     def getFieldStrings(self):
         field_strings = {}
