@@ -1081,7 +1081,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 max_lev=tif_max_level,
                 tif_path=tif_metadata["tif_path"],
             )
-            self.rescale_config["fields"]["input_dims"] = tif_metadata["dims"]
+            self.rescale_config["fields"]["input_dims"] = ",".join([int(dim) for dim in tif_metadata["dims"]])
 
         self.goToNextMenu()
 
