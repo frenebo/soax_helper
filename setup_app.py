@@ -412,7 +412,7 @@ class RescaleSetupForm(SetupForm):
         },
         {
             "id": "output_dims",
-            "help": "Dimensions to resize tiffs to"
+            "help": "Dimensions to resize tiffs to",
             "type": "int_coords"
         },
     ]
