@@ -13,10 +13,10 @@ import numpy as np
 from snakeutils.logger import PrintLogger
 
 def rescale_tiffs(
-    parsed_rescale_tiffs_settings["source_tiff_dir"],
-    parsed_rescale_tiffs_settings["target_tiff_dir"],
-    parsed_rescale_tiffs_settings["input_dims"],
-    parsed_rescale_tiffs_settings["output_dims"],
+    source_tiff_dir,
+    target_tiff_dir,
+    input_dims,
+    output_dims,
     logger=PrintLogger,
     ):
     raise NotImplementedError()
