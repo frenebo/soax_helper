@@ -254,9 +254,9 @@ class SetupForm(npyscreen.Form):
                 check_dir_field(field_id, field_str, make_dirs_if_not_present)
                 return field_str
         elif field_type == "true_false":
-            if field_str != "true" and field_str != "false":
+            if field_str.lower() != "true" and field_str.lower() != "false":
                 raise ParseException("Error parsing {}: value must be 'yes' or 'no', is '{}'".format(field_id, field_str))
-            return True if field_str == "true" else False
+            return True if field_str.lower() == "true" else False
         elif field_type == "text":
             if len(field_str.strip()) == 0:
                 raise ParseException("Invalid text field '{}' value '{}': value is empty".format(field_id, field_str))
@@ -1004,6 +1004,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "settings": {
                     **self.soax_params_page1_config["fields"],
                     **self.soax_params_page2_config["fields"],
+                    **self.soax_params_page3_config["fields"],
+                    **self.soax_params_page4_config["fields"],
                 },
             })
         if self.do_run_soax:

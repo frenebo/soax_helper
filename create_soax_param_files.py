@@ -80,194 +80,206 @@ def param_form_settings(start,stop,step):
     else:
         str_length = stop_digits_before_decimal_pt
 
-    return {"decimal_places":decimal_places,"str_length": str_length}
-
-param_abbreviations = {
-    "alpha": "a",
-    "beta": "b",
-    "gamma": "g",
-    "minimum_foreground": "mf",
-    "ridge_threshold": "rt",
-    "min_snake_length": "minsnakelen",
-    "gaussian_std": "gaussstd",
-    "snake_point_spacing": "sps",
-    "external_factor": "extfac",
-    "intensity_scaling": "intscale",
-    "stretch_factor": "stretchfac",
-}
+    return str_length, decimal_places
 
 def create_soax_param_files(
     target_dir,
+    init_z,
+    damp_z,
+    intensity_scaling_start_stop_step,
+    gaussian_std_start_stop_step,
+    ridge_threshold_start_stop_step,
+    maximum_foreground_start_stop_step,
+    minimum_foreground_start_stop_step,
+    snake_point_spacing_start_stop_step,
+    min_snake_length_start_stop_step,
+    maximum_iterations_start_stop_step,
+    change_threshold_start_stop_step,
+    check_period_start_stop_step,
     alpha_start_stop_step,
     beta_start_stop_step,
     gamma_start_stop_step,
-    minimum_foreground_start_stop_step,
-    ridge_threshold_start_stop_step,
-    min_snake_length_start_stop_step,
-    gaussian_std_start_stop_step,
-    snake_point_spacing_start_stop_step,
     external_factor_start_stop_step,
-    intensity_scaling_start_stop_step,
     stretch_factor_start_stop_step,
+    number_of_background_radial_sectors_start_stop_step,
+    background_z_xy_ratio_start_stop_step,
+    radial_near_start_stop_step,
+    radial_far_start_stop_step,
+    delta_start_stop_step,
+    overlap_threshold_start_stop_step,
+    grouping_distance_threshold_start_stop_step,
+    grouping_delta_start_stop_step,
+    minimum_angle_for_soac_linking_start_stop_step,
     logger=PrintLogger
     ):
-    alphas = create_range(**alpha_start_stop_step)
-    betas = create_range(**beta_start_stop_step)
-    gammas = create_range(**gamma_start_stop_step)
-    minimum_foregrounds = create_range(**minimum_foreground_start_stop_step)
-    ridge_thresholds = create_range(**ridge_threshold_start_stop_step)
-    min_snake_lengths = create_range(**min_snake_length_start_stop_step)
-    gaussian_stds = create_range(**gaussian_std_start_stop_step)
-    snake_point_spacings = create_range(**snake_point_spacing_start_stop_step)
-    external_factors = create_range(**external_factor_start_stop_step)
-    intensity_scalings = create_range(**intensity_scaling_start_stop_step)
-    stretch_factors = create_range(**stretch_factor_start_stop_step)
+    raise Exception("Need to create all ranges")
 
-    alpha_form_settings = param_form_settings(**alpha_start_stop_step)
-    beta_form_settings = param_form_settings(**beta_start_stop_step)
-    gamma_form_settings = param_form_settings(**gamma_start_stop_step)
-    minimum_foreground_settings = param_form_settings(**minimum_foreground_start_stop_step)
-    ridge_threshold_settings = param_form_settings(**ridge_threshold_start_stop_step)
-    min_snake_length_settings = param_form_settings(**min_snake_length_start_stop_step)
-    gaussian_std_settings = param_form_settings(**gaussian_std_start_stop_step)
-    snake_point_spacing_settings = param_form_settings(**snake_point_spacing_start_stop_step)
-    external_factor_settings = param_form_settings(**external_factor_start_stop_step)
-    intensity_scaling_settings = param_form_settings(**intensity_scaling_start_stop_step)
-    stretch_factor_settings = param_form_settings(**stretch_factor_start_stop_step)
+    # Fields that can have start-stop-step values have params created
+    # for all possible combos of values
+    vary_param_infos = [
+        {
+            "name": "intensity_scaling",
+            "startstopstep": intensity_scaling_start_stop_step,
+            "filename_tag": "intscaling",
+        },
+        {
+            "name": "gaussian_std",
+            "startstopstep": gaussian_std_start_stop_step,
+            "filename_tag": "gstd",
+        },
+        {
+            "name": "ridge_threshold",
+            "startstopstep": ridge_threshold_start_stop_step,
+            "filename_tag": "rt",
+        },
+        {
+            "name": "maximum_foreground",
+            "startstopstep": maximum_foreground_start_stop_step,
+            "filename_tag": "maxfore",
+        },
+        {
+            "name": "minimum_foreground",
+            "startstopstep": minimum_foreground_start_stop_step,
+            "filename_tag": "minfore",
+        },
+        {
+            "name": "snake_point_spacing",
+            "startstopstep": snake_point_spacing_start_stop_step,
+            "filename_tag": "sps",
+        },
+        {
+            "name": "min_snake_length",
+            "startstopstep": min_snake_length_start_stop_step,
+            "filename_tag": "minlen",
+        },
+        {
+            "name": "maximum_iterations",
+            "startstopstep": maximum_iterations_start_stop_step,
+            "filename_tag": "maxiter",
+        },
+        {
+            "name": "change_threshold",
+            "startstopstep": change_threshold_start_stop_step,
+            "filename_tag": "cngthresh",
+        },
+        {
+            "name": "check_period",
+            "startstopstep": check_period_start_stop_step,
+            "filename_tag": "ckperiod",
+        },
+        {
+            "name": "alpha",
+            "startstopstep": alpha_start_stop_step,
+            "filename_tag": "a",
+        },
+        {
+            "name": "beta",
+            "startstopstep": beta_start_stop_step,
+            "filename_tag": "b",
+        },
+        {
+            "name": "gamma",
+            "startstopstep": gamma_start_stop_step,
+            "filename_tag": "g",
+        },
+        {
+            "name": "external_factor",
+            "startstopstep": external_factor_start_stop_step,
+            "filename_tag": "extfac",
+        },
+        {
+            "name": "stretch_factor",
+            "startstopstep": stretch_factor_start_stop_step,
+            "filename_tag": "stretchfac",
+        },
+        {
+            "name": "number_of_background_radial_sectors",
+            "startstopstep": number_of_background_radial_sectors_start_stop_step,
+            "filename_tag": "radsectors",
+        },
+        {
+            "name": "background_z_xy_ratio",
+            "startstopstep": background_z_xy_ratio_start_stop_step,
+            "filename_tag": "zxyratio",
+        },
+        {
+            "name": "radial_near",
+            "startstopstep": radial_near_start_stop_step,
+            "filename_tag": "rnear",
+        },
+        {
+            "name": "radial_far",
+            "startstopstep": radial_far_start_stop_step,
+            "filename_tag": "rfar",
+        },
+        {
+            "name": "delta",
+            "startstopstep": delta_start_stop_step,
+            "filename_tag": "delta",
+        },
+        {
+            "name": "overlap_threshold",
+            "startstopstep": overlap_threshold_start_stop_step,
+            "filename_tag": "othresh",
+        },
+        {
+            "name": "grouping_distance_threshold",
+            "startstopstep": grouping_distance_threshold_start_stop_step,
+            "filename_tag": "gdthresh",
+        },
+        {
+            "name": "grouping_delta",
+            "startstopstep": grouping_delta_start_stop_step,
+            "filename_tag": "gddelta",
+        },
+        {
+            "name": "minimum_angle_for_soac_linking",
+            "startstopstep": minimum_angle_for_soac_linking_start_stop_step,
+            "filename_tag": "minang",
+        },
+    ]
+
+    vary_param_values = []
 
     filename_template = "params"
-    # For varied param settings we name param files to tell them part
-    if len(alphas) > 1:
-        print("Alphas: {}".format(alphas))
-        filename_template += "_{abbreviation}{{alpha:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["alpha"],
-            str_length=alpha_form_settings["str_length"],
-            decimals=alpha_form_settings["decimal_places"],
-        )
-    if len(betas) > 1:
-        print("Betas: {}".format(betas))
-        filename_template += "_{abbreviation}{{beta:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["beta"],
-            str_length=beta_form_settings["str_length"],
-            decimals=beta_form_settings["decimal_places"],
-        )
-    if len(gammas) > 1:
-        filename_template += "_{abbreviation}{{gamma:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["gamma"],
-            str_length=gamma_form_settings["str_length"],
-            decimals=gamma_form_settings["decimal_places"],
-        )
-    if len(minimum_foregrounds) > 1:
-        filename_template += "_{abbreviation}{{minimum_foreground:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["minimum_foreground"],
-            str_length=minimum_foreground_settings["str_length"],
-            decimals=minimum_foreground_settings["decimal_places"],
-        )
-    if len(ridge_thresholds) > 1:
-        filename_template += "_{abbreviation}{{ridge_threshold:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["ridge_threshold"],
-            str_length=ridge_threshold_settings["str_length"],
-            decimals=ridge_threshold_settings["decimal_places"],
-        )
-    if len(min_snake_lengths) > 1:
-        filename_template += "_{abbreviation}{{min_snake_length:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["min_snake_length"],
-            str_length=min_snake_length_settings["str_length"],
-            decimals=min_snake_length_settings["decimal_places"],
-        )
-    if len(gaussian_stds) > 1:
-        filename_template += "_{abbreviation}{{gaussian_std:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["gaussian_std"],
-            str_length=gaussian_std_settings["str_length"],
-            decimals=gaussian_std_settings["decimal_places"],
-        )
-    if len(snake_point_spacings) > 1:
-        filename_template += "_{abbreviation}{{snake_point_spacing:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["snake_point_spacing"],
-            str_length=snake_point_spacing_settings["str_length"],
-            decimals=snake_point_spacing_settings["decimal_places"],
-        )
-    if len(external_factors) > 1:
-        filename_template += "_{abbreviation}{{external_factor:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["external_factor"],
-            str_length=external_factor_settings["str_length"],
-            decimals=external_factor_settings["decimal_places"],
-        )
-    if len(intensity_scalings) > 1:
-        filename_template += "_{abbreviation}{{intensity_scaling:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["intensity_scaling"],
-            str_length=intensity_scaling_settings["str_length"],
-            decimals=intensity_scaling_settings["decimal_places"],
-        )
-    if len(stretch_factors) > 1:
-        filename_template += "_{abbreviation}{{stretch_factor:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["stretch_factor"],
-            str_length=stretch_factor_settings["str_length"],
-            decimals=stretch_factor_settings["decimal_places"],
-        )
+    for param_info in vary_param_infos:
+        # Making list of all values
+        param_values = create_range(**param_info["startstopstep"])
+        vary_param_values.append(param_values)
+
+        # If there is more than one value for this parameter,
+        # we incorporate value into param filename so that parameter files
+        # with different parameter values have different names.
+        if len(param_values) > 1:
+            str_length, decimals = param_form_settings(**param_info["startstopstep"])
+            filename_template += "_{filename_tag}{{{name}:0{str_length}.{decimals}f}}".format(
+                name=param_info["name"],
+                filename_tag=param_info["filename_tag"],
+                str_length=str_length,
+                decimals=decimals,
+            )
 
     filename_template += ".txt"
 
     logger.log("Using param filename template {}".format(filename_template))
 
     # all possible combinations of these parameters
-    param_combinations = itertools.product(
-        alphas,
-        betas,
-        gammas,
-        minimum_foregrounds,
-        ridge_thresholds,
-        min_snake_lengths,
-        gaussian_stds,
-        snake_point_spacings,
-        external_factors,
-        intensity_scalings,
-        stretch_factors,
-    )
-    # logger.log("Creating {} different param combinations".format(len(list(param_combinations))))
+    param_combinations = itertools.product( *  vary_param_values)
 
-    for (
-        alpha,
-        beta,
-        gamma,
-        minimum_foreground,
-        ridge_threshold,
-        min_snake_length,
-        gaussian_std,
-        snake_point_spacing,
-        external_factor,
-        intensity_scaling,
-        stretch_factor,
-    ) in param_combinations:
-        params_filename = filename_template.format(
-            alpha=alpha,
-            beta=beta,
-            gamma=gamma,
-            minimum_foreground=minimum_foreground,
-            ridge_threshold=ridge_threshold,
-            min_snake_length=min_snake_length,
-            gaussian_std=gaussian_std,
-            snake_point_spacing=snake_point_spacing,
-            external_factor=external_factor,
-            intensity_scaling=intensity_scaling,
-            stretch_factor=stretch_factor,
-        )
+    for param_combo in param_combinations:
+        param_combo_dict = {}
 
+        for i, param_info in enumerate(vary_param_infos):
+            param_combo_dict[param_info["name"]] = param_combo[i]
+
+        params_filename = filename_template.format(**param_combo_dict)
 
         fp = os.path.join(target_dir, params_filename)
 
         params_text = create_params(
-            alpha=alpha,
-            beta=beta,
-            gamma=gamma,
-            minimum_foreground=minimum_foreground,
-            ridge_threshold=ridge_threshold,
-            min_snake_length=min_snake_length,
-            gaussian_std=gaussian_std,
-            snake_point_spacing=snake_point_spacing,
-            external_factor=external_factor,
-            intensity_scaling=intensity_scaling,
-            stretch_factor=stretch_factor
+            init_z=init_z,
+            damp_z=damp_z,
+            **param_combo_dict,
         )
 
         with open(fp,"w") as file:
