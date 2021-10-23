@@ -1,9 +1,9 @@
-from create_soax_param_files import error_string_or_parse_arg_or_range
 import npyscreen
 import os
 from tiff_info import get_single_tiff_info
 from snakeutils.files import find_files_or_folders_at_depth
 import numpy as np
+import decimal
 
 # For parsing setting strings
 class ParseException(Exception):
@@ -133,6 +133,54 @@ def parse_float_coords(field_name, field_str):
         val.append(item_float)
     return val
 
+
+def error_string_or_arg_or_range(arg, require_int):
+    split_by_dash = arg.split('-')
+
+    # If we only have one value for this argument instead of a  range
+    if len(split_by_dash) == 1:
+        try:
+            only_val = decimal.Decimal(split_by_dash[0])
+        except decimal.InvalidOperation as err:
+            return "Expected {} to be decimal number".format(arg) + repr(err)
+
+        start = only_val
+        stop = only_val
+        step = decimal.Decimal(0)
+    else:
+        if len(split_by_dash) != 3:
+            return "Expected {} to be in form start-stop-step".format(arg)
+        try:
+            start = decimal.Decimal(split_by_dash[0])
+            stop = decimal.Decimal(split_by_dash[1])
+            step = decimal.Decimal(split_by_dash[2])
+        except decimal.InvalidOperation as err:
+            return "Expected {} to be in form start-stop-step. ".format(arg) + repr(err)
+
+    # start of range must be less than or equal to end of range
+    if start > stop:
+        return "Expected start {} to be <= stop {}".format(start,stop)
+    if start != stop and step == 0:
+        return "Step cannot be zero"
+    if start < 0:
+        return "Start value cannot be negative"
+    if stop < 0:
+        return "Stop value cannot be negative"
+
+    if require_int:
+        if math.floor(start) != start or math.floor(stop) != stop or math.floor(step) != step:
+            return "Expected integer values"
+
+    return {"start":start,"stop":stop,"step":step}
+
+# Should be of form 'start-stop-step' or 'value'
+def parse_arg_or_range(field_name, arg, require_int):
+    err_str_or_val = error_string_or_arg_or_range(arg, require_int)
+    if isinstance(err_str_or_val, str):
+        raise ParseException("Error parsing {field_name}: " + err_str_or_val)
+    else:
+        return err_str_or_val
+
 class SoaxStepsSelectForm(npyscreen.Form):
     def configure(self):
         self.select_steps = self.add(
@@ -238,15 +286,13 @@ class SetupForm(npyscreen.Form):
             return parse_pos_int(field_id, field_str)
         elif field_type == "non_neg_int":
             return parse_non_neg_int(field_id, field_str)
-        elif field_type ==  "arg_or_range":
+        elif field_type == "arg_or_range" or field_type == "int_arg_or_range":
+            require_int = field_type == "int_arg_or_range"
+
             if field_str == "":
                 raise ParseException("'{}' is a required field")
 
-            err_str_or_val = error_string_or_parse_arg_or_range(field_str)
-            if isinstance(err_str_or_val, str):
-                raise ParseException("Error parsing {}: {}".format(field_id, err_str_or_val))
-            else:
-                return err_str_or_val
+            return parse_arg_or_range(field_id, field_str, require_int)
         elif field_type == "optional_dir":
             if field_str.strip() == "":
                 return None

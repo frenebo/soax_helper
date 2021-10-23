@@ -1,53 +1,8 @@
-import argparse
 from snakeutils.params import create_params
 from snakeutils.logger import PrintLogger
 import os
-import math
-import decimal
 import itertools
 
-def error_string_or_parse_arg_or_range(arg):
-    split_by_dash = arg.split('-')
-
-    # If we only have one value for this argument instead of a  range
-    if len(split_by_dash) == 1:
-        try:
-            only_val = decimal.Decimal(split_by_dash[0])
-        except decimal.InvalidOperation as err:
-            return "Expected {} to be decimal number".format(arg) + repr(err)
-
-        start = only_val
-        stop = only_val
-        step = decimal.Decimal(0)
-    else:
-        if len(split_by_dash) != 3:
-            return "Expected {} to be in form start-stop-step".format(arg)
-        try:
-            start = decimal.Decimal(split_by_dash[0])
-            stop = decimal.Decimal(split_by_dash[1])
-            step = decimal.Decimal(split_by_dash[2])
-        except decimal.InvalidOperation as err:
-            return "Expected {} to be in form start-stop-step. ".format(arg) + repr(err)
-
-    # start of range must be less than or equal to end of range
-    if start > stop:
-        return "Expected start {} to be <= stop {}".format(start,stop)
-    if start != stop and step == 0:
-        return "Step cannot be zero"
-    if start < 0:
-        return "Start value cannot be negative"
-    if stop < 0:
-        return "Stop value cannot be negative"
-
-    return {"start":start,"stop":stop,"step":step}
-
-# Should be of form 'start-stop-step' or 'value'
-def arg_or_range(arg):
-    err_str_or_val = error_string_or_parse_arg_or_range(arg)
-    if isinstance(err_str_or_val, str):
-        raise argparse.ArgumentTypeError(err_str_or_val)
-    else:
-        return err_str_or_val
 
 def create_range(start,stop,step):
     vals = []
