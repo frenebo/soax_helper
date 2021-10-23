@@ -333,8 +333,6 @@ class SetupForm(npyscreen.Form):
             field_type = field_info["type"]
             field_str = field_strings[field_id]
             field_details = field_info["details"] if "details" in field_info else None
-            if field_id == "maximum_foreground":
-                raise Exception("field info: {} field strings: {}".format(field_info,field_strings))
             parsed_fields[field_id] = cls.parseField(field_id, field_str, field_type, field_details, make_dirs_if_not_present)
 
         return parsed_fields
