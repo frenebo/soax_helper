@@ -684,12 +684,6 @@ class SoaxParamsSetupPage3Form(SetupForm):
 
     app_done_func_name = "soaxParamsSetupPage3Done"
 
-class SoaxParamsSetupPage4Form(SetupForm):
-    field_infos = [
-    ]
-
-    app_done_func_name = "soaxParamsSetupPage4Done"
-
 class SoaxRunSetupForm(SetupForm):
     field_infos = [
         {
@@ -938,11 +932,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             },
             "notes": {},
         }
-        self.soax_params_page4_config = {
-            "fields": {
-            },
-            "notes": {},
-        }
 
         self.soax_run_config = {
             "fields":  {
@@ -1057,7 +1046,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                     **self.soax_params_page1_config["fields"],
                     **self.soax_params_page2_config["fields"],
                     **self.soax_params_page3_config["fields"],
-                    **self.soax_params_page4_config["fields"],
                 },
             })
         if self.do_run_soax:
@@ -1168,7 +1156,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startSoaxParamsSetupPage1)
             self.menu_functions.append(self.startSoaxParamsSetupPage2)
             self.menu_functions.append(self.startSoaxParamsSetupPage3)
-            self.menu_functions.append(self.startSoaxParamsSetupPage4)
         if self.do_run_soax:
             self.menu_functions.append(self.startSoaxRunSetup)
         if self.do_snakes_to_json:
@@ -1296,15 +1283,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def soaxParamsSetupPage3Done(self, fields):
         self.soax_params_page3_config["fields"] = fields
-        self.goToNextMenu()
-
-    def startSoaxParamsSetupPage4(self):
-        self.addForm('PARAM_SETUP_PAGE_4', SoaxParamsSetupPage4Form, name="SOAX Params Setup Page 4/4")
-        self.getForm('PARAM_SETUP_PAGE_4').configure(self.soax_params_page4_config, self.make_dirs)
-        self.setNextForm('PARAM_SETUP_PAGE_4')
-
-    def soaxParamsSetupPage4Done(self, fields):
-        self.soax_params_page4_config["fields"] = fields
         self.goToNextMenu()
 
     def startSoaxRunSetup(self):

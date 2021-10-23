@@ -25,7 +25,6 @@ from setup_app import (
     SoaxParamsSetupPage1Form,
     SoaxParamsSetupPage2Form,
     SoaxParamsSetupPage3Form,
-    SoaxParamsSetupPage4Form,
     SoaxRunSetupForm,
     SnakesToJsonSetupForm,
     JoinSectionedSnakesSetupForm,
@@ -67,13 +66,11 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         parsed_page1_params_settings = SoaxParamsSetupPage1Form.parseSettings(setting_strings, make_dirs)
         parsed_page2_params_settings = SoaxParamsSetupPage2Form.parseSettings(setting_strings, make_dirs)
         parsed_page3_params_settings = SoaxParamsSetupPage3Form.parseSettings(setting_strings, make_dirs)
-        parsed_page4_params_settings = SoaxParamsSetupPage4Form.parseSettings(setting_strings, make_dirs)
 
         parsed_params_settings = {
             **parsed_page1_params_settings,
             **parsed_page2_params_settings,
             **parsed_page3_params_settings,
-            **parsed_page4_params_settings,
         }
 
         create_soax_param_files(
