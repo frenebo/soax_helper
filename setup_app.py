@@ -638,16 +638,16 @@ class SoaxParamsSetupPage2Form(SetupForm):
             "id": "number_of_background_radial_sectors",
             "type": "int_arg_or_range",
         },
-        {
-            "id": "background_z_xy_ratio",
-            "type": "arg_or_range",
-        },
     ]
 
     app_done_func_name = "soaxParamsSetupPage2Done"
 
 class SoaxParamsSetupPage3Form(SetupForm):
     field_infos = [
+        {
+            "id": "background_z_xy_ratio",
+            "type": "arg_or_range",
+        },
         {
             "id": "radial_near",
             "type": "arg_or_range",
@@ -921,12 +921,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "external_factor": "1",
                 "stretch_factor": "0.2",
                 "number_of_background_radial_sectors": "8",
-                "background_z_xy_ratio": "1",
             },
             "notes": {},
         }
         self.soax_params_page3_config = {
             "fields": {
+                "background_z_xy_ratio": "1",
                 "radial_near": "4",
                 "radial_far": "8",
             },
