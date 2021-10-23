@@ -656,12 +656,6 @@ class SoaxParamsSetupPage3Form(SetupForm):
             "id": "radial_far",
             "type": "arg_or_range",
         },
-    ]
-
-    app_done_func_name = "soaxParamsSetupPage3Done"
-
-class SoaxParamsSetupPage4Form(SetupForm):
-    field_infos = [
         {
             "id": "delta",
             "type": "int_arg_or_range",
@@ -686,6 +680,12 @@ class SoaxParamsSetupPage4Form(SetupForm):
             "id": "damp_z",
             "type": "true_false",
         },
+    ]
+
+    app_done_func_name = "soaxParamsSetupPage3Done"
+
+class SoaxParamsSetupPage4Form(SetupForm):
+    field_infos = [
     ]
 
     app_done_func_name = "soaxParamsSetupPage4Done"
@@ -929,17 +929,17 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "background_z_xy_ratio": "1",
                 "radial_near": "4",
                 "radial_far": "8",
-            },
-            "notes": {},
-        }
-        self.soax_params_page4_config = {
-            "fields": {
                 "delta": "4",
                 "overlap_threshold": "1",
                 "grouping_distance_threshold": "4",
                 "grouping_delta": "8",
                 "minimum_angle_for_soac_linking": "2.1",
                 "damp_z": "false",
+            },
+            "notes": {},
+        }
+        self.soax_params_page4_config = {
+            "fields": {
             },
             "notes": {},
         }
