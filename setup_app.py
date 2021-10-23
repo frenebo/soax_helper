@@ -291,8 +291,10 @@ class SetupForm(npyscreen.Form):
 
             if field_str == "":
                 raise ParseException("'{}' is a required field")
-
-            return parse_arg_or_range(field_id, field_str, require_int)
+            try:
+                return parse_arg_or_range(field_id, field_str, require_int)
+            except AttributeError:
+                raise Exception("id: {}, str: {}, require int: {}".format(field_id, field_str, require_int))
         elif field_type == "optional_dir":
             if field_str.strip() == "":
                 return None
