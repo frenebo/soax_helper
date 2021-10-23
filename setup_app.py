@@ -584,16 +584,16 @@ class SoaxParamsSetupPage1Form(SetupForm):
             "id": "minimum_foreground",
             "type": "int_arg_or_range",
         },
-        {
-            "id": "init_z",
-            "type": "true_false",
-        },
     ]
 
     app_done_func_name = "soaxParamsSetupPage1Done"
 
 class SoaxParamsSetupPage2Form(SetupForm):
     field_infos = [
+        {
+            "id": "init_z",
+            "type": "true_false",
+        },
         {
             "id": "snake_point_spacing",
             "type": "arg_or_range",
@@ -634,16 +634,16 @@ class SoaxParamsSetupPage2Form(SetupForm):
             "id": "stretch_factor",
             "type": "arg_or_range",
         },
-        {
-            "id": "number_of_background_radial_sectors",
-            "type": "int_arg_or_range",
-        },
     ]
 
     app_done_func_name = "soaxParamsSetupPage2Done"
 
 class SoaxParamsSetupPage3Form(SetupForm):
     field_infos = [
+        {
+            "id": "number_of_background_radial_sectors",
+            "type": "int_arg_or_range",
+        },
         {
             "id": "background_z_xy_ratio",
             "type": "arg_or_range",
@@ -904,12 +904,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "ridge_threshold": "0.01",
                 "maximum_foreground": "65535",
                 "minimum_foreground": "0",
-                "init_z": "true",
             },
             "notes": {},
         }
         self.soax_params_page2_config = {
             "fields": {
+                "init_z": "true",
                 "snake_point_spacing": "5",
                 "min_snake_length": "20",
                 "maximum_iterations": "10000",
@@ -920,12 +920,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "gamma": "2",
                 "external_factor": "1",
                 "stretch_factor": "0.2",
-                "number_of_background_radial_sectors": "8",
             },
             "notes": {},
         }
         self.soax_params_page3_config = {
             "fields": {
+                "number_of_background_radial_sectors": "8",
                 "background_z_xy_ratio": "1",
                 "radial_near": "4",
                 "radial_far": "8",
