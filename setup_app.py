@@ -1276,7 +1276,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('PARAM_SETUP_PAGE_1')
 
     def soaxParamsSetupPage1Done(self, fields):
-        self.params_page1_config["fields"] = fields
+        self.soax_params_page1_config["fields"] = fields
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage2(self):
