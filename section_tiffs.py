@@ -1,12 +1,19 @@
-import math
 from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
+from snakeutils.logger import PrintLogger
+
+import math
+from multiprocessing.pool import ThreadPool
 import os
 import numpy as np
 from PIL import Image
 import tifffile
-from snakeutils.logger import PrintLogger
 
-def section_tiff(tiff_filepath,sectioned_dir,section_max_size,logger):
+def section_tiff(arg_dict):
+    tiff_filepath = arg_dict["tiff_filepath"]
+    sectioned_dir = arg_dict["sectioned_dir"]
+    section_max_size = arg_dict["section_max_size"]
+    logger = arg_dict["logger"]
+
     logger.log("Processing {}".format(tiff_filepath))
 
     pil_img = Image.open(tiff_filepath)
@@ -75,12 +82,20 @@ def section_tiff(tiff_filepath,sectioned_dir,section_max_size,logger):
         section_num,
         sectioned_dir))
 
-def section_tiffs(section_max_size,source_dir,target_dir,logger=PrintLogger):
+def section_tiffs(
+    section_max_size,
+    source_dir,
+    target_dir,
+    workers_num,
+    logger=PrintLogger,
+    ):
     if section_max_size <= 0:
         logger.FAIL("Section max size must be positive. Invalid value {}".format(section_size))
 
     source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
     source_tifs.sort()
+
+    section_arg_dicts = []
 
     for tiff_fn in source_tifs:
         tiff_fp = os.path.join(source_dir,tiff_fn)
@@ -95,4 +110,14 @@ def section_tiffs(section_max_size,source_dir,target_dir,logger=PrintLogger):
 
         os.mkdir(sectioned_dir)
 
-        section_tiff(tiff_fp,sectioned_dir,section_max_size,logger)
+        section_arg_dicts.append({
+            "tiff_filepath": tiff_fp,
+            "sectioned_dir": sectioned_dir,
+            "section_max_size": section_max_size,
+            "logger": logger,
+        })
+
+    with ThreadPool(workers_num) as pool:
+        logger.log("Making future")
+        future = pool.map(section_arg_dicts, contrast_arg_dicts)
+        logger.log("Future finished")

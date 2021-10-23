@@ -58,6 +58,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_sectioning_settings["section_max_size"],
             parsed_sectioning_settings["source_tiff_dir"],
             parsed_sectioning_settings["target_sectioned_tiff_dir"],
+            parsed_sectioning_settings["workers_num"],
             logger=logger,
         )
     elif action_name == "create_soax_param_files":

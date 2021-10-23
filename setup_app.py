@@ -486,7 +486,11 @@ class SectioningSetupForm(SetupForm):
         {
             "id": "section_max_size",
             "type": "pos_int",
-        }
+        },
+        {
+            "id": "workers_num",
+            "type": "pos_int",
+        },
     ]
 
     app_done_func_name = "sectioningSetupDone"
@@ -764,6 +768,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "source_tiff_dir": "",
                 "target_sectioned_tiff_dir": "./SectionedTIFFs",
                 "section_max_size": "200",
+                "workers_num": "1",
             },
             "notes": {},
         }
