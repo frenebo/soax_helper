@@ -23,6 +23,8 @@ from setup_app import (
     SectioningSetupForm,
     SoaxParamsSetupPage1Form,
     SoaxParamsSetupPage2Form,
+    SoaxParamsSetupPage3Form,
+    SoaxParamsSetupPage4Form,
     SoaxRunSetupForm,
     SnakesToJsonSetupForm,
     JoinSectionedSnakesSetupForm,
