@@ -549,6 +549,15 @@ class SectioningSetupForm(SetupForm):
 class SoaxParamsSetupPage1Form(SetupForm):
     field_infos = [
         {
+            "id": "params_save_dir",
+            "type": "dir",
+            "help": [
+                "Enter SOAX run parameters to try.",
+                "Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)",
+                "If ranges are given, soax will be run multiple times, trying all combinations of parameter values",
+            ],
+        },
+        {
             "id": "intensity_scaling",
             "type": "arg_or_range",
             "help": [
@@ -676,15 +685,6 @@ class SoaxParamsSetupPage4Form(SetupForm):
         {
             "id": "damp_z",
             "type": "true_false",
-        },
-        {
-            "id": "params_save_dir",
-            "type": "dir",
-            "help": [
-                "Enter SOAX run parameters to try.",
-                "Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)",
-                "If ranges are given, soax will be run multiple times, trying all combinations of parameter values",
-            ],
         },
     ]
 
@@ -898,6 +898,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.soax_params_page1_config = {
             "fields": {
+                "params_save_dir": "./Params",
                 "intensity_scaling": "0.0",
                 "gaussian_std": "0",
                 "ridge_threshold": "0.01",
@@ -939,7 +940,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "grouping_delta": "8",
                 "minimum_angle_for_soac_linking": "2.1",
                 "damp_z": "false",
-                "params_save_dir": "./Params",
             },
             "notes": {},
         }
@@ -1277,6 +1277,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def soaxParamsSetupPage1Done(self, fields):
         self.soax_params_page1_config["fields"] = fields
+        self.soax_run_config["fields"]["param_files_dir"] = fields["params_save_dir"]
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage2(self):
@@ -1304,7 +1305,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def soaxParamsSetupPage4Done(self, fields):
         self.soax_params_page4_config["fields"] = fields
-        self.soax_run_config["fields"]["param_files_dir"] = fields["params_save_dir"]
         self.goToNextMenu()
 
     def startSoaxRunSetup(self):
