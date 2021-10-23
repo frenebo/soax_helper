@@ -417,6 +417,7 @@ class SetupForm(npyscreen.Form):
             "pos_int",
             "non_neg_int",
             "arg_or_range",
+            "int_arg_or_range",
             "text",
             "letter",
         ]:
