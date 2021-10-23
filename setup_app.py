@@ -313,6 +313,9 @@ class SetupForm(npyscreen.Form):
             "arg_or_range",
             "text",
             "letter",
+            "int_coords",
+            "infer_or_int_coords",
+            "float_coords",
         ]:
             self.npy_fields[field_id] = self.add(
                 npyscreen.TitleText,
