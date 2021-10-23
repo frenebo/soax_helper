@@ -144,7 +144,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
                 "Auto Contrast Raw TIFFs",
                 "Rescale TIFFs in X,Y,Z",
                 "Section TIFFs before running SOAX",
-                "Create Parameter Files",
+                "Make SOAX Parameter Files",
                 "Run SOAX",
                 "Convert Snake files to JSON",
                 "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
@@ -438,7 +438,6 @@ class RescaleSetupForm(SetupForm):
     ]
 
     app_done_func_name = "rescaleSetupDone"
-
 
 class AutoContrastSetupForm(SetupForm):
     field_infos = [
