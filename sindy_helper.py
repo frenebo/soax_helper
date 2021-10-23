@@ -15,6 +15,7 @@ from make_orientation_fields import make_orientation_fields
 from sindy_matrices_from_snakes import sindy_matrices_from_snakes
 from bead_piv import bead_piv
 from tube_piv import tube_piv
+from create_soax_param_files import create_soax_param_files
 
 from setup_app import (
     SoaxSetupApp,
