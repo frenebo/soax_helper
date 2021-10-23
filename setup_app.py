@@ -9,6 +9,10 @@ import numpy as np
 class ParseException(Exception):
     pass
 
+# For when you might ask user if they want to make a directory
+class DirectoryDoesNotExistParseException(Exception):
+    pass
+
 # For fields that ask for a directory
 def check_dir_field(field_name, dir_string, make_dir_if_not_present):
     if dir_string == "":
@@ -23,7 +27,7 @@ def check_dir_field(field_name, dir_string, make_dir_if_not_present):
                 except Exception as e:
                     raise ParseException("Could not make directory {}: {}".format(dir_string, repr(e)))
             else:
-                raise ParseException("Directory '{}' does not exist".format(dir_string))
+                raise DirectoryDoesNotExistParseException(dir_string)
 
 def check_file_field(field_name, file_path):
     if file_path == "":
@@ -385,8 +389,21 @@ class SetupForm(npyscreen.Form):
         try:
             self.parseSettings(self.getFieldStrings(), self.make_dirs_if_not_present)
         except ParseException as e:
-            npyscreen.notify_confirm(str(e),editw=1)
-            return
+            if isinstance(e, DirectoryDoesNotExistParseException):
+                dirpath = str(e)
+                should_make_dir = npyscreen.notify_yes_no(str("Directory {} does not exist. Create?").format(dirpath))
+                # Make dirs and try again
+                if should_make_dir:
+                    os.makedirs(dirpath)
+                    self.afterEditing()
+                    return
+                # Just send user back to menu by returning
+                else:
+                    return
+            # Send user bacck to menu by returning
+            else:
+                npyscreen.notify_confirm(str(e),editw=1)
+                return
         if not hasattr(self, "app_done_func_name"):
             raise Exception("Parent app does not have a done function named '{}'".format(app_done_func_name))
         if self.app_done_func_name is None:
