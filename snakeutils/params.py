@@ -4,7 +4,7 @@ def create_params(
     gaussian_std=0,
     ridge_threshold=0.01,
     maximum_foreground=65535,
-    min_foreground=10,
+    minimum_foreground=10,
     init_z=True,
     snake_point_spacing=5,
     min_snake_length=20,
@@ -31,7 +31,7 @@ def create_params(
 gaussian-std	{gaussian_std}
 ridge-threshold	{ridge_threshold}
 maximum-foreground	{maximum_foreground}
-minimum-foreground	{min_foreground}
+minimum-foreground	{minimum_foreground}
 init-z	{init_z_str}
 snake-point-spacing	{snake_point_spacing}
 minimum-snake-length	{min_snake_length}
@@ -53,7 +53,7 @@ grouping-distance-threshold	{grouping_distance_threshold}
 grouping-delta	{grouping_delta}
 minimum-angle-for-soac-linking	{minimum_angle_for_soac_linking}
 damp-z	{damp_z}""".format(
-        min_foreground=min_foreground,
+        minimum_foreground=minimum_foreground,
         alpha=alpha,
         beta=beta,
         gamma=gamma,

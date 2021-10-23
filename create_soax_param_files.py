@@ -86,7 +86,7 @@ param_abbreviations = {
     "alpha": "a",
     "beta": "b",
     "gamma": "g",
-    "min_foreground": "mf",
+    "minimum_foreground": "mf",
     "ridge_threshold": "rt",
     "min_snake_length": "minsnakelen",
     "gaussian_std": "gaussstd",
@@ -101,7 +101,7 @@ def create_soax_param_files(
     alpha_start_stop_step,
     beta_start_stop_step,
     gamma_start_stop_step,
-    min_foreground_start_stop_step,
+    minimum_foreground_start_stop_step,
     ridge_threshold_start_stop_step,
     min_snake_length_start_stop_step,
     gaussian_std_start_stop_step,
@@ -114,7 +114,7 @@ def create_soax_param_files(
     alphas = create_range(**alpha_start_stop_step)
     betas = create_range(**beta_start_stop_step)
     gammas = create_range(**gamma_start_stop_step)
-    min_foregrounds = create_range(**min_foreground_start_stop_step)
+    minimum_foregrounds = create_range(**minimum_foreground_start_stop_step)
     ridge_thresholds = create_range(**ridge_threshold_start_stop_step)
     min_snake_lengths = create_range(**min_snake_length_start_stop_step)
     gaussian_stds = create_range(**gaussian_std_start_stop_step)
@@ -126,7 +126,7 @@ def create_soax_param_files(
     alpha_form_settings = param_form_settings(**alpha_start_stop_step)
     beta_form_settings = param_form_settings(**beta_start_stop_step)
     gamma_form_settings = param_form_settings(**gamma_start_stop_step)
-    min_foreground_settings = param_form_settings(**min_foreground_start_stop_step)
+    minimum_foreground_settings = param_form_settings(**minimum_foreground_start_stop_step)
     ridge_threshold_settings = param_form_settings(**ridge_threshold_start_stop_step)
     min_snake_length_settings = param_form_settings(**min_snake_length_start_stop_step)
     gaussian_std_settings = param_form_settings(**gaussian_std_start_stop_step)
@@ -157,11 +157,11 @@ def create_soax_param_files(
             str_length=gamma_form_settings["str_length"],
             decimals=gamma_form_settings["decimal_places"],
         )
-    if len(min_foregrounds) > 1:
-        filename_template += "_{abbreviation}{{min_foreground:0{str_length}.{decimals}f}}".format(
-            abbreviation=param_abbreviations["min_foreground"],
-            str_length=min_foreground_settings["str_length"],
-            decimals=min_foreground_settings["decimal_places"],
+    if len(minimum_foregrounds) > 1:
+        filename_template += "_{abbreviation}{{minimum_foreground:0{str_length}.{decimals}f}}".format(
+            abbreviation=param_abbreviations["minimum_foreground"],
+            str_length=minimum_foreground_settings["str_length"],
+            decimals=minimum_foreground_settings["decimal_places"],
         )
     if len(ridge_thresholds) > 1:
         filename_template += "_{abbreviation}{{ridge_threshold:0{str_length}.{decimals}f}}".format(
@@ -215,7 +215,7 @@ def create_soax_param_files(
         alphas,
         betas,
         gammas,
-        min_foregrounds,
+        minimum_foregrounds,
         ridge_thresholds,
         min_snake_lengths,
         gaussian_stds,
@@ -230,7 +230,7 @@ def create_soax_param_files(
         alpha,
         beta,
         gamma,
-        min_foreground,
+        minimum_foreground,
         ridge_threshold,
         min_snake_length,
         gaussian_std,
@@ -243,7 +243,7 @@ def create_soax_param_files(
             alpha=alpha,
             beta=beta,
             gamma=gamma,
-            min_foreground=min_foreground,
+            minimum_foreground=minimum_foreground,
             ridge_threshold=ridge_threshold,
             min_snake_length=min_snake_length,
             gaussian_std=gaussian_std,
@@ -260,7 +260,7 @@ def create_soax_param_files(
             alpha=alpha,
             beta=beta,
             gamma=gamma,
-            min_foreground=min_foreground,
+            minimum_foreground=minimum_foreground,
             ridge_threshold=ridge_threshold,
             min_snake_length=min_snake_length,
             gaussian_std=gaussian_std,

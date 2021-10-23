@@ -253,10 +253,10 @@ class SetupForm(npyscreen.Form):
             else:
                 check_dir_field(field_id, field_str, make_dirs_if_not_present)
                 return field_str
-        elif field_type == "yes_no":
-            if field_str != "yes" and field_str != "no":
+        elif field_type == "true_false":
+            if field_str != "true" and field_str != "false":
                 raise ParseException("Error parsing {}: value must be 'yes' or 'no', is '{}'".format(field_id, field_str))
-            return True if field_str == "yes" else False
+            return True if field_str == "true" else False
         elif field_type == "text":
             if len(field_str.strip()) == 0:
                 raise ParseException("Invalid text field '{}' value '{}': value is empty".format(field_id, field_str))
@@ -321,13 +321,13 @@ class SetupForm(npyscreen.Form):
                 npyscreen.TitleText,
                 name=field_name,
                 value=field_str)
-        elif field_type == "yes_no":
+        elif field_type == "true_false":
             self.npy_fields[field_id] = self.add(
                 npyscreen.TitleSelectOne,
                 max_height = 3,
                 name=field_name,
-                values=["yes", "no"],
-                value=([0] if field_str == "yes" else [1]),
+                values=["true", "false"],
+                value=([0] if field_str == "true" else [1]),
                 scroll_exit=True)
         else:
             raise Exception("Unknown type '{}' for field '{}'".format(field_type, field_id))
@@ -371,7 +371,7 @@ class SetupForm(npyscreen.Form):
             "letter",
         ]:
             return self.npy_fields[field_id].value
-        elif field_type in ["yes_no"]:
+        elif field_type in ["true_false"]:
             return "yes" if (0 in self.npy_fields[field_id].value) else "no"
 
     def getFieldStrings(self):
@@ -497,58 +497,7 @@ class SectioningSetupForm(SetupForm):
 class SoaxParamsSetupPage1Form(SetupForm):
     field_infos = [
         {
-            "id": "params_save_dir",
-            "type": "dir",
-            "help": [
-                "Enter SOAX run parameters to try.",
-                "Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)",
-                "If ranges are given, soax will be run multiple times, trying all combinations of parameter values",
-            ],
-        },
-        {
-            "id": "alpha",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "beta",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "gamma",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "min_foreground",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "ridge_threshold",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "min_snake_length",
-            "type": "arg_or_range",
-        },
-    ]
-
-    app_done_func_name = "soaxParamsSetupPage1Done"
-
-class SoaxParamsSetupPage2Form(SetupForm):
-    field_infos = [
-        {
-            "id": "gaussian_std",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "snake_point_spacing",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "external_factor",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "intensity_scaling",
+            "id": "intensity_scsaling",
             "type": "arg_or_range",
             "help": [
                 "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling",
@@ -559,12 +508,135 @@ class SoaxParamsSetupPage2Form(SetupForm):
             ],
         },
         {
-            "id": "stretch_factor",
+            "id": "gaussian_std",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "ridge_threshold",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "maximum_foreground",
+            "type": "int_arg_or_range",
+        }
+        {
+            "id": "minimum_foreground",
+            "type": "int_arg_or_range",
+        },
+        {
+            "id": "init_z",
+            "type": "true_false",
+        },
+        {
+            "id": "snake_point_spacing",
+            "type": "arg_or_range",
+        },
+    ]
+
+    app_done_func_name = "soaxParamsSetupPage1Done"
+
+class SoaxParamsSetupPage2Form(SetupForm):
+    field_infos = [
+        {
+            "id": "min_snake_length",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "maximum_iterations",
+            "type": "int_arg_or_range",
+        },
+        {
+            "id": "change_threshold",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "check_period",
+            "type": "int_arg_or_range",
+        },
+        {
+            "id": "alpha",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "beta",
             "type": "arg_or_range",
         },
     ]
 
     app_done_func_name = "soaxParamsSetupPage2Done"
+
+class SoaxParamsSetupPage3Form(SetupForm):
+    field_infos = [
+        {
+            "id": "gamma",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "external_factor",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "stretch_factor",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "number_of_background_radial_sectors",
+            "type": "int_arg_or_range",
+        },
+        {
+            "id": "background_z_xy_ratio",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "radial_near",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "radial_far",
+            "type": "arg_or_range",
+        },
+    ]
+
+    app_done_func_name = "soaxParamsSetupPage3Done"
+
+class SoaxParamsSetupPage4Form(SetupForm):
+    field_infos = [
+        {
+            "id": "delta",
+            "type": "int_arg_or_range",
+        },
+        {
+            "id": "overlap_threshold",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "grouping_distance_threshold",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "grouping_delta",
+            "type": "int_arg_or_range",
+        },
+        {
+            "id": "minimum_angle_for_soac_linking",
+            "type": "arg_or_range",
+        },
+        {
+            "id": "damp_z",
+            "type": "true_false",
+        },
+        {
+            "id": "params_save_dir",
+            "type": "dir",
+            "help": [
+                "Enter SOAX run parameters to try.",
+                "Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)",
+                "If ranges are given, soax will be run multiple times, trying all combinations of parameter values",
+            ],
+        },
+    ]
+
+    app_done_func_name = "soaxParamsSetupPage4Done"
 
 class SoaxRunSetupForm(SetupForm):
     field_infos = [
@@ -594,7 +666,7 @@ class SoaxRunSetupForm(SetupForm):
         },
         {
             "id": "use_subdirs",
-            "type": "yes_no"
+            "type": "true_false"
         }
     ]
 
@@ -771,32 +843,59 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             },
             "notes": {},
         }
-        self.soax_params_page1_config =  {
+
+        self.soax_params_page1_config = {
             "fields": {
-                "params_save_dir": "./Params",
-                "alpha": "0.01",
-                "beta": "0.1",
-                "gamma": "2",
-                "min_foreground":"10",
-                "ridge_threshold":"0.01",
-                "min_snake_length":"20",
+                "intensity_scaling": "0.0",
+                "gaussian_std": "0",
+                "ridge_threshold": "0.01",
+                "maximum_foreground": "65535",
+                "minimum_foreground": "10",
+                "init_z": "true",
+                "snake_point_spacing": "5",
             },
             "notes": {},
         }
         self.soax_params_page2_config = {
             "fields": {
-                "gaussian_std":"0",
-                "snake_point_spacing":"5",
-                "external_factor":"1",
-                "intensity_scaling": "0",
-                "stretch_factor": "0.2",
+                "min_snake_length": "20",
+                "maximum_iterations": "10000",
+                "change_threshold": "0.1",
+                "check_period": "100",
+                "alpha": "0.01",
+                "beta": "0.1",
             },
             "notes": {},
         }
+        self.soax_params_page3_config = {
+            "fields": {
+                "gamma": "2",
+                "external_factor": "1",
+                "stretch_factor": "0.2",
+                "number_of_background_radial_sectors": "8",
+                "background_z_xy_ratio": "1",
+                "radial_near": "4",
+                "radial_far": "8",
+            },
+            "notes": {},
+        }
+        self.soax_params_page4_config = {
+            "fields": {
+                "delta": "4",
+                "overlap_threshold": "1",
+                "grouping_distance_threshold": "4",
+                "grouping_delta": "8",
+                "minimum_angle_for_soac_linking": "2.1",
+                "damp_z": "false",
+                "params_save_dir": "./Params",
+            },
+            "notes": {},
+        }
+
         self.soax_run_config = {
             "fields":  {
                 "workers": "1",
-                "use_subdirs": "no",
+                "use_subdirs": "false",
                 "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_soax",
                 "source_tiff_dir": "",
                 "target_snakes_dir": "./Snakes",
@@ -1014,6 +1113,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.do_create_soax_params:
             self.menu_functions.append(self.startSoaxParamsSetupPage1)
             self.menu_functions.append(self.startSoaxParamsSetupPage2)
+            self.menu_functions.append(self.startSoaxParamsSetupPage3)
+            self.menu_functions.append(self.startSoaxParamsSetupPage4)
         if self.do_run_soax:
             self.menu_functions.append(self.startSoaxRunSetup)
         if self.do_snakes_to_json:
@@ -1111,27 +1212,45 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def sectioningSetupDone(self, fields):
         self.sectioning_config["fields"] = fields
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_sectioned_tiff_dir"]
-        self.soax_run_config["fields"]["use_subdirs"] = "yes"
+        self.soax_run_config["fields"]["use_subdirs"] = "true"
 
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage1(self):
-        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/2")
+        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/4")
         self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_config, self.make_dirs)
         self.setNextForm('PARAM_SETUP_PAGE_1')
 
     def soaxParamsSetupPage1Done(self, fields):
         self.params_page1_config["fields"] = fields
-        self.soax_run_config["fields"]["param_files_dir"] = fields["params_save_dir"]
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage2(self):
-        self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/2")
+        self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/4")
         self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_config, self.make_dirs)
         self.setNextForm('PARAM_SETUP_PAGE_2')
 
     def soaxParamsSetupPage2Done(self, fields):
         self.soax_params_page2_config["fields"] = fields
+        self.goToNextMenu()
+
+    def startSoaxParamsSetupPage3(self):
+        self.addForm('PARAM_SETUP_PAGE_3', SoaxParamsSetupPage3Form, name="SOAX Params Setup Page 3/4")
+        self.getForm('PARAM_SETUP_PAGE_3').configure(self.soax_params_page3_config, self.make_dirs)
+        self.setNextForm('PARAM_SETUP_PAGE_3')
+
+    def soaxParamsSetupPage3Done(self, fields):
+        self.soax_params_page3_config["fields"] = fields
+        self.goToNextMenu()
+
+    def startSoaxParamsSetupPage4(self):
+        self.addForm('PARAM_SETUP_PAGE_4', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/4")
+        self.getForm('PARAM_SETUP_PAGE_4').configure(self.soax_params_page2_config, self.make_dirs)
+        self.setNextForm('PARAM_SETUP_PAGE_4')
+
+    def soaxParamsSetupPage4Done(self, fields):
+        self.soax_params_page4_config["fields"] = fields
+        self.soax_run_config["fields"]["param_files_dir"] = fields["params_save_dir"]
         self.goToNextMenu()
 
     def startSoaxRunSetup(self):
@@ -1143,7 +1262,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_config["fields"] = fields
         self.snakes_to_json_config["fields"]["source_snakes_dir"] = fields["target_snakes_dir"]
 
-        if fields["use_subdirs"] == "yes":
+        if fields["use_subdirs"] == "true":
             self.snakes_to_json_config["fields"]["source_snakes_depth"] = "2"
         else:
             self.snakes_to_json_config["fields"]["source_snakes_depth"] = "1"

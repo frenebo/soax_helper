@@ -73,7 +73,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             alpha_start_stop_step=parsed_params_settings["alpha"],
             beta_start_stop_step=parsed_params_settings["beta"],
             gamma_start_stop_step=parsed_params_settings["gamma"],
-            min_foreground_start_stop_step=parsed_params_settings["min_foreground"],
+            minimum_foreground_start_stop_step=parsed_params_settings["minimum_foreground"],
             ridge_threshold_start_stop_step=parsed_params_settings["ridge_threshold"],
             min_snake_length_start_stop_step=parsed_params_settings["min_snake_length"],
             gaussian_std_start_stop_step=parsed_params_settings["gaussian_std"],
