@@ -4,7 +4,6 @@ import argparse
 import json
 import time
 
-from create_soax_param_files import error_string_or_parse_arg_or_range
 from rescale_tiffs import rescale_tiffs
 from auto_contrast_tiffs import auto_contrast_tiffs
 from section_tiffs import section_tiffs
