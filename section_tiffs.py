@@ -119,5 +119,5 @@ def section_tiffs(
 
     with ThreadPool(workers_num) as pool:
         logger.log("Making future")
-        future = pool.map(section_arg_dicts, contrast_arg_dicts)
+        future = pool.map(section_arg_dicts, section_arg_dicts)
         logger.log("Future finished")

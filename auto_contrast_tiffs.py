@@ -100,8 +100,7 @@ def auto_contrast_tiffs(
             "logger": logger,
             "images_are_3d": images_are_3d,
         })
-        # auto_contrast_instance(contrast_arg_dicts[-1])
-    print(contrast_arg_dicts)
+
     with ThreadPool(workers_num) as pool:
         logger.log("Making future")
         future = pool.map(auto_contrast_instance, contrast_arg_dicts)
