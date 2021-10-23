@@ -14,7 +14,8 @@ from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
 from make_orientation_fields import make_orientation_fields
 from sindy_matrices_from_snakes import sindy_matrices_from_snakes
-from do_bead_piv import do_bead_piv
+from bead_piv import bead_piv
+from tube_piv import tube_piv
 
 from setup_app import (
     SoaxSetupApp,
@@ -139,7 +140,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     elif action_name == "do_bead_PIV":
         parsed_bead_PIV_settings = BeadPIVSetupForm.parseSettings(setting_strings, make_dirs)
 
-        do_bead_piv(
+        bead_piv(
             parsed_bead_PIV_settings["source_tiff_dir"],
             parsed_bead_PIV_settings["tiff_fn_letter_before_frame_num"],
             parsed_bead_PIV_settings["target_piv_data_dir"],
@@ -151,7 +152,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     elif action_name == "do_tube_PIV":
         parsed_tube_PIV_settings = TubePIVSetupForm.parseSettings(setting_strings, make_dirs)
 
-        do_tube_piv(
+        tube_piv(
             parsed_tube_PIV_settings["source_tiff_dir"],
             parsed_tube_PIV_settings["target_piv_data_dir"],
             logger=logger,

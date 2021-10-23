@@ -86,7 +86,7 @@ def GetPIV3d(im1,im2,X1,Y1,Z1,edge_length):
     VZ  = griddata(x,y,z,shiftz,X1,Y1,Z1);
     return VX,VY,VZ
 
-def do_tube_piv(
+def tube_piv(
     source_tiff_dir,
     target_velocities_dir,
     edge_length=5,
