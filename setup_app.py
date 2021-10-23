@@ -903,7 +903,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "gaussian_std": "0",
                 "ridge_threshold": "0.01",
                 "maximum_foreground": "65535",
-                "minimum_foreground": "10",
+                "minimum_foreground": "0",
                 "init_z": "true",
                 "snake_point_spacing": "5",
             },
