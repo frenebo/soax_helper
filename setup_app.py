@@ -391,7 +391,7 @@ class SetupForm(npyscreen.Form):
         except ParseException as e:
             if isinstance(e, DirectoryDoesNotExistParseException):
                 dirpath = str(e)
-                should_make_dir = npyscreen.notify_yes_no(str("Directory {} does not exist. Create?").format(dirpath))
+                should_make_dir = npyscreen.notify_yes_no(str("Directory {} does not exist. Create?").format(dirpath), editw=1)
                 # Make dirs and try again
                 if should_make_dir:
                     os.makedirs(dirpath)
