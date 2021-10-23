@@ -893,7 +893,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_params_page1_config = {
             "fields": {
                 "params_save_dir": "./Params",
-                "intensity_scaling": "0.0",
+                "intensity_scaling": "0",
                 "gaussian_std": "0",
                 "ridge_threshold": "0.01",
                 "maximum_foreground": "65535",
@@ -904,8 +904,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_params_page2_config = {
             "fields": {
                 "init_z": "true",
-                "snake_point_spacing": "5",
-                "min_snake_length": "20",
+                "snake_point_spacing": "1",
+                "min_snake_length": "10",
                 "maximum_iterations": "10000",
                 "change_threshold": "0.1",
                 "check_period": "100",
@@ -920,7 +920,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_params_page3_config = {
             "fields": {
                 "number_of_background_radial_sectors": "8",
-                "background_z_xy_ratio": "1",
+                "background_z_xy_ratio": "2.88",
                 "radial_near": "4",
                 "radial_far": "8",
                 "delta": "4",

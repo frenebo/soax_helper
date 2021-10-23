@@ -52,7 +52,8 @@ overlap-threshold	{overlap_threshold}
 grouping-distance-threshold	{grouping_distance_threshold}
 grouping-delta	{grouping_delta}
 minimum-angle-for-soac-linking	{minimum_angle_for_soac_linking}
-damp-z	{damp_z}""".format(
+damp-z	{damp_z}
+""".format(
         minimum_foreground=minimum_foreground,
         alpha=alpha,
         beta=beta,
