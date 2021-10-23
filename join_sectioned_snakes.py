@@ -1,9 +1,16 @@
 from snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
 import os
+from multiprocessing.pool import ThreadPool
 from snakeutils.logger import PrintLogger
 from snakeutils.snakejson import load_json_snakes, save_json_snakes
+from tiff_info import get_single_tiff_info
 
-def join_snake_files_and_save(source_dir, source_filenames, target_json_fp, logger):
+def join_snake_sections_folder_and_save(arg_dict):
+    source_dir = arg_dict["source_dir"]
+    source_filenames = arg_dict["source_filenames"]
+    target_json_fp = arg_dict["target_json_fp"]
+    logger = arg_dict["logger"]
+
     new_snakes = []
 
     shifted_snakes = []
@@ -72,6 +79,7 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
     section_folder_depth = source_jsons_depth - 1
     source_folder_info = find_files_or_folders_at_depth(source_json_dir, section_folder_depth, folders_not_files=True)
 
+    join_sections_arg_dicts = []
     for containing_folder, source_folder_name in source_folder_info:
 
         relative_dir_path = os.path.relpath(containing_folder, source_json_dir)
@@ -91,6 +99,13 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
         target_json_fn =source_folder_name + ".json"
         target_json_fp = os.path.join(target_dir_path, target_json_fn)
 
-        logger.log("Joining snake jsons in {}".format(source_folder_path))
-        join_snake_files_and_save(source_folder_path, source_jsons, target_json_fp, logger)
-        logger.log("  Saved joined snakes to {}".format(target_json_fp))
+        join_sections_arg_dicts.append({
+            "source_dir": source_folder_path,
+            "source_filenames": source_jsons,
+            "target_json_fp": target_json_fp,
+            "logger": logger,
+        })
+
+
+    with ThreadPool(workers_num) as pool:
+        future = pool.map(join_snake_sections_folder_and_save, join_sections_arg_dicts)

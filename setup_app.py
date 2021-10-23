@@ -584,6 +584,12 @@ class SoaxParamsSetupPage1Form(SetupForm):
             "id": "minimum_foreground",
             "type": "int_arg_or_range",
         },
+    ]
+
+    app_done_func_name = "soaxParamsSetupPage1Done"
+
+class SoaxParamsSetupPage2Form(SetupForm):
+    field_infos = [
         {
             "id": "init_z",
             "type": "true_false",
@@ -592,12 +598,6 @@ class SoaxParamsSetupPage1Form(SetupForm):
             "id": "snake_point_spacing",
             "type": "arg_or_range",
         },
-    ]
-
-    app_done_func_name = "soaxParamsSetupPage1Done"
-
-class SoaxParamsSetupPage2Form(SetupForm):
-    field_infos = [
         {
             "id": "min_snake_length",
             "type": "arg_or_range",
@@ -904,14 +904,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "ridge_threshold": "0.01",
                 "maximum_foreground": "65535",
                 "minimum_foreground": "0",
-                "init_z": "true",
-                "snake_point_spacing": "5",
             },
             "notes": {},
         }
         self.soax_params_page2_config = {
             "fields": {
                 "min_snake_length": "20",
+                "init_z": "true",
+                "snake_point_spacing": "5",
                 "maximum_iterations": "10000",
                 "change_threshold": "0.1",
                 "check_period": "100",
