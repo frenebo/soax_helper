@@ -584,16 +584,16 @@ class SoaxParamsSetupPage1Form(SetupForm):
             "id": "minimum_foreground",
             "type": "int_arg_or_range",
         },
+        {
+            "id": "init_z",
+            "type": "true_false",
+        },
     ]
 
     app_done_func_name = "soaxParamsSetupPage1Done"
 
 class SoaxParamsSetupPage2Form(SetupForm):
     field_infos = [
-        {
-            "id": "init_z",
-            "type": "true_false",
-        },
         {
             "id": "snake_point_spacing",
             "type": "arg_or_range",
