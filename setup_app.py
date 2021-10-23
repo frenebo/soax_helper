@@ -622,12 +622,6 @@ class SoaxParamsSetupPage2Form(SetupForm):
             "id": "beta",
             "type": "arg_or_range",
         },
-    ]
-
-    app_done_func_name = "soaxParamsSetupPage2Done"
-
-class SoaxParamsSetupPage3Form(SetupForm):
-    field_infos = [
         {
             "id": "gamma",
             "type": "arg_or_range",
@@ -648,6 +642,12 @@ class SoaxParamsSetupPage3Form(SetupForm):
             "id": "background_z_xy_ratio",
             "type": "arg_or_range",
         },
+    ]
+
+    app_done_func_name = "soaxParamsSetupPage2Done"
+
+class SoaxParamsSetupPage3Form(SetupForm):
+    field_infos = [
         {
             "id": "radial_near",
             "type": "arg_or_range",
@@ -917,16 +917,16 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "check_period": "100",
                 "alpha": "0.01",
                 "beta": "0.1",
-            },
-            "notes": {},
-        }
-        self.soax_params_page3_config = {
-            "fields": {
                 "gamma": "2",
                 "external_factor": "1",
                 "stretch_factor": "0.2",
                 "number_of_background_radial_sectors": "8",
                 "background_z_xy_ratio": "1",
+            },
+            "notes": {},
+        }
+        self.soax_params_page3_config = {
+            "fields": {
                 "radial_near": "4",
                 "radial_far": "8",
             },
