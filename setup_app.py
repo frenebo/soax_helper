@@ -10,7 +10,7 @@ class ParseException(Exception):
     pass
 
 # For when you might ask user if they want to make a directory
-class DirectoryDoesNotExistParseException(Exception):
+class DirectoryDoesNotExistParseException(ParseException):
     pass
 
 # For fields that ask for a directory
