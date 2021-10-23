@@ -67,15 +67,9 @@ def parse_pos_float(field_name, field_str):
 
     return val_float
 
-def parse_infer_or_int_coords(field_name, field_str):
+def parse_int_coords(field_name, field_str):
     if len(field_str.strip()) == 0:
         raise ParseException("Invalid field '{}' value '{}': value is empty".format(field_name, field_str))
-
-    if field_str.strip().lower() == "infer":
-        return {"type": "infer"}
-
-    if "," not in field_str:
-        raise ParseException("Invalid field '{}' value '{}': expected string 'infer' or three comma-separated integer (ex. '1,2,3')".format(field_name, field_str))
 
     comma_split = field_str.split(",")
     if len(comma_split) != 3:
@@ -98,6 +92,20 @@ def parse_infer_or_int_coords(field_name, field_str):
         if item_int < 0:
             raise ParseException("Invalid field '{}' value '{}': list item '{}' is negative".format(field_name, field_str, item_str))
         val.append(item_int)
+
+    return val
+
+def parse_infer_or_int_coords(field_name, field_str):
+    if len(field_str.strip()) == 0:
+        raise ParseException("Invalid field '{}' value '{}': value is empty".format(field_name, field_str))
+
+    if field_str.strip().lower() == "infer":
+        return {"type": "infer"}
+
+    if "," not in field_str:
+        raise ParseException("Invalid field '{}' value '{}': expected string 'infer' or three comma-separated integer (ex. '1,2,3')".format(field_name, field_str))
+
+    val = parse_int_coords(field_name, field_str)
 
     return {"type": "int_coords", "val": val}
 
@@ -255,6 +263,8 @@ class SetupForm(npyscreen.Form):
             if len(field_str) != 1:
                 raise ParseException("Invalid letter field '{}' value '{}': Expected one character, got".format(field_id, field_str, len(field_str)))
             return field_str
+        elif field_type == "int_coords":
+            return parse_int_coords(field_id, field_str)
         elif field_type == "infer_or_int_coords":
             return parse_infer_or_int_coords(field_id, field_str)
         elif field_type == "float_coords":
@@ -388,11 +398,6 @@ class SetupForm(npyscreen.Form):
 class RescaleSetupForm(SetupForm):
     field_infos = [
         {
-            "id": "batch_resample_path",
-            "type": "file",
-        },
-        {
-            "help": "Rescale z-axis depth of images using SOAX batch_resample. Useful if making images smaller or correcting for z-slice size",
             "id": "source_tiff_dir",
             "type": "dir",
         },
@@ -401,12 +406,14 @@ class RescaleSetupForm(SetupForm):
             "type": "dir",
         },
         {
-            "id": "xy_factor",
-            "type": "pos_float",
+            "id": "input_dims",
+            "help": "Dimensions of the input tiffs from source_tiff_dir",
+            "type": "int_coords",
         },
         {
-            "id": "z_factor",
-            "type": "pos_float",
+            "id": "output_dims",
+            "help": "Dimensions to resize tiffs to"
+            "type": "int_coords"
         },
     ]
 
@@ -722,20 +729,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_tiff_dir": "./AutoContrastedTIFFs",
             },
             "notes": {},
-            "metadata": {},
         }
         self.rescale_config = {
             "fields": {
-                "batch_resample_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_resample",
                 "source_tiff_dir": "",
                 "target_tiff_dir": "RescaledTIFFs",
-                "xy_factor": "1.0",
-                "z_factor": "1.0",
+                "input_dims": "",
+                "output_dims": "",
             },
             "notes": {},
-            "metadata": {
-                "input_dims": None,
-            },
         }
         self.sectioning_config = {
             "fields": {
@@ -744,9 +746,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "section_max_size": "200",
             },
             "notes": {},
-            "metadata": {
-                "input_dims": None,
-            },
         }
         self.soax_params_page1_config =  {
             "fields": {
@@ -759,7 +758,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "min_snake_length":"20",
             },
             "notes": {},
-            "metadata": {},
         }
         self.soax_params_page2_config = {
             "fields": {
@@ -770,7 +768,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "stretch_factor": "0.2",
             },
             "notes": {},
-            "metadata": {},
         }
         self.soax_run_config = {
             "fields":  {
@@ -783,9 +780,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "soax_log_dir": "./SoaxLogs",
             },
             "notes": {},
-            "metadata": {
-                "input_dims": None,
-            },
         }
         self.snakes_to_json_config = {
             "fields": {
@@ -797,7 +791,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "pixel_size_um_spacing": "",
             },
             "notes": {},
-            "metadata": {},
         }
         self.join_sectioned_snakes_config = {
             "fields": {
@@ -806,7 +799,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "source_jsons_depth": "",
             },
             "notes": {},
-            "metadata": {},
         }
         self.make_orientation_fields_config = {
             "fields": {
@@ -817,9 +809,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "image_height": "",
             },
             "notes": {},
-            "metadata": {
-                "input_dims": None,
-            },
         }
 
         #PIV settings
@@ -832,7 +821,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_tiff_dir": "./AutoContrastedBeadTIFFsForPIV",
             },
             "notes": {},
-            "metadata": {},
         }
         self.tube_piv_auto_contrast_config = {
             "fields": {
@@ -843,7 +831,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_tiff_dir": "./AutoContrastedTubeTIFFsForPIV",
             },
             "notes": {},
-            "metadata": {},
         }
         self.bead_PIV_config = {
             "fields": {
@@ -853,7 +840,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "bead_diameter_um": "",
             },
             "notes": {},
-            "metadata": {},
         }
         self.tube_PIV_config = {
             "fields": {
@@ -861,7 +847,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_piv_data_dir": "./TubePIVData",
             },
             "notes": {},
-            "metadata": {},
         }
 
         self.menu_functions = [
@@ -1076,7 +1061,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 max_lev=tif_max_level,
                 tif_name=tif_metadata["tif_name"],
             )
-            self.rescale_config["metadata"]["input_dims"] = tif_metadata["dims"]
+            self.rescale_config["fields"]["input_dims"] = tif_metadata["dims"]
 
         self.goToNextMenu()
 
@@ -1090,6 +1075,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+        # self.
 
         self.goToNextMenu()
 

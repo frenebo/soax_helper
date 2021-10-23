@@ -12,14 +12,14 @@ import tifffile
 import numpy as np
 from snakeutils.logger import PrintLogger
 
-def rescale_tiffs(
-    batch_resample_path,
-    source_tiff_dir,
-    temp_dir,
-    target_tiff_dir,
-    xy_factor,
-    z_factor,
-    logger=PrintLogger,
-    ):
-    raise Exception("Not Implemented")
-    # pass
+# def rescale_tiffs(
+#     batch_resample_path,
+#     source_tiff_dir,
+#     temp_dir,
+#     target_tiff_dir,
+#     xy_factor,
+#     z_factor,
+#     logger=PrintLogger,
+#     ):
+#     raise Exception("Not Implemented")
+#     # pass
