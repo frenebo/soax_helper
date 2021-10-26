@@ -1320,9 +1320,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         new_dims = parse_int_coords(".", fields["output_dims"])
 
         if self.pixel_spacing_xyz is not None:
-            new_x_space = self.pixel_spacing_xyz[0] * new_dims[0] / orig_dims[0]
-            new_y_space = self.pixel_spacing_xyz[1] * new_dims[1] / orig_dims[1]
-            new_z_space = self.pixel_spacing_xyz[2] * new_dims[2] / orig_dims[2]
+            new_x_space = self.pixel_spacing_xyz[0] * orig_dims[0] / new_dims[0]
+            new_y_space = self.pixel_spacing_xyz[1] * orig_dims[1] / new_dims[1]
+            new_z_space = self.pixel_spacing_xyz[2] * orig_dims[2] / new_dims[2]
             self.pixel_spacing_xyz = [new_x_space,new_y_space,new_z_space]
         else:
             self.prompt_pixel_size_if_not_known(fields["target_tiff_dir"])
