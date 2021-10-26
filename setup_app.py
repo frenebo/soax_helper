@@ -446,7 +446,7 @@ class SetupForm(npyscreen.Form):
         except ParseException as e:
             if isinstance(e, DirectoryDoesNotExistParseException):
                 dirpath = str(e)
-                should_make_dir = npyscreen.notify_yes_no(str("Directory {} does not exist. Create? (Select No to return to setup page)").format(dirpath), editw=1)
+                should_make_dir = npyscreen.notify_yes_no("Directory {} does not exist. Create? (Select No to return to setup page)".format(dirpath), editw=1)
                 # Make dirs and try again
                 if should_make_dir:
                     os.makedirs(dirpath)
@@ -466,6 +466,27 @@ class SetupForm(npyscreen.Form):
         setup_done_func = getattr(self.parentApp, self.app_done_func_name)
 
         setup_done_func(self.getFieldStrings())
+
+class PixelSizeSelectionForm(SetupForm):
+    field_infos = [
+        {
+            "id": "x_spacing",
+            "name": "Pixel Width Spacing (um)",
+            "type": "pos_int",
+        },
+        {
+            "id": "y_spacing",
+            "name": "Pixel Height Spacing (um)",
+            "type": "pos_int",
+        },
+        {
+            "id": "z_spacing",
+            "name": "Pixel Depth Spacing (um)",
+            "type": "pos_int",
+        },
+    ]
+
+    app_done_func_name = "pixelSizeSelectDone"
 
 class RescaleSetupForm(SetupForm):
     field_infos = [
@@ -1013,6 +1034,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "notes": {},
         }
 
+        self.pixel_spacing_xyz = None
+
         self.menu_functions = [
             self.startSoaxStepsSelect,
             self.startPIVStepsSelect,
@@ -1121,11 +1144,32 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             next_menu_func = self.menu_functions[self.form_index]
             next_menu_func()
 
+    def prompt_pixel_size_if_not_known(self, tiff_folder_name):
+        if self.pixel_spacing_xyz is not None:
+            return
+
+        should_enter_pixel_size = npyscreen.notify_yes_no("The size of a pixel in micrometers (from images in {}) will be needed to format output data. Do you want to input pixel size now?".format(tiff_folder_name), editw=1)
+        if should_enter_pixel_size:
+            self.menu_functions.insert(0, self.startPixelSizeSelect)
+
+    def startPixelSizeSelect(self):
+        self.addForm('PIXEL_SIZE_SELECT', PixelSizeSelectionForm, name="Select Pixel Size")
+        self.getForm('PIXEL_SIZE_SELECT').configure()
+        self.setNextForm('PIXEL_SIZE_SELECT')
+
+    def pixelSizeSelectDone(self, fields):
+        self.pixel_spacing_xyz = [
+            fields["x_spacing"],
+            fields["y_spacing"],
+            fields["z_spacing"],
+        ]
+
+        self.goToNextMenu()
+
     def startSoaxStepsSelect(self):
         self.addForm('SOAX_STEPS_SELECT', SoaxStepsSelectForm, name='Select Soax Steps')
         self.getForm('SOAX_STEPS_SELECT').configure()
         self.setNextForm('SOAX_STEPS_SELECT')
-
 
     def soaxStepsSelectDone(self,
         do_auto_contrast,
@@ -1229,6 +1273,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             )
             self.rescale_config["fields"]["input_dims"] = ",".join([int(dim) for dim in tif_metadata["dims"]])
 
+        self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
+
         self.goToNextMenu()
 
     def startRescaleSetup(self):
@@ -1241,7 +1287,19 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
-        # self.
+
+
+        if self.pixel_spacing_xyz is not None:
+            old_x_space,old_y_space,old_z_space = self.pixel_spacing_xyz
+            orig_dims = fields["input_dims"]
+            new_dims = fields["output_dims"]
+            new_x_space = old_x_space * new_dims[0] / orig_dims[0]
+            new_y_space = old_y_space * new_dims[1] / orig_dims[1]
+            new_z_space = old_z_space * new_dims[2] / orig_dims[2]
+            self.pixel_spacing = [new_x_space,new_y_space,new_z_space]
+        else:
+            self.prompt_pixel_size_if_not_known(fields["target_tiff_dir"])
+
 
         self.goToNextMenu()
 
