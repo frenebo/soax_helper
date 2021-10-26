@@ -106,6 +106,5 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
             "logger": logger,
         })
 
-
     with ThreadPool(workers_num) as pool:
         future = pool.map(join_snake_sections_folder_and_save, join_sections_arg_dicts)

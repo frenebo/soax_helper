@@ -1,31 +1,9 @@
 from snakeutils.tifimage import save_3d_tif
 import os
-# import argparse
 from PIL import Image
 import numpy as np
 import tifffile
 from snakeutils.logger import PrintLogger
-
-# def slice_range(arg_str):
-#     split_by_dash = arg_str.split('-')
-
-#     if len(split_by_dash) != 2:
-#         raise argparse.ArgumentTypeError("Argument {} should have start and end slice index separated by one dash. Ex: '10-13'".format(arg_str))
-
-#     try:
-#         start = int(split_by_dash[0])
-#     except ValueError as e:
-#         raise argparse.ArgumentTypeError("Couldn't parse {} as integer in range {}: {}".format(split_by_dash[0],arg_str,str(e)))
-
-#     try:
-#         end = int(split_by_dash[1])
-#     except ValueError as e:
-#         raise argparse.ArgumentTypeError("Couldn't parse {} as integer in range {}: {}".format(split_by_dash[1],arg_str,str(e)))
-
-#     if end < start:
-#         raise argparse.ArgumentTypeError("Start slice index {} is greater than end {}".format(start,end))
-
-#     return start,end
 
 def subslice_tifs(start_slice, end_slice, source_dir,target_dir,logger=PrintLogger):
     new_n_frames = end_slice - start_slice + 1

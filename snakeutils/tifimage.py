@@ -9,7 +9,7 @@ def save_3d_tif(fp,numpy_arr):
 
     tifffile.imsave(fp,numpy_arr)
 
-def tiff_img_3d_to_arr(pil_img):
+def pil_img_3d_to_np_arr(pil_img):
     arr = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
     for frame_idx in range(pil_img.n_frames):
         pil_img.seek(frame_idx)

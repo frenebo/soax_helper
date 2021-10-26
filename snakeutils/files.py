@@ -1,14 +1,6 @@
 import sys
 import os
-import argparse
 import numpy as np
-
-def pil_img_3d_to_np_arr(pil_img):
-    arr_3d = np.zeros((pil_img.height,pil_img.width,pil_img.n_frames),dtype=np.array(pil_img).dtype)
-    for frame_idx in range(pil_img.n_frames):
-        pil_img.seek(frame_idx)
-        arr_3d[:,:, frame_idx] = np.array(pil_img)
-    return arr_3d
 
 def has_one_of_extensions(filename, file_extensions):
     for file_extension in file_extensions:

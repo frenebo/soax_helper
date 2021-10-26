@@ -6,8 +6,8 @@ from PIL import Image
 import tifffile
 
 from snakeutils.logger import PrintLogger
-from snakeutils.files import pil_img_3d_to_np_arr, has_one_of_extensions
-from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
+from snakeutils.files import has_one_of_extensions
+from snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 
 def auto_contrast_single_tiff(arg_dict):
     source_dir   = arg_dict["source_dir"]
@@ -73,7 +73,7 @@ def auto_contrast_tiffs(
     # if just one frame
     if images_are_3d:
         logger.log("Opening and saving images as 3D")
-        first_tiff_arr = tiff_img_3d_to_arr(first_tiff_img)
+        first_tiff_arr = pil_img_3d_to_np_arr(first_tiff_img)
     else:
         first_tiff_arr = np.array(first_tiff_img)
 

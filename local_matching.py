@@ -5,7 +5,6 @@ import os
 from snakeutils.files import extract_snakes, has_one_of_extensions
 from scipy.spatial.distance import cdist
 import math
-# import argparse
 
 def get_tip_coords_and_unit_vecs(snakes):
     tip_coords = np.zeros( [len(snakes)*2,2] )

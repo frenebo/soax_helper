@@ -1,5 +1,5 @@
 from snakeutils.files import has_one_of_extensions
-from snakeutils.tifimage import save_3d_tif, tiff_img_3d_to_arr
+from snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 import os
 from PIL import Image
 import tifffile
