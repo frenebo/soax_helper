@@ -488,30 +488,6 @@ class PixelSizeSelectionForm(SetupForm):
 
     app_done_func_name = "pixelSizeSelectDone"
 
-class RescaleSetupForm(SetupForm):
-    field_infos = [
-        {
-            "id": "source_tiff_dir",
-            "type": "dir",
-        },
-        {
-            "id": "target_tiff_dir",
-            "type": "dir",
-        },
-        {
-            "id": "input_dims",
-            "help": "Dimensions of the input tiffs from source_tiff_dir",
-            "type": "int_coords",
-        },
-        {
-            "id": "output_dims",
-            "help": "Dimensions to resize tiffs to",
-            "type": "int_coords"
-        },
-    ]
-
-    app_done_func_name = "rescaleSetupDone"
-
 class AutoContrastSetupForm(SetupForm):
     field_infos = [
         {
@@ -544,6 +520,30 @@ class AutoContrastSetupForm(SetupForm):
     ]
 
     app_done_func_name = "autoContrastSetupDone"
+
+class RescaleSetupForm(SetupForm):
+    field_infos = [
+        {
+            "id": "source_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "target_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "input_dims",
+            "help": "Dimensions of the input tiffs from source_tiff_dir (width,height,depth)",
+            "type": "int_coords",
+        },
+        {
+            "id": "output_dims",
+            "help": "Dimensions to resize tiffs to (width,height,depth)",
+            "type": "int_coords"
+        },
+    ]
+
+    app_done_func_name = "rescaleSetupDone"
 
 class SectioningSetupForm(SetupForm):
     field_infos = [
@@ -1313,6 +1313,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_sectioned_tiff_dir"]
         self.soax_run_config["fields"]["use_subdirs"] = "true"
 
+        self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
+
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage1(self):
@@ -1357,9 +1359,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         else:
             self.snakes_to_json_config["fields"]["source_snakes_depth"] = "1"
 
+        self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
+
         self.goToNextMenu()
 
     def startSnakesToJsonSetup(self):
+        if self.pixel_spacing_xyz is not None:
+            spacing_string = ",".join([str(dim) for dim in self.pixel_spacing_xyz])
+            self.snakes_to_json_config["fields"]["pixel_spacing_um_xyz"] = spacing_string
+
         self.addForm('SNAKES_TO_JSON_SETUP', SnakesToJsonSetupForm, name="Snakes to JSON Setup")
         self.getForm('SNAKES_TO_JSON_SETUP').configure(self.snakes_to_json_config, self.make_dirs)
         self.setNextForm('SNAKES_TO_JSON_SETUP')
