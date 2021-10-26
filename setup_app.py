@@ -1038,7 +1038,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.menu_functions = [
             self.startSoaxStepsSelect,
-            self.startPIVStepsSelect,
+            # self.startPIVStepsSelect,
         ]
         self.form_index = -1
 
