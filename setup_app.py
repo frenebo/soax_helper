@@ -1261,7 +1261,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('AUTO_CONTRAST_SETUP')
 
     def determineImageDimsFromDirIfNotKnown(self, dirpath):
-        raise NotImplementedError()
+        if self.image_dims is not None:
+            return
+
+        img_search_depth = 0
+
+        tif_metadata = self.try_find_dir_first_tif_metadata(dirpath, img_search_depth)
+        if tif_metadata is not None:
+            self.image_dims = tif_metadata["dims"]
 
     def autoContrastSetupDone(self, fields):
         self.auto_contrast_config["fields"] = fields
