@@ -1171,10 +1171,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('PIXEL_SIZE_SELECT')
 
     def pixelSizeSelectDone(self, fields):
+        parsed_fields = PixelSizeSelectionForm.parseSettings(fields, self.make_dirs)
+
         self.pixel_spacing_xyz = [
-            fields["x_spacing"],
-            fields["y_spacing"],
-            fields["z_spacing"],
+            parsed_fields["x_spacing"],
+            parsed_fields["y_spacing"],
+            parsed_fields["z_spacing"],
         ]
 
         self.goToNextMenu()
@@ -1309,7 +1311,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             new_x_space = old_x_space * new_dims[0] / orig_dims[0]
             new_y_space = old_y_space * new_dims[1] / orig_dims[1]
             new_z_space = old_z_space * new_dims[2] / orig_dims[2]
-            self.pixel_spacing = [new_x_space,new_y_space,new_z_space]
+            self.pixel_spacing_xyz = [new_x_space,new_y_space,new_z_space]
         else:
             self.prompt_pixel_size_if_not_known(fields["target_tiff_dir"])
 
