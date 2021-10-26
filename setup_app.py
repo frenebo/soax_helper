@@ -1275,6 +1275,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.rescale_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+
         # If input TIFFs have been rescaled to range from 0 to 65535,
         # When SOAX runs and converts to floats, intensities should be rescaled from 0 to 1.0
         # We can't have 0.0 to 1.0 scale in original TIFFs because TIFFs have only integer brightness
@@ -1298,7 +1299,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 tif_path=tif_metadata["tif_path"],
             )
             self.rescale_config["fields"]["input_dims"] = ",".join([str(dim) for dim in tif_metadata["dims"]])
-            # if self.snakes_to_json_config["fields"][""]
 
         self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
         self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
@@ -1340,6 +1340,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.sectioning_config["fields"] = fields
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_sectioned_tiff_dir"]
         self.soax_run_config["fields"]["use_subdirs"] = "true"
+
+        self.snakes_to_json_config["fields"]["offset_pixels"] = "infer"
+        self.snakes_to_json_config["fields"]["dims_pixels"] = "infer"
 
         self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
         self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
