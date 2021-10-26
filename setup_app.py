@@ -1150,7 +1150,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         should_enter_pixel_size = npyscreen.notify_yes_no("The size of a pixel in micrometers (from images in {}) will be needed to format output data. Do you want to input pixel size now?".format(tiff_folder_name), editw=1)
         if should_enter_pixel_size:
-            self.menu_functions.insert(0, self.startPixelSizeSelect)
+            self.menu_functions.insert(self.form_index + 1, self.startPixelSizeSelect)
 
     def startPixelSizeSelect(self):
         self.addForm('PIXEL_SIZE_SELECT', PixelSizeSelectionForm, name="Select Pixel Size")
