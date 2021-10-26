@@ -544,6 +544,10 @@ class RescaleSetupForm(SetupForm):
             "help": "Dimensions to resize tiffs to (width,height,depth)",
             "type": "int_coords"
         },
+        {
+            "id": "workers_num",
+            "type": "pos_int",
+        },
     ]
 
     app_done_func_name = "rescaleSetupDone"
@@ -901,6 +905,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_tiff_dir": "RescaledTIFFs",
                 "input_dims": "",
                 "output_dims": "",
+                "workers_num": "1",
             },
             "notes": {},
         }

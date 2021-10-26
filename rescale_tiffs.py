@@ -92,6 +92,7 @@ def rescale_tiffs(
     target_tiff_dir,
     input_dims,
     output_dims,
+    workers_num,
     logger=PrintLogger,
     ):
 

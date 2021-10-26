@@ -41,6 +41,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_rescale_tiffs_settings["target_tiff_dir"],
             parsed_rescale_tiffs_settings["input_dims"],
             parsed_rescale_tiffs_settings["output_dims"],
+            parsed_rescale_tiffs_settings["workers_num"],
             logger=logger,
         )
     elif action_name == "auto_contrast_tiffs":
