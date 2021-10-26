@@ -472,17 +472,17 @@ class PixelSizeSelectionForm(SetupForm):
         {
             "id": "x_spacing",
             "name": "Pixel Width Spacing (um)",
-            "type": "pos_int",
+            "type": "pos_float",
         },
         {
             "id": "y_spacing",
             "name": "Pixel Height Spacing (um)",
-            "type": "pos_int",
+            "type": "pos_float",
         },
         {
             "id": "z_spacing",
             "name": "Pixel Depth Spacing (um)",
-            "type": "pos_int",
+            "type": "pos_float",
         },
     ]
 
