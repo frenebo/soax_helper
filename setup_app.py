@@ -1038,6 +1038,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         }
 
         self.pixel_spacing_xyz = None
+        self.image_dims = None
 
         self.menu_functions = [
             self.startSoaxStepsSelect,
@@ -1259,6 +1260,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_config, self.make_dirs)
         self.setNextForm('AUTO_CONTRAST_SETUP')
 
+    def determineImageDimsFromDirIfNotKnown(self, dirpath):
+        raise NotImplementedError()
+
     def autoContrastSetupDone(self, fields):
         self.auto_contrast_config["fields"] = fields
         self.rescale_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
@@ -1287,8 +1291,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 tif_path=tif_metadata["tif_path"],
             )
             self.rescale_config["fields"]["input_dims"] = ",".join([str(dim) for dim in tif_metadata["dims"]])
+            # if self.snakes_to_json_config["fields"][""]
 
         self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
+        self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
 
         self.goToNextMenu()
 
@@ -1303,10 +1309,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
 
+        orig_dims = parse_int_coords(".", fields["input_dims"])
+        new_dims = parse_int_coords(".", fields["output_dims"])
 
         if self.pixel_spacing_xyz is not None:
-            orig_dims = parse_int_coords(".", fields["input_dims"])
-            new_dims = parse_int_coords(".", fields["output_dims"])
             new_x_space = self.pixel_spacing_xyz[0] * new_dims[0] / orig_dims[0]
             new_y_space = self.pixel_spacing_xyz[1] * new_dims[1] / orig_dims[1]
             new_z_space = self.pixel_spacing_xyz[2] * new_dims[2] / orig_dims[2]
@@ -1314,6 +1320,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         else:
             self.prompt_pixel_size_if_not_known(fields["target_tiff_dir"])
 
+        self.image_dims = new_dims
 
         self.goToNextMenu()
 
@@ -1325,9 +1332,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def sectioningSetupDone(self, fields):
         self.sectioning_config["fields"] = fields
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_sectioned_tiff_dir"]
-        self.soax_run_config["fields"]["use_subdirs"] = "true"
+        self.soax_run_config["
+        fields"]["use_subdirs"] = "true"
 
         self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
+        self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
 
         self.goToNextMenu()
 
@@ -1381,6 +1390,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.pixel_spacing_xyz is not None:
             spacing_string = ",".join([str(dim) for dim in self.pixel_spacing_xyz])
             self.snakes_to_json_config["fields"]["pixel_spacing_um_xyz"] = spacing_string
+        if self.image_dims is not None:
+            pixel_dims_string = ",".join([str(dim) for dim in self.image_dims])
+            self.snakes_to_json_config["fields"]["dims_pixels"]
 
         self.addForm('SNAKES_TO_JSON_SETUP', SnakesToJsonSetupForm, name="Snakes to JSON Setup")
         self.getForm('SNAKES_TO_JSON_SETUP').configure(self.snakes_to_json_config, self.make_dirs)
