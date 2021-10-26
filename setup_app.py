@@ -1398,7 +1398,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.snakes_to_json_config["fields"]["pixel_spacing_um_xyz"] = spacing_string
         if self.image_dims is not None:
             pixel_dims_string = ",".join([str(dim) for dim in self.image_dims])
-            self.snakes_to_json_config["fields"]["dims_pixels"]
+            self.snakes_to_json_config["fields"]["dims_pixels"] = pixel_dims_string
 
         self.addForm('SNAKES_TO_JSON_SETUP', SnakesToJsonSetupForm, name="Snakes to JSON Setup")
         self.getForm('SNAKES_TO_JSON_SETUP').configure(self.snakes_to_json_config, self.make_dirs)
