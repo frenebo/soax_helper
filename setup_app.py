@@ -1154,7 +1154,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startPixelSizeSelect(self):
         self.addForm('PIXEL_SIZE_SELECT', PixelSizeSelectionForm, name="Select Pixel Size")
-        self.getForm('PIXEL_SIZE_SELECT').configure()
+        self.getForm('PIXEL_SIZE_SELECT').configure(
+            {
+                "x_spacing": "",
+                "y_spacing": "",
+                "z_spacing": "",
+            },
+            self.make_dirs,
+        )
         self.setNextForm('PIXEL_SIZE_SELECT')
 
     def pixelSizeSelectDone(self, fields):
