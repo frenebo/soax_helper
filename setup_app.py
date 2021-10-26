@@ -1148,7 +1148,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.pixel_spacing_xyz is not None:
             return
 
-        should_enter_pixel_size = npyscreen.notify_yes_no("The size of a pixel in micrometers (from images in {}) will be needed to format output data. Do you want to input pixel size now?".format(tiff_folder_name), editw=1)
+        should_enter_pixel_size = npyscreen.notify_yes_no("The size of a pixel in micrometers (from images in {}) will be needed to format output data. Do you want to input pixel size now?".format(tiff_folder_name), editw=2)
         if should_enter_pixel_size:
             self.menu_functions.insert(self.form_index + 1, self.startPixelSizeSelect)
 
