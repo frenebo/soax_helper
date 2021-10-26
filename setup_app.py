@@ -1039,6 +1039,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.pixel_spacing_xyz = None
         self.image_dims = None
+        self.image_being_split = False
 
         self.menu_functions = [
             self.startSoaxStepsSelect,
@@ -1341,8 +1342,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_sectioned_tiff_dir"]
         self.soax_run_config["fields"]["use_subdirs"] = "true"
 
-        self.snakes_to_json_config["fields"]["offset_pixels"] = "infer"
-        self.snakes_to_json_config["fields"]["dims_pixels"] = "infer"
+        self.image_being_split = True
 
         self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
         self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
@@ -1400,7 +1400,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             spacing_string = ",".join([str(dim) for dim in self.pixel_spacing_xyz])
             self.snakes_to_json_config["fields"]["pixel_spacing_um_xyz"] = spacing_string
             self.snakes_to_json_config["notes"]["pixel_spacing_um_xyz"] = "Set from previously input data (and rescale factor if applicable)"
-        if self.image_dims is not None:
+
+        if self.image_being_split:
+            self.snakes_to_json_config["fields"]["dims_pixels"] = "infer"
+            self.snakes_to_json_config["fields"]["offset_pixels"] = "infer"
+        elif self.image_dims is not None:
             pixel_dims_string = ",".join([str(dim) for dim in self.image_dims])
             self.snakes_to_json_config["fields"]["dims_pixels"] = pixel_dims_string
 
