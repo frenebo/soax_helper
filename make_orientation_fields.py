@@ -6,7 +6,7 @@ from snakeutils.snakejson import load_json_snakes
 def make_field_for_json(json_fp, data_fp, logger):
     snakes_data, snakes_metadata = load_json_snakes(json_fp)
 
-    raise Exception("unimplemented")
+    raise NotImplementedError()
 
 def make_orientation_fields(
     source_json_dir,

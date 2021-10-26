@@ -52,7 +52,6 @@ def rescale_single_tiff(arg_dict):
     new_height = output_dims[1]
     new_depth = output_dims[2]
 
-
     logger.log("Loading tiff {} to rescale".format(source_tiff_path))
     pil_img = Image.open(source_tiff_path)
 

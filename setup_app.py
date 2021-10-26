@@ -197,7 +197,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
                 "Run SOAX",
                 "Convert Snake files to JSON",
                 "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
-                "Make Orientation Fields",
+                # "Make Orientation Fields",
             ],
             scroll_exit=True,
         )
