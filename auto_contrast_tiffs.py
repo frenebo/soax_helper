@@ -27,7 +27,7 @@ def auto_contrast_single_tiff(arg_dict):
     pil_img = Image.open(tiff_fp)
 
     # if 2D
-    if not getattr(pil_img, "n_frames", 1) == 1:
+    if getattr(pil_img, "n_frames", 1) == 1:
         logger.FAIL("Cannot auto-contrast '{}', image is 2D but this tool only supports 3D tiff stacks".format(tiff_fp))
 
     image_arr = pil_img_3d_to_np_arr(pil_img)
