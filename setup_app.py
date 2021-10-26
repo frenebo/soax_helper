@@ -1178,6 +1178,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             parsed_fields["y_spacing"],
             parsed_fields["z_spacing"],
         ]
+        raise Exception(self.pixel_spacing_xyz)
 
         self.goToNextMenu()
 
