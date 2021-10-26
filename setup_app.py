@@ -1396,6 +1396,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.pixel_spacing_xyz is not None:
             spacing_string = ",".join([str(dim) for dim in self.pixel_spacing_xyz])
             self.snakes_to_json_config["fields"]["pixel_spacing_um_xyz"] = spacing_string
+            self.snakes_to_json_config["notes"]["pixel_spacing_um_xyz"] = "Set from previously input data (and rescale factor if applicable)"
         if self.image_dims is not None:
             pixel_dims_string = ",".join([str(dim) for dim in self.image_dims])
             self.snakes_to_json_config["fields"]["dims_pixels"] = pixel_dims_string
