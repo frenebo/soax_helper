@@ -1178,7 +1178,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             parsed_fields["y_spacing"],
             parsed_fields["z_spacing"],
         ]
-        raise Exception(self.pixel_spacing_xyz)
 
         self.goToNextMenu()
 
@@ -1306,12 +1305,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
 
         if self.pixel_spacing_xyz is not None:
-            old_x_space,old_y_space,old_z_space = self.pixel_spacing_xyz
             orig_dims = fields["input_dims"]
             new_dims = fields["output_dims"]
-            new_x_space = old_x_space * new_dims[0] / orig_dims[0]
-            new_y_space = old_y_space * new_dims[1] / orig_dims[1]
-            new_z_space = old_z_space * new_dims[2] / orig_dims[2]
+            new_x_space = self.pixel_spacing_xyz[0] * new_dims[0] / orig_dims[0]
+            new_y_space = self.pixel_spacing_xyz[1] * new_dims[1] / orig_dims[1]
+            new_z_space = self.pixel_spacing_xyz[2] * new_dims[2] / orig_dims[2]
             self.pixel_spacing_xyz = [new_x_space,new_y_space,new_z_space]
         else:
             self.prompt_pixel_size_if_not_known(fields["target_tiff_dir"])
