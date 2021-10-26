@@ -1332,8 +1332,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def sectioningSetupDone(self, fields):
         self.sectioning_config["fields"] = fields
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_sectioned_tiff_dir"]
-        self.soax_run_config["
-        fields"]["use_subdirs"] = "true"
+        self.soax_run_config["fields"]["use_subdirs"] = "true"
 
         self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
         self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
