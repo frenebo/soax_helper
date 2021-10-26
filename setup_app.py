@@ -419,6 +419,9 @@ class SetupForm(npyscreen.Form):
             "int_arg_or_range",
             "text",
             "letter",
+            "int_coords",
+            "infer_or_int_coords",
+            "float_coords",
         ]:
             return self.npy_fields[field_id].value
         elif field_type in ["true_false"]:
@@ -481,7 +484,7 @@ class PixelSizeSelectionForm(SetupForm):
         },
         {
             "id": "z_spacing",
-            "name": "Pixel Depth Spacing (um)",
+            "name": "Pixel Z-Stack Depth Spacing (um)",
             "type": "pos_float",
         },
     ]
