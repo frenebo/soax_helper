@@ -16,7 +16,7 @@ def resize_frame(frame_arr, new_dims):
     float_frame_arr = frame_arr.astype('float64')
     # array of floats, with values from 0.0 to 1.0
     float_frame_arr = float_frame_arr / data_type_max
-    print("FLOAT ARR: min: {}, max: {}".format(np.min(float_frame_arr), np.max(float_frame_arr)))
+    # print("FLOAT ARR: min: {}, max: {}".format(np.min(float_frame_arr), np.max(float_frame_arr)))
     pil_img = Image.fromarray(float_frame_arr)
     resized_pil_img = pil_img.resize(new_dims, Image.LANCZOS)
     resized_float_arr = np.array(resized_pil_img)
@@ -24,9 +24,9 @@ def resize_frame(frame_arr, new_dims):
     resized_float_arr[resized_float_arr < 0] = 0
     resized_float_arr[resized_float_arr > 1] = 1
 
-    print("RESIZED FLOAT min: {}, max: {}".format(np.min(resized_float_arr), np.max(resized_float_arr)))
+    # print("RESIZED FLOAT min: {}, max: {}".format(np.min(resized_float_arr), np.max(resized_float_arr)))
     resized_orig_type_arr = (resized_float_arr * data_type_max).astype(frame_arr.dtype)
-    print("RESIZED ORIG type min: {}, max: {}".format(np.min(resized_orig_type_arr), np.max(resized_orig_type_arr)))
+    # print("RESIZED ORIG type min: {}, max: {}".format(np.min(resized_orig_type_arr), np.max(resized_orig_type_arr)))
     return resized_orig_type_arr
 
 def xy_rescale_3D_arr(arr, new_width, new_height):
