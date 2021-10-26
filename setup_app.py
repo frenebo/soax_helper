@@ -1305,8 +1305,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
 
         if self.pixel_spacing_xyz is not None:
-            orig_dims = fields["input_dims"]
-            new_dims = fields["output_dims"]
+            orig_dims = parse_int_coords(fields["input_dims"])
+            new_dims = parse_int_coords(fields["output_dims"])
             new_x_space = self.pixel_spacing_xyz[0] * new_dims[0] / orig_dims[0]
             new_y_space = self.pixel_spacing_xyz[1] * new_dims[1] / orig_dims[1]
             new_z_space = self.pixel_spacing_xyz[2] * new_dims[2] / orig_dims[2]
