@@ -6,7 +6,7 @@ from  snakeutils.snakejson import save_json_snakes
 def infer_snakes_dims_and_offset_pixels(snake_filename):
     # remove "sec_" and ".txt"
     section_info_text = snake_filename[4:-4]
-    x_bounds,y_bounds,z_bounds = section_info.split("_")
+    x_bounds,y_bounds,z_bounds = section_info_text.split("_")
     # remove leading coordinate from bound string:
     # "x0100-0200" -> "0100-0200"
     x_bounds,y_bounds,z_bounds = x_bounds[1:],y_bounds[1:],z_bounds[1:]
