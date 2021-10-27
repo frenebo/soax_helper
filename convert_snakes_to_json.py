@@ -81,7 +81,6 @@ def convert_snakes_to_json(
 
         json_fn = snake_filename[:-len(snakes_ext)] + ".json"
         json_fp = os.path.join(target_folder_path, json_fn)
-        logger.log("  Writing JSON snakes to {}".format(json_fp))
 
         if offset_pixels["type"] == "int_coords":
             offset_pixels_xyz = offset_pixels["value"]
@@ -104,4 +103,5 @@ def convert_snakes_to_json(
         # the image section.
         snake_list = crop_snakes(snake_list, [0,0,0], dims_pixels_xyz)
 
+        logger.log("  Writing JSON snakes to {}".format(json_fp))
         save_json_snakes(fp, snake_list, offset_pixels_xyz, dims_pixels_xyz, pixel_spacing_um_xyz)
