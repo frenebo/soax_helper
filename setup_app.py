@@ -981,7 +981,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "source_snakes_depth": "",
                 "offset_pixels": "0,0,0",
                 "dims_pixels": "",
-                "pixel_size_um_spacing": "",
+                "pixel_spacing_um_xyz": "",
             },
             "notes": {},
         }
