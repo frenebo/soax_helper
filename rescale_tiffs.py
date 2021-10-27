@@ -80,7 +80,7 @@ def rescale_single_tiff(arg_dict):
         img_arr = xy_rescale_3D_arr(img_arr, new_depth, img_arr.shape[1])
 
         # move depth axis back (depth,width,height) -> (height,width,depth)
-        img_arr = np.moveaxis(img_arr, 2, 0)
+        img_arr = np.moveaxis(img_arr, 0, 2)
 
     # resize in xy direction
     img_arr = xy_rescale_3D_arr(img_arr, new_width, new_height)
