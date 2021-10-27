@@ -145,6 +145,8 @@ def extract_snakes(snake_file):
         bg = float(bg_str)
 
         snake_points.append({"pos": [x,y,z], "fg": fg, "bg": bg})
+        line_idx += 1
+        continue
 
     snake_arr = []
 
