@@ -75,7 +75,8 @@ def extract_snakes(snake_file):
 
     snake_dict = {}
     done = False
-    lines = [line.strip().split() for line in snake_file]
+    lines = [line.rstrip() for line in snake_file.readlines()]
+    # lines = [line.strip().split() for line in snake_file]
 
     line_idx = 0
     snake_name = None
