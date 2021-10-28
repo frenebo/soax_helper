@@ -103,7 +103,7 @@ def join_sectioned_snakes(
         if len(source_jsons) == 0:
             logger.FAIL("No snake .json sections found in {}".format(source_folder_path))
 
-        target_json_fn =source_folder_name + ".json"
+        target_json_fn = "joined_" + source_folder_name + ".json"
         target_json_fp = os.path.join(target_dir_path, target_json_fn)
 
         join_sections_arg_dicts.append({
