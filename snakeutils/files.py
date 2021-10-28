@@ -129,22 +129,15 @@ def extract_snakes(snake_file):
 
             continue
 
-        if line_idx < 30000:
-            print("'{}' x_str: '{}' y_str: '{}' z_str: '{}' fg_str: '{}' bg_str".format(
-                line[:x_coord_start],
-                x_str,
-                y_str,
-                z_str,
-                fg_str,
-                bg_str,
-            ))
-        else:
-            raise Exception("AAAAAA")
-
         # Example line:
         #49           1     41.7002     55.7912     0.69079     49396.2     7611.91
+        #snake number length is 2, since 49 has two digits. Each number after takes up
+        #twelve columns
         try:
-            x_coord_start = 14
+            snake_num_len = 0
+            while line[snake_num_len] != ' ':
+                snake_num_len += 1
+            x_coord_start = snake_num_len + 12
             x_str = line[x_coord_start:x_coord_start + 12]
             y_str = line[x_coord_start + 12:x_coord_start + 12*2]
             z_str = line[x_coord_start + 12*2:x_coord_start + 12*3]
@@ -157,7 +150,18 @@ def extract_snakes(snake_file):
             fg = float(fg_str)
             bg = float(bg_str)
         except ValueError:
-            print("LINEs:")
+            # if line_idx < 30000:
+            #     print("'{}' x_str: '{}' y_str: '{}' z_str: '{}' fg_str: '{}' bg_str".format(
+            #         line[:x_coord_start],
+            #         x_str,
+            #         y_str,
+            #         z_str,
+            #         fg_str,
+            #         bg_str,
+            #     ))
+            # else:
+            #     raise Exception("AAAAAA")
+            # print("LINEs:")
             for someline in lines[line_idx-3:line_idx+1]:
                 print(someline)
             raise
