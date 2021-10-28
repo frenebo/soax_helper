@@ -151,7 +151,7 @@ def extract_snakes(snake_file):
             raise
         if line_idx < 200:
             print("'{}' x_str: '{}' y_str: '{}' z_str: '{}' fg_str: '{}' bg_str".format(
-                line[:x_coord_start]
+                line[:x_coord_start],
                 x_str,
                 y_str,
                 z_str,
