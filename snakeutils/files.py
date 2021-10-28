@@ -149,7 +149,7 @@ def extract_snakes(snake_file):
             for someline in lines[line_idx-3:line_idx+1]:
                 print(someline)
             raise
-        if line_idx < 20:
+        if line_idx < 200:
             print("x_str: '{}' y_str: '{}' z_str: '{}' fg_str: '{}' bg_str".format(
                 x_str,
                 y_str,
