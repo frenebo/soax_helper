@@ -145,7 +145,8 @@ def extract_snakes(snake_file):
             fg = float(fg_str)
             bg = float(bg_str)
         except ValueError:
-            print("LINE:")
+            print("LINEs:")
+            print(lines[line_idx-3:line_idx])
             print(line)
             raise
 
