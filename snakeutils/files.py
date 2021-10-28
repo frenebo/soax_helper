@@ -138,17 +138,16 @@ def extract_snakes(snake_file):
             z_str = line[x_coord_start + 12*2:x_coord_start + 12*3]
             fg_str = line[x_coord_start + 12*3:x_coord_start + 12*4]
             bg_str = line[x_coord_start + 12*4:x_coord_start + 12*5]
+
+            x = float(x_str)
+            y = float(y_str)
+            z = float(z_str)
+            fg = float(fg_str)
+            bg = float(bg_str)
         except ValueError:
             print("LINE:")
             print(line)
             raise
-
-
-        x = float(x_str)
-        y = float(y_str)
-        z = float(z_str)
-        fg = float(fg_str)
-        bg = float(bg_str)
 
         snake_points.append({"pos": [x,y,z], "fg": fg, "bg": bg})
         line_idx += 1
