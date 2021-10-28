@@ -804,6 +804,10 @@ class JoinSectionedSnakesSetupForm(SetupForm):
         {
             "id": "source_jsons_depth",
             "type": "non_neg_int",
+        },
+        {
+            "id": "workers",
+            "type": "pos_int",
         }
     ]
 
@@ -990,6 +994,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "source_json_dir": "",
                 "target_json_dir": "./JoinedJsonSnakes",
                 "source_jsons_depth": "",
+                "workers": "1",
             },
             "notes": {},
         }

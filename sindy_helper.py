@@ -135,7 +135,8 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         join_sectioned_snakes(
             parsed_join_sectioned_snakes_settings["source_json_dir"],
             parsed_join_sectioned_snakes_settings["target_json_dir"],
-            source_jsons_depth=parsed_join_sectioned_snakes_settings["source_jsons_depth"],
+            parsed_join_sectioned_snakes_settings["source_jsons_depth"],
+            parsed_join_sectioned_snakes_settings["workers"],
             logger=logger,
         )
     elif action_name == "make_orientation_fields":

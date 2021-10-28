@@ -72,7 +72,12 @@ def join_snake_sections_folder_and_save(arg_dict):
 
     save_json_snakes(target_json_fp, shifted_snakes, pixels_offset, dims_pixels_xyz, pixel_spacing_um_xyz)
 
-def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,logger=PrintLogger):
+def join_sectioned_snakes(
+    source_json_dir,
+    target_json_dir,
+    source_jsons_depth,
+    workers,
+    logger=PrintLogger):
     if source_jsons_depth < 1:
         raise Exception("Cannot join sectioned snakes if subdir depth is less than 1. Need a subdirectory full of sectioned snake jsons to produce one joined snake json in the target dir.")
     # The folders containing the source json files to be joined are one level less deep
@@ -106,5 +111,5 @@ def join_sectioned_snakes(source_json_dir, target_json_dir, source_jsons_depth,l
             "logger": logger,
         })
 
-    with ThreadPool(workers_num) as pool:
+    with ThreadPool(workers) as pool:
         future = pool.map(join_snake_sections_folder_and_save, join_sections_arg_dicts)
