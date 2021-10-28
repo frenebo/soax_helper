@@ -131,12 +131,18 @@ def extract_snakes(snake_file):
 
         # Example line:
         #49           1     41.7002     55.7912     0.69079     49396.2     7611.91
+        try:
         x_coord_start = 14
         x_str = line[x_coord_start:x_coord_start + 12]
         y_str = line[x_coord_start + 12:x_coord_start + 12*2]
         z_str = line[x_coord_start + 12*2:x_coord_start + 12*3]
         fg_str = line[x_coord_start + 12*3:x_coord_start + 12*4]
         bg_str = line[x_coord_start + 12*4:x_coord_start + 12*5]
+        except ValueError:
+            print("LINE:")
+            print(line)
+            raise
+
 
         x = float(x_str)
         y = float(y_str)
