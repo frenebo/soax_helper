@@ -16,8 +16,9 @@ def join_snake_sections_folder_and_save(arg_dict):
     shifted_snakes = []
 
     if len(source_filenames) == 0:
-        logger.FAIL("Cannot join snake files, source dir '{}' contains no snake jsons.".format(sourcec_dir))
+        logger.FAIL("Cannot join snake files, source dir '{}' contains no snake jsons.".format(source_dir))
 
+    logger.log("Loading snakes to join from {}".format(source_dir))
     # Make sure all sections have same units,
     # also keep track of size of the region that all of the sections cover
     first_sec_fp =  os.path.join(source_dir, source_filenames[0])
@@ -70,6 +71,7 @@ def join_snake_sections_folder_and_save(arg_dict):
     pixels_offset = [0,0,0]
     dims_pixels_xyz = [max_x,max_y,max_z]
 
+    logger.log(" Saving joined snakes as {}".format(target_json_fp))
     save_json_snakes(target_json_fp, shifted_snakes, pixels_offset, dims_pixels_xyz, pixel_spacing_um_xyz)
 
 def join_sectioned_snakes(
