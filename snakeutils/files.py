@@ -150,11 +150,13 @@ def extract_snakes(snake_file):
                 print(someline)
             raise
         if line_idx < 20:
-            print(x_str)
-            print(y_str)
-            print(z_str)
-            print(fg_str)
-            print(bg_str)
+            print("x_str: '{}' y_str: '{}' z_str: '{}' fg_str: '{}' bg_str".format(
+                x_str,
+                y_str,
+                z_str,
+                fg_str,
+                bg_str,
+            ))
         else:
             raise Exception("AAAAAA")
 
