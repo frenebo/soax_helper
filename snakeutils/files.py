@@ -146,8 +146,8 @@ def extract_snakes(snake_file):
             bg = float(bg_str)
         except ValueError:
             print("LINEs:")
-            print(lines[line_idx-3:line_idx])
-            print(line)
+            for someline in lines[line_idx-3:line_idx+1]:
+                print(someline)
             raise
 
         snake_points.append({"pos": [x,y,z], "fg": fg, "bg": bg})
