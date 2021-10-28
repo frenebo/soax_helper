@@ -149,6 +149,14 @@ def extract_snakes(snake_file):
             for someline in lines[line_idx-3:line_idx+1]:
                 print(someline)
             raise
+        if line_idx < 20:
+            print(x_str)
+            print(y_str)
+            print(z_str)
+            print(fg_str)
+            print(bg_str)
+        else:
+            raise Exception("AAAAAA")
 
         snake_points.append({"pos": [x,y,z], "fg": fg, "bg": bg})
         line_idx += 1
