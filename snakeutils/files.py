@@ -129,6 +129,18 @@ def extract_snakes(snake_file):
 
             continue
 
+        if line_idx < 30000:
+            print("'{}' x_str: '{}' y_str: '{}' z_str: '{}' fg_str: '{}' bg_str".format(
+                line[:x_coord_start],
+                x_str,
+                y_str,
+                z_str,
+                fg_str,
+                bg_str,
+            ))
+        else:
+            raise Exception("AAAAAA")
+
         # Example line:
         #49           1     41.7002     55.7912     0.69079     49396.2     7611.91
         try:
@@ -149,17 +161,6 @@ def extract_snakes(snake_file):
             for someline in lines[line_idx-3:line_idx+1]:
                 print(someline)
             raise
-        if line_idx < 30000:
-            print("'{}' x_str: '{}' y_str: '{}' z_str: '{}' fg_str: '{}' bg_str".format(
-                line[:x_coord_start],
-                x_str,
-                y_str,
-                z_str,
-                fg_str,
-                bg_str,
-            ))
-        else:
-            raise Exception("AAAAAA")
 
         snake_points.append({"pos": [x,y,z], "fg": fg, "bg": bg})
         line_idx += 1
