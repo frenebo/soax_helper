@@ -40,10 +40,6 @@ def soax_instance(soax_args):
         os.remove(errors_fp)
         os.remove(stdout_fp)
 
-
-def print_args(args):
-    print(args["tiff_dir"])
-
 def run_soax(
     batch_soax,
     tiff_dir,
@@ -123,18 +119,7 @@ def run_soax(
                 "logger": logger,
             })
 
-    # logger.log("Creating snake output directories inside {}".format(output_dir))
-    # for soax_arg in soax_args:
-    #     params_output_dir = soax_arg["params_output_dir"]
-    #     logger.log("Directory '{}' created".format(params_output_dir))
-    # print_for
-    for args in soax_args:
-        print_args(args)
-    # print([args["tiff_dir"] for args in soax_args])
-    with Pool(workers_num) as pool:
+    with ThreadPool(workers_num) as pool:
         logger.log("Making future")
-        future = pool.map(print_args,soax_args, chunksize=1)
-        # future = pool.map(soax_instance, soax_args)
+        future = pool.map(soax_instance, soax_args, chunksize=1)
         logger.log("Future finished")
-
-    raise Exception("AAAA")
