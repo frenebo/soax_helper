@@ -18,7 +18,6 @@ def auto_contrast_single_tiff(arg_dict):
     scale_factor = arg_dict["scale_factor"]
     new_max      = arg_dict["new_max"]
     logger       = arg_dict["logger"]
-    images_are_3d = arg_dict["images_are_3d"]
 
     tiff_fp = os.path.join(source_dir,tiff_fn)
     logger.log("Performing auto contrast on {}".format(tiff_fp))
@@ -41,10 +40,8 @@ def auto_contrast_single_tiff(arg_dict):
     # logger.log("New min:  {}".format(new_arr.min()))
     # logger.log("New max: {}".format(new_arr.max()))
 
-    if images_are_3d:
-        save_3d_tif(auto_contrast_fp,new_arr)
-    else:
-        tifffile.imsave(auto_contrast_fp,new_arr)
+    save_3d_tif(auto_contrast_fp,new_arr)
+
     logger.success("Saved auto contrast pic as {}".format(auto_contrast_fp))
 
 
@@ -88,7 +85,6 @@ def auto_contrast_tiffs(
             "scale_factor": scale_factor,
             "new_max": new_max,
             "logger": logger,
-            "images_are_3d": images_are_3d,
         })
 
     with ThreadPool(workers_num) as pool:
