@@ -27,6 +27,7 @@ def resize_frame(frame_arr, new_dims):
     # print("RESIZED FLOAT min: {}, max: {}".format(np.min(resized_float_arr), np.max(resized_float_arr)))
     resized_orig_type_arr = (resized_float_arr * data_type_max).astype(frame_arr.dtype)
     # print("RESIZED ORIG type min: {}, max: {}".format(np.min(resized_orig_type_arr), np.max(resized_orig_type_arr)))
+    # print("Resized frame")
     return resized_orig_type_arr
 
 def xy_rescale_3D_arr(arr, new_width, new_height):
@@ -69,17 +70,26 @@ def rescale_single_tiff(arg_dict):
 
 
     if new_depth != old_depth:
+        # print("Shape before rescaling shape: {}".format(img_arr.shape))
         # move depth axis to height dimension (height,width,depth) -> (depth,width,height)
         img_arr = np.moveaxis(img_arr, 2, 0)
+        # print("Moved axis, now {}".format(img_arr.shape))
 
         # resize in depth direction
-        img_arr = xy_rescale_3D_arr(img_arr, new_depth, img_arr.shape[1])
+        img_arr = xy_rescale_3D_arr(img_arr, img_arr.shape[1], new_depth)
+        # print("Resized, now {}".format(img_arr.shape))
 
         # move depth axis back (depth,width,height) -> (height,width,depth)
         img_arr = np.moveaxis(img_arr, 0, 2)
+        # print("Shape after rescaling depth: {}".format(img_arr.shape))
+
 
     # resize in xy direction
-    img_arr = xy_rescale_3D_arr(img_arr, new_width, new_height)
+    if new_height != old_height or new_width != old_width:
+        # print("Shape before resizing xy: {}".format(img_arr.shape))
+        img_arr = xy_rescale_3D_arr(img_arr, new_width, new_height)
+        # print("Shape after resizing xy: {}".format(img_arr.shape))
+
     save_3d_tif(target_tiff_path,img_arr)
     logger.log("  Saved rescaled tiff as {}".format(target_tiff_path))
 

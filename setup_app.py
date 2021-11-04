@@ -906,7 +906,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.rescale_config = {
             "fields": {
                 "source_tiff_dir": "",
-                "target_tiff_dir": "RescaledTIFFs",
+                "target_tiff_dir": "./RescaledTIFFs",
                 "input_dims": "",
                 "output_dims": "",
                 "workers_num": "1",
