@@ -212,6 +212,11 @@ class SoaxStepsSelectForm(npyscreen.Form):
         do_join_sectioned_snakes           = 6  in self.select_steps.value
         do_make_orientation_fields         = 7  in self.select_steps.value
 
+        if do_section and not do_auto_contrast:
+            should_continue = npyscreen.notify_yes_no("If sectioning image, it's recommended to auto contrast, so SOAX doesn't need to auto-contrast each section individually (possibly with different contrast in each section). Proceed anyway?", editw=2)
+            if not should_continue:
+                return
+
         self.parentApp.soaxStepsSelectDone(
             do_auto_contrast,
             do_rescale,
