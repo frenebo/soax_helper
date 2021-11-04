@@ -404,6 +404,8 @@ class SetupForm(npyscreen.Form):
                 field_name = field_info["name"]
             else:
                 field_name = field_id
+            if field_id in menu_config["notes"]:
+                self.add_info_text(menu_config["notes"][field_id])
             field_str = field_defaults[field_id]
             field_type = field_info["type"]
 
