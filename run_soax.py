@@ -132,8 +132,8 @@ def run_soax(
         print_args(args)
     raise Exception("AAAA")
     # print([args["tiff_dir"] for args in soax_args])
-    # with Pool(workers_num) as pool:
-    #     logger.log("Making future")
-    #     future = pool.map(print_args,soax_args)
-    #     # future = pool.map(soax_instance, soax_args)
-    #     logger.log("Future finished")
+    with Pool(workers_num) as pool:
+        logger.log("Making future")
+        future = pool.map(print_args,soax_args)
+        # future = pool.map(soax_instance, soax_args)
+        logger.log("Future finished")
