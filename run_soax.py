@@ -1,5 +1,5 @@
 import os
-from multiprocessing.pool import ThreadPool
+from multiprocessing.pool import Pool
 import subprocess
 import tqdm
 from ctypes import c_int32
@@ -124,7 +124,7 @@ def run_soax(
     #     params_output_dir = soax_arg["params_output_dir"]
     #     logger.log("Directory '{}' created".format(params_output_dir))
 
-    with ThreadPool(workers_num) as pool:
+    with Pool(workers_num) as pool:
         logger.log("Making future")
         future = pool.map(soax_instance, soax_args)
         logger.log("Future finished")
