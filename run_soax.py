@@ -40,6 +40,10 @@ def soax_instance(soax_args):
         os.remove(errors_fp)
         os.remove(stdout_fp)
 
+
+def print_args(args):
+    print(args["tiff_dir"])
+
 def run_soax(
     batch_soax,
     tiff_dir,
@@ -126,5 +130,6 @@ def run_soax(
     print([args["tiff_dir"] for args in soax_args])
     with Pool(workers_num) as pool:
         logger.log("Making future")
-        future = pool.map(soax_instance, soax_args)
+        future = pool.map(print_args,soax_args)
+        # future = pool.map(soax_instance, soax_args)
         logger.log("Future finished")
