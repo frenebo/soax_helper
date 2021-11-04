@@ -1,5 +1,5 @@
 import os
-from multiprocessing.pool import Pool
+from multiprocessing.pool import ThreadPool
 import subprocess
 import tqdm
 from ctypes import c_int32
