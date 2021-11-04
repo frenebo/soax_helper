@@ -1309,8 +1309,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 editw=1)
         else:
             tif_max_level = tif_metadata["tif_max_level"]
-            self.soax_params_page2_config["fields"]["intensity_scaling"] = format(1/tif_max_level, '.9f')
-            self.soax_params_page2_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tif {tif_path} is {max_lev} (From input to Auto Contrast step)".format(
+            self.soax_params_page1_config["fields"]["intensity_scaling"] = format(1/tif_max_level, '.9f')
+            self.soax_params_page1_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tif {tif_path} is {max_lev} (From input to Auto Contrast step)".format(
                 max_lev=tif_max_level,
                 tif_path=tif_metadata["tif_path"],
             )
