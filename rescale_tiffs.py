@@ -128,4 +128,4 @@ def rescale_tiffs(
         })
 
     with ThreadPool(workers_num) as pool:
-        future = pool.map(rescale_single_tiff, rescale_tiffs_arg_dicts, chunksize=1))
+        future = pool.map(rescale_single_tiff, rescale_tiffs_arg_dicts, chunksize=1)

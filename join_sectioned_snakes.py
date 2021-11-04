@@ -114,4 +114,4 @@ def join_sectioned_snakes(
         })
 
     with ThreadPool(workers) as pool:
-        future = pool.map(join_snake_sections_folder_and_save, join_sections_arg_dicts, chunksize=1))
+        future = pool.map(join_snake_sections_folder_and_save, join_sections_arg_dicts, chunksize=1)

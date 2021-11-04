@@ -88,4 +88,4 @@ def auto_contrast_tiffs(
         })
 
     with ThreadPool(workers_num) as pool:
-        future = pool.map(auto_contrast_single_tiff, contrast_arg_dicts, chunksize=1))
+        future = pool.map(auto_contrast_single_tiff, contrast_arg_dicts, chunksize=1)
