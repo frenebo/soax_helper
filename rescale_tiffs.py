@@ -55,14 +55,11 @@ def rescale_single_tiff(arg_dict):
 
     logger.log("Loading tiff {} to rescale".format(source_tiff_path))
     pil_img = Image.open(source_tiff_path)
-
-    # Check if loaded tiff is 3d
-    if getattr(pil_img, "n_frames", 1) == 1:
-        logger.FAIL("Input image {} to rescale is not 3D: invalid".format(source_tiff_path))
-
+    img_arr = pil_img_3d_to_np_arr(pil_img)
+    # width,height,depth
+    observed_dims = (img_arr.shape[1],img_arr.shape[0],img_arr.shape[2])
 
     # check dimensions match
-    observed_dims = (pil_img.width,pil_img.height,getattr(pil_img, "n_frames", 1))
     if observed_dims != tuple(input_dims):
         logger.FAIL("Problem resizing {}, expected original dimensions {} but dimensions are actually {}".format(
             source_tiff_path,
@@ -70,7 +67,6 @@ def rescale_single_tiff(arg_dict):
             observed_dims,
         ))
 
-    img_arr = pil_img_3d_to_np_arr(pil_img)
 
     if new_depth != old_depth:
         # move depth axis to height dimension (height,width,depth) -> (depth,width,height)

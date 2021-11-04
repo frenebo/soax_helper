@@ -26,10 +26,6 @@ def auto_contrast_single_tiff(arg_dict):
 
     pil_img = Image.open(tiff_fp)
 
-    # if 2D
-    if getattr(pil_img, "n_frames", 1) == 1:
-        logger.FAIL("Cannot auto-contrast '{}', image is 2D but this tool only supports 3D tiff stacks".format(tiff_fp))
-
     image_arr = pil_img_3d_to_np_arr(pil_img)
 
     over_max_places = image_arr >= max_cutoff
@@ -68,14 +64,8 @@ def auto_contrast_tiffs(
         return
 
     first_tiff_img = Image.open(os.path.join(source_dir, source_tifs[0]))
-    images_are_3d = getattr(first_tiff_img, "n_frames", 1) > 1
 
-    # if just one frame
-    if images_are_3d:
-        logger.log("Opening and saving images as 3D")
-        first_tiff_arr = pil_img_3d_to_np_arr(first_tiff_img)
-    else:
-        first_tiff_arr = np.array(first_tiff_img)
+    first_tiff_arr = pil_img_3d_to_np_arr(first_tiff_img)
 
     max_cutoff = np.percentile(first_tiff_arr,max_cutoff_percent)
     min_cutoff = np.percentile(first_tiff_arr,min_cutoff_percent)

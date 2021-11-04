@@ -49,7 +49,7 @@ def tiff_info(tiff_paths,logger=PrintLogger):
     for tiff_path in tiff_paths:
         data = Image.open(tiff_path)
         shape = data.size
-        stack_height = data.n_frames
+        stack_height = getattr(data, "n_frames", 1)
         arr = np.array(data)
         dtype = str(arr.dtype)
         min_val = arr.min()

@@ -18,14 +18,8 @@ def section_tiff(arg_dict):
 
     pil_img = Image.open(tiff_filepath)
 
-    tiff_is_3d = getattr(pil_img, "n_frames", 1) != 1
-    if not tiff_is_3d:
-        logger.FAIL("Cannot process TIF '{}', is not 3 dimensional, has only one frame".format(tiff_filepath))
-
-    width = pil_img.width
-    height = pil_img.height
-    depth = pil_img.n_frames
     img_arr = pil_img_3d_to_np_arr(pil_img)
+    height,width,depth = img_arr.shape
 
     # Ceil because we want to have slices on the smaller size if width/height/depth is not
     # exactly divisible by section_size
