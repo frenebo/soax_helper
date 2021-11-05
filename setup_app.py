@@ -190,27 +190,28 @@ class SoaxStepsSelectForm(npyscreen.Form):
             value = [],
             name="Pick SOAX Steps (spacebar to toggle)",
             values = [
-                "Auto Contrast Raw TIFFs",
+                "Subtract Average Image",
+                "Auto Contrast Images",
                 "Rescale TIFFs in X,Y,Z",
                 "Section TIFFs before running SOAX",
                 "Make SOAX Parameter Files",
                 "Run SOAX",
                 "Convert Snake files to JSON",
                 "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
-                # "Make Orientation Fields",
             ],
             scroll_exit=True,
         )
 
     def afterEditing(self):
-        do_auto_contrast                   = 0  in self.select_steps.value
-        do_rescale                         = 1  in self.select_steps.value
-        do_section                         = 2  in self.select_steps.value
-        do_create_soax_params              = 3  in self.select_steps.value
-        do_run_soax                        = 4  in self.select_steps.value
-        do_snakes_to_json                  = 5  in self.select_steps.value
-        do_join_sectioned_snakes           = 6  in self.select_steps.value
-        do_make_orientation_fields         = 7  in self.select_steps.value
+        do_subtract_average_image          = 0  in self.select_steps.value
+        do_auto_contrast                   = 1  in self.select_steps.value
+        do_rescale                         = 2  in self.select_steps.value
+        do_section                         = 3  in self.select_steps.value
+        do_create_soax_params              = 4  in self.select_steps.value
+        do_run_soax                        = 5  in self.select_steps.value
+        do_snakes_to_json                  = 6  in self.select_steps.value
+        do_join_sectioned_snakes           = 7  in self.select_steps.value
+        do_make_orientation_fields         = 8  in self.select_steps.value
 
         if do_section and not do_auto_contrast:
             should_continue = npyscreen.notify_yes_no("If sectioning image, it's recommended to auto contrast, so SOAX doesn't need to auto-contrast each section individually (possibly with different contrast in each section). Proceed anyway?", editw=2)
@@ -218,6 +219,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
                 return
 
         self.parentApp.soaxStepsSelectDone(
+            do_subtract_average_image,
             do_auto_contrast,
             do_rescale,
             do_section,
@@ -497,6 +499,25 @@ class PixelSizeSelectionForm(SetupForm):
     ]
 
     app_done_func_name = "pixelSizeSelectDone"
+
+class SubtractAverageImageSetupForm(SetupForm):
+    field_infos = [
+        {
+            "id": "source_tiff_dir",
+            "type": "dir",
+            "help": "Take average image over all data, and subtract the average (to remove constant background noise, if possible)",
+        },
+        {
+            "id": "target_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "workers",
+            "type": "pos_int",
+        },
+    ]
+
+    app_done_func_name = "subtractAverageImageSetupDone"
 
 class AutoContrastSetupForm(SetupForm):
     field_infos = [
@@ -900,6 +921,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
         # Info for forms, including default fields to show in forms. Updated by user and by setup app,
         # like automatically setting source_tiff_dir of rescale to target_tiff_dir of auto contrast (if user configures auto contrast)
+        self.subtract_average_image_config = {
+            "fields": {
+                "source_tiff_dir": "",
+                "target_tiff_dir": "./AverageImageSubtractedTIFFs",
+                "workers": "1",
+            },
+            "notes": {},
+        }
         self.auto_contrast_config = {
             "fields": {
                 "max_cutoff_percent": "95.5",
@@ -1068,6 +1097,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def getActionConfigs(self):
         action_configs = []
+        if self.do_subtract_average_image:
+            action_configs.append({
+                "action": "subtract_average_image",
+                "settings": self.subtract_average_image_config["fields"],
+            })
         if self.do_auto_contrast:
             action_configs.append({
                 "action": "auto_contrast_tiffs",
@@ -1206,6 +1240,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('SOAX_STEPS_SELECT')
 
     def soaxStepsSelectDone(self,
+        do_subtract_average_image,
         do_auto_contrast,
         do_rescale,
         do_section,
@@ -1215,6 +1250,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_join_sectioned_snakes,
         do_make_orientation_fields,
         ):
+        self.do_subtract_average_image = do_subtract_average_image
         self.do_auto_contrast = do_auto_contrast
         self.do_rescale = do_rescale
         self.do_section = do_section
@@ -1224,6 +1260,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
         self.do_make_orientation_fields = do_make_orientation_fields
 
+        if self.do_subtract_average_image:
+            self.menu_functions.append(self.startSubtractAverageImageSetup)
         if self.do_auto_contrast:
             self.menu_functions.append(self.startAutoContrastSetup)
         if self.do_rescale:
@@ -1273,11 +1311,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.goToNextMenu()
 
-    def startAutoContrastSetup(self):
-        self.addForm('AUTO_CONTRAST_SETUP', AutoContrastSetupForm, name='Auto Contrasting Setup')
-        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_config, self.make_dirs)
-        self.setNextForm('AUTO_CONTRAST_SETUP')
-
     def determineImageDimsFromDirIfNotKnown(self, dirpath):
         if self.image_dims is not None:
             return
@@ -1288,8 +1321,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if tif_metadata is not None:
             self.image_dims = tif_metadata["dims"]
 
+    def startAutoContrastSetup(self):
+        self.addForm('AUTO_CONTRAST_SETUP', AutoContrastSetupForm, name='Auto Contrasting Setup')
+        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_config, self.make_dirs)
+        self.setNextForm('AUTO_CONTRAST_SETUP')
+
     def autoContrastSetupDone(self, fields):
         self.auto_contrast_config["fields"] = fields
+
+        self.subtract_average_image_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.rescale_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
@@ -1317,6 +1357,23 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 tif_path=tif_metadata["tif_path"],
             )
             self.rescale_config["fields"]["input_dims"] = ",".join([str(dim) for dim in tif_metadata["dims"]])
+
+        self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
+        self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
+
+        self.goToNextMenu()
+
+    def startSubtractAverageImageSetup(self):
+        self.addForm('SUBTRACT_AVERAGE_IMAGE_SETUP', SubtractAverageImageSetupForm, name='Subtract Average Image Setup')
+        self.getForm('SUBTRACT_AVERAGE_IMAGE_SETUP').configure(self.subtract_average_image_config, self.make_dirs)
+        self.setNextForm('SUBTRACT_AVERAGE_IMAGE_SETUP')
+
+    def subtractAverageImageSetupDone(self, fields):
+        self.subtract_average_image_config["fields"] = fields
+
+        self.rescale_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+        self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+        self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
 
         self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
         self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
