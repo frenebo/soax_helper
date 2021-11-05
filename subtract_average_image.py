@@ -7,7 +7,7 @@ from snakeutils.files import has_one_of_extensions
 from snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 from multiprocessing.pool import ThreadPool
 
-def subtract_average_image(source_dir, target_dir, workers, logger=PrintLogger):
+def subtract_average_image(source_dir, target_dir, logger=PrintLogger):
     source_tifs = [filename for filename in os.listdir(source_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
     source_tifs.sort()
 
