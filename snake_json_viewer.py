@@ -19,7 +19,8 @@ if __name__ == "__main__":
 
     snakes,metadata = load_json_snakes(args.json_path)
 
-    fig = plt.figure()
+    fig = plt.figure(num=args.json_path, figsize=(10,7))
+    # fig.sets
     if args.flatten:
         ax = plt.axes()
         ax.set_xlim(0,metadata["dims_pixels_xyz"][0])
@@ -50,9 +51,7 @@ if __name__ == "__main__":
             y.append(pt_y)
             z.append(pt_z)
         if args.flatten:
-            ax.plot(x,y)
+            ax.plot(x,y, 'b')
         else:
-            ax.plot(x,y,z)
-
-
+            ax.plot(x,y,z, 'b')
     plt.show()

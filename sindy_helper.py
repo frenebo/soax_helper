@@ -16,10 +16,10 @@ from matrices_from_snakes import sindy_matrices_from_snakes
 from bead_piv import bead_piv
 from tube_piv import tube_piv
 from create_soax_param_files import create_soax_param_files
-from subtract_average_image import subtract_average_image
+from divide_average_image import divide_average_image
 
 from setup_app import (
-    SubtractAverageImageSetupForm,
+    DivideAverageImageSetupForm,
     SoaxSetupApp,
     RescaleSetupForm,
     AutoContrastSetupForm,
@@ -36,11 +36,11 @@ from setup_app import (
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
-    if action_name == "subtract_average_image":
-        parsed_subtract_average_image_settings = SubtractAverageImageSetupForm.parseSettings(setting_strings, make_dirs)
-        subtract_average_image(
-            parsed_subtract_average_image_settings["source_tiff_dir"],
-            parsed_subtract_average_image_settings["target_tiff_dir"],
+    if action_name == "divide_average_image":
+        parsed_divide_average_image_settings = DivideAverageImageSetupForm.parseSettings(setting_strings, make_dirs)
+        divide_average_image(
+            parsed_divide_average_image_settings["source_tiff_dir"],
+            parsed_divide_average_image_settings["target_tiff_dir"],
             logger=logger,
         )
     elif action_name == "rescale_tiffs":
