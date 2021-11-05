@@ -190,8 +190,8 @@ class SoaxStepsSelectForm(npyscreen.Form):
             value = [],
             name="Pick SOAX Steps (spacebar to toggle)",
             values = [
-                "Divide Average Image",
                 "Auto Contrast Images",
+                "Divide Average Image",
                 "Rescale TIFFs in X,Y,Z",
                 "Section TIFFs before running SOAX",
                 "Make SOAX Parameter Files",
@@ -203,8 +203,8 @@ class SoaxStepsSelectForm(npyscreen.Form):
         )
 
     def afterEditing(self):
-        do_divide_average_image          = 0  in self.select_steps.value
-        do_auto_contrast                   = 1  in self.select_steps.value
+        do_auto_contrast                   = 0  in self.select_steps.value
+        do_divide_average_image            = 1  in self.select_steps.value
         do_rescale                         = 2  in self.select_steps.value
         do_section                         = 3  in self.select_steps.value
         do_create_soax_params              = 4  in self.select_steps.value
@@ -219,8 +219,8 @@ class SoaxStepsSelectForm(npyscreen.Form):
                 return
 
         self.parentApp.soaxStepsSelectDone(
-            do_divide_average_image,
             do_auto_contrast,
+            do_divide_average_image,
             do_rescale,
             do_section,
             do_create_soax_params,
@@ -917,13 +917,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def onStart(self):
         # Info for forms, including default fields to show in forms. Updated by user and by setup app,
         # like automatically setting source_tiff_dir of rescale to target_tiff_dir of auto contrast (if user configures auto contrast)
-        self.divide_average_image_config = {
-            "fields": {
-                "source_tiff_dir": "",
-                "target_tiff_dir": "./AverageImageDividedTIFFs",
-            },
-            "notes": {},
-        }
         self.auto_contrast_config = {
             "fields": {
                 "max_cutoff_percent": "95.5",
@@ -931,6 +924,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "workers_num": "1",
                 "source_tiff_dir": "",
                 "target_tiff_dir": "./AutoContrastedTIFFs",
+            },
+            "notes": {},
+        }
+        self.divide_average_image_config = {
+            "fields": {
+                "source_tiff_dir": "",
+                "target_tiff_dir": "./AverageImageDividedTIFFs",
             },
             "notes": {},
         }
@@ -1092,15 +1092,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def getActionConfigs(self):
         action_configs = []
-        if self.do_divide_average_image:
-            action_configs.append({
-                "action": "divide_average_image",
-                "settings": self.divide_average_image_config["fields"],
-            })
         if self.do_auto_contrast:
             action_configs.append({
                 "action": "auto_contrast_tiffs",
                 "settings": self.auto_contrast_config["fields"],
+            })
+        if self.do_divide_average_image:
+            action_configs.append({
+                "action": "divide_average_image",
+                "settings": self.divide_average_image_config["fields"],
             })
         if self.do_rescale:
             action_configs.append({
@@ -1235,8 +1235,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('SOAX_STEPS_SELECT')
 
     def soaxStepsSelectDone(self,
-        do_divide_average_image,
         do_auto_contrast,
+        do_divide_average_image,
         do_rescale,
         do_section,
         do_create_soax_params,
@@ -1245,8 +1245,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_join_sectioned_snakes,
         do_make_orientation_fields,
         ):
-        self.do_divide_average_image = do_divide_average_image
         self.do_auto_contrast = do_auto_contrast
+        self.do_divide_average_image = do_divide_average_image
         self.do_rescale = do_rescale
         self.do_section = do_section
         self.do_create_soax_params = do_create_soax_params
@@ -1255,10 +1255,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
         self.do_make_orientation_fields = do_make_orientation_fields
 
-        if self.do_divide_average_image:
-            self.menu_functions.append(self.startDivideAverageImageSetup)
         if self.do_auto_contrast:
             self.menu_functions.append(self.startAutoContrastSetup)
+        if self.do_divide_average_image:
+            self.menu_functions.append(self.startDivideAverageImageSetup)
         if self.do_rescale:
             self.menu_functions.append(self.startRescaleSetup)
         if self.do_section:
