@@ -47,8 +47,8 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
         np_arr = pil_img_3d_to_np_arr(pil_img)
         # original_dtype = np_arr.dtype
         divided_arr = np.multiply(np_arr.astype(np.double), image_mult_factor)
-        divide_arr = divide_arr.astype(np_arr.dtype)
-        print(divide_arr.dtype)
+        divided_arr = divided_arr.astype(np_arr.dtype)
+        print(divided_arr.dtype)
         # where_less_than_average = np_arr < average_image
         # np_arr = np_arr - average_image
         # np_arr[where_less_than_average] = 0
