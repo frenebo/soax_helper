@@ -36,6 +36,7 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
     # average_image /= average_image.max()
     image_mult_factor = np.reciprocal(average_image)
     image_mult_factor /= image_mult_factor.max()
+    logger.log("Biggest division factor (inverse): {}".format(image_mult_factor.min()))
     # print()
     # avg_reciprocal /= avg_reciprocal.
 
@@ -48,7 +49,7 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
         # original_dtype = np_arr.dtype
         divided_arr = np.multiply(np_arr.astype(np.double), image_mult_factor)
         divided_arr = divided_arr.astype(np_arr.dtype)
-        print(divided_arr.dtype)
+        # print(divided_arr.dtype)
         # where_less_than_average = np_arr < average_image
         # np_arr = np_arr - average_image
         # np_arr[where_less_than_average] = 0
