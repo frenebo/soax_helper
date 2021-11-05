@@ -1092,7 +1092,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def getActionConfigs(self):
         action_configs = []
-        if self.do_divided_average_image:
+        if self.do_divide_average_image:
             action_configs.append({
                 "action": "divide_average_image",
                 "settings": self.divide_average_image_config["fields"],
