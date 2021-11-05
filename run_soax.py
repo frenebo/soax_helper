@@ -69,16 +69,6 @@ def run_soax(
 
         for subdir_name in subdir_names:
             subdir_path = os.path.join(tiff_dir,subdir_name)
-            snakes_output_dir = os.path.join(output_dir, params_name, subdir_name)
-
-            stdout_fp = os.path.join(params_logging_dir, subdir_name + "_stdout.txt")
-            errors_fp = os.path.join(params_logging_dir, subdir_name + "_errors.txt")
-
-            if not os.path.isdir(snakes_output_dir):
-                if os.path.exists(snakes_output_dir):
-                    logger.FAIL("Snakes dir {} exists but is not a directory. Cannot output snakes here".format(snakes_output_dir))
-                else:
-                    os.makedirs(snakes_output_dir)
 
             for params_filename in param_files:
                 param_fp = os.path.join(params_dir,params_filename)
@@ -90,6 +80,17 @@ def run_soax(
                         logger.FAIL("Logging dir {} exists but is not directory. Cannot log output there".format(sublogging_dir))
                     else:
                         os.makedirs(params_logging_dir)
+
+                snakes_output_dir = os.path.join(output_dir, params_name, subdir_name)
+
+                stdout_fp = os.path.join(params_logging_dir, subdir_name + "_stdout.txt")
+                errors_fp = os.path.join(params_logging_dir, subdir_name + "_errors.txt")
+
+                if not os.path.isdir(snakes_output_dir):
+                    if os.path.exists(snakes_output_dir):
+                        logger.FAIL("Snakes dir {} exists but is not a directory. Cannot output snakes here".format(snakes_output_dir))
+                    else:
+                        os.makedirs(snakes_output_dir)
 
                 soax_args.append({
                     "batch_soax": batch_soax,
