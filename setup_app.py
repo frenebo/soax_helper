@@ -511,10 +511,6 @@ class SubtractAverageImageSetupForm(SetupForm):
             "id": "target_tiff_dir",
             "type": "dir",
         },
-        {
-            "id": "workers",
-            "type": "pos_int",
-        },
     ]
 
     app_done_func_name = "subtractAverageImageSetupDone"
@@ -925,7 +921,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "fields": {
                 "source_tiff_dir": "",
                 "target_tiff_dir": "./AverageImageSubtractedTIFFs",
-                "workers": "1",
             },
             "notes": {},
         }
