@@ -37,8 +37,11 @@ def soax_instance(soax_args):
             logger.error("  STDOUT saved in {}".format(stdout_fp))
             success = False
     if success:
-        os.remove(errors_fp)
-        os.remove(stdout_fp)
+        try:
+            os.remove(errors_fp)
+            os.remove(stdout_fp)
+        except:
+            pass
 
 def run_soax(
     batch_soax,
