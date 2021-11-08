@@ -1,6 +1,7 @@
 import argparse
 from snakeutils.tifimage import pil_img_3d_to_np_arr, save_3d_tif
 import os
+from PIL import Image
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Split 3D Tiff into its 2D frames')
@@ -24,3 +25,4 @@ if __name__ == "__main__":
     for i in range(stack_num):
         fp = os.path.join(target_directory, "{}_".format(i) + tiff_name)
         save_3d_tif(fp, save_3d_np_arr[i])
+        print("Saved {}".format(fp))
