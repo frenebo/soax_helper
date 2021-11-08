@@ -112,7 +112,7 @@ def parse_infer_or_int_coords(field_name, field_str):
 
     val = parse_int_coords(field_name, field_str)
 
-    return {"type": "int_coords", "val": val}
+    return {"type": "int_coords", "value": val}
 
 def parse_float_coords(field_name, field_str):
     if len(field_str.strip()) == 0:
