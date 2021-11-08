@@ -19,6 +19,8 @@ if __name__ == "__main__":
     pil_img = Image.open(args.source_tiff_path)
     np_arr = pil_img_3d_to_np_arr(pil_img)
 
+    print("shape: {}".format(np_arr.shape))
+
     tiff_name = os.path.split(args.source_tiff_path)[-1]
 
     stack_num = np_arr.shape[2]
