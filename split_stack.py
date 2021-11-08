@@ -26,5 +26,5 @@ if __name__ == "__main__":
     stack_num = np_arr.shape[2]
     for i in range(stack_num):
         fp = os.path.join(args.target_directory, "{}_".format(i) + tiff_name)
-        save_3d_tif(fp, np_arr[:,:,i])
+        save_3d_tif(fp, np_arr[:,:,i:i+1])
         print("Saved {}".format(fp))
