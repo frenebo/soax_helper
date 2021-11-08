@@ -24,7 +24,9 @@ if __name__ == "__main__":
     tiff_name = os.path.split(args.source_tiff_path)[-1]
 
     stack_num = np_arr.shape[2]
+    # "_{filename_tag}{{{name}:0{str_length}.{decimals}f}}"
+    prefix_template = "{{idx:0{str_length}.0f}}".format(str_length=len(str(stack_num)))
     for i in range(stack_num):
-        fp = os.path.join(args.target_directory, "{}_".format(i) + tiff_name)
+        fp = os.path.join(args.target_directory, prefix_template.format(idx=i) + tiff_name)
         save_3d_tif(fp, np_arr[:,:,i:i+1])
         print("Saved {}".format(fp))
