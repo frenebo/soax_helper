@@ -112,14 +112,23 @@ def run_soax(
         for params_filename in param_files:
             param_fp = os.path.join(params_dir,params_filename)
             params_name = params_filename[:-len(".txt")]
+
+
+            snakes_output_dir = os.path.join(output_dir, params_name)
+            if not os.path.isdir(snakes_output_dir):
+                if os.path.exists(snakes_output_dir):
+                    logger.FAIL("Snakes dir {} exists but is not a directory. Cannot output snakes here".format(snakes_output_dir))
+                else:
+                    os.makedirs(snakes_output_dir)
+
             soax_args.append({
                 "batch_soax": batch_soax,
                 "tiff_dir": tiff_dir,
                 "param_fp": param_fp,
                 "params_name": params_name,
-                "snakes_output_dir": output_dir,
-                "stdout_fp": os.path.join(logging_dir, "stdout.txt"),
-                "errors_fp": os.path.join(logging_dir, "errors.txt"),
+                "snakes_output_dir": snakes_output_dir,
+                "stdout_fp": os.path.join(logging_dir, params_name + "_stdout.txt"),
+                "errors_fp": os.path.join(logging_dir, params_name + "_errors.txt"),
                 "logger": logger,
             })
 
