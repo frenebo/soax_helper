@@ -4,6 +4,7 @@ import numpy as np
 import pims
 import math
 from matplotlib import pyplot as plt
+import json
 
 from snakeutils.logger import PrintLogger
 
@@ -53,24 +54,10 @@ def bead_piv(
     output_file = os.path.join(target_piv_data_dir, "bead_piv.json")
 
     linked = tp.link_df(f, linking_search_range_um, pos_columns=['xum','yum','zum'])
-    # tp.plot_displacements(linked, 0, 1)
 
-    # for search_range in [2.5, 3.0,3.5]:
-    #     linked = tp.link_df(f, search_range, pos_columns=['xum', 'yum', 'zum'])
-    #     hist, bins = np.histogram(np.bincount(linked.particle.astype(int)),
-    #                             bins=np.arange(30), normed=True)
-    #     plt.step(bins[1:], hist, label='range = {} microns'.format(search_range))
-    # plt.ylabel('relative frequency')
-    # plt.xlabel('track length (frames)')
-    # plt.legend();
-    # plt.show()
-    # print(linked.particle)
-    # print(type(linked.particle))
-    # print(len(linked.index))
-    # print(linked.shape)
-    # print(linked.shape[0])
-    # print(f.shape[0])
     frame_count = max(linked.frame)
+
+    data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.json".format(str_length=len(str(frame_count - 1)))
     for i in range(frame_count - 1):
         before_frame = linked[linked.frame == i]
         after_frame = linked[linked.frame == i + 1]
@@ -80,18 +67,14 @@ def bead_piv(
         j = (before_frame.set_index('particle')[pos_columns].join(
             after_frame.set_index('particle')[pos_columns], rsuffix='_b'))
 
-        for i in pos_columns:
-            j['d' + i] = j[i + '_b'] - j[i]
-        arrow_specs = j[pos_columns + ['d' + i for i in pos_columns]].dropna()
-        print(arrow_specs)
-        exit()
+        for col_i in pos_columns:
+            j['d' + col_i] = j[col_i + '_b'] - j[col_i]
 
-    # for col in linked.columns:
-    #     print(col)
+        bead_movement_info = j[pos_columns + ['d' + i for i in pos_columns]].dropna()
+        # print(arrow_specs)
+        bead_motions = bead_movement_info.to_dict(orient='index')
 
-    # print(f)
+        motions_save_path = os.path.join(target_piv_data_dir, data_filename_template.format(idx=i))
 
-    # raise NotImplementedError()
-
-    # if show_things:
-    #     pass
+        with open(motions_save_path, "w") as f:
+            json.dump(bead_motions, f)
