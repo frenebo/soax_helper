@@ -8,6 +8,9 @@ from snakeutils.tifimage import pil_img_3d_to_np_arr
 from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 
+# def graph_snakes(snakes):
+#     plt.draw()
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Split 3D Tiff into its 2D frames')
     parser.add_argument('tubes')
