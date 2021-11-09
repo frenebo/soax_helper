@@ -33,8 +33,8 @@ def soax_instance(soax_args):
         except subprocess.CalledProcessError as e:
             logger.error("ERROR: ")
             logger.error("  Failed to run '{}' - return code {}".format(command,e.returncode))
-            logger.error("  STDERR saved in {}".format(errors_fp))
-            logger.error("  STDOUT saved in {}".format(stdout_fp))
+            logger.error("    STDERR saved in {}".format(errors_fp))
+            logger.error("    STDOUT saved in {}".format(stdout_fp))
             success = False
     if success:
         try:
