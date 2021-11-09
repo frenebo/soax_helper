@@ -1,7 +1,9 @@
 import os
 import trackpy as tp
+import numpy as np
 import pims
 import math
+from matplotlib import pyplot as plt
 
 from snakeutils.logger import PrintLogger
 
@@ -15,8 +17,8 @@ def bead_piv(
     x_y_pixel_spacing_um,
     z_stack_spacing_um,
     bead_diameter_um,
+    linking_search_range_um,
     logger=PrintLogger,
-    show_things=False,
     ):
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num])
     # Inside a frame axes are labelled x,y,c
@@ -48,9 +50,48 @@ def bead_piv(
     f['yum'] = f['y'] * x_y_pixel_spacing_um
     f['zum'] = f['z'] * z_stack_spacing_um
 
-    print(f)
+    output_file = os.path.join(target_piv_data_dir, "bead_piv.json")
 
-    raise NotImplementedError()
+    linked = tp.link_df(f, linking_search_range_um, pos_columns=['xum','yum','zum'])
+    # tp.plot_displacements(linked, 0, 1)
+
+    # for search_range in [2.5, 3.0,3.5]:
+    #     linked = tp.link_df(f, search_range, pos_columns=['xum', 'yum', 'zum'])
+    #     hist, bins = np.histogram(np.bincount(linked.particle.astype(int)),
+    #                             bins=np.arange(30), normed=True)
+    #     plt.step(bins[1:], hist, label='range = {} microns'.format(search_range))
+    # plt.ylabel('relative frequency')
+    # plt.xlabel('track length (frames)')
+    # plt.legend();
+    # plt.show()
+    # print(linked.particle)
+    # print(type(linked.particle))
+    # print(len(linked.index))
+    # print(linked.shape)
+    # print(linked.shape[0])
+    # print(f.shape[0])
+    frame_count = max(linked.frame)
+    for i in range(frame_count - 1):
+        before_frame = linked[linked.frame == i]
+        after_frame = linked[linked.frame == i + 1]
+
+        pos_columns = ['x', 'y', 'z']
+
+        j = (before_frame.set_index('particle')[pos_columns].join(
+            after_frame.set_index('particle')[pos_columns], rsuffix='_b'))
+
+        for i in pos_columns:
+            j['d' + i] = j[i + '_b'] - j[i]
+        arrow_specs = j[pos_columns + ['d' + i for i in pos_columns]].dropna()
+        print(arrow_specs)
+        exit()
+
+    # for col in linked.columns:
+    #     print(col)
+
+    # print(f)
+
+    # raise NotImplementedError()
 
     # if show_things:
     #     pass

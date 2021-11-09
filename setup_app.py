@@ -891,6 +891,25 @@ class BeadPIVSetupForm(SetupForm):
             "id": "bead_diameter_um",
             "type": "pos_float",
         },
+        {
+            "id": "x_y_pixel_size_um",
+            "type": "pos_float",
+        },
+        {
+            "id": "z_stack_spacing_um",
+            "type": "pos_float",
+        },
+        {
+            "help": [
+                "Search distance for tracking beads.",
+                "Trackpy library tries to match beads from one time point to the next,",
+                "looking in the next time point for a bead within this distance from where the bead",
+                "was in the previous frame.",
+                "Value should be larger than the distance beads will move from one frame to another",
+            ],
+            "id": "linking_search_range_um",
+            "type": "pos_float",
+        }
     ]
 
     app_done_func_name = "beadPIVSetupDone"
@@ -1063,10 +1082,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         }
         self.bead_PIV_config = {
             "fields": {
+                "x_y_pixel_size_um": "",
+                "z_stack_spacing_um": "",
                 "source_tiff_dir": "",
                 "tiff_fn_letter_before_frame_num": "",
                 "target_piv_data_dir": "./BeadPIVsData",
                 "bead_diameter_um": "",
+                "linking_search_range_um": "3",
             },
             "notes": {},
         }
@@ -1142,26 +1164,26 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "make_orientation_fields",
                 "settings": self.make_orientation_fields_config["fields"],
             })
-        # if self.do_bead_piv_auto_contrast:
-        #     action_configs.append({
-        #         "action": "auto_contrast_tiffs",
-        #         "settings": self.bead_piv_auto_contrast_config["fields"],
-        #     })
-        # if self.do_tube_piv_auto_contrast:
-        #     action_configs.append({
-        #         "action": "auto_contrast_tiffs",
-        #         "settings": self.tube_piv_auto_contrast_config["fields"],
-        #     })
-        # if self.do_bead_PIV:
-        #     action_configs.append({
-        #         "action": "do_bead_PIV",
-        #         "settings": self.bead_PIV_config["fields"],
-        #     })
-        # if self.do_tube_PIV:
-        #     action_configs.append({
-        #         "action": "do_tube_PIV",
-        #         "settings": self.tube_PIV_config["fields"],
-        #     })
+        if self.do_bead_piv_auto_contrast:
+            action_configs.append({
+                "action": "auto_contrast_tiffs",
+                "settings": self.bead_piv_auto_contrast_config["fields"],
+            })
+        if self.do_tube_piv_auto_contrast:
+            action_configs.append({
+                "action": "auto_contrast_tiffs",
+                "settings": self.tube_piv_auto_contrast_config["fields"],
+            })
+        if self.do_bead_PIV:
+            action_configs.append({
+                "action": "do_bead_PIV",
+                "settings": self.bead_PIV_config["fields"],
+            })
+        if self.do_tube_PIV:
+            action_configs.append({
+                "action": "do_tube_PIV",
+                "settings": self.tube_PIV_config["fields"],
+            })
         return action_configs
 
     def try_find_dir_first_tif_metadata(self, tiff_dir, img_depth):

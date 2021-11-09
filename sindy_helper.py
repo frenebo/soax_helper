@@ -179,6 +179,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_bead_PIV_settings["x_y_pixel_size_um"],
             parsed_bead_PIV_settings["z_stack_spacing_um"],
             parsed_bead_PIV_settings["bead_diameter_um"],
+            parsed_bead_PIV_settings["linking_search_range_um"],
             logger=logger,
         )
     elif action_name == "do_tube_PIV":
