@@ -1,4 +1,4 @@
-from snakeutils.params import create_params
+from snakeutils.params import create_params, param_filename_tags
 from snakeutils.logger import PrintLogger
 import os
 import itertools
@@ -74,122 +74,98 @@ def create_soax_param_files(
         {
             "name": "intensity_scaling",
             "startstopstep": intensity_scaling_start_stop_step,
-            "filename_tag": "intscaling",
         },
         {
             "name": "gaussian_std",
             "startstopstep": gaussian_std_start_stop_step,
-            "filename_tag": "gstd",
         },
         {
             "name": "ridge_threshold",
             "startstopstep": ridge_threshold_start_stop_step,
-            "filename_tag": "rt",
         },
         {
             "name": "maximum_foreground",
             "startstopstep": maximum_foreground_start_stop_step,
-            "filename_tag": "maxfore",
         },
         {
             "name": "minimum_foreground",
             "startstopstep": minimum_foreground_start_stop_step,
-            "filename_tag": "minfore",
         },
         {
             "name": "snake_point_spacing",
             "startstopstep": snake_point_spacing_start_stop_step,
-            "filename_tag": "sps",
         },
         {
             "name": "min_snake_length",
             "startstopstep": min_snake_length_start_stop_step,
-            "filename_tag": "minlen",
         },
         {
             "name": "maximum_iterations",
             "startstopstep": maximum_iterations_start_stop_step,
-            "filename_tag": "maxiter",
         },
         {
             "name": "change_threshold",
             "startstopstep": change_threshold_start_stop_step,
-            "filename_tag": "cngthresh",
         },
         {
             "name": "check_period",
             "startstopstep": check_period_start_stop_step,
-            "filename_tag": "ckperiod",
         },
         {
             "name": "alpha",
             "startstopstep": alpha_start_stop_step,
-            "filename_tag": "a",
         },
         {
             "name": "beta",
             "startstopstep": beta_start_stop_step,
-            "filename_tag": "b",
         },
         {
             "name": "gamma",
             "startstopstep": gamma_start_stop_step,
-            "filename_tag": "g",
         },
         {
             "name": "external_factor",
             "startstopstep": external_factor_start_stop_step,
-            "filename_tag": "extfac",
         },
         {
             "name": "stretch_factor",
             "startstopstep": stretch_factor_start_stop_step,
-            "filename_tag": "stretchfac",
         },
         {
             "name": "number_of_background_radial_sectors",
             "startstopstep": number_of_background_radial_sectors_start_stop_step,
-            "filename_tag": "radsectors",
         },
         {
             "name": "background_z_xy_ratio",
             "startstopstep": background_z_xy_ratio_start_stop_step,
-            "filename_tag": "zxyratio",
         },
         {
             "name": "radial_near",
             "startstopstep": radial_near_start_stop_step,
-            "filename_tag": "rnear",
         },
         {
             "name": "radial_far",
             "startstopstep": radial_far_start_stop_step,
-            "filename_tag": "rfar",
         },
         {
             "name": "delta",
             "startstopstep": delta_start_stop_step,
-            "filename_tag": "delta",
         },
         {
             "name": "overlap_threshold",
             "startstopstep": overlap_threshold_start_stop_step,
-            "filename_tag": "othresh",
         },
         {
             "name": "grouping_distance_threshold",
             "startstopstep": grouping_distance_threshold_start_stop_step,
-            "filename_tag": "gdthresh",
         },
         {
             "name": "grouping_delta",
             "startstopstep": grouping_delta_start_stop_step,
-            "filename_tag": "gddelta",
         },
         {
             "name": "minimum_angle_for_soac_linking",
             "startstopstep": minimum_angle_for_soac_linking_start_stop_step,
-            "filename_tag": "minang",
         },
     ]
 
@@ -206,9 +182,11 @@ def create_soax_param_files(
         # with different parameter values have different names.
         if len(param_values) > 1:
             str_length, decimals = param_form_settings(**param_info["startstopstep"])
+            param_name = param_info["name"]
+            filename_tag = param_filename_tags[param_name]
             filename_template += "_{filename_tag}{{{name}:0{str_length}.{decimals}f}}".format(
-                name=param_info["name"],
-                filename_tag=param_info["filename_tag"],
+                name=param_name,
+                filename_tag=filename_tag,
                 str_length=str_length,
                 decimals=decimals,
             )

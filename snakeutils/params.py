@@ -1,3 +1,29 @@
+param_filename_tags = {
+    "intensity_scaling": "intscaling",
+    "gaussian_std": "gstd",
+    "ridge_threshold": "rt",
+    "maximum_foreground": "maxfore",
+    "minimum_foreground": "minfore",
+    "snake_point_spacing": "sps",
+    "min_snake_length": "minlen",
+    "maximum_iterations": "maxiter",
+    "change_threshold": "cngthresh",
+    "check_period": "ckperiod",
+    "alpha": "a",
+    "beta": "b",
+    "gamma": "g",
+    "external_factor": "extfac",
+    "stretch_factor": "stretchfac",
+    "number_of_background_radial_sectors": "radsectors",
+    "background_z_xy_ratio": "zxyratio",
+    "radial_near": "rnear",
+    "radial_far": "rfar",
+    "delta": "delta",
+    "overlap_threshold": "othresh",
+    "grouping_distance_threshold": "gdthresh",
+    "grouping_delta": "gddelta",
+    "minimum_angle_for_soac_linking": "minang",
+}
 
 def create_params(
     intensity_scaling=0.0, # Should be equal to one to skip auto intensity scaling
