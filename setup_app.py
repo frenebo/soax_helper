@@ -836,12 +836,20 @@ class MakeSindyFieldsSetupForm(SetupForm):
             "type": "dir",
         },
         {
-            "id": "target_data_dir",
+            "id": "source_jsons_depth",
+            "type": "non_neg_int",
+        },
+        {
+            "id": "source_images_dir",
             "type": "dir",
         },
         {
-            "id": "source_jsons_depth",
-            "type": "non_neg_int",
+            "id": "save_intensities_dir",
+            "type": "dir",
+        },
+        {
+            "id": "save_orientations_dir",
+            "type": "dir",
         },
     ]
 
@@ -1036,7 +1044,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "fields": {
                 "source_json_dir": "",
                 "source_jsons_depth": "",
-                "target_data_dir": "./SindyFields",
+                "source_images_dir": "",
+                "save_intensities_dir": "./IntensityFields",
+                "save_orientations_dir": "./OrientationFields",
             },
             "notes": {},
         }

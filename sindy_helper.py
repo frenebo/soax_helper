@@ -32,7 +32,6 @@ from setup_app import (
     JoinSectionedSnakesSetupForm,
     MakeSindyFieldsSetupForm,
     BeadPIVSetupForm,
-    TubePIVSetupForm,
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
@@ -152,8 +151,10 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         parsed_make_sindy_fields_settings = MakeSindyFieldsSetupForm.parseSettings(setting_strings, make_dirs)
 
         make_sindy_fields(
+            parsed_make_sindy_fields_settings["source_images_dir"],
             parsed_make_sindy_fields_settings["source_json_dir"],
-            parsed_make_sindy_fields_settings["target_data_dir"],
+            parsed_make_sindy_fields_settings["save_orientations_dir"],
+            parsed_make_sindy_fields_settings["save_intensities_dir"],
             parsed_make_sindy_fields_settings["source_jsons_depth"],
             logger=logger,
         )

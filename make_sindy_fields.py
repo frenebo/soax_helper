@@ -4,6 +4,9 @@ import numpy as np
 from snakeutils.logger import PrintLogger
 from snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
 from snakeutils.snakejson import load_json_snakes
+from snakeutils.tifimage import pil_img_3d_to_np_arr, save_3d_tif
+from PIL import Image
+from scipy.sparse import save_npz, coo_matrix
 
 # Taking derivatives
 from scipy.integrate import odeint, cumtrapz
@@ -93,7 +96,6 @@ def get_snake_path_parametric(x,y,z):
 
     return spl_x, spl_y, spl_z, length
 
-
 def orientation_of_snake_segments(snake_pts):
     orient = snake_pts[:,1:] - snake_pts[:,0:-1]
     orient = orient/np.sqrt(orient[0, :]**2 + orient[1, :]**2+ orient[2, :]**2)
@@ -126,32 +128,44 @@ def get_json_snake_xyz(snake):
         Z.append(z)
     return np.array((X,Y,Z))
 
-def make_field_for_json(json_fp, data_fp, logger):
+# Sometimes snakes go outside, >= the dimensions of the box. This "crops" the points
+def snakes_limit_to_dims(snakes, dims):
+    for snake in snakes:
+        for pt in snake:
+            if pt["pos"][0] >= dims[0]:
+                pt["pos"][0] = dims[0] - 1
+            if pt["pos"][1] >= dims[1]:
+                pt["pos"][1] = dims[1] - 1
+            if pt["pos"][2] >= dims[2]:
+                pt["pos"][2] = dims[2] - 1
+
+def make_fields(
+    json_fp,
+    image_fp,
+    orientation_fp,
+    intensities_fp,
+    logger):
     snakes, metadata = load_json_snakes(json_fp)
     image_dims = metadata["dims_pixels_xyz"]
+    snakes_limit_to_dims(snakes, image_dims)
+
+    pil_img = Image.open(image_fp)
+    np_image = pil_img_3d_to_np_arr(pil_img)
 
     Qtensor_arr = np.zeros(image_dims + [3,3,3], dtype=float)
-    snake_exists_arr = np.zeros(image_dims + [3,3,3], dtype=float)
-
+    snake_exists_arr = np.zeros(image_dims, dtype=float)
+    min_x = snakes[0][0]["pos"][0]
+    min_y = snakes[0][0]["pos"][1]
+    min_z = snakes[0][0]["pos"][2]
+    max_x = min_x
+    max_y = min_y
+    max_z = min_z
+    logger.log("Making orientation and intensity fiels for {}".format(json_fp))
     for snake in snakes:
         snake_pts = get_json_snake_xyz(snake)
-        snake_pts = snake_pts[:,::4]
         interval_orientations = orientation_of_snake_segments(snake_pts)
         interval_Qtensors = Qtensor(interval_orientations)
 
-        # fig = plt.figure(figsize=(8,8))
-        # ax = plt.axes(projection='3d')
-        # plt.plot(snake_pts[0], snake_pts[1], snake_pts[2], 'r')
-
-        # voxel_arr = np.full(image_dims, False, dtype=bool)
-        # print(voxel_arr[:3,:3,:3])
-        # print("Snake pts:")
-        # print(snake_pts.shape)
-        # print("Interval orientations: ")
-        # print(interval_orientations.shape)
-        # print("Q tensors:")
-        # print(interval_Qtensors.shape)
-        # exit()
         for interval_idx in range(snake_pts.shape[1] - 1):
             interval_Q = interval_Qtensors[:,:,interval_idx]
             start_pt = snake_pts[:,interval_idx]
@@ -161,10 +175,18 @@ def make_field_for_json(json_fp, data_fp, logger):
 
             x_coords, y_coords, z_coords = pts_on_interval
 
-            # voxel_arr[x_coords, y_coords, z_coords] = True
             Qtensor_arr[x_coords, y_coords, z_coords] = interval_Q
             snake_exists_arr[x_coords, y_coords, z_coords] = 1.0
+    logger.log("    Saving orientations to {}. Size {}".format(orientation_fp, Qtensor_arr.shape))
+    save_npz(orientation_fp, coo_matrix(Qtensor_arr))
+    logger.log("    Saving intensities to {}".format(intensities_fp))
+    save_npz(intensities_fp, coo_matrix(snake_exists_arr))
 
+    # # snake_exists_arr *= 10000
+    # # snake_exists_arr = snake_exists_arr.astype(np_image.dtype)
+
+    # save_3d_tif("asdf.tif", snake_exists_arr)
+    # exit()
 
 def make_sindy_fields(
     source_images_dir,
@@ -175,11 +197,17 @@ def make_sindy_fields(
     logger=PrintLogger,
 ):
     source_images = [fn for fn in os.listdir(source_images_dir) if has_one_of_extensions(fn, [".tif", ".tiff"])]
-    print(source_images)
-    source_json_dirs_info = find_files_or_folders_at_depth(source_json_dir, source_jsons_depth - 1, folders_not_files)
+    source_images.sort()
+
+    if source_jsons_depth == 0:
+        json_containing_dirs = source_json_dir
+    else:
+        source_json_dirs_info = find_files_or_folders_at_depth(source_json_dir, source_jsons_depth - 1, folders_not_files=True)
+        json_containing_dirs = [os.path.join(parent,name) for parent, name in source_json_dirs_info]
+
     for json_parent_dir, json_containing_dirname in source_json_dirs_info:
         json_containing_dir = os.path.join(json_parent_dir, json_containing_dirname)
-        dir_relpath = os.path.relpath(source_json_dir, json_containing_dir)
+        dir_relpath = os.path.relpath(json_containing_dir, source_json_dir)
         orientations_containing_dir = os.path.join(save_orientations_dir, dir_relpath)
         intensities_containing_dir = os.path.join(save_intensities_dir, dir_relpath)
 
@@ -191,6 +219,37 @@ def make_sindy_fields(
                 else:
                     os.makedirs(dirpath)
 
+        json_files = [fn for fn in os.listdir(json_containing_dir) if has_one_of_extensions(fn, [".json"])]
+        json_files.sort()
+
+        if len(json_files) != len(source_images):
+            raise Exception("Number of json snake files in {} is different from number of tifs in {} ({} vs {})".format(
+                json_containing_dir,
+                source_images_dir,
+                len(json_files),
+                len(source_images),
+            ))
+
+        for image_idx in range(len(source_images)):
+            json_filename = json_files[image_idx]
+            json_fp = os.path.join(json_containing_dir, json_filename)
+            json_without_extension = json_filename[:-len(".json")]
+            image_fp = os.path.join(source_images_dir, source_images[image_idx])
+            orientation_fp = os.path.join(orientations_containing_dir, json_without_extension + "_orientations.npy")
+            intensities_fp = os.path.join(intensities_containing_dir, json_without_extension + "_intensities.npy")
+
+
+            make_fields(
+                json_fp,
+                image_fp,
+                orientation_fp,
+                intensities_fp,
+                logger,
+            )
+
+        # make_fields(
+
+        # )
 
 
     # source_jsons_info = find_files_or_folders_at_depth(source_json_dir, source_jsons_depth, file_extension=".json")
