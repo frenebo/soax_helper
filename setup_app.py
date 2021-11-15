@@ -198,7 +198,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
                 "Run SOAX",
                 "Convert Snake files to JSON",
                 "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
-                "Make Orientation Fields",
+                "Make Sindy Fields",
             ],
             scroll_exit=True,
         )
@@ -212,7 +212,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
         do_run_soax                        = 5  in self.select_steps.value
         do_snakes_to_json                  = 6  in self.select_steps.value
         do_join_sectioned_snakes           = 7  in self.select_steps.value
-        do_make_orientation_fields         = 8  in self.select_steps.value
+        do_make_sindy_fields               = 8  in self.select_steps.value
 
         if do_section and not do_auto_contrast:
             should_continue = npyscreen.notify_yes_no("If sectioning image, it's recommended to auto contrast, so SOAX doesn't need to auto-contrast each section individually (possibly with different contrast in each section). Proceed anyway?", editw=2)
@@ -228,7 +228,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
             do_run_soax,
             do_snakes_to_json,
             do_join_sectioned_snakes,
-            do_make_orientation_fields,
+            do_make_sindy_fields,
         )
 
 class PIVStepsSelectForm(npyscreen.Form):
@@ -829,7 +829,7 @@ class JoinSectionedSnakesSetupForm(SetupForm):
 
     app_done_func_name = "joinSectionedSnakesSetupDone"
 
-class MakeOrientationFieldsSetupForm(SetupForm):
+class MakeSindyFieldsSetupForm(SetupForm):
     field_infos = [
         {
             "id": "source_json_dir",
@@ -845,7 +845,7 @@ class MakeOrientationFieldsSetupForm(SetupForm):
         },
     ]
 
-    app_done_func_name = "makeOrientationFieldsSetupDone"
+    app_done_func_name = "makeSindyFieldsSetupDone"
 
 class BeadPivAutoContrastSetupForm(AutoContrastSetupForm):
     app_done_func_name = "beadPivAutoContrastSetupDone"
@@ -1032,11 +1032,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             },
             "notes": {},
         }
-        self.make_orientation_fields_config = {
+        self.make_sindy_fields_config = {
             "fields": {
                 "source_json_dir": "",
                 "source_jsons_depth": "",
-                "target_data_dir": "./OrientationFields",
+                "target_data_dir": "./SindyFields",
             },
             "notes": {},
         }
@@ -1141,10 +1141,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "join_sectioned_snakes",
                 "settings": self.join_sectioned_snakes_config["fields"],
             })
-        if self.do_make_orientation_fields:
+        if self.do_make_sindy_fields:
             action_configs.append({
-                "action": "make_orientation_fields",
-                "settings": self.make_orientation_fields_config["fields"],
+                "action": "make_sindy_fields",
+                "settings": self.make_sindy_fields_config["fields"],
             })
         # if self.do_bead_piv_auto_contrast:
         #     action_configs.append({
@@ -1247,7 +1247,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_run_soax,
         do_snakes_to_json,
         do_join_sectioned_snakes,
-        do_make_orientation_fields,
+        do_make_sindy_fields,
         ):
         self.do_auto_contrast = do_auto_contrast
         self.do_divide_average_image = do_divide_average_image
@@ -1257,7 +1257,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_run_soax = do_run_soax
         self.do_snakes_to_json = do_snakes_to_json
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
-        self.do_make_orientation_fields = do_make_orientation_fields
+        self.do_make_sindy_fields = do_make_sindy_fields
 
         if self.do_auto_contrast:
             self.menu_functions.append(self.startAutoContrastSetup)
@@ -1277,8 +1277,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startSnakesToJsonSetup)
         if self.do_join_sectioned_snakes:
             self.menu_functions.append(self.startJoinSectionedSnakesSetup)
-        if self.do_make_orientation_fields:
-            self.menu_functions.append(self.startMakeOrientationFieldsSetup)
+        if self.do_make_sindy_fields:
+            self.menu_functions.append(self.startMakeSindyFieldsSetup)
 
         # Move onto next index
         self.goToNextMenu()
@@ -1490,11 +1490,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         target_json_dir = config["target_json_dir"]
         self.join_sectioned_snakes_config["fields"]["source_json_dir"] = target_json_dir
-        self.make_orientation_fields_config["fields"]["source_json_dir"] = target_json_dir
+        self.make_sindy_fields_config["fields"]["source_json_dir"] = target_json_dir
 
         output_jsons_depth = config["source_snakes_depth"]
         self.join_sectioned_snakes_config["fields"]["source_jsons_depth"] = output_jsons_depth
-        self.make_orientation_fields_config["fields"]["source_json_dir"] = output_jsons_depth
+        self.make_sindy_fields_config["fields"]["source_json_dir"] = output_jsons_depth
 
         self.goToNextMenu()
 
@@ -1507,21 +1507,21 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.join_sectioned_snakes_config["fields"] = fields
 
         target_json_dir = fields["target_json_dir"]
-        self.make_orientation_fields_config["fields"]["source_json_dir"] = target_json_dir
+        self.make_sindy_fields_config["fields"]["source_json_dir"] = target_json_dir
 
         # Output jsons are one directory less deep since they've been joined
         output_jsons_depth = str(int(fields["source_jsons_depth"]) - 1)
-        self.make_orientation_fields_config["fields"]["source_json_dir"] = output_jsons_depth
+        self.make_sindy_fields_config["fields"]["source_json_dir"] = output_jsons_depth
 
         self.goToNextMenu()
 
-    def startMakeOrientationFieldsSetup(self):
-        self.addForm('MAKE_ORIENTATION_FIELDS', MakeOrientationFieldsSetupForm, name="Make Orientation Fields Setup")
-        self.getForm('MAKE_ORIENTATION_FIELDS').configure(self.make_orientation_fields_config, self.make_dirs)
-        self.setNextForm('MAKE_ORIENTATION_FIELDS')
+    def startMakeSindyFieldsSetup(self):
+        self.addForm('MAKE_SINDY_FIELDS', MakeSindyFieldsSetupForm, name="Make Sindy Fields Setup")
+        self.getForm('MAKE_SINDY_FIELDS').configure(self.make_sindy_fields_config, self.make_dirs)
+        self.setNextForm('MAKE_SINDY_FIELDS')
 
-    def makeOrientationFieldsSetupDone(self, fields):
-        self.make_orientation_fields_config["fields"] = fields
+    def makeSindyFieldsSetupDone(self, fields):
+        self.make_sindy_fields_config["fields"] = fields
         self.goToNextMenu()
 
     # def startBeadPivAutoContrastSetup(self):

@@ -20,5 +20,5 @@ if __name__ == "__main__":
     fig.add_subplot(312)
     plt.hist(bg, bins=np.linspace(0,65535,100))
     fig.add_subplot(313)
-    plt.hist(diff, bins=np.linspace(-20000,65535,100))
+    plt.hist(diff, bins=np.linspace(np.min(diff),np.max(diff),100))
     plt.show()

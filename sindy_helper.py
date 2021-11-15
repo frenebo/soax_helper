@@ -11,7 +11,7 @@ from run_soax import run_soax
 from snakeutils.logger import RecordLogger, PrintLogger
 from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
-from make_orientation_fields import make_orientation_fields
+from make_sindy_fields import make_sindy_fields
 from matrices_from_snakes import sindy_matrices_from_snakes
 from bead_piv import bead_piv
 from tube_piv import tube_piv
@@ -30,7 +30,7 @@ from setup_app import (
     SoaxRunSetupForm,
     SnakesToJsonSetupForm,
     JoinSectionedSnakesSetupForm,
-    MakeOrientationFieldsSetupForm,
+    MakeSindyFieldsSetupForm,
     BeadPIVSetupForm,
     TubePIVSetupForm,
 )
@@ -148,25 +148,13 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_join_sectioned_snakes_settings["workers"],
             logger=logger,
         )
-    elif action_name == "make_orientation_fields":
-        parsed_make_orientation_fields_settings = MakeOrientationFieldsSetupForm.parseSettings(setting_strings, make_dirs)
+    elif action_name == "make_sindy_fields":
+        parsed_make_sindy_fields_settings = MakeSindyFieldsSetupForm.parseSettings(setting_strings, make_dirs)
 
-        make_orientation_fields(
-            parsed_make_orientation_fields_settings["source_json_dir"],
-            parsed_make_orientation_fields_settings["target_data_dir"],
-            parsed_make_orientation_fields_settings["source_jsons_depth"],
-            parsed_make_orientation_fields_settings["image_width"],
-            parsed_make_orientation_fields_settings["image_height"],
-            logger=logger,
-        )
-    elif action_name == "make_sindy_matrices_from_snakes":
-        parsed_make_sindy_matrices_from_snakes_settings = MakeSindyMatricesFromSnakesSetupForm.parseSettings(setting_strings, make_dirs)
-
-        make_sindy_matrices_from_snakes(
-            parsed_make_sindy_matrices_from_snakes_settings["source_json_dir"],
-            parsed_make_sindy_matrices_from_snakes_settings["source_jsons_depth"],
-            parsed_make_sindy_matrices_from_snakes_settings["orientation_matrix_dir"],
-            parsed_make_sindy_matrices_from_snakes_settings["position_matrix_dir"],
+        make_sindy_fields(
+            parsed_make_sindy_fields_settings["source_json_dir"],
+            parsed_make_sindy_fields_settings["target_data_dir"],
+            parsed_make_sindy_fields_settings["source_jsons_depth"],
             logger=logger,
         )
     elif action_name == "do_bead_PIV":

@@ -140,7 +140,7 @@ def orientation(x, y, z, ds):
 
     # print("Orientation:")
     # print(orient)
-    # orient = orient/np.sqrt(orient[0, :]**2 + orient[1, :]**2+ orient[2, :]**2)
+    orient = orient/np.sqrt(orient[0, :]**2 + orient[1, :]**2+ orient[2, :]**2)
     # print("Normalized:")
     # print(orient)
 
