@@ -198,6 +198,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
                 "Run SOAX",
                 "Convert Snake files to JSON",
                 "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
+                "Make Orientation Fields",
             ],
             scroll_exit=True,
         )
@@ -238,25 +239,16 @@ class PIVStepsSelectForm(npyscreen.Form):
             value = [],
             name="Pick PIV Steps (spacebar to toggle)",
             values = [
-                "Auto Contrast Bead TIFFs for PIV",
-                "Auto Contrast Tube TIFFs for PIV",
                 "Bead PIV",
-                "Tube PIV",
             ],
             scroll_exit=True,
         )
 
     def afterEditing(self):
-        do_bead_piv_auto_contrast = 0 in self.select_steps.value
-        do_tube_piv_auto_contrast = 1 in self.select_steps.value
-        do_bead_PIV               = 2 in self.select_steps.value
-        do_tube_PIV               = 3 in self.select_steps.value
+        do_bead_PIV = 0 in self.select_steps.value
 
         self.parentApp.PIVStepsSelectDone(
-            do_bead_piv_auto_contrast,
-            do_tube_piv_auto_contrast,
             do_bead_PIV,
-            do_tube_PIV,
         )
 
 class SetupForm(npyscreen.Form):
@@ -851,14 +843,6 @@ class MakeOrientationFieldsSetupForm(SetupForm):
             "id": "source_jsons_depth",
             "type": "non_neg_int",
         },
-        {
-            "id": "image_width",
-            "type": "pos_int",
-        },
-        {
-            "id": "image_height",
-            "type": "pos_int",
-        },
     ]
 
     app_done_func_name = "makeOrientationFieldsSetupDone"
@@ -866,8 +850,8 @@ class MakeOrientationFieldsSetupForm(SetupForm):
 class BeadPivAutoContrastSetupForm(AutoContrastSetupForm):
     app_done_func_name = "beadPivAutoContrastSetupDone"
 
-class TubePivAutoContrastSetupForm(AutoContrastSetupForm):
-    app_done_func_name = "tubePivAutoContrastSetupDone"
+# class TubePivAutoContrastSetupForm(AutoContrastSetupForm):
+#     app_done_func_name = "tubePivAutoContrastSetupDone"
 
 class BeadPIVSetupForm(SetupForm):
     field_infos = [
@@ -914,19 +898,19 @@ class BeadPIVSetupForm(SetupForm):
 
     app_done_func_name = "beadPIVSetupDone"
 
-class TubePIVSetupForm(SetupForm):
-    field_infos = [
-        {
-            "id": "source_tiff_dir",
-            "type": "dir",
-        },
-        {
-            "id": "target_piv_data_dir",
-            "type": "dir",
-        },
-    ]
+# class TubePIVSetupForm(SetupForm):
+#     field_infos = [
+#         {
+#             "id": "source_tiff_dir",
+#             "type": "dir",
+#         },
+#         {
+#             "id": "target_piv_data_dir",
+#             "type": "dir",
+#         },
+#     ]
 
-    app_done_func_name = "tubePIVSetupDone"
+#     app_done_func_name = "tubePIVSetupDone"
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def __init__(self, make_dirs=False, **kwargs):
@@ -1053,33 +1037,31 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "source_json_dir": "",
                 "source_jsons_depth": "",
                 "target_data_dir": "./OrientationFields",
-                "image_width": "",
-                "image_height": "",
             },
             "notes": {},
         }
 
-        #PIV settings
-        self.bead_piv_auto_contrast_config = {
-            "fields": {
-                "max_cutoff_percent": "95.5",
-                "min_cutoff_percent": "0.1",
-                "workers_num": "1",
-                "source_tiff_dir": "",
-                "target_tiff_dir": "./AutoContrastedBeadTIFFsForPIV",
-            },
-            "notes": {},
-        }
-        self.tube_piv_auto_contrast_config = {
-            "fields": {
-                "max_cutoff_percent": "95.5",
-                "min_cutoff_percent": "0.1",
-                "workers_num": "1",
-                "source_tiff_dir": "",
-                "target_tiff_dir": "./AutoContrastedTubeTIFFsForPIV",
-            },
-            "notes": {},
-        }
+        # #PIV settings
+        # self.bead_piv_auto_contrast_config = {
+        #     "fields": {
+        #         "max_cutoff_percent": "95.5",
+        #         "min_cutoff_percent": "0.1",
+        #         "workers_num": "1",
+        #         "source_tiff_dir": "",
+        #         "target_tiff_dir": "./AutoContrastedBeadTIFFsForPIV",
+        #     },
+        #     "notes": {},
+        # }
+        # self.tube_piv_auto_contrast_config = {
+        #     "fields": {
+        #         "max_cutoff_percent": "95.5",
+        #         "min_cutoff_percent": "0.1",
+        #         "workers_num": "1",
+        #         "source_tiff_dir": "",
+        #         "target_tiff_dir": "./AutoContrastedTubeTIFFsForPIV",
+        #     },
+        #     "notes": {},
+        # }
         self.bead_PIV_config = {
             "fields": {
                 "x_y_pixel_size_um": "",
@@ -1092,13 +1074,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             },
             "notes": {},
         }
-        self.tube_PIV_config = {
-            "fields": {
-                "source_tiff_dir": "",
-                "target_piv_data_dir": "./TubePIVData",
-            },
-            "notes": {},
-        }
+        # self.tube_PIV_config = {
+        #     "fields": {
+        #         "source_tiff_dir": "",
+        #         "target_piv_data_dir": "./TubePIVData",
+        #     },
+        #     "notes": {},
+        # }
 
         self.pixel_spacing_xyz = None
         self.image_dims = None
@@ -1164,26 +1146,26 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "make_orientation_fields",
                 "settings": self.make_orientation_fields_config["fields"],
             })
-        if self.do_bead_piv_auto_contrast:
-            action_configs.append({
-                "action": "auto_contrast_tiffs",
-                "settings": self.bead_piv_auto_contrast_config["fields"],
-            })
-        if self.do_tube_piv_auto_contrast:
-            action_configs.append({
-                "action": "auto_contrast_tiffs",
-                "settings": self.tube_piv_auto_contrast_config["fields"],
-            })
+        # if self.do_bead_piv_auto_contrast:
+        #     action_configs.append({
+        #         "action": "auto_contrast_tiffs",
+        #         "settings": self.bead_piv_auto_contrast_config["fields"],
+        #     })
+        # if self.do_tube_piv_auto_contrast:
+        #     action_configs.append({
+        #         "action": "auto_contrast_tiffs",
+        #         "settings": self.tube_piv_auto_contrast_config["fields"],
+        #     })
         if self.do_bead_PIV:
             action_configs.append({
                 "action": "do_bead_PIV",
                 "settings": self.bead_PIV_config["fields"],
             })
-        if self.do_tube_PIV:
-            action_configs.append({
-                "action": "do_tube_PIV",
-                "settings": self.tube_PIV_config["fields"],
-            })
+        # if self.do_tube_PIV:
+        #     action_configs.append({
+        #         "action": "do_tube_PIV",
+        #         "settings": self.tube_PIV_config["fields"],
+        #     })
         return action_configs
 
     def try_find_dir_first_tif_metadata(self, tiff_dir, img_depth):
@@ -1307,24 +1289,24 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('PIV_STEPS_SELECT')
 
     def PIVStepsSelectDone(self,
-        do_bead_piv_auto_contrast,
-        do_tube_piv_auto_contrast,
+        # do_bead_piv_auto_contrast,
+        # do_tube_piv_auto_contrast,
         do_bead_PIV,
-        do_tube_PIV,
+        # do_tube_PIV,
         ):
-        self.do_bead_piv_auto_contrast = do_bead_piv_auto_contrast
-        self.do_tube_piv_auto_contrast = do_tube_piv_auto_contrast
+        # self.do_bead_piv_auto_contrast = do_bead_piv_auto_contrast
+        # self.do_tube_piv_auto_contrast = do_tube_piv_auto_contrast
         self.do_bead_PIV = do_bead_PIV
-        self.do_tube_PIV = do_tube_PIV
+        # self.do_tube_PIV = do_tube_PIV
 
-        if self.do_bead_piv_auto_contrast:
-            self.menu_functions.append(self.startBeadPivAutoContrastSetup)
-        if self.do_tube_piv_auto_contrast:
-            self.menu_functions.append(self.startTubePivAutoContrastSetup)
+        # if self.do_bead_piv_auto_contrast:
+        #     self.menu_functions.append(self.startBeadPivAutoContrastSetup)
+        # if self.do_tube_piv_auto_contrast:
+        #     self.menu_functions.append(self.startTubePivAutoContrastSetup)
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIVSetup)
-        if self.do_tube_PIV:
-            self.menu_functions.append(self.startTubePIVSetup)
+        # if self.do_tube_PIV:
+        #     self.menu_functions.append(self.startTubePIVSetup)
 
         self.goToNextMenu()
 
@@ -1539,32 +1521,32 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('MAKE_ORIENTATION_FIELDS')
 
     def makeOrientationFieldsSetupDone(self, fields):
-        self.make_orientation_fields_config = fields
+        self.make_orientation_fields_config["fields"] = fields
         self.goToNextMenu()
 
-    def startBeadPivAutoContrastSetup(self):
-        self.addForm('BEAD_PIV_AUTO_CONTRAST_SETUP', BeadPivAutoContrastSetupForm, name="Bead PIV Auto Contrast")
-        self.getForm('BEAD_PIV_AUTO_CONTRAST_SETUP').configure(self.bead_piv_auto_contrast_config, self.make_dirs)
-        self.setNextForm('BEAD_PIV_AUTO_CONTRAST_SETUP')
+    # def startBeadPivAutoContrastSetup(self):
+    #     self.addForm('BEAD_PIV_AUTO_CONTRAST_SETUP', BeadPivAutoContrastSetupForm, name="Bead PIV Auto Contrast")
+    #     self.getForm('BEAD_PIV_AUTO_CONTRAST_SETUP').configure(self.bead_piv_auto_contrast_config, self.make_dirs)
+    #     self.setNextForm('BEAD_PIV_AUTO_CONTRAST_SETUP')
 
-    def beadPivAutoContrastSetupDone(self, fields):
-        self.bead_piv_auto_contrast_config["fields"] = fields
+    # def beadPivAutoContrastSetupDone(self, fields):
+    #     self.bead_piv_auto_contrast_config["fields"] = fields
 
-        self.bead_PIV_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+    #     self.bead_PIV_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
 
-        self.goToNextMenu()
+    #     self.goToNextMenu()
 
-    def startTubePivAutoContrastSetup(self):
-        self.addForm('TUBE_PIV_AUTO_CONTRAST_SETUP', TubePivAutoContrastSetupForm, name="Tube PIV Auto Contrast")
-        self.getForm('TUBE_PIV_AUTO_CONTRAST_SETUP').configure(self.tube_piv_auto_contrast_config, self.make_dirs)
-        self.setNextForm('TUBE_PIV_AUTO_CONTRAST_SETUP')
+    # def startTubePivAutoContrastSetup(self):
+    #     self.addForm('TUBE_PIV_AUTO_CONTRAST_SETUP', TubePivAutoContrastSetupForm, name="Tube PIV Auto Contrast")
+    #     self.getForm('TUBE_PIV_AUTO_CONTRAST_SETUP').configure(self.tube_piv_auto_contrast_config, self.make_dirs)
+    #     self.setNextForm('TUBE_PIV_AUTO_CONTRAST_SETUP')
 
-    def tubePivAutoContrastSetupDone(self, fields):
-        self.tube_piv_auto_contrast_config["fields"] = fields
+    # def tubePivAutoContrastSetupDone(self, fields):
+    #     self.tube_piv_auto_contrast_config["fields"] = fields
 
-        self.tube_PIV_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+    #     self.tube_PIV_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
 
-        self.goToNextMenu()
+    #     self.goToNextMenu()
 
     def startBeadPIVSetup(self):
         self.addForm('BEAD_PIV_SETUP', BeadPIVSetupForm, name="Bead PIV Setup")
@@ -1575,11 +1557,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.bead_PIV_config["fields"] = fields
         self.goToNextMenu()
 
-    def startTubePIVSetup(self):
-        self.addForm('TUBE_PIV_SETUP', TubePIVSetupForm, name="Tube PIV Setup")
-        self.getForm('TUBE_PIV_SETUP').configure(self.tube_PIV_config, self.make_dirs)
-        self.setNextForm('TUBE_PIV_SETUP')
+    # def startTubePIVSetup(self):
+    #     self.addForm('TUBE_PIV_SETUP', TubePIVSetupForm, name="Tube PIV Setup")
+    #     self.getForm('TUBE_PIV_SETUP').configure(self.tube_PIV_config, self.make_dirs)
+    #     self.setNextForm('TUBE_PIV_SETUP')
 
-    def tubePIVSetupDone(self, fields):
-        self.tube_PIV_config["fields"] = fields
-        self.goToNextMenu()
+    # def tubePIVSetupDone(self, fields):
+    #     self.tube_PIV_config["fields"] = fields
+    #     self.goToNextMenu()
