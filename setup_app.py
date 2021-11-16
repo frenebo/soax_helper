@@ -1212,6 +1212,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def prompt_pixel_size_if_not_known(self, tiff_folder_name):
         if self.pixel_spacing_xyz is not None:
             return
+        if not self.do_snakes_to_json:
+            return
 
         should_enter_pixel_size = npyscreen.notify_yes_no("The size of a pixel in micrometers (from images in {}) will be needed to format output data. Do you want to input pixel size now?".format(tiff_folder_name), editw=2)
         if should_enter_pixel_size:

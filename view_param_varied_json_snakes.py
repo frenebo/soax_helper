@@ -9,6 +9,7 @@ from matplotlib.backends.backend_tkagg import (
                                     FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.figure import Figure
 from snakeutils.params import param_filename_tags
+from snakeutils.snakejson import load_json_snakes
 
 param_names_by_tags = {v: k for k, v in param_filename_tags.items()}
 
@@ -45,18 +46,41 @@ def parse_param_folder_name(folder_name):
 
     return param_values
 
-def make_gui(param_ranges, param_defaults, param_vals_by_foldername, image_json_names):
+def make_gui(
+    root_folder,
+    param_ranges,
+    param_defaults,
+    param_vals_by_foldername,
+    image_json_names,
+    flatten=False):
     root = tk.Tk()
-    root.wm_title("Embedding in Tk")
+    # root.wm_title("Embedding in Tk")
 
     fig = Figure(figsize=(5, 4), dpi=100)
 
     canvas = FigureCanvasTkAgg(fig, master=root)  # A tk.DrawingArea.
     canvas.draw()
 
-    ax = fig.add_subplot(111, projection="3d")
-    t = np.arange(0, 3, .01)
-    ax.plot(t, 2 * np.sin(2 * np.pi * t))
+    if flatten:
+        ax = fig.add_subplot(111)
+    else:
+        ax = fig.add_subplot(111, projection="3d")
+
+    def show_snakes(snakes):
+        ax.clear()
+        for snake in snakes:
+            X = []
+            Y = []
+            Z = []
+            for pt in snake:
+                X.append(pt["pos"][0])
+                Y.append(pt["pos"][1])
+                Z.append(pt["pos"][2])
+            if flatten:
+                ax.plot(X,Y)
+            else:
+                ax.plot(X,Y,Z)
+        canvas.draw()
 
     def show_selected_snakes(*args):
         selected_params = {}
@@ -75,7 +99,20 @@ def make_gui(param_ranges, param_defaults, param_vals_by_foldername, image_json_
         if selected_param_folder is None:
             raise Exception("Could not find parameter folder with parameters {}".format(selected_params))
 
-        print("Showing {}".format(selected_param_folder))
+        img_idx = selected_img_var.get()
+        folder_path = os.path.join(root_folder, selected_param_folder)
+        # contents = os.listdir(folder_path)
+        # contents.sort()
+        json_path = os.path.join(folder_path, image_json_names[img_idx])
+
+        if not os.path.exists(json_path):
+            raise Exception("Expected to find file {}, does not exist".format(json_path))
+
+        print("Showing {}".format(json_path))
+        root.wm_title(json_path)
+
+        snakes, metadata = load_json_snakes(json_path)
+        show_snakes(snakes)
 
     toolbar = NavigationToolbar2Tk(canvas, root)
     toolbar.update()
@@ -98,7 +135,16 @@ def make_gui(param_ranges, param_defaults, param_vals_by_foldername, image_json_
                 value=param_val).pack(side=tk.TOP,ipady=0)
 
         param_buttons_frame.pack(side=tk.RIGHT, padx=0, pady=0)
+
+    selected_img_var = tk.IntVar(root, 0)
+    image_selector_frame = tk.Frame(params_frame)
+    tk.Label(image_selector_frame, text="Image").pack(side=tk.TOP)
+    tk.Scale(image_selector_frame, from_=0, to=(len(image_json_names)-1), variable=selected_img_var, orient=tk.HORIZONTAL).pack(side=tk.TOP,ipady=0)
+    image_selector_frame.pack(side=tk.RIGHT,padx=0,pady=0)
+
     params_frame.pack(side=tk.TOP)
+
+    selected_img_var.trace_add("write", show_selected_snakes)
 
     show_selected_snakes()
 
@@ -110,14 +156,14 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='JSON snake viewer')
     parser.add_argument("jsons_dir")
-    # parser.add_argument('--flatten',default=False,action='store_true',help="Plot in 2D")
+    parser.add_argument('--flatten',default=False,action='store_true',help="Plot in 2D")
     # parser.add_argument('--background',default=None,help="TIF to graph in background")
 
     args = parser.parse_args()
 
     jsons_folders_files = find_files_or_folders_at_depth(args.jsons_dir, 1, file_extension=".json")
     # Assume image json filenames are same for all folders
-    image_json_names = find_files_or_folders_at_depth(jsons_folders_files[0][0], 0, file_extension=".json")
+    image_json_names = [fn for folder,fn in find_files_or_folders_at_depth(jsons_folders_files[0][0], 0, file_extension=".json")]
 
     # print(jsons_folders_files)
     # varied_params = {}
@@ -150,4 +196,10 @@ if __name__ == "__main__":
     print(param_vals_by_foldername)
     print(image_json_names)
 
-    make_gui(param_ranges, param_defaults, param_vals_by_foldername, image_json_names)
+    make_gui(
+        args.jsons_dir,
+        param_ranges,
+        param_defaults,
+        param_vals_by_foldername,
+        image_json_names,
+        flatten=args.flatten)

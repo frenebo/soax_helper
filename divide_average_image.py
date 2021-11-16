@@ -26,6 +26,7 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
 
     sum_image = np.zeros(img_shape, dtype=np.double)
 
+    logger.log("Finding average image")
     # image_count = 0
     for tiff_name in source_tifs:
         pil_img = Image.open(os.path.join(source_dir, tiff_name))
@@ -34,18 +35,15 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
 
     average_image = (sum_image / len(source_tifs))
     # average_image /= average_image.max()
-    print("Average image max: {} min: {}".format(average_image.max(), average_image.min()))
+    logger.log("Average image max: {} min: {}".format(average_image.max(), average_image.min()))
     image_mult_factor = np.reciprocal(average_image)
     image_mult_factor /= image_mult_factor.max()
     logger.log("Biggest division factor (inverse): {}".format(image_mult_factor.min()))
-    # print()
-    # avg_reciprocal /= avg_reciprocal.
-
-    # avg_max_bright = average_image.max()
-    # mult_factors = average_image / avg_max_bright
 
     for tiff_name in source_tifs:
-        pil_img = Image.open(os.path.join(source_dir, tiff_name))
+        image_path = os.path.join(source_dir, tiff_name)
+        logger.log("Dividing {} by average".format(image_path))
+        pil_img = Image.open(image_path)
         np_arr = pil_img_3d_to_np_arr(pil_img)
         # original_dtype = np_arr.dtype
         divided_arr = np.multiply(np_arr.astype(np.double), image_mult_factor)
@@ -56,4 +54,5 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
         # np_arr[where_less_than_average] = 0
         save_tiff_fn = "avg_divided_" + tiff_name
         save_tiff_path = os.path.join(target_dir, save_tiff_fn)
+        logger.success("    Saving divided image {}".format(save_tiff_path))
         save_3d_tif(save_tiff_path, np_arr)
