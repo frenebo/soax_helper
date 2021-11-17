@@ -150,20 +150,6 @@ def extract_snakes(snake_file):
             fg = float(fg_str)
             bg = float(bg_str)
         except ValueError:
-            # if line_idx < 30000:
-            #     print("'{}' x_str: '{}' y_str: '{}' z_str: '{}' fg_str: '{}' bg_str".format(
-            #         line[:x_coord_start],
-            #         x_str,
-            #         y_str,
-            #         z_str,
-            #         fg_str,
-            #         bg_str,
-            #     ))
-            # else:
-            #     raise Exception("AAAAAA")
-            # print("LINEs:")
-            for someline in lines[line_idx-3:line_idx+1]:
-                print(someline)
             raise
 
         snake_points.append({"pos": [x,y,z], "fg": fg, "bg": bg})
