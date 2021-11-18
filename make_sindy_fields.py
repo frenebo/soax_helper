@@ -195,7 +195,7 @@ def make_fields(
             snake_exists_arr[x_coords, y_coords, z_coords] = 1.0
     # np.multiply(np_image, snake_exists_arr)
     if np_image.shape != snake_exists_arr.shape:
-        raise Exception("Image shape not same as snake exists arr: {} vs {}".foramt(np_image.shape, snake_exists_arr.shape))
+        raise Exception("Image shape not same as snake exists arr: {} vs {}".format(np_image.shape, snake_exists_arr.shape))
     intensity_arr = np.multiply(np_image, snake_exists_arr)
 
     logger.log("    Saving orientations to {}. Size {}".format(orientation_fp, Qtensor_arr.shape))
