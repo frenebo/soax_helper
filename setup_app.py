@@ -1395,7 +1395,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage1(self):
-        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/4")
+        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/3")
         self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_config, self.make_dirs)
         self.setNextForm('PARAM_SETUP_PAGE_1')
 
@@ -1405,7 +1405,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage2(self):
-        self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/4")
+        self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/3")
         self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_config, self.make_dirs)
         self.setNextForm('PARAM_SETUP_PAGE_2')
 
@@ -1414,7 +1414,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.goToNextMenu()
 
     def startSoaxParamsSetupPage3(self):
-        self.addForm('PARAM_SETUP_PAGE_3', SoaxParamsSetupPage3Form, name="SOAX Params Setup Page 3/4")
+        self.addForm('PARAM_SETUP_PAGE_3', SoaxParamsSetupPage3Form, name="SOAX Params Setup Page 3/3")
         self.getForm('PARAM_SETUP_PAGE_3').configure(self.soax_params_page3_config, self.make_dirs)
         self.setNextForm('PARAM_SETUP_PAGE_3')
 
