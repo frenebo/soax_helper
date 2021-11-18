@@ -166,9 +166,9 @@ def make_fields(
     snakes_limit_to_dims(snakes, image_dims)
 
     pil_img = Image.open(image_fp)
-    np_image = pil_img_3d_to_np_arr(pil_img)
+    unswapped_np_image = pil_img_3d_to_np_arr(pil_img)
     # From Y,X,Z to X,Y,Z
-    np.swapaxes(np_image, 0, 1)
+    xyz_np_image = np.swapaxes(unswapped_np_image, 0, 1)
 
     Qtensor_arr = np.zeros(image_dims + [3,3,3], dtype=float)
     snake_exists_arr = np.zeros(image_dims, dtype=float)
@@ -196,9 +196,9 @@ def make_fields(
             Qtensor_arr[x_coords, y_coords, z_coords] = interval_Q
             snake_exists_arr[x_coords, y_coords, z_coords] = 1.0
     # np.multiply(np_image, snake_exists_arr)
-    if np_image.shape != snake_exists_arr.shape:
+    if xyz_np_image.shape != snake_exists_arr.shape:
         raise Exception("Image shape not same as snake exists arr: {} vs {}".format(np_image.shape, snake_exists_arr.shape))
-    intensity_arr = np.multiply(np_image, snake_exists_arr)
+    intensity_arr = np.multiply(xyz_np_image, snake_exists_arr)
 
     logger.log("    Saving orientations to {}. Size {}".format(orientation_fp, Qtensor_arr.shape))
     # orientation_
