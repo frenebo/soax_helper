@@ -1,6 +1,7 @@
 import os
 import numpy as np
 
+import csv
 from snakeutils.logger import PrintLogger
 from snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
 from snakeutils.snakejson import load_json_snakes
@@ -139,6 +140,21 @@ def snakes_limit_to_dims(snakes, dims):
             if pt["pos"][2] >= dims[2]:
                 pt["pos"][2] = dims[2] - 1
 
+def save_intensity_csv(arr, fp):
+    with open(fp, "w", newline='') as csvfile:
+        writer = csv.writer(csvwriter, delimiter=',')
+        writer.writerow(["x", "y", "z", "intensity"])
+        non_zero_indices = np.argwhere(arr != 0)
+        for x, y, z in non_zero_indices:
+            writer.writerow(str(x),str(y),str(z),str(arr[x,y,z]))
+    #     spamwriter = csv.writer(csvfile, delimiter=' ',
+    #                         quotechar='|', quoting=csv.QUOTE_MINIMAL)
+    # spamwriter.writerow(['Spam'] * 5 + ['Baked Beans'])
+    # spamwriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
+
+# def save_orientation_csv(arr, fp):
+
+
 def make_fields(
     json_fp,
     image_fp,
@@ -177,16 +193,18 @@ def make_fields(
 
             Qtensor_arr[x_coords, y_coords, z_coords] = interval_Q
             snake_exists_arr[x_coords, y_coords, z_coords] = 1.0
+    # np.multiply(np_image, snake_exists_arr)
+    if np_image.shape != snake_exists_arr.shape:
+        raise Exception("Image shape not same as snake exists arr")
+    intensity_arr = np.multiply(np_image, snake_exists_arr)
+
     logger.log("    Saving orientations to {}. Size {}".format(orientation_fp, Qtensor_arr.shape))
-    save_npz(orientation_fp, coo_matrix(Qtensor_arr))
+    # orientation_
+    # save_npz(orientation_fp, coo_matrix(Qtensor_arr))
     logger.log("    Saving intensities to {}".format(intensities_fp))
-    save_npz(intensities_fp, coo_matrix(snake_exists_arr))
+    save_intensity_csv(intensity_arr, intensities_fp)
+    # save_npz(intensities_fp, coo_matrix(snake_exists_arr))
 
-    # # snake_exists_arr *= 10000
-    # # snake_exists_arr = snake_exists_arr.astype(np_image.dtype)
-
-    # save_3d_tif("asdf.tif", snake_exists_arr)
-    # exit()
 
 def make_sindy_fields(
     source_images_dir,
@@ -235,8 +253,8 @@ def make_sindy_fields(
             json_fp = os.path.join(json_containing_dir, json_filename)
             json_without_extension = json_filename[:-len(".json")]
             image_fp = os.path.join(source_images_dir, source_images[image_idx])
-            orientation_fp = os.path.join(orientations_containing_dir, json_without_extension + "_orientations.npy")
-            intensities_fp = os.path.join(intensities_containing_dir, json_without_extension + "_intensities.npy")
+            orientation_fp = os.path.join(orientations_containing_dir, json_without_extension + "_orientations.txt")
+            intensities_fp = os.path.join(intensities_containing_dir, json_without_extension + "_intensities.txt")
 
 
             make_fields(
