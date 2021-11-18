@@ -167,6 +167,8 @@ def make_fields(
 
     pil_img = Image.open(image_fp)
     np_image = pil_img_3d_to_np_arr(pil_img)
+    # From Y,X,Z to X,Y,Z
+    np.swapaxes(np_image, 0, 1)
 
     Qtensor_arr = np.zeros(image_dims + [3,3,3], dtype=float)
     snake_exists_arr = np.zeros(image_dims, dtype=float)
