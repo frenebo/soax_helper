@@ -142,7 +142,7 @@ def snakes_limit_to_dims(snakes, dims):
 
 def save_intensity_csv(arr, fp):
     with open(fp, "w", newline='') as csvfile:
-        writer = csv.writer(csvwriter, delimiter=',')
+        writer = csv.writer(csvfile, delimiter=',')
         writer.writerow(["x", "y", "z", "intensity"])
         non_zero_indices = np.argwhere(arr != 0)
         for x, y, z in non_zero_indices:
