@@ -3,11 +3,14 @@ import tkinter.ttk as ttk
 import numpy as np
 import argparse
 import os
+from PIL import Image
+from snakeutils.tifimage import pil_img_3d_to_np_arr
 from mpl_toolkits.mplot3d import Axes3D
 from snakeutils.files import find_files_or_folders_at_depth
 from matplotlib.backends.backend_tkagg import (
                                     FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.figure import Figure
+# import matplotlib.pyplot as
 from snakeutils.params import param_filename_tags
 from snakeutils.snakejson import load_json_snakes
 
@@ -32,9 +35,13 @@ def parse_fn_param_str(param_str):
     return param_name, param_val
 
 def parse_param_folder_name(folder_name):
+    # For when there is only one sset of params tried
+    if folder_name == "params":
+        return []
+
     start_string = "params_"
     if not folder_name.startswith(start_string):
-        raise Exception("Expected folder {} to start with 'params' - in order to parse and view snakes")
+        raise Exception("Expected folder {} to start with 'params' - in order to parse and view snakes".format(folder_name))
     folder_name = folder_name[len(start_string):]
     param_strings = folder_name.split('_')
 
@@ -52,7 +59,8 @@ def make_gui(
     param_defaults,
     param_vals_by_foldername,
     image_json_names,
-    flatten=False):
+    flatten=False,
+    images_dir=None):
     root = tk.Tk()
     # root.wm_title("Embedding in Tk")
 
@@ -66,8 +74,10 @@ def make_gui(
     else:
         ax = fig.add_subplot(111, projection="3d")
 
-    def show_snakes(snakes):
+    def show_snakes(snakes, img_arr=None):
         ax.clear()
+        if img_arr is not None:
+            ax.imshow(img_arr[:,:,0], cmap='gray')
         for snake in snakes:
             X = []
             Y = []
@@ -77,9 +87,9 @@ def make_gui(
                 Y.append(pt["pos"][1])
                 Z.append(pt["pos"][2])
             if flatten:
-                ax.plot(X,Y)
+                ax.plot(X,Y, 'b')
             else:
-                ax.plot(X,Y,Z)
+                ax.plot(X,Y,Z, 'b')
         canvas.draw()
 
     def show_selected_snakes(*args):
@@ -112,7 +122,15 @@ def make_gui(
         root.wm_title(json_path)
 
         snakes, metadata = load_json_snakes(json_path)
-        show_snakes(snakes)
+        if images_dir is None:
+            img_arr = None
+        else:
+            img_contents = os.listdir(images_dir)
+            img_contents.sort()
+            tif_filename = img_contents[img_idx]
+            pil_img = Image.open(os.path.join(images_dir, tif_filename))
+            img_arr = pil_img_3d_to_np_arr(pil_img)
+        show_snakes(snakes, img_arr)
 
     toolbar = NavigationToolbar2Tk(canvas, root)
     toolbar.update()
@@ -142,13 +160,13 @@ def make_gui(
     tk.Scale(image_selector_frame, from_=0, to=(len(image_json_names)-1), variable=selected_img_var, orient=tk.HORIZONTAL).pack(side=tk.TOP,ipady=0)
     image_selector_frame.pack(side=tk.RIGHT,padx=0,pady=0)
 
-    params_frame.pack(side=tk.TOP)
+    params_frame.pack(side=tk.RIGHT)
+    canvas.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH, expand=1)
 
     selected_img_var.trace_add("write", show_selected_snakes)
 
     show_selected_snakes()
 
-    canvas.get_tk_widget().pack(side=tk.TOP, fill=tk.BOTH, expand=1)
 
     tk.mainloop()
 
@@ -157,6 +175,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='JSON snake viewer')
     parser.add_argument("jsons_dir")
     parser.add_argument('--flatten',default=False,action='store_true',help="Plot in 2D")
+    parser.add_argument('--images', default=None, help='Folder with source images to show')
     # parser.add_argument('--background',default=None,help="TIF to graph in background")
 
     args = parser.parse_args()
@@ -202,4 +221,5 @@ if __name__ == "__main__":
         param_defaults,
         param_vals_by_foldername,
         image_json_names,
-        flatten=args.flatten)
+        flatten=args.flatten,
+        images_dir=args.images)

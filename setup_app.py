@@ -858,9 +858,6 @@ class MakeSindyFieldsSetupForm(SetupForm):
 class BeadPivAutoContrastSetupForm(AutoContrastSetupForm):
     app_done_func_name = "beadPivAutoContrastSetupDone"
 
-# class TubePivAutoContrastSetupForm(AutoContrastSetupForm):
-#     app_done_func_name = "tubePivAutoContrastSetupDone"
-
 class BeadPIVSetupForm(SetupForm):
     field_infos = [
         {
@@ -905,20 +902,6 @@ class BeadPIVSetupForm(SetupForm):
     ]
 
     app_done_func_name = "beadPIVSetupDone"
-
-# class TubePIVSetupForm(SetupForm):
-#     field_infos = [
-#         {
-#             "id": "source_tiff_dir",
-#             "type": "dir",
-#         },
-#         {
-#             "id": "target_piv_data_dir",
-#             "type": "dir",
-#         },
-#     ]
-
-#     app_done_func_name = "tubePIVSetupDone"
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def __init__(self, make_dirs=False, **kwargs):
@@ -1008,6 +991,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "notes": {},
         }
 
+        # In Ubuntu 20.04, to build SOAX, I followed the steps from https://www.lehigh.edu/~div206/soax/downloads.html
+        # under the section "Building SOAX in Windows Linux Subsystem (Ubuntu 18.04.1 LTS)"
+        # With the change that I had to install libphonon-dev from https://packages.ubuntu.com/bionic/libphonon-dev
+        # and also install some dependencies of libphonon dev from source
+
         self.soax_run_config = {
             "fields":  {
                 "workers": "1",
@@ -1051,27 +1039,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "notes": {},
         }
 
-        # #PIV settings
-        # self.bead_piv_auto_contrast_config = {
-        #     "fields": {
-        #         "max_cutoff_percent": "95.5",
-        #         "min_cutoff_percent": "0.1",
-        #         "workers_num": "1",
-        #         "source_tiff_dir": "",
-        #         "target_tiff_dir": "./AutoContrastedBeadTIFFsForPIV",
-        #     },
-        #     "notes": {},
-        # }
-        # self.tube_piv_auto_contrast_config = {
-        #     "fields": {
-        #         "max_cutoff_percent": "95.5",
-        #         "min_cutoff_percent": "0.1",
-        #         "workers_num": "1",
-        #         "source_tiff_dir": "",
-        #         "target_tiff_dir": "./AutoContrastedTubeTIFFsForPIV",
-        #     },
-        #     "notes": {},
-        # }
         self.bead_PIV_config = {
             "fields": {
                 "x_y_pixel_size_um": "",
@@ -1084,13 +1051,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             },
             "notes": {},
         }
-        # self.tube_PIV_config = {
-        #     "fields": {
-        #         "source_tiff_dir": "",
-        #         "target_piv_data_dir": "./TubePIVData",
-        #     },
-        #     "notes": {},
-        # }
 
         self.pixel_spacing_xyz = None
         self.image_dims = None

@@ -57,7 +57,7 @@ def auto_contrast_tiffs(
     source_tifs.sort()
 
     if len(source_tifs) == 0:
-        logger.error("No .tif files found in {}".format(source_dir))
+        logger.FAIL("No .tif files found in {}".format(source_dir))
         return
 
     first_tiff_img = Image.open(os.path.join(source_dir, source_tifs[0]))
