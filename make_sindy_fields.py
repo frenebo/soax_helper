@@ -146,7 +146,7 @@ def save_intensity_csv(arr, fp):
         writer.writerow(["x", "y", "z", "intensity"])
         non_zero_indices = np.argwhere(arr != 0)
         for x, y, z in non_zero_indices:
-            writer.writerow(str(x),str(y),str(z),str(arr[x,y,z]))
+            writer.writerow([str(x),str(y),str(z),str(arr[x,y,z])])
     #     spamwriter = csv.writer(csvfile, delimiter=' ',
     #                         quotechar='|', quoting=csv.QUOTE_MINIMAL)
     # spamwriter.writerow(['Spam'] * 5 + ['Baked Beans'])
