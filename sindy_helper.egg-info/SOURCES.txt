@@ -1,0 +1,7 @@
+README.md
+setup.py
+sindy_helper.egg-info/PKG-INFO
+sindy_helper.egg-info/SOURCES.txt
+sindy_helper.egg-info/dependency_links.txt
+sindy_helper.egg-info/entry_points.txt
+sindy_helper.egg-info/top_level.txt

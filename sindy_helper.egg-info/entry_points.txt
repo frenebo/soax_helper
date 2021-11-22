@@ -1,0 +1,3 @@
+[console_scripts]
+sindy_helper = sindy_helper:run
+
