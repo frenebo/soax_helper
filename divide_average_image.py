@@ -36,7 +36,7 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
     average_image = (sum_image / len(source_tifs))
     # average_image /= average_image.max()
     logger.log("Average image max: {} min: {}".format(average_image.max(), average_image.min()))
-    if average_min == 0:
+    if average_image.min() == 0:
         logger.FAIL("Cannot divide by average image, at some points the average image has a brightness of zero")
     # where_zero = average_image == 0
     # Where the average image is zero we don't
