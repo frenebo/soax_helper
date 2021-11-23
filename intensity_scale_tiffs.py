@@ -19,16 +19,27 @@ def intensity_scale_single_tiff(arg_dict):
     logger.log("Performing intensity scaling on {}".format(source_tiff_fp))
     intensity_scaled = os.path.join(target_tiff_dir, "intensity_scaled_" + tiff_fn)
     pil_img = Image.open(source_tiff_fp)
-    image_arr = pil_img_3d_to_np_arr(pil_img)
+    orig_image_arr = pil_img_3d_to_np_arr(pil_img)
 
-    original_max_intensity = image_arr.max()
-    tiff_datatype_max_value = np.iinfo(image_arr.dtype).max
+    original_max_intensity = orig_image_arr.max()
+    img_type_max_value = np.iinfo(orig_image_arr.dtype).max
+
+    if img_type_max_value == 0:
+        logger.FAIL("Tif {} has zero brightness every where, cannot intensity scale".format(source_tiff_fp))
 
     # Rescale intensity so new maximum is max possible value.
     # For example, an 8 bit tiff would have a max possible value of 255
-    image_arr *= float(tiff_datatype_max_value) / original_max_intensity
+    scale_factor = float(img_type_max_value) / original_max_intensity
+    intensity_scaled_arr = orig_image_arr * scale_factor
+    where_float_arr_exceeds_imgtype_max = intensity_scaled_arr >= img_type_max_value
+    intensity_scaled_arr = intensity_scaled_arr.astype(orig_image_arr.dtype)
+    # In case the float multiplication put any intensities slightly over max
+    # (For example in 8 bit image, 255.1)
+    # Set them manually to the max (like 255 for example) to make sure the int value
+    # doesn't wrap around
+    intensity_scaled_arr[where_float_arr_exceeds_imgtype_max] = img_type_max_value
 
-    save_3d_tif(image_arr,new_arr)
+    save_3d_tif(intensity_scaled_image,new_arr)
 
     logger.success("Saved auto contrast pic as {}".format(intensity_scaled))
 
