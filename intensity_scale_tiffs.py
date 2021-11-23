@@ -39,7 +39,7 @@ def intensity_scale_single_tiff(arg_dict):
     # doesn't wrap around
     intensity_scaled_arr[where_float_arr_exceeds_imgtype_max] = img_type_max_value
 
-    save_3d_tif(intensity_scaled_fp,new_arr)
+    save_3d_tif(intensity_scaled_fp,intensity_scaled_arr)
 
     logger.success("Saved auto contrast pic as {}".format(intensity_scaled_fp))
 
