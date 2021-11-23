@@ -14,10 +14,10 @@ def soax_instance(soax_args):
     snakes_output_dir = soax_args["snakes_output_dir"]
     logger = soax_args["logger"]
     stdout_fp = soax_args["stdout_fp"]
-    errors_fp = soax_args["errors_fp"]
+    stderr_fp = soax_args["stderr_fp"]
 
     success = None
-    with open(errors_fp,"w") as error_file, open(stdout_fp,"w") as stdout_file:
+    with open(stdout_fp,"w") as stdout_file, open(stderr_fp,"w") as error_file:
         command = "{batch_soax} --image {tiff_dir} --parameter {param_fp} --snake {snakes_output_dir}".format(
             batch_soax = batch_soax,
             tiff_dir=tiff_dir,
@@ -25,7 +25,7 @@ def soax_instance(soax_args):
             snakes_output_dir=snakes_output_dir,
         )
 
-        logger.log("Executing '{}'".format(command))
+        logger.log("Executing '{}'\n\t(Piping stdout to '{}' and stderr to '{}')".format(command, stdout_fp, stderr_fp))
         try:
             code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
             logger.success("Completed {}".format(command))
@@ -33,12 +33,12 @@ def soax_instance(soax_args):
         except subprocess.CalledProcessError as e:
             logger.error("ERROR: ")
             logger.error("  Failed to run '{}' - return code {}".format(command,e.returncode))
-            logger.error("    STDERR saved in {}".format(errors_fp))
+            logger.error("    STDERR saved in {}".format(stderr_fp))
             logger.error("    STDOUT saved in {}".format(stdout_fp))
             success = False
     if success:
         try:
-            os.remove(errors_fp)
+            os.remove(stderr_fp)
             os.remove(stdout_fp)
         except:
             pass
@@ -87,7 +87,7 @@ def run_soax(
                 snakes_output_dir = os.path.join(output_dir, params_name, subdir_name)
 
                 stdout_fp = os.path.join(params_logging_dir, subdir_name + "_stdout.txt")
-                errors_fp = os.path.join(params_logging_dir, subdir_name + "_errors.txt")
+                stderr_fp = os.path.join(params_logging_dir, subdir_name + "_errors.txt")
 
                 if not os.path.isdir(snakes_output_dir):
                     if os.path.exists(snakes_output_dir):
@@ -102,7 +102,7 @@ def run_soax(
                     "params_name": params_name,
                     "snakes_output_dir": snakes_output_dir,
                     "stdout_fp": stdout_fp,
-                    "errors_fp": errors_fp,
+                    "stderr_fp": stderr_fp,
                     "logger": logger,
                 })
     # If no subdirs, we have
@@ -128,7 +128,7 @@ def run_soax(
                 "params_name": params_name,
                 "snakes_output_dir": snakes_output_dir,
                 "stdout_fp": os.path.join(logging_dir, params_name + "_stdout.txt"),
-                "errors_fp": os.path.join(logging_dir, params_name + "_errors.txt"),
+                "stderr_fp": os.path.join(logging_dir, params_name + "_errors.txt"),
                 "logger": logger,
             })
 
