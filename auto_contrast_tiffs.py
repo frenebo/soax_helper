@@ -3,7 +3,6 @@ from multiprocessing.pool import ThreadPool
 import os
 import numpy as np
 from PIL import Image
-import tifffile
 
 from snakeutils.logger import PrintLogger
 from snakeutils.files import has_one_of_extensions

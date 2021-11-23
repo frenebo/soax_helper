@@ -1063,7 +1063,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         action_configs = []
         if self.do_intensity_scaling:
             action_configs.append({
-                "action": "do_intensity_scaling",
+                "action": "intensity_scale_tiffs",
                 "settings": self.intensity_scaling_config["fields"],
             })
         if self.do_divide_average_image:
