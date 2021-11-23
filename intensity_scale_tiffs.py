@@ -22,7 +22,7 @@ def intensity_scale_single_tiff(arg_dict):
     image_arr = pil_img_3d_to_np_arr(pil_img)
 
     original_max_intensity = image_arr.max()
-    tiff_datatype_max_value = np.iinfo(first_tiff_arr.dtype).max
+    tiff_datatype_max_value = np.iinfo(image_arr.dtype).max
 
     # Rescale intensity so new maximum is max possible value.
     # For example, an 8 bit tiff would have a max possible value of 255
