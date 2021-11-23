@@ -761,7 +761,7 @@ class SoaxRunSetupForm(SetupForm):
             ],
             "id": "delete_soax_logs_for_finished_runs",
             "type": "true_false",
-        }
+        },
         {
             "id": "use_subdirs",
             "type": "true_false",
