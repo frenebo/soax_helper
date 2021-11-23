@@ -5,7 +5,7 @@ import json
 import time
 
 from rescale_tiffs import rescale_tiffs
-from intensity_scale_tiffs
+from intensity_scale_tiffs import intensity_scale_tiffs
 from section_tiffs import section_tiffs
 from run_soax import run_soax
 from snakeutils.logger import RecordLogger, PrintLogger
@@ -22,7 +22,6 @@ from setup_app import (
     SoaxSetupApp,
     RescaleSetupForm,
     IntensityScalingSetupForm,
-    # AutoContrastSetupForm,
     SectioningSetupForm,
     SoaxParamsSetupPage1Form,
     SoaxParamsSetupPage2Form,
@@ -60,16 +59,6 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_intensity_scaling_settings["workers_num"],
             logger=logger,
         )
-    # elif action_name == "auto_contrast_tiffs":
-    #     parsed_auto_contrast_settings = AutoContrastSetupForm.parseSettings(setting_strings, make_dirs)
-    #     auto_contrast_tiffs(
-    #         parsed_auto_contrast_settings["source_tiff_dir"],
-    #         parsed_auto_contrast_settings["target_tiff_dir"],
-    #         parsed_auto_contrast_settings["max_cutoff_percent"],
-    #         parsed_auto_contrast_settings["min_cutoff_percent"],
-    #         parsed_auto_contrast_settings["workers_num"],
-    #         logger=logger,
-    #     )
     elif action_name == "section_tiffs":
         parsed_sectioning_settings = SectioningSetupForm.parseSettings(setting_strings, make_dirs)
         section_tiffs(
