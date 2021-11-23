@@ -26,7 +26,7 @@ def intensity_scale_single_tiff(arg_dict):
 
     # Rescale intensity so new maximum is max possible value.
     # For example, an 8 bit tiff would have a max possible value of 255
-    image_arr *= tiff_datatype_max_value / original_max_intensity
+    image_arr *= float(tiff_datatype_max_value) / original_max_intensity
 
     save_3d_tif(image_arr,new_arr)
 
