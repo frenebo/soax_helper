@@ -581,6 +581,11 @@ class SectioningSetupForm(SetupForm):
         {
             "id": "section_max_size",
             "type": "pos_int",
+            "help": [
+                "Maximum size of a section in pixels (in width, length, height). ",
+                "Will divide into as many pieces for pieces to be smaller than ",
+                "this section_max_size in all dimensions.",
+            ],
         },
         {
             "id": "workers_num",
