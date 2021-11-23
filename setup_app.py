@@ -910,7 +910,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.intensity_scaling_config = {
             "fields": {
-                "source_tif_dir": "",
+                "source_tiff_dir": "",
                 "target_tiff_dir": "./IntensityScaledTIFFs",
                 "workers_num": "1",
             },
