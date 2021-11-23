@@ -12,6 +12,7 @@ def soax_instance(soax_args):
     params_name = soax_args["params_name"]
     param_fp = soax_args["param_fp"]
     snakes_output_dir = soax_args["snakes_output_dir"]
+    delete_soax_logs_for_finished_runs = soax_args["delete_soax_logs_for_finished_runs"]
     logger = soax_args["logger"]
     stdout_fp = soax_args["stdout_fp"]
     stderr_fp = soax_args["stderr_fp"]
@@ -36,7 +37,7 @@ def soax_instance(soax_args):
             logger.error("    STDERR saved in {}".format(stderr_fp))
             logger.error("    STDOUT saved in {}".format(stdout_fp))
             success = False
-    if success:
+    if success and delete_soax_logs_for_finished_runs:
         try:
             os.remove(stderr_fp)
             os.remove(stdout_fp)
@@ -50,6 +51,7 @@ def run_soax(
     output_dir,
     logging_dir,
     use_subdirs,
+    delete_soax_logs_for_finished_runs,
     workers_num,
     logger=PrintLogger):
     param_files = [filename for filename in os.listdir(params_dir) if filename.endswith(".txt")]
@@ -101,6 +103,7 @@ def run_soax(
                     "param_fp": param_fp,
                     "params_name": params_name,
                     "snakes_output_dir": snakes_output_dir,
+                    "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
                     "stdout_fp": stdout_fp,
                     "stderr_fp": stderr_fp,
                     "logger": logger,
@@ -127,6 +130,7 @@ def run_soax(
                 "param_fp": param_fp,
                 "params_name": params_name,
                 "snakes_output_dir": snakes_output_dir,
+                "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
                 "stdout_fp": os.path.join(logging_dir, params_name + "_stdout.txt"),
                 "stderr_fp": os.path.join(logging_dir, params_name + "_errors.txt"),
                 "logger": logger,

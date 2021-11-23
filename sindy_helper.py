@@ -118,8 +118,9 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_soax_run_settings["param_files_dir"],
             parsed_soax_run_settings["target_snakes_dir"],
             parsed_soax_run_settings["soax_log_dir"],
-            parsed_soax_run_settings["use_subdirs"],
-            parsed_soax_run_settings["workers"],
+            use_subdirs=parsed_soax_run_settings["use_subdirs"],
+            delete_soax_logs_for_finished_runs=parsed_soax_run_settings["delete_soax_logs_for_finished_runs"],
+            workers_num=parsed_soax_run_settings["workers"],
             logger=logger,
         )
     elif action_name == "convert_snakes_to_json":

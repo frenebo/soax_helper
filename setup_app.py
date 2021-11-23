@@ -755,8 +755,16 @@ class SoaxRunSetupForm(SetupForm):
             "type": "pos_int",
         },
         {
+            "help": [
+                "If you don't care about the SOAX print-out logs for",
+                "finished runs that had no errors, set this to true",
+            ],
+            "id": "delete_soax_logs_for_finished_runs",
+            "type": "true_false",
+        }
+        {
             "id": "use_subdirs",
-            "type": "true_false"
+            "type": "true_false",
         }
     ]
 
@@ -998,6 +1006,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_soax",
                 "source_tiff_dir": "",
                 "target_snakes_dir": "./Snakes",
+                "delete_soax_logs_for_finished_runs": "false",
                 "param_files_dir": "",
                 "soax_log_dir": "./SoaxLogs",
             },
