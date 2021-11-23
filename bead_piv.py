@@ -41,6 +41,11 @@ def bead_piv(
     search_diameter_x_y = round_to_odd(float_search_diameter_x_y)
     search_diameter_z = round_to_odd(float_search_diameter_z)
 
+    if search_diameter_x_y < 1:
+        search_diameter_x_y = 1
+    if search_diameter_z < 1:
+        search_diameter_z = 1
+
     logger.log("Rounding up x,y bead pixel diameter to nearest odd int, {} -> {}".format(float_search_diameter_x_y, search_diameter_x_y))
     logger.log("Rounding up z bead stack diameter to nearest odd int, {} -> {}".format(float_search_diameter_z, search_diameter_z))
     diameter = (search_diameter_z, search_diameter_x_y, search_diameter_x_y)

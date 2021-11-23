@@ -1,5 +1,4 @@
 import argparse
-
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
@@ -16,6 +15,7 @@ def _image_scale_to_fit_in_box(pil_img, new_width, new_height):
     zoom_factor = min(horizontal_ratio, vertical_ratio)
 
     return zoom_factor
+
 class AnnotatorGui:
     def __init__(self):
         self.root = tk.Tk()
@@ -53,29 +53,13 @@ def display_snakes(snakes):
         else:
             ax.plot(x,y,z, 'b')
 
-    # fig.canvas.draw()
     plt.show()
     plt.pause(0.0001)
-    # plt.draw()
-    # print("asldfjas;lkdfjalskdfs")
 
 def test_thing(pil_img):
     gui = AnnotatorGui()
     gui.show_image(pil_img)
     gui.root.mainloop()
-    # for filename in os.listdir(self.images_path):
-    #     filepath = os.path.join(self.images_path, filename)
-    #     try:
-    #         pil_img = Image.open(filepath)
-    #     except Exception as e:
-    #         raise e
-    #     self.gui.show_image(pil_img)
-    #     time.sleep(1)
-    # annotator = Annotator(
-    #     categories=["dog", "cat"],
-    #     images_path=images_path
-    # )
-    # annotator.begin_annotation()
 
 if __name__ == "__main__":
 
@@ -86,14 +70,10 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    # pil_img = Image.open(args.background)
-    # test_thing(pil_img)
-    # exit()
-
     snakes,metadata = load_json_snakes(args.json_path)
 
     fig = plt.figure(num=args.json_path, figsize=(10,7))
-    # fig.sets
+
     if args.flatten:
         ax = plt.axes()
         ax.set_xlim(0,metadata["dims_pixels_xyz"][0])
