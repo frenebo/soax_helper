@@ -9,15 +9,15 @@ from snakeutils.files import has_one_of_extensions
 from snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 
 def intensity_scale_single_tiff(arg_dict):
-    source_dir = arg_dict["source_dir"]
+    source_tiff_dir = arg_dict["source_tiff_dir"]
     tiff_fn = arg_dict["tiff_fn"]
-    target_dir = arg_dict["target_dir"]
+    target_tiff_dir = arg_dict["target_tiff_dir"]
     logger = arg_dict["logger"]
 
 
-    source_tiff_fp = os.path.join(source_dir,tiff_fn)
+    source_tiff_fp = os.path.join(source_tiff_dir,tiff_fn)
     logger.log("Performing intensity scaling on {}".format(source_tiff_fp))
-    intensity_scaled = os.path.join(target_dir, "intensity_scaled_" + tiff_fn)
+    intensity_scaled = os.path.join(target_tiff_dir, "intensity_scaled_" + tiff_fn)
     pil_img = Image.open(source_tiff_fp)
     image_arr = pil_img_3d_to_np_arr(pil_img)
 
@@ -39,20 +39,19 @@ def intensity_scale_tiffs(
     logger=PrintLogger,
     ):
 
-    source_tifs = [filename for filename in os.listdir(source_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
+    source_tifs = [filename for filename in os.listdir(source_tiff_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
     source_tifs.sort()
 
     if len(source_tifs) == 0:
-        logger.FAIL("No .tif or .tiff files found in {}".format(source_dir))
+        logger.FAIL("No .tif or .tiff files found in {}".format(source_tiff_dir))
         return
 
-    # first_tiff_img = Image.open(os.path.join(source_dir, source_tifs[0]))
     intensity_scale_arg_dicts = []
     for tiff_fn in source_tifs:
         intensity_scale_arg_dicts.append({
-            "source_dir": source_dir,
+            "source_tiff_dir": source_tiff_dir,
             "tiff_fn": tiff_fn,
-            "target_dir": target_dir,
+            "target_tiff_dir": target_tiff_dir,
             "logger": logger,
         })
 
