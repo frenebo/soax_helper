@@ -190,7 +190,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
             value = [],
             name="Pick SOAX Steps (spacebar to toggle)",
             values = [
-                "Auto Contrast Images",
+                "Do Intensity Scaling on Images",
                 "Divide Average Image",
                 "Rescale TIFFs in X,Y,Z",
                 "Section TIFFs before running SOAX",
@@ -204,7 +204,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
         )
 
     def afterEditing(self):
-        do_auto_contrast                   = 0  in self.select_steps.value
+        do_intensity_scaling               = 0  in self.select_steps.value
         do_divide_average_image            = 1  in self.select_steps.value
         do_rescale                         = 2  in self.select_steps.value
         do_section                         = 3  in self.select_steps.value
@@ -214,13 +214,13 @@ class SoaxStepsSelectForm(npyscreen.Form):
         do_join_sectioned_snakes           = 7  in self.select_steps.value
         do_make_sindy_fields               = 8  in self.select_steps.value
 
-        if do_section and not do_auto_contrast:
-            should_continue = npyscreen.notify_yes_no("If sectioning image, it's recommended to auto contrast, so SOAX doesn't need to auto-contrast each section individually (possibly with different contrast in each section). Proceed anyway?", editw=2)
+        if do_section and not do_intensity_scaling:
+            should_continue = npyscreen.notify_yes_no("If sectioning image, it's recommended to do intensity scaling, so SOAX doesn't need to intensity_scale each section individually (with different intensity-scaling in each section, giving inconsistent results across the image). Proceed anyway?", editw=2)
             if not should_continue:
                 return
 
         self.parentApp.soaxStepsSelectDone(
-            do_auto_contrast,
+            do_intensity_scaling,
             do_divide_average_image,
             do_rescale,
             do_section,
@@ -507,30 +507,25 @@ class DivideAverageImageSetupForm(SetupForm):
 
     app_done_func_name = "divideAverageImageSetupDone"
 
-class AutoContrastSetupForm(SetupForm):
+class IntensityScalingSetupForm(SetupForm):
     field_infos = [
         {
+            "help": [
+                "Rescales the intensity of each image so the maximum brightness is the max value of the TIFF format.",
+                "For example, if an 8 bit tiff (pixel values go from black=0 to white=255) had a maximum value of 100, then",
+                "every pixel in the image would have its brightness multiplied by 255/100 = 2.55.",
+                "This is important if you want to section the image, because although SOAX will automatically intensity scale",
+                "if SOAX is run on separated sections of one image, each section will be intensity scaled differently and the results",
+                "will be inconsistent across the different sections.",
+                "If this step is configured, in the parameters setup menu, SOAX intensity scaling will be set explicitly,",
+                "so that SOAX doesn't calculate its own intensity scaling for each value."
+            ],
             "id": "source_tiff_dir",
             "type": "dir",
-            "help": [
-                "Min and max cutoff percent are brightness level percentiles to use to rescale the TIFF image brightnesses ",
-                "min=1 and max=99 would find the brightness that only 1% of tiff pixels in the first TIF in the directory are dimmer than, ",
-                "and the brightness that 99% of tiff pixels are dimmer than. The 1% brightness is the lower threshold, and 99% brightness is the upper threhold. ",
-                "All pixels dimmer than the lower threshold are set to total black, all pixels brighter than the upper threshold are set to pure white, ",
-                "and pixel brightnesses in between are rescaled to a new value between total black and total white",
-            ],
         },
         {
             "id": "target_tiff_dir",
             "type": "dir",
-        },
-        {
-            "id": "min_cutoff_percent",
-            "type": "percentage",
-        },
-        {
-            "id": "max_cutoff_percent",
-            "type": "percentage",
         },
         {
             "id": "workers_num",
@@ -538,7 +533,7 @@ class AutoContrastSetupForm(SetupForm):
         },
     ]
 
-    app_done_func_name = "autoContrastSetupDone"
+    app_done_func_name = "intensityScalingSetupDone"
 
 class RescaleSetupForm(SetupForm):
     field_infos = [
@@ -611,10 +606,10 @@ class SoaxParamsSetupPage1Form(SetupForm):
             "type": "arg_or_range",
             "help": [
                 "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling",
-                "If input images have been contrast-scaled in a previous step, we don't want SOAX to rescale brightness",
+                "If input images have been intensity-scaled in a previous step, we don't want SOAX to rescale brightness",
                 "If the input TIFs are 16 bit, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIF max intensity to 1.0 max intensity",
-                "If input images are sectioned before feeding to SOAX, they should be contrast rescaled",
-                "before sectioning, so all sections have same contrast setting",
+                "If input images are sectioned before feeding to SOAX, they should be intensity rescaled",
+                "before sectioning, so intensity processing on all sections is uniform",
             ],
         },
         {
@@ -860,9 +855,6 @@ class MakeSindyFieldsSetupForm(SetupForm):
 
     app_done_func_name = "makeSindyFieldsSetupDone"
 
-class BeadPivAutoContrastSetupForm(AutoContrastSetupForm):
-    app_done_func_name = "beadPivAutoContrastSetupDone"
-
 class BeadPIVSetupForm(SetupForm):
     field_infos = [
         {
@@ -914,15 +906,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_dirs = make_dirs
 
     def onStart(self):
-        # Info for forms, including default fields to show in forms. Updated by user and by setup app,
-        # like automatically setting source_tiff_dir of rescale to target_tiff_dir of auto contrast (if user configures auto contrast)
-        self.auto_contrast_config = {
+        # Default configurations for setup forms, including default fields to show in forms.
+
+        self.intensity_scaling_config = {
             "fields": {
-                "max_cutoff_percent": "95.5",
-                "min_cutoff_percent": "0.0",
+                "source_tif_dir": "",
+                "target_tiff_dir": "./IntensityScaledTIFFs",
                 "workers_num": "1",
-                "source_tiff_dir": "",
-                "target_tiff_dir": "./AutoContrastedTIFFs",
             },
             "notes": {},
         }
@@ -1071,10 +1061,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def getActionConfigs(self):
         action_configs = []
-        if self.do_auto_contrast:
+        if self.do_intensity_scaling:
             action_configs.append({
-                "action": "auto_contrast_tiffs",
-                "settings": self.auto_contrast_config["fields"],
+                "action": "do_intensity_scaling",
+                "settings": self.intensity_scaling_config["fields"],
             })
         if self.do_divide_average_image:
             action_configs.append({
@@ -1121,26 +1111,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "make_sindy_fields",
                 "settings": self.make_sindy_fields_config["fields"],
             })
-        # if self.do_bead_piv_auto_contrast:
-        #     action_configs.append({
-        #         "action": "auto_contrast_tiffs",
-        #         "settings": self.bead_piv_auto_contrast_config["fields"],
-        #     })
-        # if self.do_tube_piv_auto_contrast:
-        #     action_configs.append({
-        #         "action": "auto_contrast_tiffs",
-        #         "settings": self.tube_piv_auto_contrast_config["fields"],
-        #     })
         if self.do_bead_PIV:
             action_configs.append({
                 "action": "do_bead_PIV",
                 "settings": self.bead_PIV_config["fields"],
             })
-        # if self.do_tube_PIV:
-        #     action_configs.append({
-        #         "action": "do_tube_PIV",
-        #         "settings": self.tube_PIV_config["fields"],
-        #     })
         return action_configs
 
     def try_find_dir_first_tif_metadata(self, tiff_dir, img_depth):
@@ -1216,7 +1191,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('SOAX_STEPS_SELECT')
 
     def soaxStepsSelectDone(self,
-        do_auto_contrast,
+        do_intensity_scaling,
         do_divide_average_image,
         do_rescale,
         do_section,
@@ -1226,7 +1201,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_join_sectioned_snakes,
         do_make_sindy_fields,
         ):
-        self.do_auto_contrast = do_auto_contrast
+        self.do_intensity_scaling = do_intensity_scaling
         self.do_divide_average_image = do_divide_average_image
         self.do_rescale = do_rescale
         self.do_section = do_section
@@ -1236,8 +1211,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
         self.do_make_sindy_fields = do_make_sindy_fields
 
-        if self.do_auto_contrast:
-            self.menu_functions.append(self.startAutoContrastSetup)
+        if self.do_intensity_scaling:
+            self.menu_functions.append(self.startIntensityScalingSetup)
         if self.do_divide_average_image:
             self.menu_functions.append(self.startDivideAverageImageSetup)
         if self.do_rescale:
@@ -1266,24 +1241,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('PIV_STEPS_SELECT')
 
     def PIVStepsSelectDone(self,
-        # do_bead_piv_auto_contrast,
-        # do_tube_piv_auto_contrast,
         do_bead_PIV,
-        # do_tube_PIV,
         ):
-        # self.do_bead_piv_auto_contrast = do_bead_piv_auto_contrast
-        # self.do_tube_piv_auto_contrast = do_tube_piv_auto_contrast
         self.do_bead_PIV = do_bead_PIV
-        # self.do_tube_PIV = do_tube_PIV
 
-        # if self.do_bead_piv_auto_contrast:
-        #     self.menu_functions.append(self.startBeadPivAutoContrastSetup)
-        # if self.do_tube_piv_auto_contrast:
-        #     self.menu_functions.append(self.startTubePivAutoContrastSetup)
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIVSetup)
-        # if self.do_tube_PIV:
-        #     self.menu_functions.append(self.startTubePIVSetup)
 
         self.goToNextMenu()
 
@@ -1297,13 +1260,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if tif_metadata is not None:
             self.image_dims = tif_metadata["dims"]
 
-    def startAutoContrastSetup(self):
-        self.addForm('AUTO_CONTRAST_SETUP', AutoContrastSetupForm, name='Auto Contrasting Setup')
-        self.getForm('AUTO_CONTRAST_SETUP').configure(self.auto_contrast_config, self.make_dirs)
-        self.setNextForm('AUTO_CONTRAST_SETUP')
+    def startIntensityScalingSetup(self):
+        self.addForm('INTENSITY_SCALING_SETUP', IntensityScalingSetupForm, name='Intensity Scaling Setup')
+        self.getForm('INTENSITY_SCALING_SETUP').configure(self.intensity_scaling_config, self.make_dirs)
+        self.setNextForm('INTENSITY_SCALING_SETUP')
 
-    def autoContrastSetupDone(self, fields):
-        self.auto_contrast_config["fields"] = fields
+    def intensityScalingSetupDone(self, fields):
+        self.intensity_scaling_config["fields"] = fields
 
         self.divide_average_image_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.rescale_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
@@ -1327,8 +1290,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 editw=1)
         else:
             tif_max_level = tif_metadata["tif_max_level"]
-            self.soax_params_page1_config["fields"]["intensity_scaling"] = format(1/tif_max_level, '.9f')
-            self.soax_params_page1_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tif {tif_path} is {max_lev} (From input to Auto Contrast step)".format(
+            self.soax_params_page1_config["fields"]["intensity_scaling"] = format(1/tif_max_level, '.5f')
+            self.soax_params_page1_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tif {tif_path} is {max_lev} (From input to Intensity Scaling step)".format(
                 max_lev=tif_max_level,
                 tif_path=tif_metadata["tif_path"],
             )
@@ -1501,30 +1464,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.make_sindy_fields_config["fields"] = fields
         self.goToNextMenu()
 
-    # def startBeadPivAutoContrastSetup(self):
-    #     self.addForm('BEAD_PIV_AUTO_CONTRAST_SETUP', BeadPivAutoContrastSetupForm, name="Bead PIV Auto Contrast")
-    #     self.getForm('BEAD_PIV_AUTO_CONTRAST_SETUP').configure(self.bead_piv_auto_contrast_config, self.make_dirs)
-    #     self.setNextForm('BEAD_PIV_AUTO_CONTRAST_SETUP')
-
-    # def beadPivAutoContrastSetupDone(self, fields):
-    #     self.bead_piv_auto_contrast_config["fields"] = fields
-
-    #     self.bead_PIV_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
-
-    #     self.goToNextMenu()
-
-    # def startTubePivAutoContrastSetup(self):
-    #     self.addForm('TUBE_PIV_AUTO_CONTRAST_SETUP', TubePivAutoContrastSetupForm, name="Tube PIV Auto Contrast")
-    #     self.getForm('TUBE_PIV_AUTO_CONTRAST_SETUP').configure(self.tube_piv_auto_contrast_config, self.make_dirs)
-    #     self.setNextForm('TUBE_PIV_AUTO_CONTRAST_SETUP')
-
-    # def tubePivAutoContrastSetupDone(self, fields):
-    #     self.tube_piv_auto_contrast_config["fields"] = fields
-
-    #     self.tube_PIV_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
-
-    #     self.goToNextMenu()
-
     def startBeadPIVSetup(self):
         self.addForm('BEAD_PIV_SETUP', BeadPIVSetupForm, name="Bead PIV Setup")
         self.getForm('BEAD_PIV_SETUP').configure(self.bead_PIV_config, self.make_dirs)
@@ -1533,12 +1472,3 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def beadPIVSetupDone(self, fields):
         self.bead_PIV_config["fields"] = fields
         self.goToNextMenu()
-
-    # def startTubePIVSetup(self):
-    #     self.addForm('TUBE_PIV_SETUP', TubePIVSetupForm, name="Tube PIV Setup")
-    #     self.getForm('TUBE_PIV_SETUP').configure(self.tube_PIV_config, self.make_dirs)
-    #     self.setNextForm('TUBE_PIV_SETUP')
-
-    # def tubePIVSetupDone(self, fields):
-    #     self.tube_PIV_config["fields"] = fields
-    #     self.goToNextMenu()
