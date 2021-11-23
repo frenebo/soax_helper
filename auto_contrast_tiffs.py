@@ -67,6 +67,12 @@ def auto_contrast_tiffs(
     max_cutoff = np.percentile(first_tiff_arr,max_cutoff_percent)
     min_cutoff = np.percentile(first_tiff_arr,min_cutoff_percent)
 
+    # Just to be safe in case np.percentile doesn't give exactly min or max for 0 or 100
+    if min_cutoff_percent == 0.0:
+        min_cutoff = first_tiff_arr.min()
+    if max_cutoff_percent == 100.0:
+        max_cutoff = first_tiff_arr.max()
+
     logger.log("Rescaling range to max val {}".format(max_cutoff))
     new_max = np.iinfo(first_tiff_arr.dtype).max
     scale_factor = float(new_max)/float(max_cutoff - min_cutoff)

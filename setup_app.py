@@ -919,7 +919,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.auto_contrast_config = {
             "fields": {
                 "max_cutoff_percent": "95.5",
-                "min_cutoff_percent": "0.1",
+                "min_cutoff_percent": "0.0",
                 "workers_num": "1",
                 "source_tiff_dir": "",
                 "target_tiff_dir": "./AutoContrastedTIFFs",
