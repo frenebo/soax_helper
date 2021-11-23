@@ -17,7 +17,7 @@ def intensity_scale_single_tiff(arg_dict):
 
     source_tiff_fp = os.path.join(source_tiff_dir,tiff_fn)
     logger.log("Performing intensity scaling on {}".format(source_tiff_fp))
-    intensity_scaled = os.path.join(target_tiff_dir, "intensity_scaled_" + tiff_fn)
+    intensity_scaled_fp = os.path.join(target_tiff_dir, "intensity_scaled_" + tiff_fn)
     pil_img = Image.open(source_tiff_fp)
     orig_image_arr = pil_img_3d_to_np_arr(pil_img)
 
@@ -39,9 +39,9 @@ def intensity_scale_single_tiff(arg_dict):
     # doesn't wrap around
     intensity_scaled_arr[where_float_arr_exceeds_imgtype_max] = img_type_max_value
 
-    save_3d_tif(intensity_scaled_image,new_arr)
+    save_3d_tif(intensity_scaled_fp,new_arr)
 
-    logger.success("Saved auto contrast pic as {}".format(intensity_scaled))
+    logger.success("Saved auto contrast pic as {}".format(intensity_scaled_fp))
 
 def intensity_scale_tiffs(
     source_tiff_dir,
