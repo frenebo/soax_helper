@@ -134,7 +134,6 @@ def parse_float_coords(field_name, field_str):
         val.append(item_float)
     return val
 
-
 def error_string_or_arg_or_range(arg, require_int):
     split_by_dash = arg.split('-')
 

@@ -1,4 +1,3 @@
-import math
 from multiprocessing.pool import ThreadPool
 import os
 import numpy as np

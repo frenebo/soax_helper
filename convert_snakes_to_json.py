@@ -55,7 +55,6 @@ def crop_snakes(orig_snake_list, lower_xyz, upper_xyz):
         new_snake_list.append(new_snake)
     return new_snake_list
 
-
 def convert_snakes_to_json(
     source_snakes_dir,
     target_json_dir,

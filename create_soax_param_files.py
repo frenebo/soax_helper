@@ -3,7 +3,6 @@ from snakeutils.logger import PrintLogger
 import os
 import itertools
 
-
 def create_range(start,stop,step):
     vals = []
     current_val = start

@@ -1,7 +1,5 @@
 import numpy as np
 from matplotlib import pyplot as plt
-import sys
-import os
 from snakeutils.files import extract_snakes, has_one_of_extensions
 from scipy.spatial.distance import cdist
 import math
