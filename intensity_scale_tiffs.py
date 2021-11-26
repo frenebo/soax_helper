@@ -40,7 +40,7 @@ def intensity_scale_single_tiff(arg_dict):
     # doesn't wrap around
     intensity_scaled_arr[where_float_arr_exceeds_imgtype_max] = img_type_max_value
 
-    logger.log("    New max intensity: {}".format(intensity_scaled_arr.max())
+    logger.log("    New max intensity: {}".format(intensity_scaled_arr.max()))
 
     save_3d_tif(intensity_scaled_fp,intensity_scaled_arr)
 
