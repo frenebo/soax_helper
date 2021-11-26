@@ -23,6 +23,8 @@ def intensity_scale_single_tiff(arg_dict):
     original_max_intensity = orig_image_arr.max()
     img_type_max_value = np.iinfo(orig_image_arr.dtype).max
 
+    logger.log("    Image max intensity: {}/{}".format(original_max_intensity, img_type_max_value))
+
     if img_type_max_value == 0:
         logger.FAIL("Tif {} has zero brightness every where, cannot intensity scale".format(source_tiff_fp))
 
@@ -38,9 +40,11 @@ def intensity_scale_single_tiff(arg_dict):
     # doesn't wrap around
     intensity_scaled_arr[where_float_arr_exceeds_imgtype_max] = img_type_max_value
 
+    logger.log("    New max intensity: {}".format(intensity_scaled_arr.max())
+
     save_3d_tif(intensity_scaled_fp,intensity_scaled_arr)
 
-    logger.success("Saved auto contrast pic as {}".format(intensity_scaled_fp))
+    logger.success("    Saved auto contrast pic as {}".format(intensity_scaled_fp))
 
 def intensity_scale_tiffs(
     source_tiff_dir,
