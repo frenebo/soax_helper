@@ -442,7 +442,6 @@ class SetupForm(npyscreen.Form):
 
         return field_strings
 
-
     def afterEditing(self):
         try:
             self.parseSettings(self.getFieldStrings(), self.make_dirs_if_not_present)

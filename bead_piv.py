@@ -22,8 +22,10 @@ def bead_piv(
     logger=PrintLogger,
     ):
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num])
+    print("Frames")
     print(frames)
     try:
+        print("Axes:")
         print(frames.axes)
     except:
         print("No axes")
