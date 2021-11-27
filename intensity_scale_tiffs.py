@@ -35,9 +35,9 @@ def intensity_scale_single_tiff(arg_dict):
     where_float_arr_exceeds_imgtype_max = intensity_scaled_arr >= img_type_max_value
     intensity_scaled_arr = intensity_scaled_arr.astype(orig_image_arr.dtype)
     # In case the float multiplication put any intensities slightly over max
-    # (For example in 8 bit image, 255.1)
+    # (For example in 8 bit image, an error might put a brightness to 255.1)
     # Set them manually to the max (like 255 for example) to make sure the int value
-    # doesn't wrap around
+    # doesn't wrap around to 0
     intensity_scaled_arr[where_float_arr_exceeds_imgtype_max] = img_type_max_value
 
     logger.log("    New max intensity: {}".format(intensity_scaled_arr.max()))
