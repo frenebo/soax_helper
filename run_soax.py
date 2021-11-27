@@ -57,6 +57,9 @@ def run_soax(
     param_files = [filename for filename in os.listdir(params_dir) if filename.endswith(".txt")]
     param_files.sort()
 
+    if len(param_files) == 0:
+        logger.FAIL("No SOAX parameter files ending in .txt found in {}".format(params_dir))
+
     logger.log("WORKERS: {}".format(workers_num))
 
     soax_args = []
