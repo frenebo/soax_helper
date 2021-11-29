@@ -741,6 +741,10 @@ class SoaxRunSetupForm(SetupForm):
             "type": "dir",
         },
         {
+            "id": "use_individual_image_params",
+            "type": "true_false",
+        },
+        {
             "id": "soax_log_dir",
             "type": "dir",
         },
@@ -761,9 +765,9 @@ class SoaxRunSetupForm(SetupForm):
             "type": "true_false",
         },
         {
-            "id": "use_subdirs",
+            "id": "use_sectioned_images",
             "type": "true_false",
-        }
+        },
     ]
 
     app_done_func_name = "soaxRunSetupDone"
@@ -1000,12 +1004,13 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_config = {
             "fields":  {
                 "workers": "1",
-                "use_subdirs": "false",
+                "use_sectioned_images": "false",
                 "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_soax",
                 "source_tiff_dir": "",
                 "target_snakes_dir": "./Snakes",
                 "delete_soax_logs_for_finished_runs": "false",
                 "param_files_dir": "",
+                "use_individual_image_params": "false",
                 "soax_log_dir": "./SoaxLogs",
             },
             "notes": {},
@@ -1360,7 +1365,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def sectioningSetupDone(self, fields):
         self.sectioning_config["fields"] = fields
         self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_sectioned_tiff_dir"]
-        self.soax_run_config["fields"]["use_subdirs"] = "true"
+        self.soax_run_config["fields"]["use_sectioned_images"] = "true"
+        self.soax_run_config["fields"]["use_individual_image_params"] = "true"
 
         self.image_being_split = True
 
@@ -1406,7 +1412,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.soax_run_config["fields"] = fields
         self.snakes_to_json_config["fields"]["source_snakes_dir"] = fields["target_snakes_dir"]
 
-        if fields["use_subdirs"] == "true":
+        if fields["use_sectioned_images"] == "true":
             self.snakes_to_json_config["fields"]["source_snakes_depth"] = "2"
         else:
             self.snakes_to_json_config["fields"]["source_snakes_depth"] = "1"
