@@ -1,8 +1,5 @@
 from colorama import Fore, Style
-import threading
 
-class PagerFailError(Exception):
-    pass
 
 class RecordLogger:
     def __init__(self):
@@ -28,6 +25,9 @@ class RecordLogger:
         self.fails.append(text)
         PrintLogger.FAIL(text)
 
+class LoggerFAILCalledException(Exception):
+    pass
+
 class PrintLogger:
     @staticmethod
     def log(text):
@@ -47,4 +47,4 @@ class PrintLogger:
 
     @staticmethod
     def FAIL(text):
-        raise Exception(text)
+        raise LoggerFAILCalledException(text)

@@ -8,7 +8,7 @@ from rescale_tiffs import rescale_tiffs
 from intensity_scale_tiffs import intensity_scale_tiffs
 from section_tiffs import section_tiffs
 from run_soax import run_soax
-from snakeutils.logger import RecordLogger, PrintLogger
+from snakeutils.logger import RecordLogger, PrintLogger, LoggerFAILCalledException
 from convert_snakes_to_json import convert_snakes_to_json
 from join_sectioned_snakes import join_sectioned_snakes
 from make_sindy_fields import make_sindy_fields
@@ -224,7 +224,7 @@ def run():
     all_times = []
     all_warnings = []
 
-    for action_conf in action_configs:
+    for i, action_conf in enumerate(action_configs):
         action_name = action_conf["action"]
         action_settings = action_conf["settings"]
 
@@ -233,7 +233,16 @@ def run():
         action_logger = RecordLogger()
         all_loggers.append((action_name, action_logger))
 
-        perform_action(action_name, action_settings, args.make_dirs, action_logger)
+        try:
+            perform_action(action_name, action_settings, args.make_dirs, action_logger)
+        except LoggerFAILCalledException as e:
+            message = str(e)
+            PrintLogger.error(message)
+
+            end_time = time.time()
+            elapsed = end_time - start_time
+            PrintLogger.error("Step #{}, '{}' failed after {} seconds. Ending program".format(i + 1, action_name, elapsed))
+            exit(1)
 
         end_time = time.time()
         elapsed = end_time - start_time
