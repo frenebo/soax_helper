@@ -588,143 +588,157 @@ class SectioningSetupForm(SetupForm):
 
     app_done_func_name = "sectioningSetupDone"
 
-class SoaxParamsSetupPage1Form(SetupForm):
+class SoaxParamsFirstPageForm(SetupForm):
     field_infos = [
         {
             "id": "params_save_dir",
             "type": "dir",
-            "help": [
-                "Enter SOAX run parameters to try.",
-                "Enter number values (ex. 1,3.44,10.3) or start-stop-step ranges (ex. 1-20-0.5,1.5-3.5-1.0)",
-                "If ranges are given, soax will be run multiple times, trying all combinations of parameter values",
-            ],
         },
         {
-            "id": "intensity_scaling",
-            "type": "arg_or_range",
-            "help": [
-                "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling",
-                "If input images have been intensity-scaled in a previous step, we don't want SOAX to rescale brightness",
-                "If the input TIFs are 16 bit, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIF max intensity to 1.0 max intensity",
-                "If input images are sectioned before feeding to SOAX, they should be intensity rescaled",
-                "before sectioning, so intensity processing on all sections is uniform",
-            ],
-        },
-        {
-            "id": "gaussian_std",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "ridge_threshold",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "maximum_foreground",
-            "type": "int_arg_or_range",
-        },
-        {
-            "id": "minimum_foreground",
-            "type": "int_arg_or_range",
-        },
-    ]
-
-    app_done_func_name = "soaxParamsSetupPage1Done"
-
-class SoaxParamsSetupPage2Form(SetupForm):
-    field_infos = [
-        {
-            "id": "init_z",
-            "type": "true_false",
-        },
-        {
-            "id": "snake_point_spacing",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "min_snake_length",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "maximum_iterations",
-            "type": "int_arg_or_range",
-        },
-        {
-            "id": "change_threshold",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "check_period",
-            "type": "int_arg_or_range",
-        },
-        {
-            "id": "alpha",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "beta",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "gamma",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "external_factor",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "stretch_factor",
-            "type": "arg_or_range",
-        },
-    ]
-
-    app_done_func_name = "soaxParamsSetupPage2Done"
-
-class SoaxParamsSetupPage3Form(SetupForm):
-    field_infos = [
-        {
-            "id": "number_of_background_radial_sectors",
-            "type": "int_arg_or_range",
-        },
-        {
-            "id": "background_z_xy_ratio",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "radial_near",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "radial_far",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "delta",
-            "type": "int_arg_or_range",
-        },
-        {
-            "id": "overlap_threshold",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "grouping_distance_threshold",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "grouping_delta",
-            "type": "int_arg_or_range",
-        },
-        {
-            "id": "minimum_angle_for_soac_linking",
-            "type": "arg_or_range",
-        },
-        {
-            "id": "damp_z",
+            "id": "make_params_for_individual_images",
             "type": "true_false",
         },
     ]
 
-    app_done_func_name = "soaxParamsSetupPage3Done"
+    app_done_func_name = "soaxParamsSetupFirstPageDone"
+
+# class SoaxParamsSetupPage1Form(SetupForm):
+#     field_infos = [
+#         {
+#             "id": "params_save_dir",
+#             "type": "dir",
+#             "help": [
+#                 "Enter SOAX run parameters to try.",
+#                 "For number fields, enter individual values (ex. '1','3.44', or '10.3') or start-stop-step ranges (ex. '1-20-0.5' or '1.5-3.5-1.0')",
+#                 "If ranges are given, soax will be run multiple times, trying all combinations of parameter values",
+#             ],
+#         },
+#         {
+#             "id": "intensity_scaling",
+#             "type": "arg_or_range",
+#             "help": [
+#                 "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling",
+#                 "If input images have been intensity-scaled in a previous step, we don't want SOAX to rescale brightness",
+#                 "If the input TIFs are 16 bit, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIF max intensity to 1.0 max intensity",
+#                 "If input images are sectioned before feeding to SOAX, they should be intensity rescaled",
+#                 "before sectioning, so intensity processing on all sections is uniform",
+#             ],
+#         },
+#         {
+#             "id": "gaussian_std",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "ridge_threshold",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "maximum_foreground",
+#             "type": "int_arg_or_range",
+#         },
+#         {
+#             "id": "minimum_foreground",
+#             "type": "int_arg_or_range",
+#         },
+#     ]
+
+#     app_done_func_name = "soaxParamsSetupPage1Done"
+
+# class SoaxParamsSetupPage2Form(SetupForm):
+#     field_infos = [
+#         {
+#             "id": "init_z",
+#             "type": "true_false",
+#         },
+#         {
+#             "id": "snake_point_spacing",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "min_snake_length",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "maximum_iterations",
+#             "type": "int_arg_or_range",
+#         },
+#         {
+#             "id": "change_threshold",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "check_period",
+#             "type": "int_arg_or_range",
+#         },
+#         {
+#             "id": "alpha",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "beta",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "gamma",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "external_factor",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "stretch_factor",
+#             "type": "arg_or_range",
+#         },
+#     ]
+
+#     app_done_func_name = "soaxParamsSetupPage2Done"
+
+# class SoaxParamsSetupPage3Form(SetupForm):
+#     field_infos = [
+#         {
+#             "id": "number_of_background_radial_sectors",
+#             "type": "int_arg_or_range",
+#         },
+#         {
+#             "id": "background_z_xy_ratio",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "radial_near",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "radial_far",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "delta",
+#             "type": "int_arg_or_range",
+#         },
+#         {
+#             "id": "overlap_threshold",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "grouping_distance_threshold",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "grouping_delta",
+#             "type": "int_arg_or_range",
+#         },
+#         {
+#             "id": "minimum_angle_for_soac_linking",
+#             "type": "arg_or_range",
+#         },
+#         {
+#             "id": "damp_z",
+#             "type": "true_false",
+#         },
+#     ]
+
+#     app_done_func_name = "soaxParamsSetupPage3Done"
 
 class SoaxRunSetupForm(SetupForm):
     field_infos = [
@@ -953,48 +967,56 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "notes": {},
         }
 
-        self.soax_params_page1_config = {
+        self.soax_params_first_page_config = {
             "fields": {
                 "params_save_dir": "./Params",
-                "intensity_scaling": "0",
-                "gaussian_std": "0",
-                "ridge_threshold": "0.01",
-                "maximum_foreground": "65535",
-                "minimum_foreground": "0",
+                "make_params_for_individual_images": "false",
             },
             "notes": {},
         }
-        self.soax_params_page2_config = {
-            "fields": {
-                "init_z": "true",
-                "snake_point_spacing": "1",
-                "min_snake_length": "10",
-                "maximum_iterations": "10000",
-                "change_threshold": "0.1",
-                "check_period": "100",
-                "alpha": "0.01",
-                "beta": "0.1",
-                "gamma": "2",
-                "external_factor": "1",
-                "stretch_factor": "0.2",
-            },
-            "notes": {},
-        }
-        self.soax_params_page3_config = {
-            "fields": {
-                "number_of_background_radial_sectors": "8",
-                "background_z_xy_ratio": "2.88",
-                "radial_near": "4",
-                "radial_far": "8",
-                "delta": "4",
-                "overlap_threshold": "1",
-                "grouping_distance_threshold": "4",
-                "grouping_delta": "8",
-                "minimum_angle_for_soac_linking": "2.1",
-                "damp_z": "false",
-            },
-            "notes": {},
-        }
+
+        # self.soax_params_page1_config = {
+        #     "fields": {
+        #         "params_save_dir": "./Params",
+        #         "intensity_scaling": "0",
+        #         "gaussian_std": "0",
+        #         "ridge_threshold": "0.01",
+        #         "maximum_foreground": "65535",
+        #         "minimum_foreground": "0",
+        #     },
+        #     "notes": {},
+        # }
+        # self.soax_params_page2_config = {
+        #     "fields": {
+        #         "init_z": "true",
+        #         "snake_point_spacing": "1",
+        #         "min_snake_length": "10",
+        #         "maximum_iterations": "10000",
+        #         "change_threshold": "0.1",
+        #         "check_period": "100",
+        #         "alpha": "0.01",
+        #         "beta": "0.1",
+        #         "gamma": "2",
+        #         "external_factor": "1",
+        #         "stretch_factor": "0.2",
+        #     },
+        #     "notes": {},
+        # }
+        # self.soax_params_page3_config = {
+        #     "fields": {
+        #         "number_of_background_radial_sectors": "8",
+        #         "background_z_xy_ratio": "2.88",
+        #         "radial_near": "4",
+        #         "radial_far": "8",
+        #         "delta": "4",
+        #         "overlap_threshold": "1",
+        #         "grouping_distance_threshold": "4",
+        #         "grouping_delta": "8",
+        #         "minimum_angle_for_soac_linking": "2.1",
+        #         "damp_z": "false",
+        #     },
+        #     "notes": {},
+        # }
 
         # In Ubuntu 20.04, to build SOAX, I followed the steps from https://www.lehigh.edu/~div206/soax/downloads.html
         # under the section "Building SOAX in Windows Linux Subsystem (Ubuntu 18.04.1 LTS)"
@@ -1094,15 +1116,16 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "settings": self.sectioning_config["fields"],
             })
         if self.do_create_soax_params:
-            action_configs.append({
-                "action": "create_soax_param_files",
-                # Combine page 1 and page 2 settings
-                "settings": {
-                    **self.soax_params_page1_config["fields"],
-                    **self.soax_params_page2_config["fields"],
-                    **self.soax_params_page3_config["fields"],
-                },
-            })
+            # @TODO params
+            # action_configs.append({
+            #     "action": "create_soax_param_files",
+            #     # Combine page 1 and page 2 settings
+            #     "settings": {
+            #         **self.soax_params_page1_config["fields"],
+            #         **self.soax_params_page2_config["fields"],
+            #         **self.soax_params_page3_config["fields"],
+            #     },
+            # })
         if self.do_run_soax:
             action_configs.append({
                 "action": "run_soax",
@@ -1302,11 +1325,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 editw=1)
         else:
             tif_max_level = tif_metadata["tif_max_level"]
-            self.soax_params_page1_config["fields"]["intensity_scaling"] = format(1/tif_max_level, '.5f')
-            self.soax_params_page1_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tif {tif_path} is {max_lev} (From input to Intensity Scaling step)".format(
-                max_lev=tif_max_level,
-                tif_path=tif_metadata["tif_path"],
-            )
+            # @TODO params
+            # self.soax_params_page1_config["fields"]["intensity_scaling"] = format(1/tif_max_level, '.5f')
+            # self.soax_params_page1_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tif {tif_path} is {max_lev} (From input to Intensity Scaling step)".format(
+            #     max_lev=tif_max_level,
+            #     tif_path=tif_metadata["tif_path"],
+            # )
             self.rescale_config["fields"]["input_dims"] = ",".join([str(dim) for dim in tif_metadata["dims"]])
 
         self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
@@ -1375,33 +1399,33 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.goToNextMenu()
 
-    def startSoaxParamsSetupPage1(self):
-        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/3")
-        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_config, self.make_dirs)
-        self.setNextForm('PARAM_SETUP_PAGE_1')
+    # def startSoaxParamsSetupPage1(self):
+    #     self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/3")
+    #     self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_config, self.make_dirs)
+    #     self.setNextForm('PARAM_SETUP_PAGE_1')
 
-    def soaxParamsSetupPage1Done(self, fields):
-        self.soax_params_page1_config["fields"] = fields
-        self.soax_run_config["fields"]["param_files_dir"] = fields["params_save_dir"]
-        self.goToNextMenu()
+    # def soaxParamsSetupPage1Done(self, fields):
+    #     self.soax_params_page1_config["fields"] = fields
+    #     self.soax_run_config["fields"]["param_files_dir"] = fields["params_save_dir"]
+    #     self.goToNextMenu()
 
-    def startSoaxParamsSetupPage2(self):
-        self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/3")
-        self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_config, self.make_dirs)
-        self.setNextForm('PARAM_SETUP_PAGE_2')
+    # def startSoaxParamsSetupPage2(self):
+    #     self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/3")
+    #     self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_config, self.make_dirs)
+    #     self.setNextForm('PARAM_SETUP_PAGE_2')
 
-    def soaxParamsSetupPage2Done(self, fields):
-        self.soax_params_page2_config["fields"] = fields
-        self.goToNextMenu()
+    # def soaxParamsSetupPage2Done(self, fields):
+    #     self.soax_params_page2_config["fields"] = fields
+    #     self.goToNextMenu()
 
-    def startSoaxParamsSetupPage3(self):
-        self.addForm('PARAM_SETUP_PAGE_3', SoaxParamsSetupPage3Form, name="SOAX Params Setup Page 3/3")
-        self.getForm('PARAM_SETUP_PAGE_3').configure(self.soax_params_page3_config, self.make_dirs)
-        self.setNextForm('PARAM_SETUP_PAGE_3')
+    # def startSoaxParamsSetupPage3(self):
+    #     self.addForm('PARAM_SETUP_PAGE_3', SoaxParamsSetupPage3Form, name="SOAX Params Setup Page 3/3")
+    #     self.getForm('PARAM_SETUP_PAGE_3').configure(self.soax_params_page3_config, self.make_dirs)
+    #     self.setNextForm('PARAM_SETUP_PAGE_3')
 
-    def soaxParamsSetupPage3Done(self, fields):
-        self.soax_params_page3_config["fields"] = fields
-        self.goToNextMenu()
+    # def soaxParamsSetupPage3Done(self, fields):
+    #     self.soax_params_page3_config["fields"] = fields
+    #     self.goToNextMenu()
 
     def startSoaxRunSetup(self):
         self.addForm('SOAX_RUN_SETUP', SoaxRunSetupForm, name="SOAX Run Setup")

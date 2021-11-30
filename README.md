@@ -1,1 +1,1 @@
-# Sindy Helper App
+# Soax Helper App
