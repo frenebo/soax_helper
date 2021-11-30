@@ -51,7 +51,7 @@ def run_soax(
     output_dir,
     logging_dir,
     use_sectioned_images,
-    use_individual_image_params,
+    use_image_specific_params,
     delete_soax_logs_for_finished_runs,
     workers_num,
     logger=PrintLogger):
@@ -78,7 +78,7 @@ def run_soax(
         for image_sections_dirname in image_sections_dirnames:
             image_sections_dir_path = os.path.join(tiff_dir,image_sections_dirname)
 
-            if use_individual_image_params:
+            if use_image_specific_params:
                 params_dirpath_for_image = os.path.join(params_dir, image_sections_dirname)
                 param_files = [filename for filename in os.listdir(params_dirpath_for_images) if filename.endswith(".txt")]
                 param_files.sort()
@@ -124,7 +124,7 @@ def run_soax(
     # {tiff_dir} -> tif,tif,tif,tif
     # so we only need to run soax once with each param on the same directory
     else:
-        if use_individual_image_params:
+        if use_image_specific_params:
             raise Exception("It is not currently supported to use individual image parameters when the images are not sectioned")
         else:
             param_files = [filename for filename in os.listdir(params_dir) if filename.endswith(".txt")]
