@@ -594,6 +594,43 @@ class SectioningSetupForm(SetupForm):
 
 #     app_done_func_name = "soaxParamsSetupFirstPageDone"
 
+        # self.create_normal_soax_params_config = {
+        #     "fields": {
+        #         "params_save_dir": "./Params",
+        #     },
+        #     "notes": {},
+        # }
+
+class CreateNormalSoaxParamsSetupForm(SetupForm):
+    # @TODO add help info about following param pages
+    field_infos = [
+        {
+            "id": "params_save_dir",
+            "type": "dir",
+        },
+    ]
+    app_done_func_name = "createNormalSoaxParamsSetupDone"
+
+class CreateImageSpecificSoaxParamsSetupForm(SetupForm):
+    # @TODO add help info about following param pages
+    field_infos = [
+        {
+            "id": "params_save_dir",
+            "type": "dir",
+        },
+        # @TODO make optional????
+        {
+            "id": "original_tiff_dir",
+            "type": "dir",
+        },
+        {
+            "id": "set_intensity_scaling_for_each_image",
+            "type": "true_false",
+        },
+    ]
+
+    app_done_func_name = "createImageSpecificSoaxParamsSetupDone"
+
 class SoaxParamsSetupPage1Form(SetupForm):
     field_infos = [
         {

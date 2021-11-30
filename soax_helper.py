@@ -69,10 +69,23 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "create_soax_param_files":
+        param_fields = setting_strings["param_fields"]
+        parsed_param_settings = {
+            **SoaxParamsSetupPage1Form.parseSettings(setting_strings, make_dirs)
+            **SoaxParamsSetupPage2Form.parseSettings(setting_strings, make_dirs)
+            **SoaxParamsSetupPage3Form.parseSettings(setting_strings, make_dirs)
+        }
+        create_regular_soax_param_files_settings =
         #@TODO
         raise NotImplementedError()
     elif action_name == "create_image_image_specific_params_files":
-        # @TODO
+        param_fields = setting_strings["param_fields"]
+        parsed_param_settings = {
+            **SoaxParamsSetupPage1Form.parseSettings(setting_strings, make_dirs)
+            **SoaxParamsSetupPage2Form.parseSettings(setting_strings, make_dirs)
+            **SoaxParamsSetupPage3Form.parseSettings(setting_strings, make_dirs)
+        }
+        #@TODO
         raise NotImplementedError()
     # elif action_name == "create_soax_param_files":
     #     parsed_page1_params_settings = SoaxParamsSetupPage1Form.parseSettings(setting_strings, make_dirs)
