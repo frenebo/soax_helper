@@ -222,6 +222,7 @@ def run():
 
     all_loggers = []
     all_times = []
+    all_warnings = []
 
     for action_conf in action_configs:
         action_name = action_conf["action"]
@@ -238,6 +239,8 @@ def run():
         elapsed = end_time - start_time
         all_times.append((action_name, elapsed))
         PrintLogger.log("{} took {} seconds".format(action_name, elapsed))
+        all_warnings.append(list(action_logger.warnings))
+
 
     for step_name, record_logger in all_loggers:
         if len(record_logger.errors) > 0:
@@ -246,7 +249,12 @@ def run():
                 PrintLogger.error("  " + err)
 
     for i, (step_name, seconds_taken) in enumerate(all_times):
-        print("Step #{}, '{}' took {} seconds".format(i + 1, step_name, seconds_taken))
+        PrintLogger.log("Step #{}, '{}' took {} seconds".format(i + 1, step_name, seconds_taken))
+        step_warnings = all_warnings[i]
+        if len(step_warnings) > 0:
+            PrintLogger.warn("    Step #{}, '{}' had the following warnings:".format(i + 1, step_name))
+            for warning_text in step_warnings:
+                PrintLogger.warn("        " + warning_text)
 
 
 if __name__ == "__main__":

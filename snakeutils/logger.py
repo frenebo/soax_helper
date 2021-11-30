@@ -7,10 +7,15 @@ class PagerFailError(Exception):
 class RecordLogger:
     def __init__(self):
         self.errors = []
+        self.warnings = []
         self.fails = []
 
     def log(self,text):
         PrintLogger.log(text)
+
+    def warn(self, text):
+        self.warnings.append(text)
+        PrintLogger.warn(text)
 
     def success(self,text):
         PrintLogger.success(text)
@@ -27,6 +32,10 @@ class PrintLogger:
     @staticmethod
     def log(text):
         print(text)
+
+    @staticmethod
+    def warn(text):
+        print(Fore.YELLOW + text + Style.RESET_ALL)
 
     @staticmethod
     def success(text):
