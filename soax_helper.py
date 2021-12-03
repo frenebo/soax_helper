@@ -75,7 +75,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             **SoaxParamsSetupPage2Form.parseSettings(setting_strings, make_dirs)
             **SoaxParamsSetupPage3Form.parseSettings(setting_strings, make_dirs)
         }
-        create_regular_soax_param_files_settings =
+        # create_regular_soax_param_files_settings =
         #@TODO
         raise NotImplementedError()
     elif action_name == "create_image_image_specific_params_files":
