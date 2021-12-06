@@ -25,10 +25,12 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
 
     sum_image = np.zeros(img_shape, dtype=np.double)
 
-    logger.log("Finding average image")
+    logger.log("Finding average image\n")
     # image_count = 0
     for tiff_name in source_tifs:
-        pil_img = Image.open(os.path.join(source_dir, tiff_name))
+        tiff_path = os.path.join(source_dir, tiff_name)
+        logger.success("   Reading {} ".format(tiff_path))
+        pil_img = Image.open(tiff_path)
         np_arr = pil_img_3d_to_np_arr(pil_img)
         sum_image += np_arr
 
