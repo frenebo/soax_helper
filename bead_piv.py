@@ -1,9 +1,6 @@
 import os
-import trackpy as tp
 import numpy as np
-import pims
 import math
-from matplotlib import pyplot as plt
 import json
 
 from snakeutils.logger import PrintLogger
@@ -21,6 +18,8 @@ def bead_piv(
     linking_search_range_um,
     logger=PrintLogger,
     ):
+    import pims
+    import trackpy as tp
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num])
     print("Frames")
     print(frames)

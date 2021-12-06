@@ -15,7 +15,6 @@ from scipy.interpolate import splrep, splder, splev
 import scipy.optimize as optimize
 from scipy.interpolate import UnivariateSpline
 import math
-from matplotlib import pyplot as plt
 
 intensity_field_around_snake_radius_pixels = 5
 

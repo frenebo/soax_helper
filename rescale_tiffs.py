@@ -3,7 +3,6 @@ from snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 from skimage.transform import resize
 from multiprocessing.pool import ThreadPool
 import os
-import matplotlib.pyplot as plt
 import imageio
 import cv2
 from PIL import Image
