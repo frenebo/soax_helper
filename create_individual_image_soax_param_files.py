@@ -7,7 +7,8 @@ from snakeutils.files import has_one_of_extensions
 def create_soax_param_files_by_image(
     target_dir,
     # start_stop_step_vals,
-)
+):
+    raise NotImplementedError()
 
 # def create_individual_image_soax_param_files(
 #     target_dir,
