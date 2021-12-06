@@ -343,7 +343,7 @@ class SetupForm(npyscreen.Form):
             field_type = field_info["type"]
             field_str = field_strings[field_id]
             field_details = field_info["details"] if "details" in field_info else None
-            if field_strings_nullable_to_grey_out_and_ignore and field_str is None:
+            if cls.field_strings_nullable_to_grey_out_and_ignore and field_str is None:
                 parsed_fields[field_id] = None
             else:
                 parsed_fields[field_id] = cls.parseField(field_id, field_str, field_type, field_details, make_dirs_if_not_present)

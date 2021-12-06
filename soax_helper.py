@@ -21,7 +21,6 @@ from setup_app import (
     DivideAverageImageSetupForm,
     SoaxSetupApp,
     RescaleSetupForm,
-    # IntensityScalingSetupForm,
     SectioningSetupForm,
     SoaxParamsSetupPage1Form,
     SoaxParamsSetupPage2Form,
