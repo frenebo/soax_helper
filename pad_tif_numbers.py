@@ -24,7 +24,7 @@ def pad_tif_numbers(
     source_tifs.sort()
 
     most_digits = 0
-    for tif_fn in source_tifs:
+    for tiff_fn in source_tifs:
         tif_fn_num = get_num_of_tif_fn(tiff_fn, tiff_name_prefix, logger)
         if tif_fn_num is None:
             continue
@@ -33,7 +33,7 @@ def pad_tif_numbers(
             most_digits = num_digits
 
     # Rename files
-    for tif_fn in source_tifs:
+    for tiff_fn in source_tifs:
         tif_fn_num = get_num_of_tif_fn(tiff_fn, tiff_name_prefix, logger)
         if tif_fn_num is None:
             continue
