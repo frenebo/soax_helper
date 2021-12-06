@@ -15,7 +15,7 @@ def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger):
         logger.FAIL("Cannot parse string '{}' from '{}' as integer".format(tiff_num_str, tiff_fn))
     return tiff_num
 
-def pad_tif_numbers(
+def pad_tiff_numbers(
     tiff_dir,
     tiff_name_prefix,
     logger=PrintLogger,
