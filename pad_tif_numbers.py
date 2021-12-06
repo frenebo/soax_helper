@@ -20,7 +20,7 @@ def pad_tiff_numbers(
     tiff_name_prefix,
     logger=PrintLogger,
 ):
-    source_tifs = [filename for filename in os.listdir(tiff_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
+    source_tifs = [filename for filename in os.listdir(tiff_dir) if has_one_of_extensions(filename, [".tifs", ".tif", ".tiff"])]
     source_tifs.sort()
 
     most_digits = 0
@@ -38,7 +38,7 @@ def pad_tiff_numbers(
         if tiff_fn_num is None:
             continue
 
-        new_tiff_fn = tiff_name_prefix + str(tiff_fn_num).zfill(most_digits) + ".tifs"
+        new_tiff_fn = tiff_name_prefix + str(tiff_fn_num).zfill(most_digits) + ".tif"
         old_fp = os.path.join(tiff_dir, tiff_fn)
         new_fp = os.path.join(tiff_dir, new_tiff_fn)
         logger.log("Renaming {} to {}".format(tiff_fn, new_tiff_fn))
