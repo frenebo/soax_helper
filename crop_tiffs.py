@@ -1,8 +1,9 @@
 import argparse
+from snakeutils.logger import PrintLogger
 
 def crop_tiffs(
     source_tiff_dir,
-    target_tiff_dir,
+    logger=PrintLogger
 ):
     raise NotImplementedError()
 
