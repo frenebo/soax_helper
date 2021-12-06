@@ -20,7 +20,7 @@ def pad_tif_numbers(
     tiff_name_prefix,
     logger=PrintLogger,
 ):
-    source_tifs = [filename for filename in os.listdir(source_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
+    source_tifs = [filename for filename in os.listdir(tiff_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
     source_tifs.sort()
 
     most_digits = 0
