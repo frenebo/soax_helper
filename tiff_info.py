@@ -57,7 +57,8 @@ def tiff_info(tiff_paths,logger=PrintLogger):
         avg = np.average(arr)
 
         logger.log("{}:".format(tiff_path))
-        logger.log(" shape: {}, stack frames: {}, dtype: {}, min: {}, max: {}, avg: {}".format(shape,stack_height,dtype, min_val, max_val, avg))
+        # logger.log("Size in X,Y: ({},{})".format())
+        logger.log("XY shape: {}, stack frames: {}, dtype: {}, min: {}, max: {}, avg: {}".format(shape,stack_height,dtype, min_val, max_val, avg))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Get info from tif file or directory of tif files')
