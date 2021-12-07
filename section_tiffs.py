@@ -112,6 +112,4 @@ def section_tiffs(
         })
 
     with ThreadPool(workers_num) as pool:
-        logger.log("Making future")
         future = pool.map(section_tiff, section_arg_dicts, chunksize=1)
-        logger.log("Future finished")

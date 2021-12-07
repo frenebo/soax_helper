@@ -155,6 +155,4 @@ def run_soax(
             })
 
     with ThreadPool(workers_num) as pool:
-        logger.log("Making future")
         future = pool.map(soax_instance, soax_instance_args, chunksize=1)
-        logger.log("Future finished")
