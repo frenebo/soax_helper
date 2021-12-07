@@ -14,10 +14,8 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
         logger.FAIL("No .tif/.tiff files found in {}".format(source_dir))
         return
 
-
     if len(source_tiffs) < 20:
         logger.log("Warning: less than 20 source tiffs. Dividing image average works best for large data sets.")
-
 
     first_pil_img = Image.open(os.path.join(source_dir, source_tiffs[0]))
     first_tiff_arr = pil_img_3d_to_np_arr(first_pil_img)

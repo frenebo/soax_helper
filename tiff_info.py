@@ -56,9 +56,9 @@ def tiff_info(tiff_paths,logger=PrintLogger):
         max_val = arr.max()
         avg = np.average(arr)
 
-        logger.log("{}:".format(tiff_path))\
-        logger.log("DIMENSIONS: XY shape: {}, Number of tiff n_frames (Z): {}".format(shape,stack_height))
-        logger.log("TIFF INFO: pixel dtype: {}, with min: {} and max: {}. Image average value is: {}".format(dtype, min_val, max_val, avg))
+        logger.log("{}:".format(tiff_path))
+        logger.success("   DIMENSIONS: XY shape: {}, Number of tiff n_frames (Z): {}".format(shape,stack_height))
+        logger.success("   TIFF INFO: pixel dtype: {}, with min: {} and max: {}. Image average value is: {}".format(dtype, min_val, max_val, avg))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Get info from tiff file or directory of tiff files')
