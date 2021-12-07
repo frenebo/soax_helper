@@ -42,5 +42,5 @@ def create_soax_param_files_by_image(
 #     # minimum_angle_for_soac_linking_start_stop_step,
 #     logger=PrintLogger,
 #     ):
-#     source_tifs = [filename for filename in os.listdir(source_images_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
-#     source_tifs.sort()
+#     source_tiffs = [filename for filename in os.listdir(source_images_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
+#     source_tiffs.sort()
