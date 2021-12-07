@@ -3,7 +3,7 @@ import tifffile
 
 # numpy arr should have (height,width,depth)
 def save_3d_tif(fp,numpy_arr):
-    # tif takes (depth,height,width)
+    # tifffile takes (depth,height,width)
     numpy_arr = np.swapaxes(numpy_arr,2,1)
     numpy_arr = np.swapaxes(numpy_arr,1,0)
 

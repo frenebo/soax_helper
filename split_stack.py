@@ -14,7 +14,7 @@ if __name__ == "__main__":
         os.makedirs(args.target_directory)
     else:
         if not os.path.isdir(args.target_directory):
-            raise Exception("Bad target directory '{}': should be a directory to put the tif frames into".format(args.target_directory))
+            raise Exception("Bad target directory '{}': should be a directory to put the TIFF frames into".format(args.target_directory))
 
     pil_img = Image.open(args.source_tiff_path)
     np_arr = pil_img_3d_to_np_arr(pil_img)

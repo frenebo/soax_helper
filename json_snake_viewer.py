@@ -66,7 +66,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='JSON snake viewer')
     parser.add_argument("json_path")
     parser.add_argument('--flatten',default=False,action='store_true',help="Plot in 2D")
-    parser.add_argument('--background',default=None,help="TIF to graph in background")
+    parser.add_argument('--background',default=None,help="TIFF to graph in background")
 
     args = parser.parse_args()
 

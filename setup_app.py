@@ -652,7 +652,7 @@ class SoaxParamsSetupPage1Form(SetupForm):
             "help": [
                 "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling",
                 "If input images have been intensity-scaled in a previous step, we don't want SOAX to rescale brightness",
-                "If the input TIFFs are 16 bit, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIF max intensity to 1.0 max intensity",
+                "If the input TIFFs are 16 bit, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIFF max intensity to 1.0 max intensity",
                 "If input images are sectioned before feeding to SOAX, they should be intensity rescaled",
                 "before sectioning, so intensity processing on all sections is uniform",
             ],
@@ -835,8 +835,8 @@ class SnakesToJsonSetupForm(SetupForm):
             "id": "offset_pixels",
             "type": "infer_or_int_coords",
             "help": [
-                "Offset pixels is useful if the snakes from SOAX are for a section of the original TIF image. If the snakes were",
-                "calculated from a TIF section that went from x=100 to x=200, y=150 to y=300, z=30 to z=80, then the offset pixels",
+                "Offset pixels is useful if the snakes from SOAX are for a section of the original TIFF image. If the snakes were",
+                "calculated from a TIFF section that went from x=100 to x=200, y=150 to y=300, z=30 to z=80, then the offset pixels",
                 "would be 100,150,30. If the snakes are for the entire image, input '0,0,0'. If the input images were cut up in the",
                 "sectioning step, then the image filenames and SOAX snake filenames should contain the coordinates of each section,",
                 "and the snakes to JSON converter can infer offset from filename. In that case input '0,0,0'",
@@ -846,8 +846,8 @@ class SnakesToJsonSetupForm(SetupForm):
             "id": "dims_pixels",
             "type": "infer_or_int_coords",
             "help": [
-                "The x,y,z dimensions of the input TIF (or TIF section). Ex. '100,200,40'",
-                "Similar to offset_pixels, enter 'infer' if processing TIF section snakes."
+                "The x,y,z dimensions of the input TIFF (or TIFF section). Ex. '100,200,40'",
+                "Similar to offset_pixels, enter 'infer' if processing TIFF section snakes."
             ],
         },
         {
@@ -1387,7 +1387,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     #         tif_max_level = tif_metadata["tif_max_level"]
     #         # @TODO params
     #         # self.soax_params_page1_config["fields"]["intensity_scaling"] = format(1/tif_max_level, '.5f')
-    #         # self.soax_params_page1_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tif {tif_path} is {max_lev} (From input to Intensity Scaling step)".format(
+    #         # self.soax_params_page1_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tiff {tif_path} is {max_lev} (From input to Intensity Scaling step)".format(
     #         #     max_lev=tif_max_level,
     #         #     tif_path=tif_metadata["tif_path"],
     #         # )

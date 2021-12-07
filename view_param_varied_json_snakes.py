@@ -176,7 +176,7 @@ if __name__ == "__main__":
     parser.add_argument("jsons_dir")
     parser.add_argument('--flatten',default=False,action='store_true',help="Plot in 2D")
     parser.add_argument('--images', default=None, help='Folder with source images to show')
-    # parser.add_argument('--background',default=None,help="TIF to graph in background")
+    # parser.add_argument('--background',default=None,help="TIFF to graph in background")
 
     args = parser.parse_args()
 

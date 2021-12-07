@@ -94,8 +94,7 @@ def section_tiffs(
     for tiff_fn in source_tiffs:
         tiff_fp = os.path.join(source_dir,tiff_fn)
 
-        # remove .tif from file name
-        image_name_extensionless = tiff_fn[:-4]
+        image_name_extensionless = os.path.splitext(tiff_fn)[0]
 
         sectioned_dir = os.path.join(target_dir, image_name_extensionless)
 

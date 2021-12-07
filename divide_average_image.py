@@ -11,7 +11,7 @@ def divide_average_image(source_dir, target_dir, logger=PrintLogger):
     source_tiffs.sort()
 
     if len(source_tiffs) == 0:
-        logger.FAIL("No .tif files found in {}".format(source_dir))
+        logger.FAIL("No .tif/.tiff files found in {}".format(source_dir))
         return
 
 

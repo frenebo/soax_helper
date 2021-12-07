@@ -26,7 +26,7 @@ def intensity_scale_single_tiff(arg_dict):
     logger.log("    Image max intensity: {}/{}".format(original_max_intensity, img_type_max_value))
 
     if img_type_max_value == 0:
-        logger.FAIL("Tif {} has zero brightness every where, cannot intensity scale".format(source_tiff_fp))
+        logger.FAIL("TIFF {} has zero brightness every where, cannot intensity scale".format(source_tiff_fp))
 
     # Rescale intensity so new maximum is max possible value.
     # For example, an 8 bit tiff would have a max possible value of 255
@@ -57,7 +57,7 @@ def intensity_scale_tiffs(
     source_tiffs.sort()
 
     if len(source_tiffs) == 0:
-        logger.FAIL("No .tif or .tiff files found in {}".format(source_tiff_dir))
+        logger.FAIL("No TIFF files found in {}".format(source_tiff_dir))
         return
 
     intensity_scale_arg_dicts = []

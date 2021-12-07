@@ -20,7 +20,7 @@ def tiff_file_or_dir(target_path):
     # bad idea why did i do it this way
     except argparse.ArgumentTypeError:
         if not target_path.endswith(".tif"):
-            raise argparse.ArgumentTypeError("{} is not a directory or tif file".format(target_path))
+            raise argparse.ArgumentTypeError("{} is not a directory or tiff file".format(target_path))
 
         if not os.path.exists(target_path):
             raise argparse.ArgumentTypeError("{} does not exist".format(target_path))
@@ -56,14 +56,13 @@ def tiff_info(tiff_paths,logger=PrintLogger):
         max_val = arr.max()
         avg = np.average(arr)
 
-        logger.log("{}:".format(tiff_path))
-        # logger.log("Size in X,Y: ({},{})".format())
+        logger.log("{}:".format(tiff_path))\
         logger.log("DIMENSIONS: XY shape: {}, Number of tiff n_frames (Z): {}".format(shape,stack_height))
         logger.log("TIFF INFO: pixel dtype: {}, with min: {} and max: {}. Image average value is: {}".format(dtype, min_val, max_val, avg))
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Get info from tif file or directory of tif files')
-    parser.add_argument('target',type=tiff_file_or_dir,help="TIF file or directory of tif files")
+    parser = argparse.ArgumentParser(description='Get info from tiff file or directory of tiff files')
+    parser.add_argument('target',type=tiff_file_or_dir,help="TIFF file or directory of tiff files")
 
     args = parser.parse_args()
 

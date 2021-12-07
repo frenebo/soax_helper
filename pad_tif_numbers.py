@@ -6,7 +6,7 @@ from snakeutils.files import has_one_of_extensions
 def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger):
     fn_without_extension = os.path.splitext(tiff_fn)[0]
     if not fn_without_extension.startswith(tiff_name_prefix):
-        logger.error("Tif '{}' does not start with '{}', skipping".format(tiff_fn, tiff_name_prefix))
+        logger.error("TIFF '{}' does not start with '{}', skipping".format(tiff_fn, tiff_name_prefix))
         return None
     tiff_num_str = fn_without_extension[len(tiff_name_prefix):]
     try:
@@ -46,7 +46,7 @@ def pad_tiff_numbers(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Pad numbers of of tif filenames in directory')
+    parser = argparse.ArgumentParser(description='Pad numbers of of TIFF filenames in directory')
     parser.add_argument("tiff_dir")
     parser.add_argument("tiff_name_prefix")
 
