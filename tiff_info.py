@@ -58,7 +58,8 @@ def tiff_info(tiff_paths,logger=PrintLogger):
 
         logger.log("{}:".format(tiff_path))
         # logger.log("Size in X,Y: ({},{})".format())
-        logger.log("XY shape: {}, stack frames: {}, dtype: {}, min: {}, max: {}, avg: {}".format(shape,stack_height,dtype, min_val, max_val, avg))
+        logger.log("DIMENSIONS: XY shape: {}, Number of tiff n_frames (Z): {}".format(shape,stack_height))
+        logger.log("TIFF INFO: pixel dtype: {}, with min: {} and max: {}. Image average value is: {}".format(dtype, min_val, max_val, avg))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Get info from tif file or directory of tif files')
