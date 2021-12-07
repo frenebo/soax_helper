@@ -77,8 +77,7 @@ def convert_snakes_to_json(
         snakes_fp = os.path.join(folder_path,snake_filename)
         logger.log("Reading snakes from {}".format(snakes_fp))
 
-
-        json_fn = snake_filename[:-len(snakes_ext)] + ".json"
+        json_fn = os.path.splitext(snake_filename)[0] + ".json"
         json_fp = os.path.join(target_folder_path, json_fn)
 
         if offset_pixels["type"] == "int_coords":

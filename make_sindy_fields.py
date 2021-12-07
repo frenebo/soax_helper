@@ -242,7 +242,7 @@ def make_sindy_fields(
         json_files.sort()
 
         if len(json_files) != len(source_images):
-            raise Exception("Number of json snake files in {} is different from number of tifs in {} ({} vs {})".format(
+            raise Exception("Number of json snake files in {} is different from number of tiffs in {} ({} vs {})".format(
                 json_containing_dir,
                 source_images_dir,
                 len(json_files),

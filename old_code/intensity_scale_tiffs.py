@@ -16,7 +16,7 @@ def intensity_scale_single_tiff(arg_dict):
 
     source_tiff_fp = os.path.join(source_tiff_dir,tiff_fn)
     logger.log("Performing intensity scaling on {}".format(source_tiff_fp))
-    intensity_scaled_fp = os.path.join(target_tiff_dir, "intensity_scaled_" + tiff_fn)
+    intensity_scaled_fp = os.path.join(target_tiff_dir, tiff_fn)
     pil_img = Image.open(source_tiff_fp)
     orig_image_arr = pil_img_3d_to_np_arr(pil_img)
 
@@ -53,15 +53,15 @@ def intensity_scale_tiffs(
     logger=PrintLogger,
     ):
 
-    source_tifs = [filename for filename in os.listdir(source_tiff_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
-    source_tifs.sort()
+    source_tiffs = [filename for filename in os.listdir(source_tiff_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
+    source_tiffs.sort()
 
-    if len(source_tifs) == 0:
+    if len(source_tiffs) == 0:
         logger.FAIL("No .tif or .tiff files found in {}".format(source_tiff_dir))
         return
 
     intensity_scale_arg_dicts = []
-    for tiff_fn in source_tifs:
+    for tiff_fn in source_tiffs:
         intensity_scale_arg_dicts.append({
             "source_tiff_dir": source_tiff_dir,
             "tiff_fn": tiff_fn,

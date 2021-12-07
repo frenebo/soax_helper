@@ -86,18 +86,18 @@ def section_tiffs(
     if section_max_size <= 0:
         logger.FAIL("Section max size must be positive. Invalid value {}".format(section_size))
 
-    source_tifs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
-    source_tifs.sort()
+    source_tiffs = [filename for filename in os.listdir(source_dir) if filename.endswith(".tif")]
+    source_tiffs.sort()
 
     section_arg_dicts = []
 
-    for tiff_fn in source_tifs:
+    for tiff_fn in source_tiffs:
         tiff_fp = os.path.join(source_dir,tiff_fn)
 
         # remove .tif from file name
         image_name_extensionless = tiff_fn[:-4]
 
-        sectioned_dir = os.path.join(target_dir, "sectioned_" + image_name_extensionless)
+        sectioned_dir = os.path.join(target_dir, image_name_extensionless)
 
         if os.path.exists(sectioned_dir):
             logger.FAIL("Directory {} already exists".format(sectioned_dir))

@@ -109,7 +109,6 @@ def rescale_tiffs(
         source_tiff_fp = os.path.join(source_tiff_containing_dirpath, tiff_fn)
         dir_relpath = os.path.relpath(source_tiff_containing_dirpath, source_tiff_dir)
         target_tiff_dirpath = os.path.join(target_tiff_dir, dir_relpath)
-        target_tiff_fn = "rescale_" + tiff_fn
         target_tiff_fp = os.path.join(target_tiff_dirpath, tiff_fn)
 
         if not os.path.isdir(target_tiff_dirpath):

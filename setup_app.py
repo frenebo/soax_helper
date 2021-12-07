@@ -652,7 +652,7 @@ class SoaxParamsSetupPage1Form(SetupForm):
             "help": [
                 "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling",
                 "If input images have been intensity-scaled in a previous step, we don't want SOAX to rescale brightness",
-                "If the input TIFs are 16 bit, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIF max intensity to 1.0 max intensity",
+                "If the input TIFFs are 16 bit, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIF max intensity to 1.0 max intensity",
                 "If input images are sectioned before feeding to SOAX, they should be intensity rescaled",
                 "before sectioning, so intensity processing on all sections is uniform",
             ],
