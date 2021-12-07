@@ -2,6 +2,7 @@ import os
 import argparse
 import json
 import time
+from snakeutils.logger import RecordLogger, PrintLogger, LoggerFAILCalledException
 
 
 from setup_app import (
@@ -24,7 +25,6 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     from intensity_scale_tiffs import intensity_scale_tiffs
     from section_tiffs import section_tiffs
     from run_soax import run_soax
-    from snakeutils.logger import RecordLogger, PrintLogger, LoggerFAILCalledException
     from convert_snakes_to_json import convert_snakes_to_json
     from join_sectioned_snakes import join_sectioned_snakes
     from make_sindy_fields import make_sindy_fields

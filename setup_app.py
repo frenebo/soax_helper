@@ -220,7 +220,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
                 if not should_continue:
                     return
             if not do_create_image_specific_soax_params:
-                should_continue = npyscreen.notify_yes_no("If you're sectioning TIFFs, you need to generate image specific soax parameters: intensity_scaling in SOAX needs to be configured manually for each group of sections from an image. This is so SOAX doesn't auto intensity-scale each image section independently.", editw=2)
+                should_continue = npyscreen.notify_yes_no("If you're sectioning TIFFs, you need to generate image specific soax parameters: intensity_scaling in SOAX needs to be configured manually for each group of sections from an image. This is so SOAX doesn't auto intensity-scale each image section independently. Continue without doing this?", editw=2)
                 if not should_continue:
                     return
 
