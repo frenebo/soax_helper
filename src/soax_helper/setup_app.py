@@ -1493,8 +1493,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def createNormalSoaxParamsSetupDone(self, fields):
         self.create_normal_soax_params_config["fields"] = fields
+        self.soax_run_config["param_files_dir"] = fields["params_save_dir"]
         self.goToNextMenu()
-
 
     def startCreateImageSpecificSoaxParamsSetup(self):
         self.addForm('CREATE_IMAGE_SPECIFIC_SOAX_PARAMS_SETUP', CreateImageSpecificSoaxParamsSetupForm, name='Create Image Specific Soax Params Setup Form')
@@ -1504,8 +1504,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def createImageSpecificSoaxParamsSetupDone(self, fields):
         self.create_image_specific_soax_params_config["fields"] = fields
 
+
         if fields["set_intensity_scaling_for_each_image"] == "true":
             self.soax_params_page1_config["intensity_scaling"] = None
+
+        self.soax_run_config["param_files_dir"] = fields["params_save_dir"]
 
         self.goToNextMenu()
 
