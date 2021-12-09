@@ -9,6 +9,8 @@ from .setup_app import (
     SoaxSetupApp,
     RescaleSetupForm,
     SectioningSetupForm,
+    CreateNormalSoaxParamsSetupForm,
+    CreateImageSpecificSoaxParamsSetupForm,
     SoaxParamsSetupPage1Form,
     SoaxParamsSetupPage2Form,
     SoaxParamsSetupPage3Form,
