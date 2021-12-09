@@ -192,7 +192,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     else:
         raise Exception("Unknown action name '{}'".format(action_name))
 
-def run():
+def parse_command_line_args_and_run():
     parser = argparse.ArgumentParser(description='Soax Helper')
     parser.add_argument('--load-settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
     parser.add_argument('--save-settings',default=None,help="Save settings from GUI menu to JSON file")
@@ -278,4 +278,4 @@ def run():
 
 
 if __name__ == "__main__":
-    run()
+    parse_command_line_args_and_run()
