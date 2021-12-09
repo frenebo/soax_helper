@@ -29,7 +29,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     from make_sindy_fields import make_sindy_fields
     from bead_piv import bead_piv
     from tube_piv import tube_piv
-    from create_soax_param_files import create_soax_param_files
+    from create_regular_soax_param_files import create_regular_soax_param_files
     from divide_average_image import divide_average_image
 
     if action_name == "divide_average_image":
@@ -58,16 +58,18 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_sectioning_settings["workers_num"],
             logger=logger,
         )
-    elif action_name == "create_soax_param_files":
+    elif action_name == "create_regular_soax_param_files":
         param_fields = setting_strings["param_fields"]
         parsed_param_settings = {
             **SoaxParamsSetupPage1Form.parseSettings(setting_strings, make_dirs)
             **SoaxParamsSetupPage2Form.parseSettings(setting_strings, make_dirs)
             **SoaxParamsSetupPage3Form.parseSettings(setting_strings, make_dirs)
         }
-        # create_regular_soax_param_files_settings =
-        #@TODO
-        raise NotImplementedError()
+        create_regular_soax_param_files(
+            params_save_dir=param_fields["params_save_dir"]
+            param_settings=parsed_params_settings,
+            logger=logger,
+        )
     elif action_name == "create_image_image_specific_params_files":
         param_fields = setting_strings["param_fields"]
         parsed_param_settings = {

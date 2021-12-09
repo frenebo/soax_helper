@@ -1008,56 +1008,48 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "notes": {},
         }
 
-        # self.soax_params_first_page_config = {
-        #     "fields": {
-        #         "params_save_dir": "./Params",
-        #         "make_params_for_individual_images": "false",
-        #     },
-        #     "notes": {},
-        # }
-
-        # self.soax_params_page1_config = {
-        #     "fields": {
-        #         "params_save_dir": "./Params",
-        #         "intensity_scaling": "0",
-        #         "gaussian_std": "0",
-        #         "ridge_threshold": "0.01",
-        #         "maximum_foreground": "65535",
-        #         "minimum_foreground": "0",
-        #     },
-        #     "notes": {},
-        # }
-        # self.soax_params_page2_config = {
-        #     "fields": {
-        #         "init_z": "true",
-        #         "snake_point_spacing": "1",
-        #         "min_snake_length": "10",
-        #         "maximum_iterations": "10000",
-        #         "change_threshold": "0.1",
-        #         "check_period": "100",
-        #         "alpha": "0.01",
-        #         "beta": "0.1",
-        #         "gamma": "2",
-        #         "external_factor": "1",
-        #         "stretch_factor": "0.2",
-        #     },
-        #     "notes": {},
-        # }
-        # self.soax_params_page3_config = {
-        #     "fields": {
-        #         "number_of_background_radial_sectors": "8",
-        #         "background_z_xy_ratio": "2.88",
-        #         "radial_near": "4",
-        #         "radial_far": "8",
-        #         "delta": "4",
-        #         "overlap_threshold": "1",
-        #         "grouping_distance_threshold": "4",
-        #         "grouping_delta": "8",
-        #         "minimum_angle_for_soac_linking": "2.1",
-        #         "damp_z": "false",
-        #     },
-        #     "notes": {},
-        # }
+        self.soax_params_page1_config = {
+            "fields": {
+                "params_save_dir": "./Params",
+                "intensity_scaling": "0",
+                "gaussian_std": "0",
+                "ridge_threshold": "0.01",
+                "maximum_foreground": "65535",
+                "minimum_foreground": "0",
+            },
+            "notes": {},
+        }
+        self.soax_params_page2_config = {
+            "fields": {
+                "init_z": "true",
+                "snake_point_spacing": "1",
+                "min_snake_length": "10",
+                "maximum_iterations": "10000",
+                "change_threshold": "0.1",
+                "check_period": "100",
+                "alpha": "0.01",
+                "beta": "0.1",
+                "gamma": "2",
+                "external_factor": "1",
+                "stretch_factor": "0.2",
+            },
+            "notes": {},
+        }
+        self.soax_params_page3_config = {
+            "fields": {
+                "number_of_background_radial_sectors": "8",
+                "background_z_xy_ratio": "2.88",
+                "radial_near": "4",
+                "radial_far": "8",
+                "delta": "4",
+                "overlap_threshold": "1",
+                "grouping_distance_threshold": "4",
+                "grouping_delta": "8",
+                "minimum_angle_for_soac_linking": "2.1",
+                "damp_z": "false",
+            },
+            "notes": {},
+        }
 
         # In Ubuntu 20.04, to build SOAX, I followed the steps from https://www.lehigh.edu/~div206/soax/downloads.html
         # under the section "Building SOAX in Windows Linux Subsystem (Ubuntu 18.04.1 LTS)"
@@ -1154,7 +1146,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.do_create_soax_params:
             # @TODO params
             action_configs.append({
-                "action": "create_soax_param_files",
+                "action": "create_regular_soax_param_files",
                 "settings": {
                     **self.create_normal_soax_params_config["fields"],
                     "param_fields": {
@@ -1305,14 +1297,14 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startSectioningSetup)
         if self.do_create_soax_params:
             self.menu_functions.append(self.startCreateNormalSoaxParamsSetup)
-            self.menu_functions.append(self.startSoaxParamsSelectPage1)
-            self.menu_functions.append(self.startSoaxParamsSelectPage2)
-            self.menu_functions.append(self.startSoaxParamsSelectPage3)
+            self.menu_functions.append(self.startSoaxParamsSetupPage1)
+            self.menu_functions.append(self.startSoaxParamsSetupPage2)
+            self.menu_functions.append(self.startSoaxParamsSetupPage3)
         if self.do_create_image_specific_soax_params:
             self.menu_functions.append(self.startCreateImageSpecificSoaxParamsSetup)
-            self.menu_functions.append(self.startSoaxParamsSelectPage1)
-            self.menu_functions.append(self.startSoaxParamsSelectPage2)
-            self.menu_functions.append(self.startSoaxParamsSelectPage3)
+            self.menu_functions.append(self.startSoaxParamsSetupPage1)
+            self.menu_functions.append(self.startSoaxParamsSetupPage2)
+            self.menu_functions.append(self.startSoaxParamsSetupPage3)
         if self.do_run_soax:
             self.menu_functions.append(self.startSoaxRunSetup)
         if self.do_snakes_to_json:
@@ -1353,6 +1345,34 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         tif_metadata = self.try_find_dir_first_tif_metadata(dirpath, img_search_depth)
         if tif_metadata is not None:
             self.image_dims = tif_metadata["dims"]
+
+    # @TODO find out what these should be doing
+    def startSoaxParamsSetupPage1(self):
+        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/3")
+        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_config, self.make_dirs)
+        self.setNextForm('PARAM_SETUP_PAGE_1')
+
+    def soaxParamsSetupPage1Done(self, fields):
+        self.soax_params_page1_config["fields"] = fields
+        self.goToNextMenu()
+
+    def startSoaxParamsSetupPage2(self):
+        self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/3")
+        self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_config, self.make_dirs)
+        self.setNextForm('PARAM_SETUP_PAGE_2')
+
+    def soaxParamsSetupPage2Done(self, fields):
+        self.soax_params_page2_config["fields"] = fields
+        self.goToNextMenu()
+
+    def startSoaxParamsSetupPage3(self):
+        self.addForm('PARAM_SETUP_PAGE_3', SoaxParamsSetupPage3Form, name="SOAX Params Setup Page 3/3")
+        self.getForm('PARAM_SETUP_PAGE_3').configure(self.soax_params_page3_config, self.make_dirs)
+        self.setNextForm('PARAM_SETUP_PAGE_3')
+
+    def soaxParamsSetupPage3Done(self, fields):
+        self.soax_params_page3_config["fields"] = fields
+        self.goToNextMenu()
 
     # @TODO sort out where all this goes
     # def startIntensityScalingSetup(self):
@@ -1472,6 +1492,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.create_normal_soax_params_config["fields"] = fields
         self.goToNextMenu()
 
+
     def startCreateImageSpecificSoaxParamsSetup(self):
         self.addForm('CREATE_IMAGE_SPECIFIC_SOAX_PARAMS_SETUP', CreateImageSpecificSoaxParamsSetupForm, name='Create Image Specific Soax Params Setup Form')
         self.getForm('CREATE_IMAGE_SPECIFIC_SOAX_PARAMS_SETUP').configure(self.create_image_specific_soax_params_config)
@@ -1483,34 +1504,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if fields["set_intensity_scaling_for_each_image"] == "true":
             self.soax_params_page1_config["intensity_scaling"] = None
 
-        self.goToNextMenu()
-
-    def startSoaxParamsSetupPage1(self):
-        self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/3")
-        self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_config, self.make_dirs)
-        self.setNextForm('PARAM_SETUP_PAGE_1')
-
-    def soaxParamsSetupPage1Done(self, fields):
-        self.soax_params_page1_config["fields"] = fields
-        self.soax_run_config["fields"]["param_files_dir"] = fields["params_save_dir"]
-        self.goToNextMenu()
-
-    def startSoaxParamsSetupPage2(self):
-        self.addForm('PARAM_SETUP_PAGE_2', SoaxParamsSetupPage2Form, name="SOAX Params Setup Page 2/3")
-        self.getForm('PARAM_SETUP_PAGE_2').configure(self.soax_params_page2_config, self.make_dirs)
-        self.setNextForm('PARAM_SETUP_PAGE_2')
-
-    def soaxParamsSetupPage2Done(self, fields):
-        self.soax_params_page2_config["fields"] = fields
-        self.goToNextMenu()
-
-    def startSoaxParamsSetupPage3(self):
-        self.addForm('PARAM_SETUP_PAGE_3', SoaxParamsSetupPage3Form, name="SOAX Params Setup Page 3/3")
-        self.getForm('PARAM_SETUP_PAGE_3').configure(self.soax_params_page3_config, self.make_dirs)
-        self.setNextForm('PARAM_SETUP_PAGE_3')
-
-    def soaxParamsSetupPage3Done(self, fields):
-        self.soax_params_page3_config["fields"] = fields
         self.goToNextMenu()
 
     def startSoaxRunSetup(self):

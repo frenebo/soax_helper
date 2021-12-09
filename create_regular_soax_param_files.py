@@ -36,36 +36,39 @@ def param_form_settings(start,stop,step):
 
     return str_length, decimal_places
 
-def create_soax_param_files(
-    target_dir,
-    init_z,
-    damp_z,
-    intensity_scaling_start_stop_step,
-    gaussian_std_start_stop_step,
-    ridge_threshold_start_stop_step,
-    maximum_foreground_start_stop_step,
-    minimum_foreground_start_stop_step,
-    snake_point_spacing_start_stop_step,
-    min_snake_length_start_stop_step,
-    maximum_iterations_start_stop_step,
-    change_threshold_start_stop_step,
-    check_period_start_stop_step,
-    alpha_start_stop_step,
-    beta_start_stop_step,
-    gamma_start_stop_step,
-    external_factor_start_stop_step,
-    stretch_factor_start_stop_step,
-    number_of_background_radial_sectors_start_stop_step,
-    background_z_xy_ratio_start_stop_step,
-    radial_near_start_stop_step,
-    radial_far_start_stop_step,
-    delta_start_stop_step,
-    overlap_threshold_start_stop_step,
-    grouping_distance_threshold_start_stop_step,
-    grouping_delta_start_stop_step,
-    minimum_angle_for_soac_linking_start_stop_step,
+def create_regular_soax_param_files(
+    params_save_dir,
+    param_settings,
+    logger,
     logger=PrintLogger
     ):
+
+    init_z = param_settings["init_z"]
+    damp_z = param_settings["damp_z"]
+    intensity_scaling_start_stop_step = param_settings["intensity_scaling_start_stop_step"]
+    gaussian_std_start_stop_step = param_settings["gaussian_std_start_stop_step"]
+    ridge_threshold_start_stop_step = param_settings["ridge_threshold_start_stop_step"]
+    maximum_foreground_start_stop_step = param_settings["maximum_foreground_start_stop_step"]
+    minimum_foreground_start_stop_step = param_settings["minimum_foreground_start_stop_step"]
+    snake_point_spacing_start_stop_step = param_settings["snake_point_spacing_start_stop_step"]
+    min_snake_length_start_stop_step = param_settings["min_snake_length_start_stop_step"]
+    maximum_iterations_start_stop_step = param_settings["maximum_iterations_start_stop_step"]
+    change_threshold_start_stop_step = param_settings["change_threshold_start_stop_step"]
+    check_period_start_stop_step = param_settings["check_period_start_stop_step"]
+    alpha_start_stop_step = param_settings["alpha_start_stop_step"]
+    beta_start_stop_step = param_settings["beta_start_stop_step"]
+    gamma_start_stop_step = param_settings["gamma_start_stop_step"]
+    external_factor_start_stop_step = param_settings["external_factor_start_stop_step"]
+    stretch_factor_start_stop_step = param_settings["stretch_factor_start_stop_step"]
+    number_of_background_radial_sectors_start_stop_step = param_settings["number_of_background_radial_sectors_start_stop_step"]
+    background_z_xy_ratio_start_stop_step = param_settings["background_z_xy_ratio_start_stop_step"]
+    radial_near_start_stop_step = param_settings["radial_near_start_stop_step"]
+    radial_far_start_stop_step = param_settings["radial_far_start_stop_step"]
+    delta_start_stop_step = param_settings["delta_start_stop_step"]
+    overlap_threshold_start_stop_step = param_settings["overlap_threshold_start_stop_step"]
+    grouping_distance_threshold_start_stop_step = param_settings["grouping_distance_threshold_start_stop_step"]
+    grouping_delta_start_stop_step = param_settings["grouping_delta_start_stop_step"]
+    minimum_angle_for_soac_linking_start_stop_step = param_settings["minimum_angle_for_soac_linking_start_stop_step"]
 
     # Fields that can have start-stop-step values have params created
     # for all possible combos of values

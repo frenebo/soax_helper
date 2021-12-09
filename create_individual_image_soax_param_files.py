@@ -1,6 +1,5 @@
 import os
 
-from create_soax_param_files import create_soax_param_files
 from snakeutils.logger import PrintLogger
 from snakeutils.files import has_one_of_extensions
 
