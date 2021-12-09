@@ -66,7 +66,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         }
         create_regular_soax_param_files(
             params_save_dir=setting_strings["params_save_dir"],
-            param_settings=parsed_params_settings,
+            param_settings=parsed_param_settings,
             logger=logger,
         )
     elif action_name == "create_image_image_specific_params_files":
