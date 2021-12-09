@@ -4,6 +4,7 @@ from PIL import Image
 import numpy as np
 
 from .snakeutils.logger import PrintLogger
+from .snakeutils.tifimage import get_single_tiff_info
 
 def readable_dir(dirpath):
     if not os.path.isdir(dirpath):
@@ -33,18 +34,6 @@ def readable_dir(dirpath):
         raise argparse.ArgumentTypeError("{} is not a directory".format(dirpath))
 
     return dirpath
-
-def get_single_tiff_info(tiff_path):
-    data = Image.open(tiff_path)
-    shape = data.size
-    stack_height = data.n_frames
-    arr = np.array(data)
-    dtype = str(arr.dtype)
-    min_val = arr.min()
-    max_val = arr.max()
-    avg = np.average(arr)
-
-    return shape, stack_height, dtype
 
 def tiff_info(tiff_paths,logger=PrintLogger):
     for tiff_path in tiff_paths:

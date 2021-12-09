@@ -4,7 +4,7 @@ import os
 import numpy as np
 import decimal
 
-from .tiff_info import get_single_tiff_info
+from .snakeutils.tifimage import get_single_tiff_info
 from .snakeutils.files import find_files_or_folders_at_depth
 
 # For parsing setting strings

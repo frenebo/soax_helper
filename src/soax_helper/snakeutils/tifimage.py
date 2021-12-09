@@ -1,5 +1,18 @@
 import numpy as np
 import tifffile
+from PIL import Image
+
+def get_single_tiff_info(tiff_path):
+    data = Image.open(tiff_path)
+    shape = data.size
+    stack_height = data.n_frames
+    arr = np.array(data)
+    dtype = str(arr.dtype)
+    min_val = arr.min()
+    max_val = arr.max()
+    avg = np.average(arr)
+
+    return shape, stack_height, dtype
 
 # numpy arr should have (height,width,depth)
 def save_3d_tif(fp,numpy_arr):
