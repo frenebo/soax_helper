@@ -40,7 +40,6 @@ def param_form_settings(start,stop,step):
 def create_regular_soax_param_files(
     params_save_dir,
     param_settings,
-    logger,
     logger=PrintLogger
     ):
 
