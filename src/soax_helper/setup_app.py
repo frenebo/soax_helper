@@ -213,6 +213,29 @@ class SoaxStepsSelectForm(npyscreen.Form):
         do_snakes_to_json                    = 5  in self.select_steps.value
         do_join_sectioned_snakes             = 6  in self.select_steps.value
         do_make_sindy_fields                 = 7  in self.select_steps.value
+        selected_things = []
+
+        if do_divide_average_image:
+            selected_things.append("do_divide_average_image")
+        if do_rescale:
+            selected_things.append("do_rescale")
+        if do_section:
+            selected_things.append("do_section")
+        if do_create_soax_params:
+            selected_things.append("do_create_soax_params")
+        if do_create_image_specific_soax_params:
+            selected_things.append("do_create_image_specific_soax_params")
+        if do_run_soax:
+            selected_things.append("do_run_soax")
+        if do_snakes_to_json:
+            selected_things.append("do_snakes_to_json")
+        if do_join_sectioned_snakes:
+            selected_things.append("do_join_sectioned_snakes")
+        if do_make_sindy_fields:
+            selected_things.append("do_make_sindy_fields")
+
+        npyscreen.notify_yes_no("Selected {}".format(",".join(selected_things)))
+        return
 
         # @TODO do we neeed some other warning for this?
         if do_section:
