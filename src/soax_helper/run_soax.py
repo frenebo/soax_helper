@@ -56,10 +56,11 @@ def run_soax(
     delete_soax_logs_for_finished_runs,
     workers_num,
     logger=PrintLogger):
+    # # @TODO implemente image specific params
+    # if
 
-
-    if len(param_files) == 0:
-        logger.FAIL("No SOAX parameter files ending in .txt found in {}".format(params_dir))
+    # if len(param_files) == 0:
+    #     logger.FAIL("No SOAX parameter files ending in .txt found in {}".format(params_dir))
 
     logger.log("WORKERS: {}".format(workers_num))
 
@@ -79,17 +80,21 @@ def run_soax(
         for image_sections_dirname in image_sections_dirnames:
             image_sections_dir_path = os.path.join(tiff_dir,image_sections_dirname)
 
+            param_directory_for_this_image =
+
             if use_image_specific_params:
                 params_dirpath_for_image = os.path.join(params_dir, image_sections_dirname)
-                param_files = [filename for filename in os.listdir(params_dirpath_for_images) if filename.endswith(".txt")]
-                param_files.sort()
             else:
-                param_files = [filename for filename in os.listdir(params_dir) if filename.endswith(".txt")]
-                param_files.sort()
+                params_dirpath_for_image = params_dir
 
+            param_files = [filename for filename in os.listdir(params_dirpath_for_image) if filename.endswith(".txt")]
+            param_files.sort()
+
+            if len(param_files) == 0:
+                logger.FAIL("No SOAX parameter files ending in .txt found in {}".format(params_dirpath_for_image))
 
             for params_filename in param_files:
-                param_fp = os.path.join(params_dir,params_filename)
+                param_fp = os.path.join(params_dirpath_for_image,params_filename)
                 params_name = params_filename[:-len(".txt")]
 
                 params_logging_dir = os.path.join(logging_dir, params_name)
