@@ -80,8 +80,6 @@ def run_soax(
         for image_sections_dirname in image_sections_dirnames:
             image_sections_dir_path = os.path.join(tiff_dir,image_sections_dirname)
 
-            param_directory_for_this_image =
-
             if use_image_specific_params:
                 params_dirpath_for_image = os.path.join(params_dir, image_sections_dirname)
             else:
