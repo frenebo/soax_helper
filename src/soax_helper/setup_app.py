@@ -204,40 +204,19 @@ class SoaxStepsSelectForm(npyscreen.Form):
         )
 
     def afterEditing(self):
+        # @TODO make more robust for getting order wrong
         do_divide_average_image              = 0  in self.select_steps.value
         do_rescale                           = 1  in self.select_steps.value
         do_section                           = 2  in self.select_steps.value
         do_create_soax_params                = 3  in self.select_steps.value
         do_create_image_specific_soax_params = 4 in self.select_steps.value
-        do_run_soax                          = 4  in self.select_steps.value
-        do_snakes_to_json                    = 5  in self.select_steps.value
-        do_join_sectioned_snakes             = 6  in self.select_steps.value
-        do_make_sindy_fields                 = 7  in self.select_steps.value
+        do_run_soax                          = 5  in self.select_steps.value
+        do_snakes_to_json                    = 6  in self.select_steps.value
+        do_join_sectioned_snakes             = 7  in self.select_steps.value
+        do_make_sindy_fields                 = 8  in self.select_steps.value
         selected_things = []
 
-        if do_divide_average_image:
-            selected_things.append("do_divide_average_image")
-        if do_rescale:
-            selected_things.append("do_rescale")
-        if do_section:
-            selected_things.append("do_section")
-        if do_create_soax_params:
-            selected_things.append("do_create_soax_params")
-        if do_create_image_specific_soax_params:
-            selected_things.append("do_create_image_specific_soax_params")
-        if do_run_soax:
-            selected_things.append("do_run_soax")
-        if do_snakes_to_json:
-            selected_things.append("do_snakes_to_json")
-        if do_join_sectioned_snakes:
-            selected_things.append("do_join_sectioned_snakes")
-        if do_make_sindy_fields:
-            selected_things.append("do_make_sindy_fields")
-
-        npyscreen.notify_yes_no("Selected {}".format(",".join(selected_things)))
-        return
-
-        # @TODO do we neeed some other warning for this?
+        # @TODO do we need some other warning for this?
         if do_section:
             if not do_join_sectioned_snakes:
                 should_continue = npyscreen.notify_yes_no("If you're sectioning TIFFs, you probably want to join the output snakes of soax in the Join Sectioned Snakes step. Do you want to continue without doing that?", editw=2)
