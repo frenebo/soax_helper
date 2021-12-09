@@ -4,9 +4,9 @@ from PIL import Image
 
 import os
 
-from snakeutils.logger import PrintLogger
-from snakeutils.files import find_files_or_folders_at_depth
-from snakeutils.tifimage import pil_img_3d_to_np_arr
+from .snakeutils.logger import PrintLogger
+from .snakeutils.files import find_files_or_folders_at_depth
+from .snakeutils.tifimage import pil_img_3d_to_np_arr
 
 # def loadData(file_path):
 #     dataset = Image.open(file_path)

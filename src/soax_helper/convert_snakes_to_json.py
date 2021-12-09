@@ -1,7 +1,8 @@
-from snakeutils.files import find_files_or_folders_at_depth, extract_snakes
 import os
-from snakeutils.logger import PrintLogger
-from  snakeutils.snakejson import save_json_snakes
+
+from .snakeutils.files import find_files_or_folders_at_depth, extract_snakes
+from .snakeutils.logger import PrintLogger
+from .snakeutils.snakejson import save_json_snakes
 
 def infer_snakes_dims_and_offset_pixels(snake_filename):
     # remove "sec_" and ".txt"

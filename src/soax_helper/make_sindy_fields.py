@@ -1,20 +1,18 @@
 import os
 import numpy as np
-
 import csv
-from snakeutils.logger import PrintLogger
-from snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
-from snakeutils.snakejson import load_json_snakes
-from snakeutils.tifimage import pil_img_3d_to_np_arr, save_3d_tif
 from PIL import Image
 from scipy.sparse import save_npz, coo_matrix
-
-# Taking derivatives
 from scipy.integrate import odeint, cumtrapz
 from scipy.interpolate import splrep, splder, splev
 import scipy.optimize as optimize
 from scipy.interpolate import UnivariateSpline
 import math
+
+from .snakeutils.logger import PrintLogger
+from .snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
+from .snakeutils.snakejson import load_json_snakes
+from .snakeutils.tifimage import pil_img_3d_to_np_arr, save_3d_tif
 
 intensity_field_around_snake_radius_pixels = 5
 

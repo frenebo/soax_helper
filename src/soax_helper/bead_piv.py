@@ -3,7 +3,7 @@ import numpy as np
 import math
 import json
 
-from snakeutils.logger import PrintLogger
+from .snakeutils.logger import PrintLogger
 
 def round_to_odd(num):
     return round( (num - 1)/2 ) * 2 + 1

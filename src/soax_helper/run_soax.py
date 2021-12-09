@@ -4,7 +4,8 @@ import subprocess
 import tqdm
 from ctypes import c_int32
 import time
-from snakeutils.logger import PrintLogger
+
+from .snakeutils.logger import PrintLogger
 
 def soax_instance(soax_instance_args):
     batch_soax = soax_instance_args["batch_soax"]

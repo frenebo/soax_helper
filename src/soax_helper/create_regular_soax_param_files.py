@@ -1,7 +1,8 @@
-from snakeutils.params import create_params, param_filename_tags
-from snakeutils.logger import PrintLogger
 import os
 import itertools
+
+from .snakeutils.logger import PrintLogger
+from .snakeutils.params import create_params, param_filename_tags
 
 def create_range(start,stop,step):
     vals = []

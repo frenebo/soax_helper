@@ -2,9 +2,10 @@ import npyscreen
 import math
 import os
 from tiff_info import get_single_tiff_info
-from snakeutils.files import find_files_or_folders_at_depth
 import numpy as np
 import decimal
+
+from .snakeutils.files import find_files_or_folders_at_depth
 
 # For parsing setting strings
 class ParseException(Exception):

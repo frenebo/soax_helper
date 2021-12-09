@@ -1,8 +1,9 @@
-from snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
 import os
 from multiprocessing.pool import ThreadPool
-from snakeutils.logger import PrintLogger
-from snakeutils.snakejson import load_json_snakes, save_json_snakes
+
+from .snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
+from .snakeutils.logger import PrintLogger
+from .snakeutils.snakejson import load_json_snakes, save_json_snakes
 
 def join_snake_sections_folder_and_save(arg_dict):
     source_dir = arg_dict["source_dir"]

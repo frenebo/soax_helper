@@ -2,10 +2,9 @@ import os
 import argparse
 import json
 import time
+
 from .snakeutils.logger import RecordLogger, PrintLogger, LoggerFAILCalledException
-
-
-from setup_app import (
+from .setup_app import (
     DivideAverageImageSetupForm,
     SoaxSetupApp,
     RescaleSetupForm,
@@ -21,16 +20,16 @@ from setup_app import (
 )
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
-    from rescale_tiffs import rescale_tiffs
-    from section_tiffs import section_tiffs
-    from run_soax import run_soax
-    from convert_snakes_to_json import convert_snakes_to_json
-    from join_sectioned_snakes import join_sectioned_snakes
-    from make_sindy_fields import make_sindy_fields
-    from bead_piv import bead_piv
-    from tube_piv import tube_piv
-    from create_regular_soax_param_files import create_regular_soax_param_files
-    from divide_average_image import divide_average_image
+    from .rescale_tiffs import rescale_tiffs
+    from .section_tiffs import section_tiffs
+    from .run_soax import run_soax
+    from .convert_snakes_to_json import convert_snakes_to_json
+    from .join_sectioned_snakes import join_sectioned_snakes
+    from .make_sindy_fields import make_sindy_fields
+    from .bead_piv import bead_piv
+    from .tube_piv import tube_piv
+    from .create_regular_soax_param_files import create_regular_soax_param_files
+    from .divide_average_image import divide_average_image
 
     if action_name == "divide_average_image":
         parsed_divide_average_image_settings = DivideAverageImageSetupForm.parseSettings(setting_strings, make_dirs)

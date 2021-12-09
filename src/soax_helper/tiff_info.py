@@ -2,7 +2,8 @@ import argparse
 import os
 from PIL import Image
 import numpy as np
-from snakeutils.logger import PrintLogger
+
+from .snakeutils.logger import PrintLogger
 
 def readable_dir(dirpath):
     if not os.path.isdir(dirpath):

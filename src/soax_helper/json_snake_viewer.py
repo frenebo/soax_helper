@@ -2,11 +2,11 @@ import argparse
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import axes3d
-from snakeutils.tifimage import pil_img_3d_to_np_arr
 from PIL import ImageTk, Image
 import tkinter as tk
 
-from snakeutils.snakejson import load_json_snakes
+from .snakeutils.tifimage import pil_img_3d_to_np_arr
+from .snakeutils.snakejson import load_json_snakes
 
 def _image_scale_to_fit_in_box(pil_img, new_width, new_height):
     horizontal_ratio = new_width/pil_img.width

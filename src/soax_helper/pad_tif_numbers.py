@@ -1,7 +1,8 @@
 import argparse
-from snakeutils.logger import PrintLogger
 import os
-from snakeutils.files import has_one_of_extensions
+
+from .snakeutils.logger import PrintLogger
+from .snakeutils.files import has_one_of_extensions
 
 def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger):
     fn_without_extension = os.path.splitext(tiff_fn)[0]

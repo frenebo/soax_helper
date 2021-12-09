@@ -1,7 +1,7 @@
 import os
 
-from snakeutils.logger import PrintLogger
-from snakeutils.files import has_one_of_extensions
+from .snakeutils.logger import PrintLogger
+from .snakeutils.files import has_one_of_extensions
 
 def create_soax_param_files_by_image(
     target_dir,

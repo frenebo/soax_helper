@@ -3,13 +3,11 @@ import vedo
 import numpy as np
 import os
 from PIL import Image
-from snakeutils.files import find_files_or_folders_at_depth
-from snakeutils.tifimage import pil_img_3d_to_np_arr
 from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 
-# def graph_snakes(snakes):
-#     plt.draw()
+from .snakeutils.files import find_files_or_folders_at_depth
+from .snakeutils.tifimage import pil_img_3d_to_np_arr
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Split 3D Tiff into its 2D frames')

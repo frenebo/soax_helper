@@ -3,9 +3,9 @@ import argparse
 from PIL import Image
 from multiprocessing.pool import ThreadPool
 
-from snakeutils.logger import PrintLogger
-from snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
-from snakeutils.files import has_one_of_extensions
+from .snakeutils.logger import PrintLogger
+from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
+from .snakeutils.files import has_one_of_extensions
 
 def crop_tiff(
     arg_dict,

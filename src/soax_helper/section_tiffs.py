@@ -1,12 +1,12 @@
-from snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
-from snakeutils.logger import PrintLogger
-
 import math
 from multiprocessing.pool import ThreadPool
 import os
 import numpy as np
 from PIL import Image
 import tifffile
+
+from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
+from .snakeutils.logger import PrintLogger
 
 def section_tiff(arg_dict):
     tiff_filepath = arg_dict["tiff_filepath"]

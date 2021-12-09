@@ -4,15 +4,15 @@ import numpy as np
 import argparse
 import os
 from PIL import Image
-from snakeutils.tifimage import pil_img_3d_to_np_arr
 from mpl_toolkits.mplot3d import Axes3D
-from snakeutils.files import find_files_or_folders_at_depth
 from matplotlib.backends.backend_tkagg import (
                                     FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.figure import Figure
-# import matplotlib.pyplot as
-from snakeutils.params import param_filename_tags
-from snakeutils.snakejson import load_json_snakes
+
+from .snakeutils.files import find_files_or_folders_at_depth
+from .snakeutils.tifimage import pil_img_3d_to_np_arr
+from .snakeutils.params import param_filename_tags
+from .snakeutils.snakejson import load_json_snakes
 
 param_names_by_tags = {v: k for k, v in param_filename_tags.items()}
 
