@@ -2,7 +2,7 @@ import os
 import argparse
 import json
 import time
-from snakeutils.logger import RecordLogger, PrintLogger, LoggerFAILCalledException
+from .snakeutils.logger import RecordLogger, PrintLogger, LoggerFAILCalledException
 
 
 from setup_app import (
