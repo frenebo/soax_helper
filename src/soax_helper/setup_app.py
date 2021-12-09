@@ -1486,7 +1486,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startCreateNormalSoaxParamsSetup(self):
         self.addForm('CREATE_NORMAL_SOAX_PARAMS_SETUP', CreateNormalSoaxParamsSetupForm, name='Create Soax Params Setup Form')
-        self.getForm('CREATE_NORMAL_SOAX_PARAMS_SETUP').configure(self.create_normal_soax_params_config)
+        self.getForm('CREATE_NORMAL_SOAX_PARAMS_SETUP').configure(self.create_normal_soax_params_config, self.make_dirs)
         self.setNextForm('CREATE_NORMAL_SOAX_PARAMS_SETUP')
 
     def createNormalSoaxParamsSetupDone(self, fields):
@@ -1496,7 +1496,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def startCreateImageSpecificSoaxParamsSetup(self):
         self.addForm('CREATE_IMAGE_SPECIFIC_SOAX_PARAMS_SETUP', CreateImageSpecificSoaxParamsSetupForm, name='Create Image Specific Soax Params Setup Form')
-        self.getForm('CREATE_IMAGE_SPECIFIC_SOAX_PARAMS_SETUP').configure(self.create_image_specific_soax_params_config)
+        self.getForm('CREATE_IMAGE_SPECIFIC_SOAX_PARAMS_SETUP').configure(self.create_image_specific_soax_params_config, self.make_dirs)
         self.setNextForm('CREATE_IMAGE_SPECIFIC_SOAX_PARAMS_SETUP')
 
     def createImageSpecificSoaxParamsSetupDone(self, fields):
