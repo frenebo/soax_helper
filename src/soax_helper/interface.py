@@ -58,67 +58,20 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "create_regular_soax_param_files":
-        param_fields = setting_strings["param_fields"]
+        create_normal_soax_params_settings = CreateNormalSoaxParamsSetupForm.parseSettings(setting_strings, make_dirs)
+        param_field_sstrings = setting_strings["param_fields"]
         parsed_param_settings = {
-            **SoaxParamsSetupPage1Form.parseSettings(param_fields, make_dirs),
-            **SoaxParamsSetupPage2Form.parseSettings(param_fields, make_dirs),
-            **SoaxParamsSetupPage3Form.parseSettings(param_fields, make_dirs),
+            **SoaxParamsSetupPage1Form.parseSettings(param_field_sstrings, make_dirs),
+            **SoaxParamsSetupPage2Form.parseSettings(param_field_sstrings, make_dirs),
+            **SoaxParamsSetupPage3Form.parseSettings(param_field_sstrings, make_dirs),
         }
         create_regular_soax_param_files(
-            params_save_dir=setting_strings["params_save_dir"],
+            params_save_dir=create_normal_soax_params_settings["params_save_dir"],
             param_settings=parsed_param_settings,
             logger=logger,
         )
     elif action_name == "create_image_image_specific_params_files":
-        param_fields = setting_strings["param_fields"]
-        parsed_param_settings = {
-            **SoaxParamsSetupPage1Form.parseSettings(param_fields, make_dirs),
-            **SoaxParamsSetupPage2Form.parseSettings(param_fields, make_dirs),
-            **SoaxParamsSetupPage3Form.parseSettings(param_fields, make_dirs),
-        }
-        #@TODO
         raise NotImplementedError()
-    # elif action_name == "create_soax_param_files":
-    #     parsed_page1_params_settings = SoaxParamsSetupPage1Form.parseSettings(setting_strings, make_dirs)
-    #     parsed_page2_params_settings = SoaxParamsSetupPage2Form.parseSettings(setting_strings, make_dirs)
-    #     parsed_page3_params_settings = SoaxParamsSetupPage3Form.parseSettings(setting_strings, make_dirs)
-
-    #     parsed_params_settings = {
-    #         **parsed_page1_params_settings,
-    #         **parsed_page2_params_settings,
-    #         **parsed_page3_params_settings,
-    #     }
-
-    #     create_soax_param_files(
-    #         target_dir=parsed_params_settings["params_save_dir"],
-    #         init_z=parsed_params_settings["init_z"],
-    #         damp_z=parsed_params_settings["damp_z"],
-    #         intensity_scaling_start_stop_step=parsed_params_settings["intensity_scaling"],
-    #         gaussian_std_start_stop_step=parsed_params_settings["gaussian_std"],
-    #         ridge_threshold_start_stop_step=parsed_params_settings["ridge_threshold"],
-    #         maximum_foreground_start_stop_step=parsed_params_settings["maximum_foreground"],
-    #         minimum_foreground_start_stop_step=parsed_params_settings["minimum_foreground"],
-    #         snake_point_spacing_start_stop_step=parsed_params_settings["snake_point_spacing"],
-    #         min_snake_length_start_stop_step=parsed_params_settings["min_snake_length"],
-    #         maximum_iterations_start_stop_step=parsed_params_settings["maximum_iterations"],
-    #         change_threshold_start_stop_step=parsed_params_settings["change_threshold"],
-    #         check_period_start_stop_step=parsed_params_settings["check_period"],
-    #         alpha_start_stop_step=parsed_params_settings["alpha"],
-    #         beta_start_stop_step=parsed_params_settings["beta"],
-    #         gamma_start_stop_step=parsed_params_settings["gamma"],
-    #         external_factor_start_stop_step=parsed_params_settings["external_factor"],
-    #         stretch_factor_start_stop_step=parsed_params_settings["stretch_factor"],
-    #         number_of_background_radial_sectors_start_stop_step=parsed_params_settings["number_of_background_radial_sectors"],
-    #         background_z_xy_ratio_start_stop_step=parsed_params_settings["background_z_xy_ratio"],
-    #         radial_near_start_stop_step=parsed_params_settings["radial_near"],
-    #         radial_far_start_stop_step=parsed_params_settings["radial_far"],
-    #         delta_start_stop_step=parsed_params_settings["delta"],
-    #         overlap_threshold_start_stop_step=parsed_params_settings["overlap_threshold"],
-    #         grouping_distance_threshold_start_stop_step=parsed_params_settings["grouping_distance_threshold"],
-    #         grouping_delta_start_stop_step=parsed_params_settings["grouping_delta"],
-    #         minimum_angle_for_soac_linking_start_stop_step=parsed_params_settings["minimum_angle_for_soac_linking"],
-    #         logger=logger,
-    #     )
     elif action_name == "run_soax":
         parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(setting_strings, make_dirs)
 
