@@ -65,7 +65,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             **SoaxParamsSetupPage3Form.parseSettings(param_fields, make_dirs),
         }
         create_regular_soax_param_files(
-            params_save_dir=param_fields["params_save_dir"],
+            params_save_dir=setting_strings["params_save_dir"],
             param_settings=parsed_params_settings,
             logger=logger,
         )
