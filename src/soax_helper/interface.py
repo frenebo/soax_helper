@@ -60,9 +60,9 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     elif action_name == "create_regular_soax_param_files":
         param_fields = setting_strings["param_fields"]
         parsed_param_settings = {
-            **SoaxParamsSetupPage1Form.parseSettings(param_fields, make_dirs)
-            **SoaxParamsSetupPage2Form.parseSettings(param_fields, make_dirs)
-            **SoaxParamsSetupPage3Form.parseSettings(param_fields, make_dirs)
+            **SoaxParamsSetupPage1Form.parseSettings(param_fields, make_dirs),
+            **SoaxParamsSetupPage2Form.parseSettings(param_fields, make_dirs),
+            **SoaxParamsSetupPage3Form.parseSettings(param_fields, make_dirs),
         }
         create_regular_soax_param_files(
             params_save_dir=param_fields["params_save_dir"],
@@ -72,9 +72,9 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     elif action_name == "create_image_image_specific_params_files":
         param_fields = setting_strings["param_fields"]
         parsed_param_settings = {
-            **SoaxParamsSetupPage1Form.parseSettings(param_fields, make_dirs)
-            **SoaxParamsSetupPage2Form.parseSettings(param_fields, make_dirs)
-            **SoaxParamsSetupPage3Form.parseSettings(param_fields, make_dirs)
+            **SoaxParamsSetupPage1Form.parseSettings(param_fields, make_dirs),
+            **SoaxParamsSetupPage2Form.parseSettings(param_fields, make_dirs),
+            **SoaxParamsSetupPage3Form.parseSettings(param_fields, make_dirs),
         }
         #@TODO
         raise NotImplementedError()
