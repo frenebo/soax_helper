@@ -208,7 +208,7 @@ def create_regular_soax_param_files(
 
         params_filename = filename_template.format(**param_combo_dict)
 
-        fp = os.path.join(target_dir, params_filename)
+        fp = os.path.join(params_save_dir, params_filename)
 
         params_text = create_params(
             init_z=init_z,
