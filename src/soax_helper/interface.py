@@ -29,8 +29,8 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     from .join_sectioned_snakes import join_sectioned_snakes
     from .make_sindy_fields import make_sindy_fields
     from .bead_piv import bead_piv
-    from .tube_piv import tube_piv
     from .create_regular_soax_param_files import create_regular_soax_param_files
+    from .create_image_specific_soax_param_files import create_image_specific_soax_param_files
     from .divide_average_image import divide_average_image
 
     if action_name == "divide_average_image":
@@ -60,20 +60,33 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             logger=logger,
         )
     elif action_name == "create_regular_soax_param_files":
-        create_normal_soax_params_settings = CreateNormalSoaxParamsSetupForm.parseSettings(setting_strings, make_dirs)
-        param_field_sstrings = setting_strings["param_fields"]
+        create_normal_soax_param_files_settings = CreateNormalSoaxParamsSetupForm.parseSettings(setting_strings, make_dirs)
+        param_field_strings = setting_strings["param_fields"]
         parsed_param_settings = {
-            **SoaxParamsSetupPage1Form.parseSettings(param_field_sstrings, make_dirs),
-            **SoaxParamsSetupPage2Form.parseSettings(param_field_sstrings, make_dirs),
-            **SoaxParamsSetupPage3Form.parseSettings(param_field_sstrings, make_dirs),
+            **SoaxParamsSetupPage1Form.parseSettings(param_field_strings, make_dirs),
+            **SoaxParamsSetupPage2Form.parseSettings(param_field_strings, make_dirs),
+            **SoaxParamsSetupPage3Form.parseSettings(param_field_strings, make_dirs),
         }
         create_regular_soax_param_files(
-            params_save_dir=create_normal_soax_params_settings["params_save_dir"],
+            params_save_dir=create_normal_soax_param_files_settings["params_save_dir"],
             param_settings=parsed_param_settings,
             logger=logger,
         )
-    elif action_name == "create_image_image_specific_params_files":
-        raise NotImplementedError()
+    elif action_name == "create_image_specific_soax_param_files":
+        create_image_specific_soax_param_files_settings = CreateImageSpecificSoaxParamsSetupForm.parseSettings(setting_strings, make_dirs)
+        general_param_field_strings = setting_strings["general_param_fields"]
+        parsed_general_param_settings = {
+            **SoaxParamsSetupPage1Form.parseSettings(general_param_field_strings, make_dirs),
+            **SoaxParamsSetupPage2Form.parseSettings(general_param_field_strings, make_dirs),
+            **SoaxParamsSetupPage3Form.parseSettings(general_param_field_strings, make_dirs),
+        }
+        create_image_specific_soax_param_files(
+            params_save_dir=create_image_specific_soax_param_files_settings["params_save_dir"],
+            original_tiff_dir=create_image_specific_soax_param_files_settings["original_tiff_dir"],
+            set_intensity_scaling_for_each_image=create_image_specific_soax_param_files_settings["set_intensity_scaling_for_each_image"]
+            general_param_settings=parsed_general_param_settings,
+            logger=logger,
+        )
     elif action_name == "run_soax":
         parsed_soax_run_settings = SoaxRunSetupForm.parseSettings(setting_strings, make_dirs)
 
@@ -133,14 +146,6 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_bead_PIV_settings["z_stack_spacing_um"],
             parsed_bead_PIV_settings["bead_diameter_um"],
             parsed_bead_PIV_settings["linking_search_range_um"],
-            logger=logger,
-        )
-    elif action_name == "do_tube_PIV":
-        parsed_tube_PIV_settings = TubePIVSetupForm.parseSettings(setting_strings, make_dirs)
-
-        tube_piv(
-            parsed_tube_PIV_settings["source_tiff_dir"],
-            parsed_tube_PIV_settings["target_piv_data_dir"],
             logger=logger,
         )
     else:

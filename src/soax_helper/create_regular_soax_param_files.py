@@ -1,10 +1,15 @@
 import os
 import itertools
+import decimal
 
 from .snakeutils.logger import PrintLogger
 from .snakeutils.params import create_params, param_filename_tags
 
 def create_range(start,stop,step):
+    start = decimal.Decimal(start)
+    stop = decimal.Decimal(stop)
+    step = decimal.Decimal(step)
+
     vals = []
     current_val = start
     while True:
@@ -20,7 +25,11 @@ def create_range(start,stop,step):
             break
     return vals
 
-def param_form_settings(start,stop,step):
+def param_filename_string_format_settings(start,stop,step):
+    start = decimal.Decimal(start)
+    stop = decimal.Decimal(stop)
+    step = decimal.Decimal(step)
+
     start_exp = start.as_tuple().exponent
     stop_exp = stop.as_tuple().exponent
     step_exp = step.as_tuple().exponent
@@ -183,7 +192,7 @@ def create_regular_soax_param_files(
         # we incorporate value into param filename so that parameter files
         # with different parameter values have different names.
         if len(param_values) > 1:
-            str_length, decimals = param_form_settings(**param_info["startstopstep"])
+            str_length, decimals = param_filename_string_format_settings(**param_info["startstopstep"])
             param_name = param_info["name"]
             filename_tag = param_filename_tags[param_name]
             filename_template += "_{filename_tag}{{{name}:0{str_length}.{decimals}f}}".format(

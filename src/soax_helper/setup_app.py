@@ -1003,9 +1003,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.create_image_specific_soax_params_config = {
             "fields": {
                 "params_save_dir": "./ImageSpecificParams",
-
                 "original_tiff_dir": "",
-
                 "set_intensity_scaling_for_each_image": "false",
             },
             "notes": {},
@@ -1161,17 +1159,16 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             })
         if self.do_create_image_specific_soax_params:
             action_configs.append({
-                "action": "create_image_specific_params_files",
+                "action": "create_image_specific_soax_param_files",
                 "settings": {
                     **self.create_image_specific_soax_params_config["fields"],
-                    "param_fields": {
+                    "general_param_fields": {
                         **self.soax_params_page1_config["fields"],
                         **self.soax_params_page2_config["fields"],
                         **self.soax_params_page3_config["fields"],
                     },
                 }
             })
-            pass
         if self.do_run_soax:
             action_configs.append({
                 "action": "run_soax",
