@@ -30,5 +30,35 @@
    ``` bash
    $ make -j 4
    ```
+   Leave VTK build directory
+   ``` bash
+   $ cd ..
+   ```
+3. Download and compile TSOAX
+   Download source code
+   ``` bash
+   $ git clone --recursive https://github.com/tix209/TSOAX.git
+   ```
+   Modify source code of TSOAX to play nice with the latest VTK:
+   In `TSOAX/include/main_window.h`:
+   - Remove the line with the declaration `class QVTKOpenGLWidget;`
+   - Under the line `#include <QMainWindow>` insert `#include "QVTKOpenGLWidget.h"`
+   In `TSOAX/include/viewer.h`:
+   - Remove the line with the declaration `class QVTKOpenGLWidget;`
+   - Under the line `#include <QObject>` insert `#include "QVTKOpenGLWidget.h"`
+   In `TSOAX/srv/viewer.cc`:
+   - Remove the line `#include "QVTKWidget.h"`
 
+   Tell CMake where to find VTK
+   ``` bash
+   $ export VTK_DIR=/{pathto}/build_vtk
+   ```
+   Set up TSOAX build and compile
+   ``` bash
+   $ mkdir build_tsoax && cd build_tsoax
+   $ cmake -DCMAKE_BUILD_TYPE=Release ../TSOAX
+   $ make -j 4
+   ```
+
+   The `TSOAX` executable should be in `build_tsoax/src`
 
