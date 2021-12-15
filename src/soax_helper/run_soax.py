@@ -46,21 +46,58 @@ def soax_instance(soax_instance_args):
         except:
             pass
 
-def run_soax(
+def args_to_run_soax_on_image_dir_with_dir_of_paramfiles(
     batch_soax,
     tiff_dir,
-    params_dir,
-    output_dir,
+    param_file_dir,
+    snakes_dir,
     logging_dir,
-    use_sectioned_images,
-    use_image_specific_params,
     delete_soax_logs_for_finished_runs,
-    workers_num,
-    logger=PrintLogger,
+    logger,
 ):
-    logger.log("Running SOAX with {} batch_soax worker instances".format(workers_num))
+    if not os.path.isdir(snakes_dir):
+        if os.path.exists(snakes_dir):
+            logger.FAIL("Output snakes dir {} exists but is not directory. Cannot output snakes there".format(snakes_dir))
+        else:
+            os.makedirs(snakes_dir)
 
-    soax_instance_arg_dicts  = []
+    if not os.path.isdir(logging_dir):
+        if os.path.exists(logging_dir):
+            logger.FAIL("Logging dir {} exists but is not directory. Cannot log output there".format(logging_dir))
+        else:
+            os.makedirs(logging_dir)
+
+    arg_dicts = []
+
+    param_files = [filename for filename in os.listdir(param_file_dir) if filename.endswith(".txt")]
+    param_files.sort()
+
+    for param_filename in param_files:
+        param_fp = os.path.join(param_file_dir, param_filename)
+        params_name = os.path.splitext(param_filename)[0]
+
+        logging_dir_for_params = os.path.join(logging_dir, params_name)
+        if not os.path.isdir(logging_dir_for_params):
+            if os.path.exists(logging_dir_for_params):
+                logger.FAIL("Logging dir {} exists but is not directory. Cannot log output there".format(logging_dir_for_params))
+            else:
+                os.makedirs(logging_dir_for_params)
+
+        stdout_fp = os.path.join(logging_dir_for_params, "stdout.txt")
+        stderr_fp = os.path.join(logging_dir_for_params, "stderr.txt")
+
+        arg_dicts.append({
+            "batch_soax": batch_soax,
+            "tiff_dir":  tiff_dir,
+            "param_fp": param_fp,
+            "params_name":  params_name,
+            "snakes_output_dir": snakes_dir,
+            "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
+            "stdout_fp": stdout_fp,
+            "stderr_fp": stderr_fp,
+            "logger": logger,
+        })
+
 
     # soax_instance_args.append({
     #     "batch_soax": batch_soax,
@@ -74,135 +111,92 @@ def run_soax(
     #     "logger": logger,
     # })
 
+
+def run_soax(
+    batch_soax,
+    base_image_dir,
+    base_params_dir,
+    base_output_dir,
+    base_logging_dir,
+    use_sectioned_images,
+    use_image_specific_params,
+    delete_soax_logs_for_finished_runs,
+    workers_num,
+    logger=PrintLogger,
+):
+    logger.log("Running SOAX with {} batch_soax worker instances".format(workers_num))
+
+    soax_instance_arg_dicts  = []
+
+
+    if use_image_specific_params and not use_sectioned_images:
+        logger.FAIL("Currently it isn't supported to use image-specific parameters without sectioned images")
+
     if use_sectioned_images:
         image_dirs_depth = 1
     else:
         image_dirs_depth = 0
 
-    # if use_image_specific_params:
-    #     param_files_depth = 2
-    # else:
-    #     param_files_depth = 1
-
-    input_image_dirs_info = find_files_or_folders_at_depth(tiff_dir, image_dirs_depth, folders_not_files=True)
-
-    for containing_full_dirpath, image_dirname:
-        image_dir_relative_path = os.path.join(os.path.relpath(containing_full_dirpath, tiff_dir))
-
-        # relative_dir_path = os.path.relpath(containing_folder, source_json_dir)
+    input_image_dirs_info = find_files_or_folders_at_depth(base_image_dir, image_dirs_depth, folders_not_files=True)
 
 
-    # param_files_info = find_files_or_folders_at_depth(params_dir, param_files_depth, ".txt")
-
-
-
-
-def run_soax(
-    batch_soax,
-    tiff_dir,
-    params_dir,
-    output_dir,
-    logging_dir,
-    use_sectioned_images,
-    use_image_specific_params,
-    delete_soax_logs_for_finished_runs,
-    workers_num,
-    logger=PrintLogger):
-    logger.log("WORKERS: {}".format(workers_num))
-
-    soax_instance_args = []
-
-    # If we have subdirectories for the sections of each images, we have
-    # {tiff_dir} -> subdir0 -> tif,tif,tif,tif
-    #                 subdir1 -> tif,tif,tif,tif,
-    #                    ........
-    #                 subdir123 -> tif,tif,tif,tif,
-    # So we need to run soax on each subdir with each parameter
     if use_sectioned_images:
-        tiff_dir_contents = os.listdir(tiff_dir)
-        image_sections_dirnames = [name for name in tiff_dir_contents if os.path.isdir(os.path.join(tiff_dir,name))]
-        image_sections_dirnames.sort()
+        image_dirs_info = find_files_or_folders_at_depth(base_image_dir, 0, folders_not_files=True)
+        image_dirnames = [dirname for containing_path, dirname in image_dirs_info]
 
-        for image_sections_dirname in image_sections_dirnames:
-            image_sections_dir_path = os.path.join(tiff_dir,image_sections_dirname)
+        # check there's a param directory for each image
+        if use_image_specific_params:
+            param_dirs_info = find_files_or_folders_at_depth(base_params_dir, 0, folders_not_files=True)
+            param_dirnames = [dirname for containing_path, dirname in param_dirs_info]
 
+            if len(image_dirnames) != len(param_dirnames):
+                logger.FAIL(("Expected same number of image section directories as param directories, "
+                    "but found {} image directories in {} and {} param directories in {}").format(
+                        len(image_dirnames), base_image_dir, len(param_dirnames), base_params_dir,
+                ))
+            for img_idx in range(len(image_dirnames)):
+                image_dirname = image_dirnames[img_idx]
+                param_dirname = param_dirnames[img_idx]
+
+                if image_dirname != param_dirname:
+                    logger.FAIL(("Expected to have matching image dirs and param dirs, but "
+                        "name of an image dir '{}' doesn't match with the name of a param dir '{}'").format(
+                            image_dirname, param_dirname
+                    ))
+
+        for img_idx, image_dirname in enumerate(image_dirnames):
+            image_dirpath = os.path.join(base_image_dir, image_dirname)
             if use_image_specific_params:
-                params_dirpath_for_image = os.path.join(params_dir, image_sections_dirname)
+                param_dir = os.path.join(base_params_dir, param_dirnames[img_idx])
             else:
-                params_dirpath_for_image = params_dir
+                param_dir = base_params_dir
 
-            param_files = [filename for filename in os.listdir(params_dirpath_for_image) if filename.endswith(".txt")]
-            param_files.sort()
+            snakes_dir = os.path.join(base_output_dir, image_dirname)
+            logging_dir = os.path.join(base_logging_dir, image_dirname)
 
-            if len(param_files) == 0:
-                logger.FAIL("No SOAX parameter files ending in .txt found in {}".format(params_dirpath_for_image))
-
-            for params_filename in param_files:
-                param_fp = os.path.join(params_dirpath_for_image,params_filename)
-                params_name = params_filename[:-len(".txt")]
-
-                params_logging_dir = os.path.join(logging_dir, params_name)
-                if not os.path.isdir(params_logging_dir):
-                    if os.path.exists(params_logging_dir):
-                        logger.FAIL("Logging dir {} exists but is not directory. Cannot log output there".format(sublogging_dir))
-                    else:
-                        os.makedirs(params_logging_dir)
-
-                snakes_output_dir = os.path.join(output_dir, params_name, image_sections_dirname)
-
-                stdout_fp = os.path.join(params_logging_dir, image_sections_dirname + "_stdout.txt")
-                stderr_fp = os.path.join(params_logging_dir, image_sections_dirname + "_errors.txt")
-
-                if not os.path.isdir(snakes_output_dir):
-                    if os.path.exists(snakes_output_dir):
-                        logger.FAIL("Snakes dir {} exists but is not a directory. Cannot output snakes here".format(snakes_output_dir))
-                    else:
-                        os.makedirs(snakes_output_dir)
-
-                soax_instance_args.append({
-                    "batch_soax": batch_soax,
-                    "tiff_dir": image_sections_dir_path,
-                    "param_fp": param_fp,
-                    "params_name": params_name,
-                    "snakes_output_dir": snakes_output_dir,
-                    "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
-                    "stdout_fp": stdout_fp,
-                    "stderr_fp": stderr_fp,
-                    "logger": logger,
-                })
-    # If no sub directories for sections of images, we have
-    # {tiff_dir} -> tif,tif,tif,tif
-    # so we only need to run soax once with each param on the same directory
+            soax_instance_arg_dicts += args_to_run_soax_on_image_dir_with_dir_of_paramfiles(
+                batch_soax,
+                image_dirpath,
+                param_dir,
+                snakes_dir,
+                logging_dir,
+                delete_soax_logs_for_finished_runs,
+                logger,
+            )
+    # Not using sectioned images
     else:
         if use_image_specific_params:
-            raise Exception("It is not currently supported to use individual image parameters when the images are not sectioned")
-        else:
-            param_files = [filename for filename in os.listdir(params_dir) if filename.endswith(".txt")]
-            param_files.sort()
+            logger.FAIL("Currently it isn't supported to use image-specific parameters without sectioned images")
 
-        for params_filename in param_files:
-            param_fp = os.path.join(params_dir,params_filename)
-            params_name = params_filename[:-len(".txt")]
-
-
-            snakes_output_dir = os.path.join(output_dir, params_name)
-            if not os.path.isdir(snakes_output_dir):
-                if os.path.exists(snakes_output_dir):
-                    logger.FAIL("Snakes dir {} exists but is not a directory. Cannot output snakes here".format(snakes_output_dir))
-                else:
-                    os.makedirs(snakes_output_dir)
-
-            soax_instance_args.append({
-                "batch_soax": batch_soax,
-                "tiff_dir": tiff_dir,
-                "param_fp": param_fp,
-                "params_name": params_name,
-                "snakes_output_dir": snakes_output_dir,
-                "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
-                "stdout_fp": os.path.join(logging_dir, params_name + "_stdout.txt"),
-                "stderr_fp": os.path.join(logging_dir, params_name + "_errors.txt"),
-                "logger": logger,
-            })
+        soax_instance_arg_dicts += args_to_run_soax_on_image_dir_with_dir_of_paramfiles(
+            batch_soax,
+            base_image_dir,
+            base_params_dir,
+            base_output_dir,
+            base_logging_dir,
+            delete_soax_logs_for_finished_runs,
+            logger,
+        )
 
     with ThreadPool(workers_num) as pool:
-        future = pool.map(soax_instance, soax_instance_args, chunksize=1)
+        future = pool.map(soax_instance, soax_instance_arg_dicts, chunksize=1)
