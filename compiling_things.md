@@ -1,10 +1,10 @@
 # Compiling TSOAX on Ubuntu 20.04:
-1. Install dependencies / libraries
+##  1. Install dependencies and required tools
    ``` bash
    $ sudo apt update && sudo apt upgrade
    $ sudo apt install git curl gcc-7 g++-7 cmake cmake-curses-gui build-essential libxt-dev mesa-utils qt5-default qtcreator qt5-doc qt5-doc-html qtbase5-doc-html qtbase5-examples qtdeclarative5-dev libboost-all-dev libegl1-mesa-dev libxcursor-dev libeigen3-dev
    ```
-2. Download and compile VTK 9.1.0
+## 2. Download and compile VTK 9.1.0
    Download source code
    ``` bash
    $ curl -O -L https://github.com/Kitware/VTK/archive/refs/tags/v9.1.0.tar.gz
@@ -34,7 +34,7 @@
    ``` bash
    $ cd ..
    ```
-3. Download and compile TSOAX
+## 3. Download and compile TSOAX
    Download source code
    ``` bash
    $ git clone --recursive https://github.com/tix209/TSOAX.git
