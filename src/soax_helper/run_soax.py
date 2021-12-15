@@ -98,19 +98,7 @@ def args_to_run_soax_on_image_dir_with_dir_of_paramfiles(
             "logger": logger,
         })
 
-
-    # soax_instance_args.append({
-    #     "batch_soax": batch_soax,
-    #     "tiff_dir": image_sections_dir_path,
-    #     "param_fp": param_fp,
-    #     "params_name": params_name,
-    #     "snakes_output_dir": snakes_output_dir,
-    #     "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
-    #     "stdout_fp": stdout_fp,
-    #     "stderr_fp": stderr_fp,
-    #     "logger": logger,
-    # })
-
+    return arg_dicts
 
 def run_soax(
     batch_soax,
