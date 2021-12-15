@@ -1250,6 +1250,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if should_enter_pixel_size:
             self.menu_functions.insert(self.form_index + 1, self.startPixelSizeSelect)
 
+    def setSoaxInputTiffDir(self, tiff_dir):
+        self.soax_run_config["fields"]["source_tiff_dir"] = tiff_dir
+        self.create_image_specific_soax_params_config["fields"]["original_tiff_dir"] = tiff_dir
+
     def startPixelSizeSelect(self):
         self.addForm('PIXEL_SIZE_SELECT', PixelSizeSelectionForm, name="Select Pixel Size")
         self.getForm('PIXEL_SIZE_SELECT').configure(
@@ -1345,10 +1349,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.goToNextMenu()
 
-    def setOrigTiffDirForImageSpecificParamsIfNotSet(self, tiff_dirpath):
-        if self.create_image_specific_soax_params_config["fields"]["original_tiff_dir"] == "":
-            self.create_image_specific_soax_params_config["fields"]["original_tiff_dir"] = tiff_dirpath
-
     def determineImageDimsFromDirIfNotKnown(self, dirpath):
         if self.image_dims is not None:
             return
@@ -1396,11 +1396,10 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.rescale_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
         self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
-        self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+        self.setSoaxInputTiffDir(fields["target_tiff_dir"])
 
         self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
         self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
-        self.setOrigTiffDirForImageSpecificParamsIfNotSet(fields["source_tiff_dir"])
 
         self.goToNextMenu()
 
@@ -1413,7 +1412,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.rescale_config["fields"] = fields
 
         self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
-        self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
+        self.setSoaxInputTiffDir(fields["target_tiff_dir"])
 
         orig_dims = parse_int_coords(".", fields["input_dims"])
         new_dims = parse_int_coords(".", fields["output_dims"])
@@ -1428,8 +1427,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.image_dims = new_dims
 
-        self.setOrigTiffDirForImageSpecificParamsIfNotSet(fields["source_tiff_dir"])
-
         self.goToNextMenu()
 
     def startSectioningSetup(self):
@@ -1439,7 +1436,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def sectioningSetupDone(self, fields):
         self.sectioning_config["fields"] = fields
-        self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_sectioned_tiff_dir"]
+        self.setSoaxInputTiffDir(fields["target_sectioned_tiff_dir"])
         self.soax_run_config["fields"]["use_sectioned_images"] = "true"
         self.soax_run_config["fields"]["use_image_specific_params"] = "true"
         self.create_image_specific_soax_params_config["fields"]["set_intensity_scaling_for_each_image"] = "true"
