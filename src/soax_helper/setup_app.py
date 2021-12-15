@@ -192,7 +192,6 @@ class SoaxStepsSelectForm(npyscreen.Form):
         {"name": "run_soax", "show": "Run SOAX"},
         {"name": "snakes_to_json", "show": "Convert Snake files to JSON"},
         {"name": "join_sectioned_snakes", "show": "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)"},
-        {"name": "make_sindy_fields", "show": "Make Sindy Fields"},
     ]
 
     def configure(self):
@@ -201,17 +200,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
             max_height =-2,
             value = [],
             name="Pick SOAX Steps (spacebar to toggle)",
-            values = [
-                "Divide Average Image",
-                "Rescale TIFFs in X,Y,Z",
-                "Section TIFFs before running SOAX",
-                "Make SOAX Parameter Files",
-                "Make SOAX Parameter Files - With Image-Specific Parameters",
-                "Run SOAX",
-                "Convert Snake files to JSON",
-                "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)",
-                "Make Sindy Fields",
-            ],
+            values = [step_info["name"] for step_info in self.steps],
             scroll_exit=True,
         )
 
@@ -232,7 +221,6 @@ class SoaxStepsSelectForm(npyscreen.Form):
         do_run_soax                          =  self.step_is_selected("run_soax")
         do_snakes_to_json                    =  self.step_is_selected("snakes_to_json")
         do_join_sectioned_snakes             =  self.step_is_selected("join_sectioned_snakes")
-        do_make_sindy_fields                 =  self.step_is_selected("make_sindy_fields")
 
         if do_section:
             if not do_join_sectioned_snakes:
@@ -257,27 +245,31 @@ class SoaxStepsSelectForm(npyscreen.Form):
             do_run_soax,
             do_snakes_to_json,
             do_join_sectioned_snakes,
-            do_make_sindy_fields,
         )
 
-class PIVStepsSelectForm(npyscreen.Form):
+class SINDyStepsSelectForm(npyscreen.Form):
+    # self.
+    #     {"name": "make_sindy_fields", "show": "Make Sindy Fields"},
     def configure(self):
         self.select_steps = self.add(
             npyscreen.TitleMultiSelect,
             max_height =-2,
             value = [],
-            name="Pick PIV Steps (spacebar to toggle)",
+            name="Pick SINDy Steps (spacebar to toggle)",
             values = [
                 "Bead PIV",
+                "Make SINDy Fields",
             ],
             scroll_exit=True,
         )
 
     def afterEditing(self):
-        do_bead_PIV = 0 in self.select_steps.value
+        do_bead_PIV =          0 in self.select_steps.value
+        do_make_sindy_fields = 1 in self.select_steps.value
 
-        self.parentApp.PIVStepsSelectDone(
+        self.parentApp.SINDyStepsSelectDone(
             do_bead_PIV,
+            do_make_sindy_fields,
         )
 
 class SetupForm(npyscreen.Form):
@@ -1135,7 +1127,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.menu_functions = [
             self.startSoaxStepsSelect,
-            self.startPIVStepsSelect,
+            self.startSINDyStepsSelect,
         ]
         self.form_index = -1
 
@@ -1197,15 +1189,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "join_sectioned_snakes",
                 "settings": self.join_sectioned_snakes_config["fields"],
             })
-        if self.do_make_sindy_fields:
-            action_configs.append({
-                "action": "make_sindy_fields",
-                "settings": self.make_sindy_fields_config["fields"],
-            })
         if self.do_bead_PIV:
             action_configs.append({
                 "action": "do_bead_PIV",
                 "settings": self.bead_PIV_config["fields"],
+            })
+        if self.do_make_sindy_fields:
+            action_configs.append({
+                "action": "make_sindy_fields",
+                "settings": self.make_sindy_fields_config["fields"],
             })
         return action_configs
 
@@ -1304,7 +1296,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.do_run_soax = do_run_soax
         self.do_snakes_to_json = do_snakes_to_json
         self.do_join_sectioned_snakes = do_join_sectioned_snakes
-        self.do_make_sindy_fields = do_make_sindy_fields
 
         if self.do_divide_average_image:
             self.menu_functions.append(self.startDivideAverageImageSetup)
@@ -1328,24 +1319,26 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             self.menu_functions.append(self.startSnakesToJsonSetup)
         if self.do_join_sectioned_snakes:
             self.menu_functions.append(self.startJoinSectionedSnakesSetup)
-        if self.do_make_sindy_fields:
-            self.menu_functions.append(self.startMakeSindyFieldsSetup)
 
         # Move onto next index
         self.goToNextMenu()
 
-    def startPIVStepsSelect(self):
-        self.addForm('PIV_STEPS_SELECT', PIVStepsSelectForm, name='Select PIV Steps')
-        self.getForm('PIV_STEPS_SELECT').configure()
-        self.setNextForm('PIV_STEPS_SELECT')
+    def startSINDyStepsSelect(self):
+        self.addForm('SINDY_STEPS_SELECT', SINDyStepsSelectForm, name='Select SINDy Steps')
+        self.getForm('SINDY_STEPS_SELECT').configure()
+        self.setNextForm('SINDY_STEPS_SELECT')
 
-    def PIVStepsSelectDone(self,
+    def SINDyStepsSelectDone(self,
         do_bead_PIV,
+        do_make_sindy_fields,
         ):
         self.do_bead_PIV = do_bead_PIV
+        self.do_make_sindy_fields = do_make_sindy_fields
 
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIVSetup)
+        if self.do_make_sindy_fields:
+            self.menu_functions.append(self.startMakeSindyFieldsSetup)
 
         self.goToNextMenu()
 
