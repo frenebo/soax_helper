@@ -183,6 +183,18 @@ def parse_arg_or_range(field_name, arg, require_int):
         return err_str_or_val
 
 class SoaxStepsSelectForm(npyscreen.Form):
+    steps = [
+        {"name": "divide_average_image", "show": "Divide Average Image"},
+        {"name": "rescale", "show": "Rescale TIFFs in X,Y,Z"},
+        {"name": "section", "show": "Section TIFFs before running SOAX"},
+        {"name": "create_soax_params", "show": "Make SOAX Parameter Files"},
+        {"name": "create_image_specific_soax_params", "show": "Make SOAX Parameter Files - With Image-Specific Parameters"},
+        {"name": "run_soax", "show": "Run SOAX"},
+        {"name": "snakes_to_json", "show": "Convert Snake files to JSON"},
+        {"name": "join_sectioned_snakes", "show": "Join Sectioned Snakes together (you should do this if input images to soax are sectioned)"},
+        {"name": "make_sindy_fields", "show": "Make Sindy Fields"},
+    ]
+
     def configure(self):
         self.select_steps = self.add(
             npyscreen.TitleMultiSelect,
@@ -203,17 +215,24 @@ class SoaxStepsSelectForm(npyscreen.Form):
             scroll_exit=True,
         )
 
+    def step_is_selected(step_name):
+        # Return whether selected indices include index of step corresponding to step_name
+        for i, step_info in enumerate(self.steps):
+            if step_info["name"] == step_name:
+                return i in self.select_steps.value
+
+        raise Exception("No such step {}".format(step_name))
+
     def afterEditing(self):
-        # @TODO make more robust for getting order wrong
-        do_divide_average_image              = 0  in self.select_steps.value
-        do_rescale                           = 1  in self.select_steps.value
-        do_section                           = 2  in self.select_steps.value
-        do_create_soax_params                = 3  in self.select_steps.value
-        do_create_image_specific_soax_params = 4 in self.select_steps.value
-        do_run_soax                          = 5  in self.select_steps.value
-        do_snakes_to_json                    = 6  in self.select_steps.value
-        do_join_sectioned_snakes             = 7  in self.select_steps.value
-        do_make_sindy_fields                 = 8  in self.select_steps.value
+        do_divide_average_image              =  self.step_is_selected("divide_average_image")
+        do_rescale                           =  self.step_is_selected("rescale")
+        do_section                           =  self.step_is_selected("section")
+        do_create_soax_params                =  self.step_is_selected("create_soax_params")
+        do_create_image_specific_soax_params =  self.step_is_selected("create_image_specific_soax_params")
+        do_run_soax                          =  self.step_is_selected("run_soax")
+        do_snakes_to_json                    =  self.step_is_selected("snakes_to_json")
+        do_join_sectioned_snakes             =  self.step_is_selected("join_sectioned_snakes")
+        do_make_sindy_fields                 =  self.step_is_selected("make_sindy_fields")
 
         if do_section:
             if not do_join_sectioned_snakes:
