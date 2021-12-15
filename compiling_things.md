@@ -42,10 +42,10 @@
    Modify source code of TSOAX to play nice with the latest VTK:
    - In `TSOAX/include/main_window.h`:
      - Remove the line with the declaration `class QVTKOpenGLWidget;`
-     - Under the line `#include <QMainWindow>` insert `#include "QVTKOpenGLWidget.h"`
+     - Insert `#include "QVTKOpenGLWidget.h"` under the line `#include <QMainWindow>`
    - In `TSOAX/include/viewer.h`:
      - Remove the line with the declaration `class QVTKOpenGLWidget;`
-     - Under the line `#include <QObject>` insert `#include "QVTKOpenGLWidget.h"`
+     - Insert `#include "QVTKOpenGLWidget.h"` under the line `#include <QObject>`
    - In `TSOAX/srv/viewer.cc`:
      - Remove the line `#include "QVTKWidget.h"`
 
