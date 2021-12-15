@@ -4,12 +4,11 @@ from PIL import Image
 from multiprocessing.pool import ThreadPool
 
 from .snakeutils.logger import PrintLogger
-from .snakeutils.files import has_one_of_extensions
+from .snakeutils.files import find_tiffs_in_dir
 from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 
 def divide_average_image(source_dir, target_dir, logger=PrintLogger):
-    source_tiffs = [filename for filename in os.listdir(source_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
-    source_tiffs.sort()
+    source_tiffs = find_tiffs_in_dir(source_dir)
 
     if len(source_tiffs) == 0:
         logger.FAIL("No .tif/.tiff files found in {}".format(source_dir))

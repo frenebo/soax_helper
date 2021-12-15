@@ -5,7 +5,7 @@ from multiprocessing.pool import ThreadPool
 
 from .snakeutils.logger import PrintLogger
 from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
-from .snakeutils.files import has_one_of_extensions
+from .snakeutils.files import find_tiffs_in_dir
 
 def crop_tiff(
     arg_dict,
@@ -46,8 +46,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    source_tiffs = [filename for filename in os.listdir(args.source_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
-    source_tiffs.sort()
+    source_tiffs = find_tiffs_in_dir(args.source_dir)
 
     crop_tiffs_arg_dicts = []
     for tif_name in source_tiffs:

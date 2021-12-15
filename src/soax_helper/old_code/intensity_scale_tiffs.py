@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 
 from snakeutils.logger import PrintLogger
-from snakeutils.files import has_one_of_extensions
+from snakeutils.files import find_tiffs_in_dir
 from snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 
 def intensity_scale_single_tiff(arg_dict):
@@ -53,7 +53,7 @@ def intensity_scale_tiffs(
     logger=PrintLogger,
     ):
 
-    source_tiffs = [filename for filename in os.listdir(source_tiff_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
+    source_tiffs = find_tiffs_in_dir(source_tiff_dir)
     source_tiffs.sort()
 
     if len(source_tiffs) == 0:

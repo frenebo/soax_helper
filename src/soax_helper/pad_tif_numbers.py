@@ -2,7 +2,7 @@ import argparse
 import os
 
 from .snakeutils.logger import PrintLogger
-from .snakeutils.files import has_one_of_extensions
+from .snakeutils.files import find_tiffs_in_dir
 
 def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger):
     fn_without_extension = os.path.splitext(tiff_fn)[0]
@@ -21,8 +21,7 @@ def pad_tiff_numbers(
     tiff_name_prefix,
     logger=PrintLogger,
 ):
-    source_tiffs = [filename for filename in os.listdir(tiff_dir) if has_one_of_extensions(filename, [".tif", ".tiff"])]
-    source_tiffs.sort()
+    source_tiffs = find_tiffs_in_dir(tiff_dir)
 
     most_digits = 0
     for tiff_fn in source_tiffs:
