@@ -214,9 +214,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
         do_snakes_to_json                    = 6  in self.select_steps.value
         do_join_sectioned_snakes             = 7  in self.select_steps.value
         do_make_sindy_fields                 = 8  in self.select_steps.value
-        selected_things = []
 
-        # @TODO do we need some other warning for this?
         if do_section:
             if not do_join_sectioned_snakes:
                 should_continue = npyscreen.notify_yes_no("If you're sectioning TIFFs, you probably want to join the output snakes of soax in the Join Sectioned Snakes step. Do you want to continue without doing that?", editw=2)
@@ -605,7 +603,6 @@ class SectioningSetupForm(SetupForm):
         # }
 
 class CreateNormalSoaxParamsSetupForm(SetupForm):
-    # @TODO add help info about following param pages
     field_infos = [
         {
             "id": "params_save_dir",
@@ -615,13 +612,11 @@ class CreateNormalSoaxParamsSetupForm(SetupForm):
     app_done_func_name = "createNormalSoaxParamsSetupDone"
 
 class CreateImageSpecificSoaxParamsSetupForm(SetupForm):
-    # @TODO add help info about following param pages
     field_infos = [
         {
             "id": "params_save_dir",
             "type": "dir",
         },
-        # @TODO make optional????
         {
             "id": "original_tiff_dir",
             "type": "dir",
@@ -1145,7 +1140,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "settings": self.sectioning_config["fields"],
             })
         if self.do_create_soax_params:
-            # @TODO params
             action_configs.append({
                 "action": "create_regular_soax_param_files",
                 "settings": {
@@ -1346,7 +1340,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if tif_metadata is not None:
             self.image_dims = tif_metadata["dims"]
 
-    # @TODO find out what these should be doing
     def startSoaxParamsSetupPage1(self):
         self.addForm('PARAM_SETUP_PAGE_1', SoaxParamsSetupPage1Form, name="SOAX Params Setup Page 1/3")
         self.getForm('PARAM_SETUP_PAGE_1').configure(self.soax_params_page1_config, self.make_dirs)
@@ -1373,50 +1366,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def soaxParamsSetupPage3Done(self, fields):
         self.soax_params_page3_config["fields"] = fields
         self.goToNextMenu()
-
-    # @TODO sort out where all this goes
-    # def startIntensityScalingSetup(self):
-    #     self.addForm('INTENSITY_SCALING_SETUP', IntensityScalingSetupForm, name='Intensity Scaling Setup')
-    #     self.getForm('INTENSITY_SCALING_SETUP').configure(self.intensity_scaling_config, self.make_dirs)
-    #     self.setNextForm('INTENSITY_SCALING_SETUP')
-
-    # def intensityScalingSetupDone(self, fields):
-    #     self.intensity_scaling_config["fields"] = fields
-
-    #     self.divide_average_image_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
-    #     self.rescale_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
-    #     self.sectioning_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
-    #     self.soax_run_config["fields"]["source_tiff_dir"] = fields["target_tiff_dir"]
-
-    #     # If input TIFFs have been rescaled to range from 0 to 65535,
-    #     # When SOAX runs and converts to floats, intensities should be rescaled from 0 to 1.0
-    #     # We can't have 0.0 to 1.0 scale in original TIFFs because TIFFs have only integer brightness
-    #     # levels
-    #     img_search_depth = 0
-    #     tif_metadata = self.try_find_dir_first_tif_metadata(
-    #         fields["source_tiff_dir"],
-    #         img_search_depth,
-    #     )
-
-    #     if tif_metadata is None:
-    #         npyscreen.notify_confirm(
-    #             "In soax run stage intensity_scaling will need to be set manually, could not find TIFF files in {} at depth {} to set intensity to 1 / tiff data type max value".format(fields["source_tiff_dir"], img_search_depth),
-    #             wide=True,
-    #             editw=1)
-    #     else:
-    #         tif_max_level = tif_metadata["tif_max_level"]
-    #         # @TODO params
-    #         # self.soax_params_page1_config["fields"]["intensity_scaling"] = format(1/tif_max_level, '.5f')
-    #         # self.soax_params_page1_config["notes"]["intensity_scaling"] = "Set intensity scaling to 1/{max_lev} because max brightness in tiff {tif_path} is {max_lev} (From input to Intensity Scaling step)".format(
-    #         #     max_lev=tif_max_level,
-    #         #     tif_path=tif_metadata["tif_path"],
-    #         # )
-    #         self.rescale_config["fields"]["input_dims"] = ",".join([str(dim) for dim in tif_metadata["dims"]])
-
-    #     self.prompt_pixel_size_if_not_known(fields["source_tiff_dir"])
-    #     self.determineImageDimsFromDirIfNotKnown(fields["source_tiff_dir"])
-
-    #     self.goToNextMenu()
 
     def startDivideAverageImageSetup(self):
         self.addForm('DIVIDE_AVERAGE_IMAGE_SETUP', DivideAverageImageSetupForm, name='Divide Average Image Setup')

@@ -6,6 +6,7 @@ from ctypes import c_int32
 import time
 
 from .snakeutils.logger import PrintLogger
+from .snakeutils.files import find_files_or_folders_at_depth
 
 def soax_instance(soax_instance_args):
     batch_soax = soax_instance_args["batch_soax"]
@@ -55,13 +56,58 @@ def run_soax(
     use_image_specific_params,
     delete_soax_logs_for_finished_runs,
     workers_num,
+    logger=PrintLogger,
+):
+    logger.log("Running SOAX with {} batch_soax worker instances".format(workers_num))
+
+    soax_instance_arg_dicts  = []
+
+    # soax_instance_args.append({
+    #     "batch_soax": batch_soax,
+    #     "tiff_dir": image_sections_dir_path,
+    #     "param_fp": param_fp,
+    #     "params_name": params_name,
+    #     "snakes_output_dir": snakes_output_dir,
+    #     "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
+    #     "stdout_fp": stdout_fp,
+    #     "stderr_fp": stderr_fp,
+    #     "logger": logger,
+    # })
+
+    if use_sectioned_images:
+        image_dirs_depth = 1
+    else:
+        image_dirs_depth = 0
+
+    # if use_image_specific_params:
+    #     param_files_depth = 2
+    # else:
+    #     param_files_depth = 1
+
+    input_image_dirs_info = find_files_or_folders_at_depth(tiff_dir, image_dirs_depth, folders_not_files=True)
+
+    for containing_full_dirpath, image_dirname:
+        image_dir_relative_path = os.path.join(os.path.relpath(containing_full_dirpath, tiff_dir))
+
+        # relative_dir_path = os.path.relpath(containing_folder, source_json_dir)
+
+
+    # param_files_info = find_files_or_folders_at_depth(params_dir, param_files_depth, ".txt")
+
+
+
+
+def run_soax(
+    batch_soax,
+    tiff_dir,
+    params_dir,
+    output_dir,
+    logging_dir,
+    use_sectioned_images,
+    use_image_specific_params,
+    delete_soax_logs_for_finished_runs,
+    workers_num,
     logger=PrintLogger):
-    # # @TODO implemente image specific params
-    # if
-
-    # if len(param_files) == 0:
-    #     logger.FAIL("No SOAX parameter files ending in .txt found in {}".format(params_dir))
-
     logger.log("WORKERS: {}".format(workers_num))
 
     soax_instance_args = []
