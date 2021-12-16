@@ -29,6 +29,7 @@
    - Press `t` to show advanced mode settings
    - Set `VTK_LEGACY_SILENT` to `ON`
    - Press `c` to configure until option to generate with `g` appears, then press `g` to generate and exit.
+
    Build with make:
    ``` bash
    $ make -j 4
