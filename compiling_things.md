@@ -2,7 +2,10 @@
 ##  1. Install dependencies and required tools
    ``` bash
    $ sudo apt update && sudo apt upgrade
-   $ sudo apt install git curl gcc-7 g++-7 cmake cmake-curses-gui build-essential libxt-dev mesa-utils qt5-default qtcreator qt5-doc qt5-doc-html qtbase5-doc-html qtbase5-examples qtdeclarative5-dev libboost-all-dev libegl1-mesa-dev libxcursor-dev libeigen3-dev
+   $ sudo apt install git curl gcc-7 g++-7 cmake cmake-curses-gui build-essential \
+     libxt-dev mesa-utils qt5-default qtcreator qt5-doc qt5-doc-html \
+     qtbase5-doc-html qtbase5-examples qtdeclarative5-dev libboost-all-dev \
+     libegl1-mesa-dev libxcursor-dev libeigen3-dev
    ```
 ## 2. Download and compile VTK 9.1.0
    Download source code
@@ -42,10 +45,10 @@
    Modify source code of TSOAX to play nice with the latest VTK:
    - In `TSOAX/include/main_window.h`:
      - Remove the line with the declaration `class QVTKOpenGLWidget;`
-     - Insert `#include "QVTKOpenGLWidget.h"` under the line `#include <QMainWindow>`
+     - Insert new line `#include "QVTKOpenGLWidget.h"` under the line `#include <QMainWindow>`
    - In `TSOAX/include/viewer.h`:
      - Remove the line with the declaration `class QVTKOpenGLWidget;`
-     - Insert `#include "QVTKOpenGLWidget.h"` under the line `#include <QObject>`
+     - Insert new line `#include "QVTKOpenGLWidget.h"` under the line `#include <QObject>`
    - In `TSOAX/srv/viewer.cc`:
      - Remove the line `#include "QVTKWidget.h"`
 
