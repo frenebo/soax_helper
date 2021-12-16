@@ -18,7 +18,7 @@
    $ export CC=/usr/bin/gcc-7
    $ export CXX=/usr/bin/g++-7
    ```
-   Use CMake to configure VTK build and compile
+   Use ccmake to configure VTK build and compile
    ``` bash
    $ mkdir build_vtk && cd build_vtk
    $ ccmake ../VTK-9.1.0
@@ -26,9 +26,9 @@
    Configure VTK build with ccmake:
    - Set `CMAKE_BUILD_TYPE` to `Release`
    - Set `VTK_GROUP_ENABLE_Qt` to `Yes`
-   `t` to show advanced mode settings
+   - Press `t` to show advanced mode settings
    - Set `VTK_LEGACY_SILENT` to `ON`
-   `c` to configure until option to generate with `g` appears, press `g` to generate and exit
+   - Press `c` to configure until option to generate with `g` appears, then press `g` to generate and exit.
    Build with make:
    ``` bash
    $ make -j 4
