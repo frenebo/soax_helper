@@ -3,7 +3,7 @@ import argparse
 import json
 import time
 
-from .snakeutils.logger import RecordingLogger, ConsoleLogger, LoggerFAILCalledException
+from .snakeutils.logger import FileLogger, RecordingLogger, ConsoleLogger, LoggerFAILCalledException
 from .setup_app import (
     DivideAverageImageSetupForm,
     SoaxSetupApp,
@@ -20,6 +20,107 @@ from .setup_app import (
     MakeSindyFieldsSetupForm,
     BeadPIVSetupForm,
 )
+
+def parse_command_line_args_and_run():
+    parser = argparse.ArgumentParser(description='Soax Helper')
+    parser.add_argument('--load-settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
+    parser.add_argument('--save-settings',default=None,help="Save settings from GUI menu to JSON file")
+    parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
+    parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
+    parser.add_argument('--save-logs-to-file', default=None,help='Text file to write soax helper output to')
+
+    args = parser.parse_args()
+
+    # Check if environment variable BATCH_SOAX_PATH is set for the path to the compiled
+    # batch_soax executable, if not found use default value None
+    batch_soax_path = os.getenv('BATCH_SOAX_PATH', None)
+
+    if args.load_settings is not None and args.save_settings is not None:
+        raise Exception("Loading settings and saving settings is not supported"
+            "(loading tells program to skip GUI, but saving is meant to store "
+            "settings configured in GUI)")
+    if args.load_settings is not None:
+        if not args.load_settings.endswith(".json"):
+            raise Exception("Invalid settings load file '{}': must be json file".format(args.load_settings))
+
+        if not os.path.exists(args.load_settings):
+            raise Exception("File '{}' does not exist".format(args.load_settings))
+
+        with open(args.load_settings, "r") as f:
+            action_configs = json.load(f)
+    else:
+        if args.save_settings is not None:
+            if not args.save_settings.endswith(".json"):
+                raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(args.save_settings))
+            if os.path.exists(args.save_settings):
+                raise Exception("Cannot save settings as '{}', already exists".format(args.save_settings))
+        app = SoaxSetupApp(make_dirs=args.make_dirs, batch_soax_path=batch_soax_path)
+        app.run()
+
+        action_configs = app.getActionConfigs()
+
+        if args.save_settings is not None:
+            with open(args.save_settings, "w") as f:
+                json.dump(action_configs, f, indent=4)
+
+    if args.do_not_run:
+        exit()
+
+    console_logger = ConsoleLogger()
+
+    if args.save_logs_to_file:
+        with open(args.save_logs_to_file, 'w') as log_file:
+            file_logger = FileLogger(log_filehandle=log_file, parent_logger=console_logger)
+            run_actions(action_configs, logger=file_logger)
+    else:
+        run_actions(action_configs, logger=console_logger)
+
+def run_actions(action_configs, logger):
+    all_loggers = []
+    all_times = []
+    all_warnings = []
+
+    for i, action_conf in enumerate(action_configs):
+        action_name = action_conf["action"]
+        action_settings = action_conf["settings"]
+
+        start_time = time.time()
+
+        action_logger = RecordingLogger(logger)
+        all_loggers.append((action_name, action_logger))
+
+        try:
+            perform_action(action_name, action_settings, args.make_dirs, action_logger)
+        except LoggerFAILCalledException as e:
+            message = str(e)
+            logger.error(message)
+
+            end_time = time.time()
+            elapsed = end_time - start_time
+            logger.error("Step #{}, '{}' failed after {} seconds. Ending program".format(i + 1, action_name, elapsed))
+
+            raise
+
+        end_time = time.time()
+        elapsed = end_time - start_time
+        all_times.append((action_name, elapsed))
+        logger.log("{} took {} seconds".format(action_name, elapsed))
+        all_warnings.append(list(action_logger.warnings))
+
+
+    for step_name, record_logger in all_loggers:
+        if len(record_logger.errors) > 0:
+            logger.error("ERRORS FROM {}".format(step_name))
+            for err in record_logger.errors:
+                logger.error("  " + err)
+
+    for i, (step_name, seconds_taken) in enumerate(all_times):
+        logger.log("Step #{}, '{}' took {} seconds".format(i + 1, step_name, seconds_taken))
+        step_warnings = all_warnings[i]
+        if len(step_warnings) > 0:
+            logger.warn("    Step #{}, '{}' had the following warnings:".format(i + 1, step_name))
+            for warning_text in step_warnings:
+                logger.warn("        " + warning_text)
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
     from .rescale_tiffs import rescale_tiffs
@@ -150,107 +251,6 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         )
     else:
         raise Exception("Unknown action name '{}'".format(action_name))
-
-def parse_command_line_args_and_run():
-    parser = argparse.ArgumentParser(description='Soax Helper')
-    parser.add_argument('--load-settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
-    parser.add_argument('--save-settings',default=None,help="Save settings from GUI menu to JSON file")
-    parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
-    parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
-    parser.add_argument('--save-logs-to-file', default=None,help='Text file to write soax helper output to')
-
-    args = parser.parse_args()
-
-    # Check if environment variable BATCH_SOAX_PATH is set for the path to the compiled
-    # batch_soax executable, if not found use default value None
-    batch_soax_path = os.getenv('BATCH_SOAX_PATH', None)
-
-    if args.load_settings is not None and args.save_settings is not None:
-        raise Exception("Loading settings and saving settings is not supported"
-            "(loading tells program to skip GUI, but saving is meant to store "
-            "settings configured in GUI)")
-    if args.load_settings is not None:
-        if not args.load_settings.endswith(".json"):
-            raise Exception("Invalid settings load file '{}': must be json file".format(args.load_settings))
-
-        if not os.path.exists(args.load_settings):
-            raise Exception("File '{}' does not exist".format(args.load_settings))
-
-        with open(args.load_settings, "r") as f:
-            action_configs = json.load(f)
-    else:
-        if args.save_settings is not None:
-            if not args.save_settings.endswith(".json"):
-                raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(args.save_settings))
-            if os.path.exists(args.save_settings):
-                raise Exception("Cannot save settings as '{}', already exists".format(args.save_settings))
-        app = SoaxSetupApp(make_dirs=args.make_dirs, batch_soax_path=batch_soax_path)
-        app.run()
-
-        action_configs = app.getActionConfigs()
-
-        if args.save_settings is not None:
-            with open(args.save_settings, "w") as f:
-                json.dump(action_configs, f, indent=4)
-
-    if args.do_not_run:
-        exit()
-
-    console_logger = ConsoleLogger()
-
-    if args.save_logs_to_file:
-        with open(args.save_logs_to_file, 'w') as log_file:
-            file_logger = FileLogger(log_filehandle=log_file, parent_logger=console_logger)
-            run_actions(action_configs, logger=file_logger)
-    else:
-        run_actions(action_configs, logger=console_logger)
-
-def run_actions(action_configs, logger):
-    all_loggers = []
-    all_times = []
-    all_warnings = []
-
-    for i, action_conf in enumerate(action_configs):
-        action_name = action_conf["action"]
-        action_settings = action_conf["settings"]
-
-        start_time = time.time()
-
-        action_logger = RecordingLogger(logger)
-        all_loggers.append((action_name, action_logger))
-
-        try:
-            perform_action(action_name, action_settings, args.make_dirs, action_logger)
-        except LoggerFAILCalledException as e:
-            message = str(e)
-            logger.error(message)
-
-            end_time = time.time()
-            elapsed = end_time - start_time
-            logger.error("Step #{}, '{}' failed after {} seconds. Ending program".format(i + 1, action_name, elapsed))
-            exit(1)
-
-        end_time = time.time()
-        elapsed = end_time - start_time
-        all_times.append((action_name, elapsed))
-        logger.log("{} took {} seconds".format(action_name, elapsed))
-        all_warnings.append(list(action_logger.warnings))
-
-
-    for step_name, record_logger in all_loggers:
-        if len(record_logger.errors) > 0:
-            logger.error("ERRORS FROM {}".format(step_name))
-            for err in record_logger.errors:
-                logger.error("  " + err)
-
-    for i, (step_name, seconds_taken) in enumerate(all_times):
-        logger.log("Step #{}, '{}' took {} seconds".format(i + 1, step_name, seconds_taken))
-        step_warnings = all_warnings[i]
-        if len(step_warnings) > 0:
-            logger.warn("    Step #{}, '{}' had the following warnings:".format(i + 1, step_name))
-            for warning_text in step_warnings:
-                logger.warn("        " + warning_text)
-
 
 if __name__ == "__main__":
     parse_command_line_args_and_run()
