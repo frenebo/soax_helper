@@ -63,7 +63,7 @@ def run_soax_helper(save_settings, load_settings, make_dirs, do_not_run, save_lo
         if not load_settings.endswith(".json"):
             raise Exception("Invalid settings load file '{}': must be json file".format(load_settings))
 
-        if not os.path.existsload_settings):
+        if not os.path.exists(load_settings):
             raise Exception("File '{}' does not exist".format(load_settings))
 
         with open(load_settings, "r") as f:
