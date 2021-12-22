@@ -38,7 +38,7 @@ def parse_command_line_args_and_run():
 
     args = parser.parse_args()
 
-    print(subparsers.dest)
+    print(args)
 
     exit()
 
