@@ -967,7 +967,7 @@ class BeadPIVSetupForm(SetupForm):
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def __init__(self, make_dirs=False, batch_soax_path=None, **kwargs):
         self.make_dirs = make_dirs
-        self.batch_soax_bath = batch_soax_path
+        self.batch_soax_path = batch_soax_path
 
         super().__init__(**kwargs)
 
