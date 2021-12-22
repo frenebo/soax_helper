@@ -159,6 +159,11 @@ def parse_command_line_args_and_run():
     parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
 
     args = parser.parse_args()
+
+    # Check if environment variable BATCH_SOAX_PATH is set for the path to the compiled
+    # batch_soax executable, if not found use default value None
+    batch_soax_path = os.getenv('BATCH_SOAX_PATH', None)
+
     if args.load_settings is not None and args.save_settings is not None:
         raise Exception("Loading settings and saving settings is not supported"
             "(loading tells program to skip GUI, but saving is meant to store "
@@ -178,7 +183,7 @@ def parse_command_line_args_and_run():
                 raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(args.save_settings))
             if os.path.exists(args.save_settings):
                 raise Exception("Cannot save settings as '{}', already exists".format(args.save_settings))
-        app = SoaxSetupApp(make_dirs=args.make_dirs)
+        app = SoaxSetupApp(make_dirs=args.make_dirs, batch_soax_path=batch_soax_path)
         app.run()
 
         action_configs = app.getActionConfigs()

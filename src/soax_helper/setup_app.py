@@ -965,11 +965,12 @@ class BeadPIVSetupForm(SetupForm):
     app_done_func_name = "beadPIVSetupDone"
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
-    def __init__(self, make_dirs=False, **kwargs):
+    def __init__(self, make_dirs=False, batch_soax_path=None, **kwargs):
         super().__init__(**kwargs)
         self.make_dirs = make_dirs
+        self.batch_soax_bath = batch_soax_path
 
-    def onStart(self):
+    def onStart(self, ):
         # Default configurations for setup forms, including default fields to show in forms.
 
         self.divide_average_image_config = {
@@ -1067,7 +1068,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "fields":  {
                 "workers": "1",
                 "use_sectioned_images": "false",
-                "batch_soax_path": "/home/paul/Documents/build_soax_july3_follow_ubuntu_18_guide/build_soax_3.7.2/batch_soax",
+                "batch_soax_path": ("" if self.batch_soax_path is None else self.batch_soax_path),
                 "source_tiff_dir": "",
                 "target_snakes_dir": "./Snakes",
                 "delete_soax_logs_for_finished_runs": "false",
