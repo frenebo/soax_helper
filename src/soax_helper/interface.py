@@ -71,11 +71,11 @@ def parse_command_line_args_and_run():
     if args.save_logs_to_file:
         with open(args.save_logs_to_file, 'w') as log_file:
             file_logger = FileLogger(log_filehandle=log_file, parent_logger=console_logger)
-            run_actions(action_configs, logger=file_logger)
+            run_actions(action_configs, args.make_dirs, logger=file_logger)
     else:
-        run_actions(action_configs, logger=console_logger)
+        run_actions(action_configs, args.make_dirs, logger=console_logger)
 
-def run_actions(action_configs, logger):
+def run_actions(action_configs, make_dirs_if_not_present, logger):
     all_loggers = []
     all_times = []
     all_warnings = []
@@ -90,7 +90,7 @@ def run_actions(action_configs, logger):
         all_loggers.append((action_name, action_logger))
 
         try:
-            perform_action(action_name, action_settings, args.make_dirs, action_logger)
+            perform_action(action_name, action_settings, make_dirs_if_not_present, action_logger)
         except LoggerFAILCalledException as e:
             message = str(e)
             logger.error(message)
