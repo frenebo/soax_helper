@@ -37,23 +37,23 @@ class RecordingLogger:
 
     def log(self,text):
         self.normal_logs.append(text)
-        parent_logger.log(text)
+        self.parent_logger.log(text)
 
     def warn(self, text):
         self.warnings.append(text)
-        parent_logger.warn(text)
+        self.parent_logger.warn(text)
 
     def success(self,text):
         self.successes.append(text)
-        parent_logger.success(text)
+        self.parent_logger.success(text)
 
     def error(self,text):
         self.errors.append(text)
-        parent_loggerr.error(text)
+        self.parent_loggerr.error(text)
 
     def FAIL(self,text):
         self.fails.append(text)
-        parent_logger.FAIL(text)
+        self.parent_logger.FAIL(text)
 
 class LoggerFAILCalledException(Exception):
     pass
