@@ -1,5 +1,5 @@
-from snakeutils.logger import PrintLogger
-from snakeutils.snakejson import load_json_snakes
+from .snakeutils.logger import PrintLogger
+from .snakeutils.snakejson import load_json_snakes
 import os
 import numpy as np
 import math

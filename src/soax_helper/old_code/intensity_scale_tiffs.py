@@ -3,9 +3,9 @@ import os
 import numpy as np
 from PIL import Image
 
-from snakeutils.logger import PrintLogger
-from snakeutils.files import find_tiffs_in_dir
-from snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
+from .snakeutils.logger import PrintLogger
+from .snakeutils.files import find_tiffs_in_dir
+from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 
 def intensity_scale_single_tiff(arg_dict):
     source_tiff_dir = arg_dict["source_tiff_dir"]
