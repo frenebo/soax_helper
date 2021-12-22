@@ -71,7 +71,7 @@ def section_tiff(arg_dict):
 
     section_num = width_slices*height_slices*depth_slices
 
-    logger.log("  Split {} into {} sections in {}".format(
+    logger.success("  Split {} into {} sections in {}".format(
         tiff_filepath,
         section_num,
         sectioned_dir))
