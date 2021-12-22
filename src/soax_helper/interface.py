@@ -20,6 +20,7 @@ from .setup_app import (
     MakeSindyFieldsSetupForm,
     BeadPIVSetupForm,
 )
+from .tiff_info import tiff_info, tiff_file_or_dir_argparse_type
 
 def parse_command_line_args_and_run():
     parser = argparse.ArgumentParser(description='Soax Helper')
@@ -33,7 +34,7 @@ def parse_command_line_args_and_run():
     subparsers.dest = 'subcommand'
 
     tiff_info_parser = subparsers.add_parser("foo", help="Get info from tiff file or directory of tiff files")
-    tiff_info_parser.add_argument('target',type=tiff_file_or_dir,help="TIFF file or directory of tiff files")
+    tiff_info_parser.add_argument('target',type=tiff_file_or_dir_argparse_type,help="TIFF file or directory of tiff files")
 
     args = parser.parse_args()
 

@@ -12,7 +12,7 @@ def readable_dir(dirpath):
 
     return dirpath
 
-def tiff_file_or_dir(target_path):
+def tiff_file_or_dir_argparse_type(target_path):
     try:
         dir_path = readable_dir(target_path)
         dir_contents = os.listdir(dir_path)
@@ -50,10 +50,10 @@ def tiff_info(tiff_paths,logger):
         logger.success("   DIMENSIONS: XY shape: {}, Number of tiff n_frames (Z): {}".format(shape,stack_height))
         logger.success("   TIFF INFO: pixel dtype: {}, with min: {} and max: {}. Image average value is: {}".format(dtype, min_val, max_val, avg))
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Get info from tiff file or directory of tiff files')
-    parser.add_argument('target',type=tiff_file_or_dir,help="TIFF file or directory of tiff files")
+# if __name__ == "__main__":
+#     parser = argparse.ArgumentParser(description='Get info from tiff file or directory of tiff files')
+#     parser.add_argument('target',type=tiff_file_or_dir,help="TIFF file or directory of tiff files")
 
-    args = parser.parse_args()
+#     args = parser.parse_args()
 
-    tiff_info(args.target, logger=ConsoleLogger())
+#     tiff_info(args.target, logger=ConsoleLogger())
