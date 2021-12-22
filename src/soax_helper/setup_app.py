@@ -237,14 +237,14 @@ class SoaxStepsSelectForm(npyscreen.Form):
             return
 
         self.parentApp.soaxStepsSelectDone(
-            do_divide_average_image,
-            do_rescale,
-            do_section,
-            do_create_soax_params,
-            do_create_image_specific_soax_params,
-            do_run_soax,
-            do_snakes_to_json,
-            do_join_sectioned_snakes,
+            do_divide_average_image=do_divide_average_image,
+            do_rescale=do_rescale,
+            do_section=do_section,
+            do_create_soax_params=do_create_soax_params,
+            do_create_image_specific_soax_params=do_create_image_specific_soax_params,
+            do_run_soax=do_run_soax,
+            do_snakes_to_json=do_snakes_to_json,
+            do_join_sectioned_snakes=do_join_sectioned_snakes,
         )
 
 class SINDyStepsSelectForm(npyscreen.Form):
@@ -1288,7 +1288,6 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         do_run_soax,
         do_snakes_to_json,
         do_join_sectioned_snakes,
-        do_make_sindy_fields,
         ):
         self.do_divide_average_image = do_divide_average_image
         self.do_rescale = do_rescale
