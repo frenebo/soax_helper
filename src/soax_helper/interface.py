@@ -60,13 +60,13 @@ def run_soax_helper(save_settings, load_settings, make_dirs, do_not_run, save_lo
             "(loading tells program to skip GUI, but saving is meant to store "
             "settings configured in GUI)")
     if load_settings is not None:
-        if notload_settings.endswith(".json"):
-            raise Exception("Invalid settings load file '{}': must be json file".formatload_settings))
+        if not load_settings.endswith(".json"):
+            raise Exception("Invalid settings load file '{}': must be json file".format(load_settings))
 
         if not os.path.existsload_settings):
-            raise Exception("File '{}' does not exist".formatload_settings))
+            raise Exception("File '{}' does not exist".format(load_settings))
 
-        with openload_settings, "r") as f:
+        with open(load_settings, "r") as f:
             action_configs = json.load(f)
     else:
         if save_settings is not None:
