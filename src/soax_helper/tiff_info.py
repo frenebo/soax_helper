@@ -49,12 +49,12 @@ def tiff_info(tiff_paths,logger):
         logger.log("{}:".format(tiff_path))
         logger.success("  DIMENSIONS:")
         logger.success("    XY shape: {}".format(shape))
-        logger.success("    Number of frames: {}".format(stack_height))
+        logger.success("    Number of frames in stack: {}".format(stack_height))
         logger.success("  TIFF INFO:")
         logger.success("    Pixel data type: {}".format(dtype))
-        logger.success("    Minimum pixel value: {}".format(min_val))
-        logger.success("    Max pixel value: {}".format(max_val))
-        logger.success("    Average pixel value: {}".format(avg))
+        logger.success("    Minimum pixel value in tiff: {}".format(min_val))
+        logger.success("    Max pixel value in tiff: {}".format(max_val))
+        logger.success("    Average pixel value in tiff: {}".format(avg))
 
 # if __name__ == "__main__":
 #     parser = argparse.ArgumentParser(description='Get info from tiff file or directory of tiff files')
