@@ -966,9 +966,10 @@ class BeadPIVSetupForm(SetupForm):
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def __init__(self, make_dirs=False, batch_soax_path=None, **kwargs):
-        super().__init__(**kwargs)
         self.make_dirs = make_dirs
         self.batch_soax_bath = batch_soax_path
+
+        super().__init__(**kwargs)
 
     def onStart(self, ):
         # Default configurations for setup forms, including default fields to show in forms.
