@@ -2,7 +2,6 @@ import os
 import itertools
 import decimal
 
-from .snakeutils.logger import PrintLogger
 from .snakeutils.params import create_params, param_filename_tags
 
 def create_range(start,stop,step):
@@ -49,7 +48,7 @@ def param_filename_string_format_settings(start,stop,step):
 def create_regular_soax_param_files(
     params_save_dir,
     param_settings,
-    logger=PrintLogger
+    logger,
     ):
 
     init_z = param_settings["init_z"]

@@ -3,7 +3,6 @@ import numpy as np
 import math
 import json
 
-from .snakeutils.logger import PrintLogger
 
 def round_to_odd(num):
     return round( (num - 1)/2 ) * 2 + 1
@@ -16,7 +15,7 @@ def bead_piv(
     z_stack_spacing_um,
     bead_diameter_um,
     linking_search_range_um,
-    logger=PrintLogger,
+    logger,
     ):
     import pims
     import trackpy as tp

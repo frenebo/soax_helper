@@ -3,7 +3,6 @@ import copy
 from PIL import Image
 import numpy as np
 
-from .snakeutils.logger import PrintLogger
 from .snakeutils.files import find_tiffs_in_dir
 from .create_regular_soax_param_files import create_regular_soax_param_files
 from .snakeutils.tifimage import pil_img_3d_to_np_arr
@@ -25,7 +24,7 @@ def create_image_specific_soax_param_files(
     original_tiff_dir,
     set_intensity_scaling_for_each_image,
     general_param_settings,
-    logger=PrintLogger
+    logger,
 ):
     orig_tiffs = find_tiffs_in_dir(original_tiff_dir)
 

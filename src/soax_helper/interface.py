@@ -3,7 +3,7 @@ import argparse
 import json
 import time
 
-from .snakeutils.logger import RecordLogger, PrintLogger, LoggerFAILCalledException
+from .snakeutils.logger import RecordingLogger, ConsoleLogger, LoggerFAILCalledException
 from .setup_app import (
     DivideAverageImageSetupForm,
     SoaxSetupApp,
@@ -157,6 +157,7 @@ def parse_command_line_args_and_run():
     parser.add_argument('--save-settings',default=None,help="Save settings from GUI menu to JSON file")
     parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
     parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
+    parser.add_argument('--save-logs-to-file', default=None,help='Text file to write soax helper output to')
 
     args = parser.parse_args()
 
@@ -195,6 +196,16 @@ def parse_command_line_args_and_run():
     if args.do_not_run:
         exit()
 
+    console_logger = ConsoleLogger()
+
+    if args.save_logs_to_file:
+        with open(args.save_logs_to_file, 'w') as log_file:
+            file_logger = FileLogger(log_filehandle=log_file, parent_logger=console_logger)
+            run_actions(action_configs, logger=file_logger)
+    else:
+        run_actions(action_configs, logger=console_logger)
+
+def run_actions(action_configs, logger):
     all_loggers = []
     all_times = []
     all_warnings = []
@@ -205,40 +216,40 @@ def parse_command_line_args_and_run():
 
         start_time = time.time()
 
-        action_logger = RecordLogger()
+        action_logger = RecordingLogger(logger)
         all_loggers.append((action_name, action_logger))
 
         try:
             perform_action(action_name, action_settings, args.make_dirs, action_logger)
         except LoggerFAILCalledException as e:
             message = str(e)
-            PrintLogger.error(message)
+            logger.error(message)
 
             end_time = time.time()
             elapsed = end_time - start_time
-            PrintLogger.error("Step #{}, '{}' failed after {} seconds. Ending program".format(i + 1, action_name, elapsed))
+            logger.error("Step #{}, '{}' failed after {} seconds. Ending program".format(i + 1, action_name, elapsed))
             exit(1)
 
         end_time = time.time()
         elapsed = end_time - start_time
         all_times.append((action_name, elapsed))
-        PrintLogger.log("{} took {} seconds".format(action_name, elapsed))
+        logger.log("{} took {} seconds".format(action_name, elapsed))
         all_warnings.append(list(action_logger.warnings))
 
 
     for step_name, record_logger in all_loggers:
         if len(record_logger.errors) > 0:
-            PrintLogger.error("ERRORS FROM {}".format(step_name))
+            logger.error("ERRORS FROM {}".format(step_name))
             for err in record_logger.errors:
-                PrintLogger.error("  " + err)
+                logger.error("  " + err)
 
     for i, (step_name, seconds_taken) in enumerate(all_times):
-        PrintLogger.log("Step #{}, '{}' took {} seconds".format(i + 1, step_name, seconds_taken))
+        logger.log("Step #{}, '{}' took {} seconds".format(i + 1, step_name, seconds_taken))
         step_warnings = all_warnings[i]
         if len(step_warnings) > 0:
-            PrintLogger.warn("    Step #{}, '{}' had the following warnings:".format(i + 1, step_name))
+            logger.warn("    Step #{}, '{}' had the following warnings:".format(i + 1, step_name))
             for warning_text in step_warnings:
-                PrintLogger.warn("        " + warning_text)
+                logger.warn("        " + warning_text)
 
 
 if __name__ == "__main__":

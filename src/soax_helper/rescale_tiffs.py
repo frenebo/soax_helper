@@ -7,7 +7,6 @@ import cv2
 from PIL import Image
 from scipy.ndimage import zoom
 
-from .snakeutils.logger import PrintLogger
 from .snakeutils.files import find_files_or_folders_at_depth
 from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 
@@ -99,7 +98,7 @@ def rescale_tiffs(
     input_dims,
     output_dims,
     workers_num,
-    logger=PrintLogger,
+    logger,
     ):
 
     source_tiffs_info = find_files_or_folders_at_depth(source_tiff_dir, 0, file_extensions=[".tif", ".tiff"])

@@ -9,7 +9,6 @@ import scipy.optimize as optimize
 from scipy.interpolate import UnivariateSpline
 import math
 
-from .snakeutils.logger import PrintLogger
 from .snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions, find_tiffs_in_dir
 from .snakeutils.snakejson import load_json_snakes
 from .snakeutils.tifimage import pil_img_3d_to_np_arr, save_3d_tif
@@ -211,7 +210,7 @@ def make_sindy_fields(
     save_orientations_dir,
     save_intensities_dir,
     source_jsons_depth,
-    logger=PrintLogger,
+    logger,
 ):
     source_images = find_tiffs_in_dir(source_images_dir)
 

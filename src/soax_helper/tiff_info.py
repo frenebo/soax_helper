@@ -3,7 +3,7 @@ import os
 from PIL import Image
 import numpy as np
 
-from .snakeutils.logger import PrintLogger
+from .snakeutils.logger import ConsoleLogger
 from .snakeutils.tifimage import get_single_tiff_info
 
 def readable_dir(dirpath):
@@ -35,7 +35,7 @@ def readable_dir(dirpath):
 
     return dirpath
 
-def tiff_info(tiff_paths,logger=PrintLogger):
+def tiff_info(tiff_paths,logger):
     for tiff_path in tiff_paths:
         data = Image.open(tiff_path)
         shape = data.size
@@ -56,4 +56,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    tiff_info(args.target)
+    tiff_info(args.target, logger=ConsoleLogger())

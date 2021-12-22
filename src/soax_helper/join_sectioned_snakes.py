@@ -2,7 +2,6 @@ import os
 from multiprocessing.pool import ThreadPool
 
 from .snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions
-from .snakeutils.logger import PrintLogger
 from .snakeutils.snakejson import load_json_snakes, save_json_snakes
 
 def join_snake_sections_folder_and_save(arg_dict):
@@ -79,7 +78,7 @@ def join_sectioned_snakes(
     target_json_dir,
     source_jsons_depth,
     workers,
-    logger=PrintLogger):
+    logger):
     if source_jsons_depth < 1:
         raise Exception("Cannot join sectioned snakes if subdir depth is less than 1. Need a subdirectory full of sectioned snake jsons to produce one joined snake json in the target dir.")
     # The folders containing the source json files to be joined are one level less deep

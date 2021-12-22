@@ -3,7 +3,7 @@ import argparse
 from PIL import Image
 from multiprocessing.pool import ThreadPool
 
-from .snakeutils.logger import PrintLogger
+from .snakeutils.logger import ConsoleLogger
 from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 from .snakeutils.files import find_tiffs_in_dir
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
             "end_y": args.end_y,
             "start_z": args.start_z,
             "end_z": args.end_z,
-            "logger": PrintLogger,
+            "logger": ConsoleLogger(),
         }
         crop_tiffs_arg_dicts.append(arg_dict)
 

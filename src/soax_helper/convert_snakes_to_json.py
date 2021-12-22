@@ -1,7 +1,6 @@
 import os
 
 from .snakeutils.files import find_files_or_folders_at_depth, extract_snakes
-from .snakeutils.logger import PrintLogger
 from .snakeutils.snakejson import save_json_snakes
 
 def infer_snakes_dims_and_offset_pixels(snake_filename):
@@ -63,7 +62,7 @@ def convert_snakes_to_json(
     offset_pixels, # {"type": "infer"} or {"type": "int_coords", "value": [x,y,z]}
     dims_pixels, # {"type": "infer"} or {"type": "int_coords", "value": [0,0,0]}
     pixel_spacing_um_xyz, # [dx,dy,dz] pixel spacing in micrometers
-    logger=PrintLogger):
+    logger):
     snakes_ext = ".txt"
     snake_folders_and_filenames = find_files_or_folders_at_depth(source_snakes_dir,source_snakes_depth,snakes_ext)
 

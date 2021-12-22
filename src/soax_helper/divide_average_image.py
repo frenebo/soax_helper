@@ -2,12 +2,10 @@ import os
 import numpy as np
 from PIL import Image
 from multiprocessing.pool import ThreadPool
-
-from .snakeutils.logger import PrintLogger
 from .snakeutils.files import find_tiffs_in_dir
 from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
 
-def divide_average_image(source_dir, target_dir, logger=PrintLogger):
+def divide_average_image(source_dir, target_dir, logger):
     source_tiffs = find_tiffs_in_dir(source_dir)
 
     if len(source_tiffs) == 0:

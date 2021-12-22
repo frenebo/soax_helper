@@ -1,9 +1,9 @@
-from .snakeutils.logger import PrintLogger
-from .snakeutils.snakejson import load_json_snakes
 import os
 import numpy as np
 import math
 import scipy.signal
+
+from .snakeutils.snakejson import load_json_snakes
 # from skimage.draw import line_aa
 
 def rasterize_line(start_coords, end_coords, arr_size):
@@ -174,7 +174,7 @@ def sindy_matrices_from_snakes(
     depth,
     orientation_matrix_dir,
     position_matrix_dir,
-    logger=PrintLogger,
+    logger,
     ):
     source_jsons_folders_and_filenames = find_files_or_folders_at_depth(source_json_dir,source_jsons_depth, ".json")
 

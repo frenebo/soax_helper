@@ -6,7 +6,6 @@ from PIL import Image
 import tifffile
 
 from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
-from .snakeutils.logger import PrintLogger
 
 def section_tiff(arg_dict):
     tiff_filepath = arg_dict["tiff_filepath"]
@@ -81,7 +80,7 @@ def section_tiffs(
     source_dir,
     target_dir,
     workers_num,
-    logger=PrintLogger,
+    logger,
     ):
     if section_max_size <= 0:
         logger.FAIL("Section max size must be positive. Invalid value {}".format(section_size))

@@ -1,7 +1,7 @@
 import argparse
 import os
 
-from .snakeutils.logger import PrintLogger
+from .snakeutils.logger import ConsoleLogger
 from .snakeutils.files import find_tiffs_in_dir
 
 def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger):
@@ -19,7 +19,7 @@ def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger):
 def pad_tiff_numbers(
     tiff_dir,
     tiff_name_prefix,
-    logger=PrintLogger,
+    logger,
 ):
     source_tiffs = find_tiffs_in_dir(tiff_dir)
 
@@ -52,4 +52,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix)
+    pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, logger=ConsoleLogger())

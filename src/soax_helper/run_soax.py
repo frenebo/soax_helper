@@ -5,7 +5,6 @@ import tqdm
 from ctypes import c_int32
 import time
 
-from .snakeutils.logger import PrintLogger
 from .snakeutils.files import find_files_or_folders_at_depth
 
 def soax_instance(soax_instance_args):
@@ -110,7 +109,7 @@ def run_soax(
     use_image_specific_params,
     delete_soax_logs_for_finished_runs,
     workers_num,
-    logger=PrintLogger,
+    logger,
 ):
     logger.log("Running SOAX with {} batch_soax worker instances".format(workers_num))
 

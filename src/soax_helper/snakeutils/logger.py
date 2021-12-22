@@ -1,50 +1,75 @@
 from colorama import Fore, Style
 
+class FileLogger:
+    def __init__(self, log_filehandle, parent_logger):
+        self.log_filehandle = log_filehandle
+        self.parent_logger = parent_logger
 
-class RecordLogger:
-    def __init__(self):
+    def log(self, text):
+        self.log_filehandle.write('LOG: ' + text + '\n')
+        self.parent_logger.log(text)
+
+    def warn(self, text):
+        self.log_filehandle.write('WARN: ' + text + '\n')
+        self.parent_logger.warn(text)
+
+    def success(self, text):
+        self.log_filehandle.write('SUCCESS: ' + text + '\n')
+        self.parent_logger.success(text)
+
+    def error(self, text):
+        self.log_filehandle.write('ERROR: ' + text + '\n')
+        self.parent_logger.error(text)
+
+    def FAIL(self, text):
+        self.log_filehandle.write('FAIL: ' + text + '\n')
+        self.parent_logger.FAIL(text)
+
+class RecordingLogger:
+    def __init__(self, parent_logger):
+        self.parent_logger = parent_logger
+
+        self.normal_logs = []
+        self.successes = []
         self.errors = []
         self.warnings = []
         self.fails = []
 
     def log(self,text):
-        PrintLogger.log(text)
+        self.normal_logs.append(text)
+        parent_logger.log(text)
 
     def warn(self, text):
         self.warnings.append(text)
-        PrintLogger.warn(text)
+        parent_logger.warn(text)
 
     def success(self,text):
-        PrintLogger.success(text)
+        self.successes.append(text)
+        parent_logger.success(text)
 
     def error(self,text):
         self.errors.append(text)
-        PrintLogger.error(text)
+        parent_loggerr.error(text)
 
     def FAIL(self,text):
         self.fails.append(text)
-        PrintLogger.FAIL(text)
+        parent_logger.FAIL(text)
 
 class LoggerFAILCalledException(Exception):
     pass
 
-class PrintLogger:
-    @staticmethod
+class ConsoleLogger:
     def log(text):
         print(text)
 
-    @staticmethod
     def warn(text):
         print(Fore.YELLOW + text + Style.RESET_ALL)
 
-    @staticmethod
     def success(text):
         print(Fore.GREEN + text + Style.RESET_ALL)
 
-    @staticmethod
     def error(text):
         print(Fore.RED + text + Style.RESET_ALL)
 
-    @staticmethod
     def FAIL(text):
         raise LoggerFAILCalledException(text)
