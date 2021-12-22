@@ -200,7 +200,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
             max_height =-2,
             value = [],
             name="Pick SOAX Steps (spacebar to toggle)",
-            values = [step_info["name"] for step_info in self.steps],
+            values = [step_info["show"] for step_info in self.steps],
             scroll_exit=True,
         )
 
