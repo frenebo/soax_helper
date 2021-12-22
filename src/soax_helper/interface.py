@@ -29,7 +29,17 @@ def parse_command_line_args_and_run():
     parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
     parser.add_argument('--save-logs-to-file', default=None,help='Text file to write soax helper output to')
 
+    subparsers = parser.add_subparsers()
+    subparsers.dest = 'subcommand'
+
+    tiff_info_parser = subparsers.add_parser("foo", help="Get info from tiff file or directory of tiff files")
+    tiff_info_parser.add_argument('target',type=tiff_file_or_dir,help="TIFF file or directory of tiff files")
+
     args = parser.parse_args()
+
+    print(subparsers.dest)
+
+    exit()
 
     # Check if environment variable BATCH_SOAX_PATH is set for the path to the compiled
     # batch_soax executable, if not found use default value None
