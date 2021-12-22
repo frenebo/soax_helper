@@ -83,7 +83,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         create_image_specific_soax_param_files(
             params_save_dir=create_image_specific_soax_param_files_settings["params_save_dir"],
             original_tiff_dir=create_image_specific_soax_param_files_settings["original_tiff_dir"],
-            set_intensity_scaling_for_each_image=create_image_specific_soax_param_files_settings["set_intensity_scaling_for_each_image"]
+            set_intensity_scaling_for_each_image=create_image_specific_soax_param_files_settings["set_intensity_scaling_for_each_image"],
             general_param_settings=parsed_general_param_settings,
             logger=logger,
         )

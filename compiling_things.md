@@ -50,7 +50,7 @@
    - In `TSOAX/include/viewer.h`:
      - Remove the line with the declaration `class QVTKOpenGLWidget;`
      - Insert new line `#include "QVTKOpenGLWidget.h"` under the line `#include <QObject>`
-   - In `TSOAX/srv/viewer.cc`:
+   - In `TSOAX/src/viewer.cc`:
      - Remove the line `#include "QVTKWidget.h"`
 
    Tell CMake where to find VTK
