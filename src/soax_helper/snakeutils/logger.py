@@ -59,17 +59,17 @@ class LoggerFAILCalledException(Exception):
     pass
 
 class ConsoleLogger:
-    def log(text):
+    def log(self, text):
         print(text)
 
-    def warn(text):
+    def warn(self, text):
         print(Fore.YELLOW + text + Style.RESET_ALL)
 
-    def success(text):
+    def success(self, text):
         print(Fore.GREEN + text + Style.RESET_ALL)
 
-    def error(text):
+    def error(self, text):
         print(Fore.RED + text + Style.RESET_ALL)
 
-    def FAIL(text):
+    def FAIL(self, text):
         raise LoggerFAILCalledException(text)
