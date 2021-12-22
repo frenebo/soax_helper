@@ -204,7 +204,7 @@ class SoaxStepsSelectForm(npyscreen.Form):
             scroll_exit=True,
         )
 
-    def step_is_selected(step_name):
+    def step_is_selected(self, step_name):
         # Return whether selected indices include index of step corresponding to step_name
         for i, step_info in enumerate(self.steps):
             if step_info["name"] == step_name:
