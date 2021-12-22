@@ -33,58 +33,67 @@ def parse_command_line_args_and_run():
     subparsers = parser.add_subparsers()
     subparsers.dest = 'subcommand'
 
-    tiff_info_parser = subparsers.add_parser("foo", help="Get info from tiff file or directory of tiff files")
+    tiff_info_parser = subparsers.add_parser("tiffinfo", help="Get info from tiff file or directory of tiff files")
     tiff_info_parser.add_argument('target',type=tiff_file_or_dir_argparse_type,help="TIFF file or directory of tiff files")
 
     args = parser.parse_args()
 
-    print(args)
+    if args.subcommand is None:
+        run_soax_helper(
+            save_settings=args.save_settings,
+            load_settings=args.load_settings,
+            make_dirs=args.make_dirs,
+            do_not_run=args.do_not_run,
+            save_logs_to_file=args.save_logs_to_file,
+        )
+    elif args.subcommand == 'tiffinfo':
+        tiff_info(args.target, logger=ConsoleLogger())
 
-    exit()
+def run_soax_helper(save_settings, load_settings, make_dirs, do_not_run, save_logs_to_file)
 
     # Check if environment variable BATCH_SOAX_PATH is set for the path to the compiled
     # batch_soax executable, if not found use default value None
     batch_soax_path = os.getenv('BATCH_SOAX_PATH', None)
 
-    if args.load_settings is not None and args.save_settings is not None:
+    if load_settings is not None and save_settings is not None:
         raise Exception("Loading settings and saving settings is not supported"
             "(loading tells program to skip GUI, but saving is meant to store "
             "settings configured in GUI)")
-    if args.load_settings is not None:
-        if not args.load_settings.endswith(".json"):
-            raise Exception("Invalid settings load file '{}': must be json file".format(args.load_settings))
+    if load_settings is not None:
+        if notload_settings.endswith(".json"):
+            raise Exception("Invalid settings load file '{}': must be json file".formatload_settings))
 
-        if not os.path.exists(args.load_settings):
-            raise Exception("File '{}' does not exist".format(args.load_settings))
+        if not os.path.existsload_settings):
+            raise Exception("File '{}' does not exist".formatload_settings))
 
-        with open(args.load_settings, "r") as f:
+        with openload_settings, "r") as f:
             action_configs = json.load(f)
     else:
-        if args.save_settings is not None:
-            if not args.save_settings.endswith(".json"):
-                raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(args.save_settings))
-            if os.path.exists(args.save_settings):
-                raise Exception("Cannot save settings as '{}', already exists".format(args.save_settings))
-        app = SoaxSetupApp(make_dirs=args.make_dirs, batch_soax_path=batch_soax_path)
+        if save_settings is not None:
+            if not save_settings.endswith(".json"):
+                raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(save_settings))
+            if os.path.exists(save_settings):
+                raise Exception("Cannot save settings as '{}', already exists".format(save_settings))
+        app = SoaxSetupApp(make_dirs=make_dirs, batch_soax_path=batch_soax_path)
         app.run()
 
         action_configs = app.getActionConfigs()
 
-        if args.save_settings is not None:
-            with open(args.save_settings, "w") as f:
+        if save_settings is not None:
+            with open(save_settings, "w") as f:
                 json.dump(action_configs, f, indent=4)
 
-    if args.do_not_run:
+    if do_not_run:
         exit()
 
     console_logger = ConsoleLogger()
 
-    if args.save_logs_to_file:
-        with open(args.save_logs_to_file, 'w') as log_file:
+    if save_logs_to_file:
+        with open(save_logs_to_file, 'w') as log_file:
             file_logger = FileLogger(log_filehandle=log_file, parent_logger=console_logger)
-            run_actions(action_configs, args.make_dirs, logger=file_logger)
+            run_actions(action_configs, make_dirs, logger=file_logger)
     else:
-        run_actions(action_configs, args.make_dirs, logger=console_logger)
+        run_actions(action_configs, make_dirs, logger=console_logger)
 
 def run_actions(action_configs, make_dirs_if_not_present, logger):
     all_loggers = []
