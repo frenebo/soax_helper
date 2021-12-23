@@ -49,7 +49,7 @@ class RecordingLogger:
 
     def error(self,text):
         self.errors.append(text)
-        self.parent_loggerr.error(text)
+        self.parent_logger.error(text)
 
     def FAIL(self,text):
         self.fails.append(text)

@@ -83,10 +83,12 @@ def run_soax_helper(save_settings, load_settings, make_dirs, do_not_run, save_lo
             with open(save_settings, "w") as f:
                 json.dump(action_configs, f, indent=4)
 
+    console_logger = ConsoleLogger()
+
     if do_not_run:
+        console_logger.log("Program was run with do not run option, exiting before performing any actions")
         exit()
 
-    console_logger = ConsoleLogger()
 
     if save_logs_to_file:
         with open(save_logs_to_file, 'w') as log_file:
