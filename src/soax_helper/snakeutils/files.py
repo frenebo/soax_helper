@@ -53,7 +53,7 @@ def find_files_or_folders_at_depth(source_dir_path, depth, file_extension=None, 
             folders_and_files.extend(sub_folders_and_files)
         return folders_and_files
 
-def extract_snakes(snake_file):
+def extract_snakes(snake_file, logger=None):
     # get past starting params
     count = 0
     while count < 30:
@@ -63,8 +63,8 @@ def extract_snakes(snake_file):
     snake_dict = {}
     done = False
     lines = [line.rstrip() for line in snake_file.readlines()]
-    print("Number of lines: {}".format(len(lines)))
-    # lines = [line.strip().split() for line in snake_file]
+    if logger is not None:
+        logger.log("Number of lines in snake file: {}".format(len(lines)))
 
     line_idx = 0
     snake_name = None
