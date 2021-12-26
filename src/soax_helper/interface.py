@@ -49,6 +49,8 @@ def parse_command_line_args_and_run():
     elif args.subcommand == 'tiffinfo':
         tiff_info(args.target, logger=ConsoleLogger())
 
+    exit(0)
+
 def run_soax_helper(save_settings, load_settings, make_dirs, do_not_run, save_logs_to_file):
 
     # Check if environment variable BATCH_SOAX_PATH is set for the path to the compiled
