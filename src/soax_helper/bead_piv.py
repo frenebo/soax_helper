@@ -15,10 +15,12 @@ def bead_piv(
     z_stack_spacing_um,
     bead_diameter_um,
     linking_search_range_um,
+    processes,
     logger,
     ):
     import pims
     import trackpy as tp
+
     logger.log("Letter before frame num: {}"format(tiff_fn_letter_before_frame_num))
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num])
     logger.log("Frames")
@@ -57,7 +59,7 @@ def bead_piv(
     diameter = (search_diameter_z, search_diameter_x_y, search_diameter_x_y)
     logger.log("Finding features with diameter {}".format(diameter))
 
-    f = tp.batch(frames, diameter=diameter)
+    f = tp.batch(frames, diameter=diameter, processes=processes)
     f['xum'] = f['x'] * x_y_pixel_spacing_um
     f['yum'] = f['y'] * x_y_pixel_spacing_um
     f['zum'] = f['z'] * z_stack_spacing_um

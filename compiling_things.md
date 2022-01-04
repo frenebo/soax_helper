@@ -1,3 +1,6 @@
+# Compiling SOAX on Ubuntu 20.04:
+
+
 # Compiling TSOAX on Ubuntu 20.04:
 ##  1. Install dependencies and required tools
    ``` bash
@@ -32,11 +35,68 @@
 
    Build with make:
    ``` bash
-   $ make -j 4
+   $ make
    ```
    Leave VTK build directory
    ``` bash
    $ cd ..
+   ```
+## 3. Download and compile ITK (not necessary for compiling just TSOAX)
+   Download source code
+   ``` bash
+   $ curl -O -L https://github.com/InsightSoftwareConsortium/ITK/archive/refs/tags/v5.2.1.tar.gz
+   $ tar -xvf v5.2.1.tar.gz
+   ```
+   Tell CMake to use gcc and g++ version 7
+   ``` bash
+   $ export CC=/usr/bin/gcc-7
+   $ export CXX=/usr/bin/g++-7
+   ```
+   ``` bash
+   $ mkdir build_itk && cd build_itk
+   $ ccmake ../ITK-5.2.1/
+   ```
+   Configure ITK build with ccmake:
+   - Set `BUILD_EXAMPLES` to `OFF`
+   - Set `BUILD_TESTING` to `OFF`
+   - Press `t` to show advanced mode settings
+   - Press `c` to generate a few times until `Module_ITKVtkGlue` option appears on one of the pages
+   - Set `Module_ITKVtkGlue` to `ON`
+
+   Build with make:
+   ``` bash
+   $ make
+   ```
+
+   Leave ITK build directory
+   ``` bash
+   $ cd ..
+   ```
+## 4. Download and compile SOAX
+   Download source code
+   ```  bash
+   $ git clone https://github.com/tix209/SOAX
+   ```
+
+   Tell CMake where to find VTK and ITK
+   ``` bash
+   $ export VTK_DIR=/{pathto}/build_vtk
+   $ export ITK_DIR=/{pathto}/build_itk
+   ```
+
+   Set up SOAX buile and compile
+   ``` bash
+   $ mkdir build_soax && cd build_soax
+   $ ccmake ../SOAX
+   ```
+   Use ccmake to configure - press `c` to configure until generate option `g` appears, then generate.
+
+
+   ERROR: conversion ambiguous
+
+   Build with make:
+   ``` bash
+   $ make
    ```
 ## 3. Download and compile TSOAX
    Download source code
@@ -61,7 +121,7 @@
    ``` bash
    $ mkdir build_tsoax && cd build_tsoax
    $ cmake -DCMAKE_BUILD_TYPE=Release ../TSOAX
-   $ make -j 4
+   $ make
    ```
 
    The `TSOAX` executable should be in `build_tsoax/src`

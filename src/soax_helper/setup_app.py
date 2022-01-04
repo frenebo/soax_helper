@@ -950,6 +950,11 @@ class BeadPIVSetupForm(SetupForm):
             "type": "pos_float",
         },
         {
+            "help": "Number of processes for trackpy to run in parallel",
+            "id": "processes",
+            "type": "pos_int",
+        },
+        {
             "help": [
                 "Search distance for tracking beads.",
                 "Trackpy library tries to match beads from one time point to the next,",
@@ -1119,6 +1124,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_piv_data_dir": "./BeadPIVsData",
                 "bead_diameter_um": "",
                 "linking_search_range_um": "3",
+                "processes": "1",
             },
             "notes": {},
         }
@@ -1246,7 +1252,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def setSoaxInputTiffDir(self, tiff_dir):
         self.soax_run_config["fields"]["source_tiff_dir"] = tiff_dir
-        self.create_image_specific_soax_params_config["fields"]["original_tiff_dir"] = tiff_dir
+        # self.create_image_specific_soax_params_config["fields"]["original_tiff_dir"] = tiff_dir
 
     def startPixelSizeSelect(self):
         self.addForm('PIXEL_SIZE_SELECT', PixelSizeSelectionForm, name="Select Pixel Size")
