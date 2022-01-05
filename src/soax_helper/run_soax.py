@@ -9,20 +9,21 @@ from .snakeutils.files import find_files_or_folders_at_depth, find_tiffs_in_dir,
 
 def soax_instance(soax_instance_args):
     batch_soax_path = soax_instance_args["batch_soax_path"]
-    tiff_path = soax_instance_args["tiff_path"]
-    params_name = soax_instance_args["params_name"]
-    param_fp = soax_instance_args["param_fp"]
+    tiff_fp = soax_instance_args["tiff_fp"]
+    params_fp = soax_instance_args["params_fp"]
     snakes_output_dir = soax_instance_args["snakes_output_dir"]
+    logging_dir = soax_instance_args["logging_dir"]
     delete_soax_logs_for_finished_runs = soax_instance_args["delete_soax_logs_for_finished_runs"]
     logger = soax_instance_args["logger"]
-    stdout_fp = soax_instance_args["stdout_fp"]
-    stderr_fp = soax_instance_args["stderr_fp"]
+
+    stdout_fp = os.path.join(logging_dir, "stdout.txt")
+    stderr_fp = os.path.join(loggin_dir, "stderr.txt")
 
     success = None
     with open(stdout_fp,"w") as stdout_file, open(stderr_fp,"w") as error_file:
-        command = "{batch_soax_path} --image {tiff_path} --parameter {param_fp} --snake {snakes_output_dir}".format(
+        command = "{batch_soax_path} --image {tiff_fp} --parameter {param_fp} --snake {snakes_output_dir}".format(
             batch_soax_path = batch_soax_path,
-            tiff_path=tiff_path,
+            tiff_fp=tiff_fp,
             param_fp=param_fp,
             snakes_output_dir=snakes_output_dir,
         )
@@ -45,61 +46,6 @@ def soax_instance(soax_instance_args):
         except:
             pass
 
-
-# def args_to_run_soax_on_image_dir_with_dir_of_paramfiles(
-#     batch_soax_path,
-#     tiff_dir,
-#     param_file_dir,
-#     snakes_dir,
-#     logging_dir,
-#     delete_soax_logs_for_finished_runs,
-#     logger,
-# ):
-#     if not os.path.isdir(snakes_dir):
-#         if os.path.exists(snakes_dir):
-#             logger.FAIL("Output snakes dir {} exists but is not directory. Cannot output snakes there".format(snakes_dir))
-#         else:
-#             os.makedirs(snakes_dir)
-
-#     if not os.path.isdir(logging_dir):
-#         if os.path.exists(logging_dir):
-#             logger.FAIL("Logging dir {} exists but is not directory. Cannot log output there".format(logging_dir))
-#         else:
-#             os.makedirs(logging_dir)
-
-#     arg_dicts = []
-
-#     param_files = [filename for filename in os.listdir(param_file_dir) if filename.endswith(".txt")]
-#     param_files.sort()
-
-#     for param_filename in param_files:
-#         param_fp = os.path.join(param_file_dir, param_filename)
-#         params_name = os.path.splitext(param_filename)[0]
-
-#         logging_dir_for_params = os.path.join(logging_dir, params_name)
-#         if not os.path.isdir(logging_dir_for_params):
-#             if os.path.exists(logging_dir_for_params):
-#                 logger.FAIL("Logging dir {} exists but is not directory. Cannot log output there".format(logging_dir_for_params))
-#             else:
-#                 os.makedirs(logging_dir_for_params)
-
-#         stdout_fp = os.path.join(logging_dir_for_params, "stdout.txt")
-#         stderr_fp = os.path.join(logging_dir_for_params, "stderr.txt")
-
-#         arg_dicts.append({
-#             "batch_soax_path": batch_soax_path,
-#             "tiff_dir":  tiff_dir,
-#             "param_fp": param_fp,
-#             "params_name":  params_name,
-#             "snakes_output_dir": snakes_dir,
-#             "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
-#             "stdout_fp": stdout_fp,
-#             "stderr_fp": stderr_fp,
-#             "logger": logger,
-#         })
-
-#     return arg_dicts
-
 def soax_args_for_tiff_and_param_file(
     batch_soax_path,
     tiff_fp,
@@ -109,7 +55,16 @@ def soax_args_for_tiff_and_param_file(
     delete_soax_logs_for_finished_runs,
     logger,
 ):
-    raise NotImplementedError()
+    return {
+        "batch_soax_path": batch_soax_path,
+        "tiff_fp":  tiff_fp,
+        "params_fp":  params_fp,
+        "snakes_output_dir": snakes_dir,
+        "logging_dir": logging_dir,
+        "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
+        "logger": logger,
+    }
+    # raise NotImplementedError()
 
 def find_param_files_in_dir(dirpath):
     param_file_names = [filename for filename in os.listdir(dirpath) if has_one_of_extensions(filename, [".txt"])]
@@ -239,14 +194,69 @@ def run_soax(
                             delete_soax_logs_for_finished_runs,
                             logger,
                         ))
-
-                # for
     else:
         if not use_sectioned_images:
-            raise NotImplementedError()
-        else:
-            raise NotImplementedError()
+            tiff_filenames = find_tiffs_in_dir(base_image_dir)
 
+            for tiff_fn in tiff_filenames:
+                image_name_extensionless = os.path.splitext(tiff_fn)[0]
+                image_path = os.path.join(base_image_dir, tiff_fn)
+
+                param_filenames = find_param_files_in_dir(base_params_dir)
+
+                for param_fn in param_filenames:
+                    param_name_extensionless = os.path.splitext(param_fn)[0]
+                    param_filepath = os.path.join(base_params_dir, param_fn)
+
+                    snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless)
+                    logging_target_dir = os.path.join(base_output_dir, param_name_extensionless, image_name_extensionless)
+
+                    make_dir_if_not_exist(snakes_target_dir, logger)
+                    make_dir_if_not_exist(logging_target_dir, logger)
+
+                    soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
+                        batch_soax_path,
+                        image_path,
+                        param_filepath,
+                        snakes_target_dir,
+                        logging_target_dir,
+                        delete_soax_logs_for_finished_runs,
+                        logger,
+                    ))
+        else:
+            sectioned_image_folders_info = find_files_or_folders_at_depth(base_image_dir, 0, folders_not_files=True)
+            sectioned_image_folder_names = [dirname for containing_path, dirname in sectioned_image_folders_info]
+
+            for sectioned_image_dirname in sectioned_image_folder_names:
+                sectioned_image_dirpath = os.path.join(base_image_dir, sectioned_image_dirname)
+
+                image_section_tiff_names = find_tiffs_in_dir(sectioned_image_dirpath)
+                param_filenames = find_param_files_in_dir(base_params_dir)
+
+                for image_section_fn in image_section_tiff_names:
+                    image_section_tiff_path = os.path.join(sectioned_image_dirpath, image_section_fn)
+                    section_name_extensionless = os.path.splitext(image_section_fn)[0]
+
+
+                    for param_fn in param_filenames:
+                        param_filepath = os.path.join(base_params_dir, param_fn)
+                        param_name_extensionless = os.path.splitext(param_fn)[0]
+
+                        snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname)
+                        logging_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname, section_name_extensionless)
+
+                        make_dir_if_not_exist(snakes_target_dir, logger)
+                        make_dir_if_not_exist(logging_target_dir, logger)
+
+                        soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
+                            batch_soax_path,
+                            image_section_tiff_path,
+                            param_filepath,
+                            snakes_target_dir,
+                            logging_target_dir,
+                            delete_soax_logs_for_finished_runs,
+                            logger,
+                        ))
 
 
 def run_soax(
