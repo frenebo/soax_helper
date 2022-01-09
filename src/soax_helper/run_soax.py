@@ -17,7 +17,7 @@ def soax_instance(soax_instance_args):
     logger = soax_instance_args["logger"]
 
     stdout_fp = os.path.join(logging_dir, "stdout.txt")
-    stderr_fp = os.path.join(loggin_dir, "stderr.txt")
+    stderr_fp = os.path.join(logging_dir, "stderr.txt")
 
     success = None
     with open(stdout_fp,"w") as stdout_file, open(stderr_fp,"w") as error_file:
