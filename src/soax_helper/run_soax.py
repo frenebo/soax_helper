@@ -126,7 +126,7 @@ def run_soax(
                     param_filepath = os.path.join(param_folder_path_for_tiff, param_filename)
 
                     snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless)
-                    logging_target_dir = os.path.join(base_output_dir, param_name_extensionless, image_name_extensionless)
+                    logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, image_name_extensionless)
 
                     make_dir_if_not_exist(snakes_target_dir, logger)
                     make_dir_if_not_exist(logging_target_dir, logger)
@@ -178,7 +178,7 @@ def run_soax(
                         param_name_extensionless = os.path.splitext(param_fn)[0]
 
                         snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname)
-                        logging_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname, section_name_extensionless)
+                        logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, sectioned_image_dirname, section_name_extensionless)
 
                         make_dir_if_not_exist(snakes_target_dir, logger)
                         make_dir_if_not_exist(logging_target_dir, logger)
@@ -207,7 +207,7 @@ def run_soax(
                     param_filepath = os.path.join(base_params_dir, param_fn)
 
                     snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless)
-                    logging_target_dir = os.path.join(base_output_dir, param_name_extensionless, image_name_extensionless)
+                    logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, image_name_extensionless)
 
                     make_dir_if_not_exist(snakes_target_dir, logger)
                     make_dir_if_not_exist(logging_target_dir, logger)
@@ -241,7 +241,7 @@ def run_soax(
                         param_name_extensionless = os.path.splitext(param_fn)[0]
 
                         snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname)
-                        logging_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname, section_name_extensionless)
+                        logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, sectioned_image_dirname, section_name_extensionless)
 
                         make_dir_if_not_exist(snakes_target_dir, logger)
                         make_dir_if_not_exist(logging_target_dir, logger)
