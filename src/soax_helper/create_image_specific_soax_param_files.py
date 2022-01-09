@@ -29,7 +29,7 @@ def create_image_specific_soax_param_files(
     orig_tiffs = find_tiffs_in_dir(original_tiff_dir)
 
     for orig_tiff_fn in orig_tiffs:
-        tiff_path = os.path.join(original_tiff_dir, tiff_path)
+        tiff_path = os.path.join(original_tiff_dir, orig_tiff_fn)
         image_name_without_extension = os.path.splitext(orig_tiff_fn)[0]
         image_params_dirpath = os.path.join(params_save_dir, image_name_without_extension)
         os.mkdir(image_params_dirpath)
