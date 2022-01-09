@@ -178,7 +178,7 @@ def error_string_or_arg_or_range(arg, require_int):
 def parse_arg_or_range(field_name, arg, require_int):
     err_str_or_val = error_string_or_arg_or_range(arg, require_int)
     if isinstance(err_str_or_val, str):
-        raise ParseException("Error parsing {field_name}: " + err_str_or_val)
+        raise ParseException("Error parsing {field_name}: ".format(field_name) + err_str_or_val)
     else:
         return err_str_or_val
 
@@ -660,11 +660,10 @@ class SoaxParamsSetupPage1Form(SetupForm):
             "id": "intensity_scaling",
             "type": "arg_or_range",
             "help": [
-                "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling",
-                "If input images have been intensity-scaled in a previous step, we don't want SOAX to rescale brightness",
-                "If the input TIFFs are 16 bit, set intensity_scaling to 1/65535 = 0.000015259. to rescale from TIFF max intensity to 1.0 max intensity",
-                "If input images are sectioned before feeding to SOAX, they should be intensity rescaled",
-                "before sectioning, so intensity processing on all sections is uniform",
+                "Intensity scaling controls how SOAX rescales image brightness. 0=automatic rescaling.",
+                "Non-zero values are the number SOAX multiplies the integer pixel brightness values to rescale them to a 0-1 scale.",
+                "If this parameter is being determined per image, then this field will be different for each image,",
+                "so you can't set it here for all images in general."
             ],
         },
         {
