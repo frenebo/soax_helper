@@ -178,7 +178,7 @@ def error_string_or_arg_or_range(arg, require_int):
 def parse_arg_or_range(field_name, arg, require_int):
     err_str_or_val = error_string_or_arg_or_range(arg, require_int)
     if isinstance(err_str_or_val, str):
-        raise ParseException("Error parsing {field_name}: ".format(field_name) + err_str_or_val)
+        raise ParseException("Error parsing {}: ".format(field_name) + err_str_or_val)
     else:
         return err_str_or_val
 
