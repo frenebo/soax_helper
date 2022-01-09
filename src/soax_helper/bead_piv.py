@@ -21,7 +21,7 @@ def bead_piv(
     import pims
     import trackpy as tp
 
-    logger.log("Letter before frame num: {}"format(tiff_fn_letter_before_frame_num))
+    logger.log("Letter before frame num: {}".format(tiff_fn_letter_before_frame_num))
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num])
     logger.log("Frames")
     logger.log(str(frames))
