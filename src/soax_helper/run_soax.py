@@ -89,8 +89,6 @@ def run_soax(
     workers_num,
     logger,
 ):
-    logger.log("Running SOAX with {} batch_soax processes".format(workers_num))
-
     soax_instance_arg_dicts = []
 
     if use_image_specific_params:
@@ -257,3 +255,7 @@ def run_soax(
                             logger,
                         ))
 
+    with ThreadPool(workers_num) as pool:
+        logger.log("Running {} batch_soax workers on {} jobs".format(workers_num, len(soax_instance_arg_dicts)))
+        future = pool.map(soax_instance, soax_instance_arg_dicts, chunksize=1)
+        logger.log("Finished running batch_soax workers")
