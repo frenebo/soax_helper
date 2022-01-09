@@ -8,7 +8,7 @@ from .create_regular_soax_param_files import create_regular_soax_param_files
 from .snakeutils.tifimage import pil_img_3d_to_np_arr
 
 def get_image_intensity_scaling(img_arr, logger):
-    original_max_intensity = image_arr.max()
+    original_max_intensity = img_arr.max()
 
     if original_max_intensity == 0:
         logger.FAIL("TIFF has zero brightness everywhere, cannot intensity scale")
