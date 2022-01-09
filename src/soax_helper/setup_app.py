@@ -118,8 +118,7 @@ def parse_infer_or_int_coords(field_name, field_str):
 def parse_float_coords(field_name, field_str):
     if len(field_str.strip()) == 0:
         raise ParseException("Invalid field '{}' value '{}': value is empty".format(field_name, field_str))
-    # if "," not in field_str:
-    #     raise ParseException("Invalid field '{}' value '{}': expected three float values separated by commas".format(field_name, field_str))
+
     comma_split = field_str.split(",")
     if len(comma_split) != 3:
         raise ParseException("Could not parse field '{}' value '{}' as three comma-separated floats. Expected 3 items, got {}: {}".format(field_name, field_str, len(comma_split), comma_split))
@@ -367,7 +366,8 @@ class SetupForm(npyscreen.Form):
 
     def add_field(self, field_id, field_name, field_str, field_type):
         if self.field_strings_nullable_to_grey_out_and_ignore and field_str is None:
-            self.npy_fields[field_id] = self.add(
+            self.npy_fields[field_id] = None
+            self.add(
                 npyscreen.TitleText,
                 name=field_name,
                 value="Field Disabled",
@@ -438,6 +438,9 @@ class SetupForm(npyscreen.Form):
 
 
     def getFieldString(self, field_type, field_id, field_details):
+        if self.npy_fields[field_id] is None:
+            return None
+
         if field_type in [
             "dir",
             "optional_dir",
