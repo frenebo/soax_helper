@@ -21,10 +21,10 @@ def soax_instance(soax_instance_args):
 
     success = None
     with open(stdout_fp,"w") as stdout_file, open(stderr_fp,"w") as error_file:
-        command = "{batch_soax_path} --image {tiff_fp} --parameter {param_fp} --snake {snakes_output_dir}".format(
+        command = "{batch_soax_path} --image {tiff_fp} --parameter {params_fp} --snake {snakes_output_dir}".format(
             batch_soax_path = batch_soax_path,
             tiff_fp=tiff_fp,
-            param_fp=param_fp,
+            params_fp=params_fp,
             snakes_output_dir=snakes_output_dir,
         )
 
@@ -49,7 +49,7 @@ def soax_instance(soax_instance_args):
 def soax_args_for_tiff_and_param_file(
     batch_soax_path,
     tiff_fp,
-    param_fp,
+    params_fp,
     snakes_dir,
     logging_dir,
     delete_soax_logs_for_finished_runs,
