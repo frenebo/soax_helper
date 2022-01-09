@@ -1001,7 +1001,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "fields": {
                 "source_tiff_dir": "",
                 "target_sectioned_tiff_dir": "./SectionedTIFFs",
-                "section_max_size": "200",
+                "section_max_size": "300",
                 "workers_num": "1",
             },
             "notes": {},
