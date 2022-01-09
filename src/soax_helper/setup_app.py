@@ -184,7 +184,7 @@ def parse_arg_or_range(field_name, arg, require_int):
 
 class SoaxStepsSelectForm(npyscreen.Form):
     steps = [
-        {"name": "divide_average_image", "show": "Divide Average Image"},
+        {"name": "divide_average_image", "show": "Divide Each Image by Average Image"},
         {"name": "rescale", "show": "Rescale TIFFs in X,Y,Z"},
         {"name": "section", "show": "Section TIFFs before running SOAX"},
         {"name": "create_soax_params", "show": "Make SOAX Parameter Files"},
@@ -629,6 +629,7 @@ class CreateImageSpecificSoaxParamsSetupForm(SetupForm):
             "type": "dir",
         },
         {
+            "help": "Directory with the tiffs that are given to SOAX. If images are being sectioned before being run, this should be the directory with the images before sectioning.",
             "id": "original_tiff_dir",
             "type": "dir",
         },

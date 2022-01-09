@@ -64,7 +64,6 @@ def soax_args_for_tiff_and_param_file(
         "delete_soax_logs_for_finished_runs": delete_soax_logs_for_finished_runs,
         "logger": logger,
     }
-    # raise NotImplementedError()
 
 def find_param_files_in_dir(dirpath):
     param_file_names = [filename for filename in os.listdir(dirpath) if has_one_of_extensions(filename, [".txt"])]
@@ -156,7 +155,7 @@ def run_soax(
                 ))
 
             # Match sectioned image directories and param directories together
-            for image_num, (param_dirname_for_image, sectioned_image_dirname) in enumerate(zip(param_dirnames, sectioned_image_folder_names))
+            for image_num, (param_dirname_for_image, sectioned_image_dirname) in enumerate(zip(param_dirnames, sectioned_image_folder_names)):
                 # Check that image name matches with param dir name
                 if sectioned_image_dirname != param_dirname_for_image:
                     logger.FAIL(("Parameter folder names in {} and image names in {} don't match: "
