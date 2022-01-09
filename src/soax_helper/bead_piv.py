@@ -58,13 +58,12 @@ def bead_piv(
     logger.log("Rounding up z bead stack diameter to nearest odd int, {} -> {}".format(float_search_diameter_z, search_diameter_z))
     diameter = (search_diameter_z, search_diameter_x_y, search_diameter_x_y)
     logger.log("Finding features with diameter {}".format(diameter))
+    logger.log("After finding features, cross-time-frame linking will be done with linking search range {} um".format(linking_search_range_um))
 
     f = tp.batch(frames, diameter=diameter, processes=processes)
     f['xum'] = f['x'] * x_y_pixel_spacing_um
     f['yum'] = f['y'] * x_y_pixel_spacing_um
     f['zum'] = f['z'] * z_stack_spacing_um
-
-    output_file = os.path.join(target_piv_data_dir, "bead_piv.json")
 
     linked = tp.link_df(f, linking_search_range_um, pos_columns=['xum','yum','zum'])
 

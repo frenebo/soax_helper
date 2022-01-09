@@ -505,17 +505,17 @@ class PixelSizeSelectionForm(SetupForm):
     field_infos = [
         {
             "id": "x_spacing",
-            "name": "Pixel Width Spacing (um)",
+            "name": "Pixel Width X Spacing (um)",
             "type": "pos_float",
         },
         {
             "id": "y_spacing",
-            "name": "Pixel Height Spacing (um)",
+            "name": "Pixel Height Y Spacing (um)",
             "type": "pos_float",
         },
         {
             "id": "z_spacing",
-            "name": "Pixel Z-Stack Depth Spacing (um)",
+            "name": "Pixel Stack Depth Z Spacing (um)",
             "type": "pos_float",
         },
     ]
@@ -1469,7 +1469,9 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
 
         if fields["set_intensity_scaling_for_each_image"] == "true":
-            self.soax_params_page1_config["intensity_scaling"] = None
+            # This field should be disabled, because it can't be set in general, it will be
+            # calculated for each image indivdually
+            self.soax_params_page1_config["fields"]["intensity_scaling"] = None
 
         self.soax_run_config["fields"]["param_files_dir"] = fields["params_save_dir"]
 
