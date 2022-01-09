@@ -27,7 +27,7 @@ def bead_piv(
     logger.log(str(frames))
     try:
         logger.log("Axes:")
-        logger.(str(frames.axes))
+        logger.log(str(frames.axes))
     except:
         logger.log("No axes")
     # Inside a frame axes are labelled x,y,c
