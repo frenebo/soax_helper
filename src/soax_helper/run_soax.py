@@ -29,7 +29,7 @@ def soax_instance(soax_instance_args):
         )
 
         logger.log("Executing '{}'".format(command))
-        logger.log("    (Piping stdout to '{}' and stderr to '{}')".format(stdout_fp, stderr_fp))
+        logger.log("    (stdout in '{}' and stderr in '{}')".format(stdout_fp, stderr_fp))
         try:
             code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
             logger.success("Completed {}".format(command))
