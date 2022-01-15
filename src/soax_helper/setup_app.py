@@ -223,11 +223,14 @@ class SoaxStepsSelectForm(npyscreen.Form):
 
         if do_section:
             if not do_join_sectioned_snakes:
-                should_continue = npyscreen.notify_yes_no("If you're sectioning TIFFs, you probably want to join the output snakes of soax in the Join Sectioned Snakes step. Do you want to continue without doing that?", editw=2)
+                should_continue = npyscreen.notify_yes_no(
+                    "If you're sectioning TIFFs, you probably want to join the output snakes of soax "
+                    "in the Join Sectioned Snakes step. Do you want to continue without doing that?",
+                    editw=1)
                 if not should_continue:
                     return
             if not do_create_image_specific_soax_params:
-                should_continue = npyscreen.notify_yes_no("If you're sectioning TIFFs, you need to generate image specific soax parameters: intensity_scaling in SOAX needs to be configured manually for each group of sections from an image. This is so SOAX doesn't auto intensity-scale each image section independently. Continue without doing this?", editw=2)
+                should_continue = npyscreen.notify_yes_no("If you're sectioning TIFFs, you need to generate image specific soax parameters: intensity_scaling in SOAX needs to be configured manually for each group of sections from an image. This is so SOAX doesn't auto intensity-scale each image section independently. Continue without doing this?", editw=1)
                 if not should_continue:
                     return
 
