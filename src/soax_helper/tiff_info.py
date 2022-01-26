@@ -52,8 +52,8 @@ def tiff_info(tiff_paths,logger):
         logger.success("    Number of frames in stack: {}".format(stack_height))
         logger.success("  TIFF INFO:")
         logger.success("    Pixel data type: {}".format(dtype))
-        logger.success("    Minimum pixel value in tiff: {}".format(min_val))
-        logger.success("    Max pixel value in tiff: {}".format(max_val))
+        logger.success("    Minimum pixel value found in tiff: {}".format(min_val))
+        logger.success("    Max pixel value found in tiff: {}".format(max_val))
         logger.success("    Average pixel value in tiff: {}".format(avg))
 
 # if __name__ == "__main__":

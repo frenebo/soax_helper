@@ -28,8 +28,7 @@ def soax_instance(soax_instance_args):
             snakes_output_dir=snakes_output_dir,
         )
 
-        logger.log("Executing '{}'".format(command))
-        logger.log("    (stdout in '{}' and stderr in '{}')".format(stdout_fp, stderr_fp))
+        logger.log("Executing '{}'\n    (stdout in '{}' and stderr in '{}')".format(command, stdout_fp, stderr_fp))
         try:
             code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
             logger.success("Completed {}".format(command))
