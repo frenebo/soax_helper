@@ -37,7 +37,7 @@ def soax_instance(soax_instance_args):
 
             end = time.time()
             elapsed_seconds = end - start
-            runtime_file.write("process runtime (seconds):" + elapsed_seconds)
+            runtime_file.write("process runtime (seconds):" + str(elapsed_seconds))
             success = True
         except subprocess.CalledProcessError as e:
             logger.error("ERROR: ")
