@@ -22,7 +22,7 @@ def soax_instance(soax_instance_args):
 
     success = None
     start = time.time()
-    with open(stdout_fp,"w") as stdout_file, open(stderr_fp,"w") as error_file:
+    with open(stdout_fp,"w") as stdout_file, open(stderr_fp,"w") as error_file, open(runtime_fp, "w") as runtime_file:
         command = "{batch_soax_path} --image {tiff_fp} --parameter {params_fp} --snake {snakes_output_dir}".format(
             batch_soax_path = batch_soax_path,
             tiff_fp=tiff_fp,
@@ -34,6 +34,10 @@ def soax_instance(soax_instance_args):
         try:
             code = subprocess.run(command,shell=True,stdout=stdout_file,stderr=error_file,check=True).returncode
             logger.success("Completed {}".format(command))
+
+            end = time.time()
+            elapsed_seconds = end - start
+            runtime_file.write("process runtime (seconds):" + elapsed_seconds)
             success = True
         except subprocess.CalledProcessError as e:
             logger.error("ERROR: ")
@@ -41,15 +45,12 @@ def soax_instance(soax_instance_args):
             logger.error("    STDERR saved in {}".format(stderr_fp))
             logger.error("    STDOUT saved in {}".format(stdout_fp))
             success = False
-    try:
-        end = time.time()
-        elapsed_seconds = end - start
-        with open(runtime_fp, "w") as runtime_file:
-            runtime_file.write("runtime (seconds):" + elapsed_seconds)
+
     if success and delete_soax_logs_for_finished_runs:
         try:
             os.remove(stderr_fp)
             os.remove(stdout_fp)
+            os.remove(runtime_fp)
         except:
             pass
 
