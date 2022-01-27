@@ -11,7 +11,8 @@ def bead_piv(
     source_tiff_dir,
     tiff_fn_letter_before_frame_num,
     target_piv_data_dir,
-    x_y_pixel_spacing_um,
+    x_pixel_spacing_um,
+    y_pixel_spacing_um,
     z_stack_spacing_um,
     bead_diameter_um,
     linking_search_range_um,
@@ -35,34 +36,41 @@ def bead_piv(
     # PIMS gives the time axis the name of identifier letter
     frames.iter_axes = [tiff_fn_letter_before_frame_num]
 
-    float_search_diameter_x_y = bead_diameter_um / x_y_pixel_spacing_um
+    float_search_diameter_x = bead_diameter_um / x_pixel_spacing_um
+    float_search_diameter_y = bead_diameter_um / y_pixel_spacing_um
     float_search_diameter_z = bead_diameter_um / z_stack_spacing_um
 
-    logger.log("Using x_y_pixel size {x_y_size} um, z_spacing {z_size} um, bead size {bead_diameter_um} um".format(
-        x_y_size = x_y_pixel_spacing_um,
+    logger.log("Using x pixel size {x_size} um, y pixel size {y_size} um, z_spacing {z_size} um, bead size {bead_diameter_um} um".format(
+        x_size = x_pixel_spacing_um,
+        y_size = y_pixel_spacing_um,
         z_size = z_stack_spacing_um,
         bead_diameter_um = bead_diameter_um,
         ))
-    logger.log("In x y dimension we expect beads to be {} pixels large".format(float_search_diameter_x_y))
+    logger.log("In x dimension we expect beads to be {} pixels large".format(float_search_diameter_x))
+    logger.log("In y dimension we expect beads to be {} pixels large".format(float_search_diameter_y))
     logger.log("In z dimension we expect beads to be {} stacks large".format(float_search_diameter_z))
 
-    search_diameter_x_y = round_to_odd(float_search_diameter_x_y)
+    search_diameter_x = round_to_odd(float_search_diameter_x)
+    search_diameter_y = round_to_odd(float_search_diameter_y)
     search_diameter_z = round_to_odd(float_search_diameter_z)
 
-    if search_diameter_x_y < 1:
-        search_diameter_x_y = 1
+    if search_diameter_x < 1:
+        search_diameter_x = 1
+    if search_diameter_y < 1:
+        search_diameter_y = 1
     if search_diameter_z < 1:
         search_diameter_z = 1
 
-    logger.log("Rounding up x,y bead pixel diameter to nearest odd int, {} -> {}".format(float_search_diameter_x_y, search_diameter_x_y))
+    logger.log("Rounding up x bead pixel diameter to nearest odd int, {} -> {}".format(float_search_diameter_x, search_diameter_x))
+    logger.log("Rounding up y bead pixel diameter to nearest odd int, {} -> {}".format(float_search_diameter_y, search_diameter_y))
     logger.log("Rounding up z bead stack diameter to nearest odd int, {} -> {}".format(float_search_diameter_z, search_diameter_z))
-    diameter = (search_diameter_z, search_diameter_x_y, search_diameter_x_y)
+    diameter = (search_diameter_z, search_diameter_x, search_diameter_y)
     logger.log("Finding features with diameter {}".format(diameter))
     logger.log("After finding features, cross-time-frame linking will be done with linking search range {} um".format(linking_search_range_um))
 
     f = tp.batch(frames, diameter=diameter, processes=processes)
-    f['xum'] = f['x'] * x_y_pixel_spacing_um
-    f['yum'] = f['y'] * x_y_pixel_spacing_um
+    f['xum'] = f['x'] * x_pixel_spacing_um
+    f['yum'] = f['y'] * y_pixel_spacing_um
     f['zum'] = f['z'] * z_stack_spacing_um
 
     linked = tp.link_df(f, linking_search_range_um, pos_columns=['xum','yum','zum'])

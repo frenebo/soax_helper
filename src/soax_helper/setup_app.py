@@ -948,7 +948,11 @@ class BeadPIVSetupForm(SetupForm):
             "type": "pos_float",
         },
         {
-            "id": "x_y_pixel_size_um",
+            "id": "x_pixel_size_um",
+            "type": "pos_float",
+        },
+        {
+            "id": "y_pixel_size_um",
             "type": "pos_float",
         },
         {
@@ -1123,7 +1127,8 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.bead_PIV_config = {
             "fields": {
-                "x_y_pixel_size_um": "",
+                "x_pixel_size_um": "",
+                "y_pixel_size_um": "",
                 "z_stack_spacing_um": "",
                 "source_tiff_dir": "",
                 "tiff_fn_letter_before_frame_num": "",
