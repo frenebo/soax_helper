@@ -18,7 +18,7 @@ def soax_instance(soax_instance_args):
 
     stdout_fp = os.path.join(logging_dir, "stdout.txt")
     stderr_fp = os.path.join(logging_dir, "stderr.txt")
-    runtime_fp = os.path.join(loggin_dir, "runtime.txt")
+    runtime_fp = os.path.join(logging_dir, "runtime.txt")
 
     success = None
     start = time.time()
