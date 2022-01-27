@@ -18,8 +18,10 @@ def soax_instance(soax_instance_args):
 
     stdout_fp = os.path.join(logging_dir, "stdout.txt")
     stderr_fp = os.path.join(logging_dir, "stderr.txt")
+    runtime_fp = os.path.join(loggin_dir, "runtime.txt")
 
     success = None
+    start = time.time()
     with open(stdout_fp,"w") as stdout_file, open(stderr_fp,"w") as error_file:
         command = "{batch_soax_path} --image {tiff_fp} --parameter {params_fp} --snake {snakes_output_dir}".format(
             batch_soax_path = batch_soax_path,
@@ -39,6 +41,11 @@ def soax_instance(soax_instance_args):
             logger.error("    STDERR saved in {}".format(stderr_fp))
             logger.error("    STDOUT saved in {}".format(stdout_fp))
             success = False
+    try:
+        end = time.time()
+        elapsed_seconds = end - start
+        with open(runtime_fp, "w") as runtime_file:
+            runtime_file.write("runtime (seconds):" + elapsed_seconds)
     if success and delete_soax_logs_for_finished_runs:
         try:
             os.remove(stderr_fp)
