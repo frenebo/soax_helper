@@ -94,7 +94,7 @@ def run_soax_helper(save_settings, load_settings, make_dirs, do_not_run, save_lo
 
     if save_logs_to_file:
         with open(save_logs_to_file, 'w') as log_file:
-            file_logger = FileLogger(log_filehandle=log_file, parent_logger=console_logger)
+            file_logger = FileLogger(log_filehandle=log_file, child_logger=console_logger)
             run_actions(action_configs, make_dirs, logger=file_logger)
     else:
         run_actions(action_configs, make_dirs, logger=console_logger)

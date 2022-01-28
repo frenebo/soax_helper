@@ -45,8 +45,11 @@ def create_image_specific_soax_param_files(
 
         if set_intensity_scaling_for_each_image:
             logger.log("Finding intensity scaling for {}".format(tiff_path))
-            intensity_scaling = get_image_intensity_scaling(image_arr, logger)
-            intensity_scaling = decimal.Decimal(intensity_scaling)
+            float_intensity_scaling = get_image_intensity_scaling(image_arr, logger)
+            # Convert to string with 12 significant digits - so decimal doesn't have way too many
+            # unnecessary digits
+            str_intensity_scaling = "{0:.12g}".format(float_intensity_scaling)
+            intensity_scaling = decimal.Decimal(str_intensity_scaling)
             logger.success("     Intensity scaling for {} is {}".format(tiff_path, intensity_scaling))
             image_param_settings["intensity_scaling"] = {
                 "start": intensity_scaling,
