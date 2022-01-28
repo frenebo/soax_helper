@@ -51,6 +51,8 @@ def soax_instance(soax_instance_args):
             os.remove(stderr_fp)
             os.remove(stdout_fp)
             os.remove(runtime_fp)
+            if len(os.listdir(logging_dir)) == 0:
+                os.rmdir(logging_dir)
         except:
             pass
 
