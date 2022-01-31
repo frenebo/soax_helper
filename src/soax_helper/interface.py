@@ -3,7 +3,7 @@ import argparse
 import json
 import time
 
-from .snakeutils.logger import FileLogger, RecordingLogger, ConsoleLogger, LoggerFAILCalledException
+from .snakeutils.logger import FileLogger, RecordingLogger, ConsoleLogger
 from .setup_app import (
     DivideAverageImageSetupForm,
     SoaxSetupApp,
@@ -115,7 +115,7 @@ def run_actions(action_configs, make_dirs_if_not_present, logger):
 
         try:
             perform_action(action_name, action_settings, make_dirs_if_not_present, action_logger)
-        except LoggerFAILCalledException as e:
+        except Exception as e:
             message = str(e)
             logger.error(message)
 

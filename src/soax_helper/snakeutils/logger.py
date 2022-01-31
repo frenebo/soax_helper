@@ -55,9 +55,6 @@ class RecordingLogger:
         self.fails.append(text)
         self.child_logger.FAIL(text)
 
-class LoggerFAILCalledException(Exception):
-    pass
-
 class ConsoleLogger:
     def log(self, text):
         print(text)
@@ -72,4 +69,4 @@ class ConsoleLogger:
         print(Fore.RED + text + Style.RESET_ALL)
 
     def FAIL(self, text):
-        raise LoggerFAILCalledException(text)
+        raise Exception(text)
