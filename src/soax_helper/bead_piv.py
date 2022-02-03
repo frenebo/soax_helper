@@ -83,6 +83,33 @@ def bead_piv(
     logger.log(str(f.size))
     logger.log("Unique frames: ")
     logger.log(str(f.frame.unique()))
+    logger.log("XYZ min and max:")
+    logger.log("min {} {} {}, max {} {} {}".format(
+        str(f.x.min()),
+        str(f.y.min()),
+        str(f.z.min()),
+        str(f.x.max()),
+        str(f.y.max()),
+        str(f.z.max()),
+    ))
+    logger.log("XYZ um min and max:")
+    logger.log("min {} {} {}, max {} {} {}".format(
+        str(f.xum.min()),
+        str(f.yum.min()),
+        str(f.zum.min()),
+        str(f.xum.max()),
+        str(f.yum.max()),
+        str(f.zum.max()),
+    ))
+    logger.log("size min and max:")
+    logger.log("min {} {} {}, max {} {} {}".format(
+        str(f.size_x.min()),
+        str(f.size_y.min()),
+        str(f.size_z.min()),
+        str(f.size_x.max()),
+        str(f.size_y.max()),
+        str(f.size_z.max()),
+    ))
 
     # Linking is faster if using a predictor for where the particles will go
     pred = tp.predict.NearestVelocityPredict()
