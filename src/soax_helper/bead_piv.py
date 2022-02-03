@@ -81,6 +81,8 @@ def bead_piv(
     logger.log(str(f.shape))
     logger.log("Size: ")
     logger.log(str(f.size))
+    logger.log("Unique frames: ")
+    logger.log(str(f.frame.unique()))
 
     # Linking is faster if using a predictor for where the particles will go
     pred = tp.predict.NearestVelocityPredict()
