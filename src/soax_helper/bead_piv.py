@@ -16,6 +16,7 @@ def bead_piv(
     z_stack_spacing_um,
     bead_diameter_um,
     linking_search_range_um,
+
     processes,
     logger,
     ):
@@ -73,7 +74,13 @@ def bead_piv(
     f['yum'] = f['y'] * y_pixel_spacing_um
     f['zum'] = f['z'] * z_stack_spacing_um
 
-    linked = tp.link_df(f, linking_search_range_um, pos_columns=['xum','yum','zum'])
+    logger.log("Columns:")
+    for col in f.columns:
+        logger.log("   " + str(col))
+
+    # Linking is faster if using a predictor for where the particles will go
+    pred = tp.predict.NearestVelocityPredict()
+    linked = pred.link_df(f, linking_search_range_um, pos_columns=['xum','yum','zum'])
 
     frame_count = max(linked.frame)
 
