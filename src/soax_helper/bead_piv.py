@@ -77,6 +77,10 @@ def bead_piv(
     logger.log("Columns:")
     for col in f.columns:
         logger.log("   " + str(col))
+    logger.log("Shape: ")
+    logger.log(str(f.shape))
+    logger.log("Size: ")
+    logger.log(str(f.size))
 
     # Linking is faster if using a predictor for where the particles will go
     pred = tp.predict.NearestVelocityPredict()
