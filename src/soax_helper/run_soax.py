@@ -16,6 +16,9 @@ def soax_instance(soax_instance_args):
     delete_soax_logs_for_finished_runs = soax_instance_args["delete_soax_logs_for_finished_runs"]
     logger = soax_instance_args["logger"]
 
+    make_dir_if_not_exist(snakes_output_dir)
+    make_dir_if_not_exist(logging_dir)
+
     stdout_fp = os.path.join(logging_dir, "stdout.txt")
     stderr_fp = os.path.join(logging_dir, "stderr.txt")
     runtime_fp = os.path.join(logging_dir, "runtime.txt")
@@ -81,11 +84,10 @@ def find_param_files_in_dir(dirpath):
     return param_file_names
 
 def make_dir_if_not_exist(dirpath, logger):
+    os.makedirs(dirpath, exist_ok=True)
+
     if not os.path.isdir(dirpath):
-        if os.path.exists(dirpath):
-            logger.FAIL("Failed to create directory {}, that location exists already but is not a directory".format(dirpath))
-        else:
-            os.makedirs(dirpath)
+        logger.FAIL("Failed to create directory {}".format(dirpath))
 
 def run_soax(
     batch_soax_path,
@@ -137,8 +139,8 @@ def run_soax(
                     snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless)
                     logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, image_name_extensionless)
 
-                    make_dir_if_not_exist(snakes_target_dir, logger)
-                    make_dir_if_not_exist(logging_target_dir, logger)
+                    # make_dir_if_not_exist(snakes_target_dir, logger)
+                    # make_dir_if_not_exist(logging_target_dir, logger)
 
                     soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
                         batch_soax_path,
@@ -189,8 +191,8 @@ def run_soax(
                         snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname)
                         logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, sectioned_image_dirname, section_name_extensionless)
 
-                        make_dir_if_not_exist(snakes_target_dir, logger)
-                        make_dir_if_not_exist(logging_target_dir, logger)
+                        # make_dir_if_not_exist(snakes_target_dir, logger)
+                        # make_dir_if_not_exist(logging_target_dir, logger)
 
                         soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
                             batch_soax_path,
@@ -218,8 +220,8 @@ def run_soax(
                     snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless)
                     logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, image_name_extensionless)
 
-                    make_dir_if_not_exist(snakes_target_dir, logger)
-                    make_dir_if_not_exist(logging_target_dir, logger)
+                    # make_dir_if_not_exist(snakes_target_dir, logger)
+                    # make_dir_if_not_exist(logging_target_dir, logger)
 
                     soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
                         batch_soax_path,
@@ -252,8 +254,8 @@ def run_soax(
                         snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname)
                         logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, sectioned_image_dirname, section_name_extensionless)
 
-                        make_dir_if_not_exist(snakes_target_dir, logger)
-                        make_dir_if_not_exist(logging_target_dir, logger)
+                        # make_dir_if_not_exist(snakes_target_dir, logger)
+                        # make_dir_if_not_exist(logging_target_dir, logger)
 
                         soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
                             batch_soax_path,
