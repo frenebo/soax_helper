@@ -2,7 +2,7 @@ import argparse
 import os
 from PIL import Image
 
-from .snakeutils.tifimage import pil_img_3d_to_np_arr, save_3d_tif
+from .snakeutils.tifimage import open_tiff_as_np_arr, save_3d_tif
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Split 3D Tiff into its 2D frames')
@@ -17,8 +17,7 @@ if __name__ == "__main__":
         if not os.path.isdir(args.target_directory):
             raise Exception("Bad target directory '{}': should be a directory to put the TIFF frames into".format(args.target_directory))
 
-    pil_img = Image.open(args.source_tiff_path)
-    np_arr = pil_img_3d_to_np_arr(pil_img)
+    np_arr = open_tiff_as_np_arr(args.source_tiff_path)
 
     print("shape: {}".format(np_arr.shape))
 

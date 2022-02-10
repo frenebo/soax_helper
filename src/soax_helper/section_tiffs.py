@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 import tifffile
 
-from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
+from .snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
 
 def section_tiff(arg_dict):
     tiff_filepath = arg_dict["tiff_filepath"]
@@ -15,9 +15,7 @@ def section_tiff(arg_dict):
 
     logger.log("Processing {}".format(tiff_filepath))
 
-    pil_img = Image.open(tiff_filepath)
-
-    img_arr = pil_img_3d_to_np_arr(pil_img)
+    img_arr = open_tiff_as_np_arr(tiff_filepath)
     height,width,depth = img_arr.shape
 
     # Ceil because we want to have slices on the smaller size if width/height/depth is not

@@ -10,7 +10,7 @@ from matplotlib.backends.backend_tkagg import (
 from matplotlib.figure import Figure
 
 from .snakeutils.files import find_files_or_folders_at_depth
-from .snakeutils.tifimage import pil_img_3d_to_np_arr
+from .snakeutils.tifimage import open_tiff_as_np_arr
 from .snakeutils.params import param_filename_tags
 from .snakeutils.snakejson import load_json_snakes
 
@@ -128,8 +128,8 @@ def make_gui(
             img_contents = os.listdir(images_dir)
             img_contents.sort()
             tif_filename = img_contents[img_idx]
-            pil_img = Image.open(os.path.join(images_dir, tif_filename))
-            img_arr = pil_img_3d_to_np_arr(pil_img)
+
+            img_arr = open_tiff_as_np_arr(os.path.join(images_dir, tif_filename))
         show_snakes(snakes, img_arr)
 
     toolbar = NavigationToolbar2Tk(canvas, root)

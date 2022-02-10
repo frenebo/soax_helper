@@ -6,7 +6,7 @@ import decimal
 
 from .snakeutils.files import find_tiffs_in_dir
 from .create_regular_soax_param_files import create_regular_soax_param_files
-from .snakeutils.tifimage import pil_img_3d_to_np_arr
+from .snakeutils.tifimage import open_tiff_as_np_arr
 
 def get_image_intensity_scaling(img_arr, logger):
     original_max_intensity = img_arr.max()
@@ -40,8 +40,7 @@ def create_image_specific_soax_param_files(
         image_param_settings = copy.deepcopy(general_param_settings)
 
 
-        pil_img = Image.open(tiff_path)
-        image_arr = pil_img_3d_to_np_arr(pil_img)
+        image_arr = open_tiff_as_np_arr(tiff_path)
 
         if set_intensity_scaling_for_each_image:
             logger.log("Finding intensity scaling for {}".format(tiff_path))

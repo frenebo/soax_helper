@@ -8,7 +8,7 @@ from PIL import Image
 from scipy.ndimage import zoom
 
 from .snakeutils.files import find_files_or_folders_at_depth
-from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
+from .snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
 
 def resize_frame(frame_arr, new_dims):
     data_type_max =  np.iinfo(frame_arr.dtype).max
@@ -54,8 +54,8 @@ def rescale_single_tiff(arg_dict):
     new_depth = output_dims[2]
 
     logger.log("Loading tiff {} to rescale".format(source_tiff_path))
-    pil_img = Image.open(source_tiff_path)
-    img_arr = pil_img_3d_to_np_arr(pil_img)
+
+    img_arr = open_tiff_as_np_arr(source_tiff_path)
     # width,height,depth
     observed_dims = (img_arr.shape[1],img_arr.shape[0],img_arr.shape[2])
 

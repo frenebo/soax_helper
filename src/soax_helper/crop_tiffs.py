@@ -4,7 +4,7 @@ from PIL import Image
 from multiprocessing.pool import ThreadPool
 
 from .snakeutils.logger import ConsoleLogger
-from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
+from .snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
 from .snakeutils.files import find_tiffs_in_dir
 
 def crop_tiff(
@@ -21,8 +21,8 @@ def crop_tiff(
     logger = arg_dict["logger"]
 
     logger.log("Loading tiff {} to crop".format(source_tiff_fp))
-    pil_img = Image.open(source_tiff_fp)
-    img_arr = pil_img_3d_to_np_arr(pil_img)
+
+    img_arr = open_tiff_as_np_arr(source_tiff_fp)
     cropped_img_arr = img_arr[
         start_y:end_y,
         start_x:end_x,

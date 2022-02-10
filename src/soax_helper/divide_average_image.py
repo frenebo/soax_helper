@@ -3,7 +3,7 @@ import numpy as np
 from PIL import Image
 from multiprocessing.pool import ThreadPool
 from .snakeutils.files import find_tiffs_in_dir
-from .snakeutils.tifimage import save_3d_tif, pil_img_3d_to_np_arr
+from .snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
 
 def divide_average_image(source_dir, target_dir, logger):
     source_tiffs = find_tiffs_in_dir(source_dir)
@@ -15,8 +15,7 @@ def divide_average_image(source_dir, target_dir, logger):
     if len(source_tiffs) < 20:
         logger.log("Warning: less than 20 source tiffs. Dividing image average works best for large data sets.")
 
-    first_pil_img = Image.open(os.path.join(source_dir, source_tiffs[0]))
-    first_tiff_arr = pil_img_3d_to_np_arr(first_pil_img)
+    first_tiff_arr = open_tiff_as_np_arr(os.path.join(source_dir, source_tiffs[0]))
     img_shape = first_tiff_arr.shape
 
     sum_image = np.zeros(img_shape, dtype=np.double)
@@ -26,8 +25,8 @@ def divide_average_image(source_dir, target_dir, logger):
     for tiff_name in source_tiffs:
         tiff_path = os.path.join(source_dir, tiff_name)
         logger.success("   Reading {} ".format(tiff_path))
-        pil_img = Image.open(tiff_path)
-        np_arr = pil_img_3d_to_np_arr(pil_img)
+
+        np_arr = open_tiff_as_np_arr(tiff_path)
         sum_image += np_arr
 
     average_image = (sum_image / len(source_tiffs))
@@ -43,8 +42,8 @@ def divide_average_image(source_dir, target_dir, logger):
     for tiff_name in source_tiffs:
         image_path = os.path.join(source_dir, tiff_name)
         logger.log("Dividing {} by average".format(image_path))
-        pil_img = Image.open(image_path)
-        np_arr = pil_img_3d_to_np_arr(pil_img)
+
+        np_arr = open_tiff_as_np_arr(image_path)
 
         divided_arr = np.multiply(np_arr.astype(np.double), image_mult_factor)
         divided_arr = divided_arr.astype(np_arr.dtype)

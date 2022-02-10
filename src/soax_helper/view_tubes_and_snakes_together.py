@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 
 from .snakeutils.files import find_files_or_folders_at_depth
-from .snakeutils.tifimage import pil_img_3d_to_np_arr
+from .snakeutils.tifimage import open_tiff_as_np_arr
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Split 3D Tiff into its 2D frames')
@@ -27,10 +27,8 @@ if __name__ == "__main__":
         tube_path = os.path.join(*tubes_folder_and_files[i])
         bead_path = os.path.join(*beads_folder_and_files[i])
 
-        tube_pil_img = Image.open(tube_path)
-        bead_pil_img = Image.open(bead_path)
-        tube_arr = pil_img_3d_to_np_arr(tube_pil_img)
-        bead_arr = pil_img_3d_to_np_arr(bead_pil_img)
+        tube_arr = open_tiff_as_np_arr(tube_path)
+        bead_arr = open_tiff_as_np_arr(bead_path)
         bead_arr = bead_arr * 0.75
         # print(tube_arr.shape)
         # print(bead_arr.shape)

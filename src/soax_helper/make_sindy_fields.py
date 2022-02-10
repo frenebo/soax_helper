@@ -11,7 +11,7 @@ import math
 
 from .snakeutils.files import find_files_or_folders_at_depth, has_one_of_extensions, find_tiffs_in_dir
 from .snakeutils.snakejson import load_json_snakes
-from .snakeutils.tifimage import pil_img_3d_to_np_arr, save_3d_tif
+from .snakeutils.tifimage import open_tiff_as_np_arr, save_3d_tif
 
 intensity_field_around_snake_radius_pixels = 5
 
@@ -161,8 +161,7 @@ def make_fields(
     image_dims = metadata["dims_pixels_xyz"]
     snakes_limit_to_dims(snakes, image_dims)
 
-    pil_img = Image.open(image_fp)
-    unswapped_np_image = pil_img_3d_to_np_arr(pil_img)
+    unswapped_np_image = open_tiff_as_np_arr(image_fp)
     # From Y,X,Z to X,Y,Z
     xyz_np_image = np.swapaxes(unswapped_np_image, 0, 1)
 
