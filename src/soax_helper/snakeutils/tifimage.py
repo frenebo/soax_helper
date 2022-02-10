@@ -4,10 +4,13 @@ import PIL
 from PIL import Image
 
 def get_single_tiff_info(tiff_path):
+    # Just to show more detailed errors if something goes wrong here
+    arr = open_tiff_as_np_arr(tiff_path)
+
     data = Image.open(tiff_path)
     shape = data.size
     stack_height = data.n_frames
-    arr = np.array(data)
+    # arr = np.array(data)
     dtype = str(arr.dtype)
     min_val = arr.min()
     max_val = arr.max()
