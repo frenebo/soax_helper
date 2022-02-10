@@ -1,5 +1,6 @@
 import numpy as np
 import tifffile
+import PIL
 from PIL import Image
 
 def get_single_tiff_info(tiff_path):
@@ -21,6 +22,11 @@ def save_3d_tif(fp,numpy_arr):
     numpy_arr = np.swapaxes(numpy_arr,1,0)
 
     tifffile.imsave(fp,numpy_arr)
+
+def open_tiff_as_np_arr(img_path):
+    pil_img = Image.open(img_path)
+
+    return pil_img_3d_to_np_arr(pil_img)
 
 def pil_img_3d_to_np_arr(pil_img):
     frames = getattr(pil_img, "n_frames", 1)
