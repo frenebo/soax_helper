@@ -24,7 +24,24 @@ def save_3d_tif(fp,numpy_arr):
     tifffile.imsave(fp,numpy_arr)
 
 def open_tiff_as_np_arr(img_path):
-    pil_img = Image.open(img_path)
+    try:
+        pil_img = Image.open(img_path)
+    except PIL.UnidentifiedImageError as e:
+        # error_message = str(e)
+
+        try:
+            np_arr_from_tifffile = tifffile.imread(img_path)
+            tiff_dtype = np_arr_from_tifffile.dtype
+            if not issubclass(tiff_dtype.type, np.integer):
+                error_message = "PIL can't open tiff. Tiff data type is '{}', try converting to integer tiff: ".format(str(tiff_dtype)) + str(e)
+            else:
+                error_message = "PIL can't open this tiff: " + str(e)
+        except:
+            error_message = str(e)
+
+        raise Exception(error_message)
+
+
 
     return pil_img_3d_to_np_arr(pil_img)
 
