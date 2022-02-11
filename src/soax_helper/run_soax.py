@@ -16,8 +16,8 @@ def soax_instance(soax_instance_args):
     delete_soax_logs_for_finished_runs = soax_instance_args["delete_soax_logs_for_finished_runs"]
     logger = soax_instance_args["logger"]
 
-    make_dir_if_not_exist(snakes_output_dir)
-    make_dir_if_not_exist(logging_dir)
+    make_dir_if_not_exist(snakes_output_dir, logger)
+    make_dir_if_not_exist(logging_dir, logger)
 
     stdout_fp = os.path.join(logging_dir, "stdout.txt")
     stderr_fp = os.path.join(logging_dir, "stderr.txt")
