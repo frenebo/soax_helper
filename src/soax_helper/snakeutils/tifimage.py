@@ -4,7 +4,7 @@ import PIL
 from PIL import Image
 
 def get_single_tiff_info(tiff_path):
-    # Just to show more detailed errors if something goes wrong here
+    # Doing this first to show more detailed errors if something goes wrong here
     arr = open_tiff_as_np_arr(tiff_path)
 
     data = Image.open(tiff_path)
