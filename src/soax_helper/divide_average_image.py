@@ -27,6 +27,8 @@ def divide_average_image(source_dir, target_dir, logger):
         logger.success("   Reading {} ".format(tiff_path))
 
         np_arr = open_tiff_as_np_arr(tiff_path)
+        if np_arr.shape != sum_image.shape:
+            logger.FAIL("Can't combine {} into average: Dimensions {} is different from previous tiff dimensions {}".format(tiff_path, np_arr.shape, sum_image.shape))
         sum_image += np_arr
 
     average_image = (sum_image / len(source_tiffs))
