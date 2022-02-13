@@ -46,7 +46,7 @@ def parse_command_line_args_and_run():
     tiff_info_parser = subparsers.add_parser("tiffinfo", help="Get info from tiff file or directory of tiff files")
     tiff_info_parser.add_argument('target',type=tiff_file_or_dir_argparse_type,help="TIFF file or directory of tiff files")
 
-    pad_tiff_nums_parser = subparsers.add_parser("padtiffnums", help="Pad numbers in tif filenames with zeros. E.x. im1.tif, im10.tif, im300.tif become im001.tif, im010.tif, im300.tif")
+    pad_tiff_nums_parser = subparsers.add_parser("padtiffnums", help="In a directory, pad numbers in numbered tiff filenames. E.x. im1.tif, im10.tif, im300.tif become im001.tif, im010.tif, im300.tif")
     pad_tiff_nums_parser.add_argument("tiff_dir")
     pad_tiff_nums_parser.add_argument("tiff_name_prefix")
 
