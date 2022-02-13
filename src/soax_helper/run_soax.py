@@ -139,9 +139,6 @@ def run_soax(
                     snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless)
                     logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, image_name_extensionless)
 
-                    # make_dir_if_not_exist(snakes_target_dir, logger)
-                    # make_dir_if_not_exist(logging_target_dir, logger)
-
                     soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
                         batch_soax_path,
                         image_path,
@@ -191,9 +188,6 @@ def run_soax(
                         snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname)
                         logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, sectioned_image_dirname, section_name_extensionless)
 
-                        # make_dir_if_not_exist(snakes_target_dir, logger)
-                        # make_dir_if_not_exist(logging_target_dir, logger)
-
                         soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
                             batch_soax_path,
                             image_section_tiff_path,
@@ -219,9 +213,6 @@ def run_soax(
 
                     snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless)
                     logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, image_name_extensionless)
-
-                    # make_dir_if_not_exist(snakes_target_dir, logger)
-                    # make_dir_if_not_exist(logging_target_dir, logger)
 
                     soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
                         batch_soax_path,
@@ -253,9 +244,6 @@ def run_soax(
 
                         snakes_target_dir = os.path.join(base_output_dir, param_name_extensionless, sectioned_image_dirname)
                         logging_target_dir = os.path.join(base_logging_dir, param_name_extensionless, sectioned_image_dirname, section_name_extensionless)
-
-                        # make_dir_if_not_exist(snakes_target_dir, logger)
-                        # make_dir_if_not_exist(logging_target_dir, logger)
 
                         soax_instance_arg_dicts.append(soax_args_for_tiff_and_param_file(
                             batch_soax_path,
