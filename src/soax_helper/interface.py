@@ -58,7 +58,7 @@ def parse_command_line_args_and_run():
             load_settings=args.load_settings,
             make_dirs=args.make_dirs,
             do_not_run=args.do_not_run,
-            save_logs_to_file=args.save_logs_to_file,
+            save_logs_to_file=args.save_logs,
         )
     elif args.subcommand == 'tiffinfo':
         tiff_info(args.target, logger=ConsoleLogger())
