@@ -25,11 +25,6 @@ from .pad_tiff_numbers import pad_tiff_numbers
 
 def parse_command_line_args_and_run():
     parser = argparse.ArgumentParser(description='Soax Helper')
-    # parser.add_argument('--load-settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
-    # parser.add_argument('--save-settings',default=None,help="Save settings from GUI menu to JSON file")
-    # parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
-    # parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
-    # parser.add_argument('--save-logs-to-file', default=None,help='Text file to write soax helper output to')
 
     subparsers = parser.add_subparsers()
     subparsers.dest = 'subcommand'
