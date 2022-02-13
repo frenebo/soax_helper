@@ -25,14 +25,22 @@ from .pad_tiff_numbers import pad_tiff_numbers
 
 def parse_command_line_args_and_run():
     parser = argparse.ArgumentParser(description='Soax Helper')
-    parser.add_argument('--load-settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
-    parser.add_argument('--save-settings',default=None,help="Save settings from GUI menu to JSON file")
-    parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
-    parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
-    parser.add_argument('--save-logs-to-file', default=None,help='Text file to write soax helper output to')
+    # parser.add_argument('--load-settings',default=None,help="Skip GUI, Run from settings loaded from JSON file")
+    # parser.add_argument('--save-settings',default=None,help="Save settings from GUI menu to JSON file")
+    # parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
+    # parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
+    # parser.add_argument('--save-logs-to-file', default=None,help='Text file to write soax helper output to')
 
     subparsers = parser.add_subparsers()
     subparsers.dest = 'subcommand'
+
+    run_parser = subparsers.add_parser("run", help="Set up SOAX helper to run")
+    run_parser.add_argument('--load-settings',default=None, help="Skip GUI, Run from settings loaded from JSON file")
+    run_parser.add_argument('--save-settings',default=None, help="Save settings from GUI menu to JSON file")
+    run_parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
+    run_parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
+    run_parser.add_argument('--save-logs', default=None, help='Specify text file to write soax helper output to')
+
 
     tiff_info_parser = subparsers.add_parser("tiffinfo", help="Get info from tiff file or directory of tiff files")
     tiff_info_parser.add_argument('target',type=tiff_file_or_dir_argparse_type,help="TIFF file or directory of tiff files")
@@ -43,7 +51,7 @@ def parse_command_line_args_and_run():
 
     args = parser.parse_args()
 
-    if args.subcommand is None:
+    if args.subcommand == 'run':
         run_soax_helper(
             save_settings=args.save_settings,
             load_settings=args.load_settings,
@@ -99,7 +107,7 @@ def run_soax_helper(save_settings, load_settings, make_dirs, do_not_run, save_lo
         exit()
 
 
-    if save_logs_to_file:
+    if save_logs_to_file is not None:
         with open(save_logs_to_file, 'w') as log_file:
             file_logger = FileLogger(log_filehandle=log_file, child_logger=console_logger)
             run_actions(action_configs, make_dirs, logger=file_logger)
