@@ -50,6 +50,8 @@ def parse_command_line_args_and_run():
     pad_tiff_nums_parser.add_argument("tiff_dir")
     pad_tiff_nums_parser.add_argument("tiff_name_prefix")
 
+    help_parser = subparsers.add_parser("help", help="Help menu")
+
     args = parser.parse_args()
 
     if args.subcommand == 'run':
@@ -64,6 +66,8 @@ def parse_command_line_args_and_run():
         tiff_info(args.target, logger=ConsoleLogger())
     elif args.subcommand == 'padtiffnums':
         pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, logger=ConsoleLogger())
+    elif args.subcommand == 'help':
+        parser.print_help()
 
     exit(0)
 
