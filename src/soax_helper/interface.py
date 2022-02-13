@@ -33,6 +33,7 @@ def parse_command_line_args_and_run():
 
     subparsers = parser.add_subparsers()
     subparsers.dest = 'subcommand'
+    subparsers.required = True
 
     run_parser = subparsers.add_parser("run", help="Set up SOAX helper to run")
     run_parser.add_argument('--load-settings',default=None, help="Skip GUI, Run from settings loaded from JSON file")
