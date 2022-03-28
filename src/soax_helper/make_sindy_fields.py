@@ -219,8 +219,7 @@ def make_sindy_fields(
         source_json_dirs_info = find_files_or_folders_at_depth(source_json_dir, source_jsons_depth - 1, folders_not_files=True)
         json_containing_dirs = [os.path.join(parent,name) for parent, name in source_json_dirs_info]
 
-    for json_parent_dir, json_containing_dirname in source_json_dirs_info:
-        json_containing_dir = os.path.join(json_parent_dir, json_containing_dirname)
+    for json_containing_dir in json_containing_dirs:
         dir_relpath = os.path.relpath(json_containing_dir, source_json_dir)
         orientations_containing_dir = os.path.join(save_orientations_dir, dir_relpath)
         intensities_containing_dir = os.path.join(save_intensities_dir, dir_relpath)
