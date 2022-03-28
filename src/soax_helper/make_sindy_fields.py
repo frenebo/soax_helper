@@ -197,7 +197,7 @@ def make_fields(
             pts_on_interval = bresenham_line_pts(start_pt,end_pt)
 
             x_coords, y_coords, z_coords = pts_on_interval
-            if not_print_something and len(pts_on_interval) > 2:
+            if not_print_something and len(x_coords) > 2:
                 not_print_something = False
                 logger.log("Interval start: {}".format(start_pt))
                 logger.log("Interval end: {}".format(end_pt))
