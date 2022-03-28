@@ -178,7 +178,7 @@ def make_fields(
     max_x = min_x
     max_y = min_y
     max_z = min_z
-    logger.log("Making orientation and intensity fiels for {}".format(json_fp))
+    logger.log("Making orientation and intensity fields for {}".format(json_fp))
     for snake in snakes:
         snake_pts = get_json_snake_xyz(snake)
         interval_orientations = orientation_of_snake_segments(snake_pts)
@@ -202,7 +202,7 @@ def make_fields(
 
     logger.log("    Saving orientations to {}. Size {}".format(orientation_fp, Qtensor_arr.shape))
     # orientation_
-    save_npz(orientation_fp, coo_matrix(Qtensor_arr))
+    save_npz(orientation_fp, coo_matrix(Qtensor_arr.flatten()))
     logger.log("    Saving intensities to {}".format(intensities_fp))
     save_intensity_csv(intensity_arr, intensities_fp)
     # save_npz(intensities_fp, coo_matrix(snake_exists_arr))
