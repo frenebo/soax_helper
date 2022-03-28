@@ -166,7 +166,7 @@ def make_fields(
     # From Y,X,Z to X,Y,Z
     xyz_np_image = np.swapaxes(unswapped_np_image, 0, 1)
 
-    Qtensor_arr = np.zeros(image_dims + [3,3,3], dtype=float)
+    Qtensor_arr = np.zeros(image_dims + [3,3], dtype=float)
     snake_exists_arr = np.zeros(image_dims, dtype=float)
     snakes = [snake for snake in snakes if len(snake) > 0]
     if len(snakes) == 0:
