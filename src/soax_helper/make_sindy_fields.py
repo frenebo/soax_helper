@@ -201,14 +201,17 @@ def make_fields(
             pts_on_interval = bresenham_line_pts(start_pt,end_pt)
 
             x_coords, y_coords, z_coords = pts_on_interval
-            if not_print_something and len(x_coords) > 2:
-                not_print_something = False
-                logger.log("Interval start: {}".format(start_pt))
-                logger.log("Interval end: {}".format(end_pt))
-                logger.log("Number of points: {}".format(len(x_coords)))
-                logger.log("Points: {}, {}, {}".format(x_coords, y_coords, z_coords))
-                logger.log("Interval Q: {}".format(interval_Q))
-                logger.log("Interval orientation: {}".format(interval_orientations[:,interval_idx]))
+
+            if np.trace(interval_Q) < 0.99:
+                logger.FAIL("At snake {}, index : {}, Q tensor has trace {}".format(i, interval_idx, np.trace(interval_Q)))
+            # if not_print_something and len(x_coords) > 2:
+            #     not_print_something = False
+            #     logger.log("Interval start: {}".format(start_pt))
+            #     logger.log("Interval end: {}".format(end_pt))
+            #     logger.log("Number of points: {}".format(len(x_coords)))
+            #     logger.log("Points: {}, {}, {}".format(x_coords, y_coords, z_coords))
+            #     logger.log("Interval Q: {}".format(interval_Q))
+            #     logger.log("Interval orientation: {}".format(interval_orientations[:,interval_idx]))
 
             Qtensor_arr[x_coords, y_coords, z_coords] = interval_Q
             snake_exists_arr[x_coords, y_coords, z_coords] = 1.0
