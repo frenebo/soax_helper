@@ -160,6 +160,8 @@ def make_fields(
     logger.log("Making field files from {} and {} ".format(json_fp, image_fp))
     snakes, metadata = load_json_snakes(json_fp)
     image_dims = metadata["dims_pixels_xyz"]
+    if len(image_dims) != 3:
+        logger.FAIL("Can't make fields for data that's not 3D - image dimensions are {} according to {}".format(image_dims, json_fp))
     snakes_limit_to_dims(snakes, image_dims)
 
     unswapped_np_image = open_tiff_as_np_arr(image_fp)
@@ -194,6 +196,10 @@ def make_fields(
             pts_on_interval = bresenham_line_pts(start_pt,end_pt)
 
             x_coords, y_coords, z_coords = pts_on_interval
+            if i == 0 and interval_idx == 0:
+                logger.log("Interval start: {}".format(start_pt))
+                logger.log("Interval end: {}".format(end_pt))
+                logger.log("Number of points: {}".format(len(x_coords)))
 
             Qtensor_arr[x_coords, y_coords, z_coords] = interval_Q
             snake_exists_arr[x_coords, y_coords, z_coords] = 1.0
