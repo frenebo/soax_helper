@@ -157,6 +157,7 @@ def make_fields(
     orientation_fp,
     intensities_fp,
     logger):
+    logger.log("Making field files from {} and {} ".format(json_fp, image_fp))
     snakes, metadata = load_json_snakes(json_fp)
     image_dims = metadata["dims_pixels_xyz"]
     snakes_limit_to_dims(snakes, image_dims)
