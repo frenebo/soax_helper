@@ -181,6 +181,7 @@ def make_fields(
     max_y = min_y
     max_z = min_z
     logger.log("Making orientation and intensity fields for {}".format(json_fp))
+    not_print_something = True
     for i, snake in enumerate(snakes):
         snake_pts = get_json_snake_xyz(snake)
         interval_orientations = orientation_of_snake_segments(snake_pts)
@@ -196,7 +197,8 @@ def make_fields(
             pts_on_interval = bresenham_line_pts(start_pt,end_pt)
 
             x_coords, y_coords, z_coords = pts_on_interval
-            if i == 0 and interval_idx == 0:
+            if not_print_something and len(pts_on_interval) > 2:
+                not_print_something = False
                 logger.log("Interval start: {}".format(start_pt))
                 logger.log("Interval end: {}".format(end_pt))
                 logger.log("Number of points: {}".format(len(x_coords)))
