@@ -187,9 +187,10 @@ def make_fields(
         interval_orientations = orientation_of_snake_segments(snake_pts)
         interval_Qtensors = Qtensor(interval_orientations)
         if i == 0:
-            logger.log("Interval qtensors shape: {}".format(interval_Qtensors.shape))
+            # logger.log("Interval qtensors shape: {}".format(interval_Qtensors.shape))
             nx,ny,nz = interval_orientations
             logger.log("Interval orientation first: {}, {}, {}".format(nx[0],ny[0],nz[0]))
+            logger.log("First Qtensor: {}".format(interval_Qtensors[:,:,0]))
 
         for interval_idx in range(snake_pts.shape[1] - 1):
             interval_Q = interval_Qtensors[:,:,interval_idx]
