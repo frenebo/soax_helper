@@ -208,6 +208,7 @@ def make_fields(
                 logger.log("Number of points: {}".format(len(x_coords)))
                 logger.log("Points: {}, {}, {}".format(x_coords, y_coords, z_coords))
                 logger.log("Interval Q: {}".format(interval_Q))
+                logger.log("Interval orientation: {}".format(interval_orientations[:,interval_idx]))
 
             Qtensor_arr[x_coords, y_coords, z_coords] = interval_Q
             snake_exists_arr[x_coords, y_coords, z_coords] = 1.0
