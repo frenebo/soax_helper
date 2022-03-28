@@ -202,7 +202,7 @@ def make_fields(
 
     logger.log("    Saving orientations to {}. Size {}".format(orientation_fp, Qtensor_arr.shape))
     # orientation_
-    # save_npz(orientation_fp, coo_matrix(Qtensor_arr))
+    save_npz(orientation_fp, coo_matrix(Qtensor_arr))
     logger.log("    Saving intensities to {}".format(intensities_fp))
     save_intensity_csv(intensity_arr, intensities_fp)
     # save_npz(intensities_fp, coo_matrix(snake_exists_arr))
@@ -255,7 +255,7 @@ def make_sindy_fields(
             json_fp = os.path.join(json_containing_dir, json_filename)
             json_without_extension = json_filename[:-len(".json")]
             image_fp = os.path.join(source_images_dir, source_images[image_idx])
-            orientation_fp = os.path.join(orientations_containing_dir, json_without_extension + "_orientations.txt")
+            orientation_fp = os.path.join(orientations_containing_dir, json_without_extension + "_orientations.npz")
             intensities_fp = os.path.join(intensities_containing_dir, json_without_extension + "_intensities.txt")
 
 
