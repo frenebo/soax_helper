@@ -215,12 +215,12 @@ def make_sindy_fields(
     source_images = find_tiffs_in_dir(source_images_dir)
 
     if source_jsons_depth == 0:
-        json_containing_dirs = source_json_dir
+        json_containing_dirs = [source_json_dir]
     else:
         source_json_dirs_info = find_files_or_folders_at_depth(source_json_dir, source_jsons_depth - 1, folders_not_files=True)
         json_containing_dirs = [os.path.join(parent,name) for parent, name in source_json_dirs_info]
 
-    logger.log("Json containing dirs")
+    logger.log("Json containing dirs number: {}".format(len(json_containing_dirs)))
 
     for json_containing_dir in json_containing_dirs:
         dir_relpath = os.path.relpath(json_containing_dir, source_json_dir)
