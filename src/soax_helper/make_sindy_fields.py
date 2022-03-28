@@ -220,9 +220,10 @@ def make_fields(
         raise Exception("Image shape not same as snake exists arr: {} vs {}".format(np_image.shape, snake_exists_arr.shape))
     intensity_arr = np.multiply(xyz_np_image, snake_exists_arr)
 
-    logger.log("    Saving orientations to {}. Size {}".format(orientation_fp, Qtensor_arr.shape))
+    coo_orientation_arr = coo_matrix(Qtensor_arr.flatten())
+    logger.log("    Saving orientations to {}. Size {} flattened to {}".format(orientation_fp, Qtensor_arr.shape, coo_orientation_arr.shape))
     # orientation_
-    save_npz(orientation_fp, coo_matrix(Qtensor_arr.flatten()))
+    save_npz(orientation_fp, coo_orientation_arr)
     logger.log("    Saving intensities to {}".format(intensities_fp))
     save_intensity_csv(intensity_arr, intensities_fp)
     # save_npz(intensities_fp, coo_matrix(snake_exists_arr))
