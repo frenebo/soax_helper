@@ -179,10 +179,12 @@ def make_fields(
     max_y = min_y
     max_z = min_z
     logger.log("Making orientation and intensity fields for {}".format(json_fp))
-    for snake in snakes:
+    for i, snake in enumerate(snakes):
         snake_pts = get_json_snake_xyz(snake)
         interval_orientations = orientation_of_snake_segments(snake_pts)
         interval_Qtensors = Qtensor(interval_orientations)
+        if i == 0:
+            logger.log("Interval qtensors shape: {}".format(interval_Qtensors.shape))
 
         for interval_idx in range(snake_pts.shape[1] - 1):
             interval_Q = interval_Qtensors[:,:,interval_idx]
