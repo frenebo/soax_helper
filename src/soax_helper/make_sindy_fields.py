@@ -168,6 +168,7 @@ def make_fields(
 
     Qtensor_arr = np.zeros(image_dims + [3,3,3], dtype=float)
     snake_exists_arr = np.zeros(image_dims, dtype=float)
+    snakes = [snake for snake in snakes if len(snake) > 0]
     min_x = snakes[0][0]["pos"][0]
     min_y = snakes[0][0]["pos"][1]
     min_z = snakes[0][0]["pos"][2]
