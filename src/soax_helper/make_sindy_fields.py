@@ -103,9 +103,9 @@ def Qtensor(orientation_unit_vectors):
     nx, ny, nz = orientation_unit_vectors
 
     Q = np.zeros((3, 3, len(nx)))
-    Q[0, 0, :] = nx*nx
-    Q[1, 1, :] = ny*ny
-    Q[2, 2, :] = nz*nz
+    Q[0, 0, :] = nx*nx - 1/3
+    Q[1, 1, :] = ny*ny - 1/3
+    Q[2, 2, :] = nz*nz - 1/3
     Q[0, 1, :] = nx*ny
     Q[0, 2, :] = nx*nz
     Q[1, 2, :] = ny*nz
@@ -245,7 +245,7 @@ def make_sindy_fields(
         source_json_dirs_info = find_files_or_folders_at_depth(source_json_dir, source_jsons_depth - 1, folders_not_files=True)
         json_containing_dirs = [os.path.join(parent,name) for parent, name in source_json_dirs_info]
 
-    logger.log("Json containing dirs number: {}".format(len(json_containing_dirs)))
+    logger.log("Processing json snake files in {} dir(s)".format(len(json_containing_dirs)))
 
     for json_containing_dir in json_containing_dirs:
         dir_relpath = os.path.relpath(json_containing_dir, source_json_dir)

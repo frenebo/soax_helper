@@ -30,6 +30,11 @@ Tried Product > Clean Build Folder and run again
 Try again START OVER
 ccmake -DCMAKE_BUILD_TYPE=Release -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/qt@4/4.8.7_6/bin/qmake -G Xcode ../path/to/vtk-6.3.0
 
+And configure with appropriate settings
+Then 
+
+ccmake -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/qt@4/4.8.7_6/bin/qmake -G Xcode ../path/to/insighttoolkit
+
 # Compiling TSOAX on Ubuntu 20.04:
 ##  1. Install dependencies and required tools
    ``` bash
