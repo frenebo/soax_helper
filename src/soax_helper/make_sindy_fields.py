@@ -202,8 +202,6 @@ def make_fields(
 
             x_coords, y_coords, z_coords = pts_on_interval
 
-            if np.trace(interval_Q) < 0.99:
-                logger.FAIL("At snake {}, index : {}, Q tensor has trace {}".format(i, interval_idx, np.trace(interval_Q)))
             # if not_print_something and len(x_coords) > 2:
             #     not_print_something = False
             #     logger.log("Interval start: {}".format(start_pt))
