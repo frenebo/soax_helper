@@ -115,13 +115,14 @@ def bead_piv(
     pred = tp.predict.NearestVelocityPredict()
     linked = pred.link_df(f, linking_search_range_um, pos_columns=['xum','yum','zum'])
 
-    frame_count = max(linked.frame)
+    # frame_count = max(linked.frame)
+    linked.to_csv("linked_df.csv")
 
     # data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.json".format(str_length=len(str(frame_count - 1)))
-    data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.csv".format(str_length=len(str(frame_count - 1)))
-    for i in range(frame_count):
-        frame = linked[linked.frame == i]
-        frame.to_csv(data_filename_template.format(idx=i))
+    # data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.csv".format(str_length=len(str(frame_count - 1)))
+    # for i in range(frame_count):
+    #     frame = linked[linked.frame == i]
+    #     frame.to_csv(data_filename_template.format(idx=i))
         # before_frame = linked[linked.frame == i]
 
         # after_frame = linked[linked.frame == i + 1]
