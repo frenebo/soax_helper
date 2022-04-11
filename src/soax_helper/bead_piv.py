@@ -117,24 +117,29 @@ def bead_piv(
 
     frame_count = max(linked.frame)
 
-    data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.json".format(str_length=len(str(frame_count - 1)))
+    # data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.json".format(str_length=len(str(frame_count - 1)))
+    data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.csv".format(str_length=len(str(frame_count - 1)))
     for i in range(frame_count - 1):
-        before_frame = linked[linked.frame == i]
-        after_frame = linked[linked.frame == i + 1]
+        frame = linked[linked.frame == i]
+        frame.to_csv(data_filename_template)
+        # before_frame = linked[linked.frame == i]
 
-        pos_columns = ['x', 'y', 'z']
+        # after_frame = linked[linked.frame == i + 1]
+        # before_frame.
 
-        j = (before_frame.set_index('particle')[pos_columns].join(
-            after_frame.set_index('particle')[pos_columns], rsuffix='_b'))
+        # pos_columns = ['x', 'y', 'z']
 
-        for col_i in pos_columns:
-            j['d' + col_i] = j[col_i + '_b'] - j[col_i]
+        # j = (before_frame.set_index('particle')[pos_columns].join(
+        #     after_frame.set_index('particle')[pos_columns], rsuffix='_b'))
 
-        bead_movement_info = j[pos_columns + ['d' + i for i in pos_columns]].dropna()
-        # print(arrow_specs)
-        bead_motions = bead_movement_info.to_dict(orient='index')
+        # for col_i in pos_columns:
+        #     j['d' + col_i] = j[col_i + '_b'] - j[col_i]
 
-        motions_save_path = os.path.join(target_piv_data_dir, data_filename_template.format(idx=i))
+        # bead_movement_info = j[pos_columns + ['d' + i for i in pos_columns]].dropna()
+        # # print(arrow_specs)
+        # bead_motions = bead_movement_info.to_dict(orient='index')
 
-        with open(motions_save_path, "w") as f:
-            json.dump(bead_motions, f)
+        # motions_save_path = os.path.join(target_piv_data_dir, data_filename_template.format(idx=i))
+
+        # with open(motions_save_path, "w") as f:
+        #     json.dump(bead_motions, f)
