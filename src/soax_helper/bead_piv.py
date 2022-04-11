@@ -121,7 +121,7 @@ def bead_piv(
     data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.csv".format(str_length=len(str(frame_count - 1)))
     for i in range(frame_count):
         frame = linked[linked.frame == i]
-        frame.to_csv(data_filename_template)
+        frame.to_csv(data_filename_template.format(idx=i))
         # before_frame = linked[linked.frame == i]
 
         # after_frame = linked[linked.frame == i + 1]
