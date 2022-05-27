@@ -69,14 +69,14 @@ if __name__ == "__main__":
         zmax = max(zdict.keys())
 
         first_tiff_arr = open_tiff_as_np_arr(zdict[zmin])
-        if len(first_tiff_arr.shape != 2):
+        if len(first_tiff_arr.shape) != 2:
             raise Exception("Stack is not 2d: {}".format(zdict[zmin]))
         full_arr = np.zeros(first_tiff_arr.shape + (zsize,), dtype=first_tiff_arr.dtype )
 
 
         for zidx in range(zsize):
             zslice_arr = open_tiff_as_np_arr(zdict[zmin+zidx])
-            if len(zslice_arr.shape != 2):
+            if len(zslice_arr.shape) != 2:
                 raise Exception("Stack is not 2d: {}".format(zdict[zmin+zidx]))
             full_arr[:,:,zidx] = zslice_arr
 
