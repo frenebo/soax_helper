@@ -69,16 +69,16 @@ if __name__ == "__main__":
         zmax = max(zdict.keys())
 
         first_tiff_arr = open_tiff_as_np_arr(zdict[zmin])
-        if len(first_tiff_arr.shape) != 2:
+        if first_tiff_arr.shape[2] != 1:
             raise Exception("Stack is not 2d: {}".format(zdict[zmin]))
-        full_arr = np.zeros(first_tiff_arr.shape + (zsize,), dtype=first_tiff_arr.dtype )
+        full_arr = np.zeros((first_tiff_arr.shape[0],first_tiff_arr.shape[1],zsize), dtype=first_tiff_arr.dtype )
 
 
         for zidx in range(zsize):
             zslice_arr = open_tiff_as_np_arr(zdict[zmin+zidx])
-            if len(zslice_arr.shape) != 2:
+            if zslice_arr.shape[2] != 1:
                 raise Exception("Stack is not 2d: {}".format(zdict[zmin+zidx]))
-            full_arr[:,:,zidx] = zslice_arr
+            full_arr[:,:,zidx] = zslice_arr[:,:,0]
 
         save_tiff_path = os.path.join(args.target_directory, "T"+str(timeidx))
         save_3d_tif(save_tiff_path, full_arr)
