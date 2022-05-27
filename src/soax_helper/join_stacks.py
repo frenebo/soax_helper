@@ -28,11 +28,11 @@ if __name__ == "__main__":
     fulltiffs_by_t_and_z = {}
 
     for orig_tiff_fn in orig_tiffs:
-        tiff_path = os.path.join(args.source_tiff_dir, orig_tiff_fn)
-        image_name_without_extension = os.path.splitext(orig_tiff_fn)[0]
+        # tiff_path = os.path.join(args.source_tiff_dir, orig_tiff_fn)
+        # image_name_without_extension = os.path.splitext(orig_tiff_fn)[0]
 
-        tiff_tstr = image_name[args.start_t:args.start_t+args.t_length]
-        tiff_zstr = image_name[args.start_z:args.start_z+args.z_length]
+        tiff_tstr = orig_tiff_fn[args.start_t:args.start_t+args.t_length]
+        tiff_zstr = orig_tiff_fn[args.start_z:args.start_z+args.z_length]
         tiff_t = int(tiff_tstr)
         tiff_z = int(tiff_zstr)
 
