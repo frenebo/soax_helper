@@ -81,7 +81,7 @@ if __name__ == "__main__":
                 raise Exception("Stack is not 2d: {}".format(zdict[zmin+zidx]))
             full_arr[:,:,zidx] = zslice_arr[:,:,0]
 
-        save_tiff_path = os.path.join(args.target_directory, "T"+str(timeidx))
+        save_tiff_path = os.path.join(args.target_directory, "T"+str(timeidx)+".tif")
         save_3d_tif(save_tiff_path, full_arr)
 
 
