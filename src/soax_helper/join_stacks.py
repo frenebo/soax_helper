@@ -28,7 +28,7 @@ if __name__ == "__main__":
     fulltiffs_by_t_and_z = {}
 
     for orig_tiff_fn in orig_tiffs:
-        # tiff_path = os.path.join(args.source_tiff_dir, orig_tiff_fn)
+        tiff_path = os.path.join(args.source_tiff_dir, orig_tiff_fn)
         # image_name_without_extension = os.path.splitext(orig_tiff_fn)[0]
 
         tiff_tstr = orig_tiff_fn[args.start_t:args.start_t+args.t_length]
@@ -48,7 +48,7 @@ if __name__ == "__main__":
                 orig_tiff_fn,
             ))
 
-        fulltiffs_by_t_and_z[tiff_t][tiff_z] = orig_tiff_fn
+        fulltiffs_by_t_and_z[tiff_t][tiff_z] = tiff_path
 
     zsize = len(fulltiffs_by_t_and_z[min(fulltiffs_by_t_and_z.keys())])
     for timeidx in fulltiffs_by_t_and_z:
