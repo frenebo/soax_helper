@@ -1,6 +1,7 @@
 import argparse
 import os
 from PIL import Image
+import numpy as np
 
 from snakeutils.tifimage import open_tiff_as_np_arr, save_3d_tif
 from snakeutils.files import find_tiffs_in_dir
