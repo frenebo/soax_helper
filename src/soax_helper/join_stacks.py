@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
         fulltiffs_by_t_and_z[tiff_t][tiff_z] = orig_tiff_fn
 
-    zsize = len(fulltiffs_by_t_and_z[0])
+    zsize = len(fulltiffs_by_t_and_z[min(fulltiffs_by_t_and_z.keys())])
     for timeidx in fulltiffs_by_t_and_z:
         zdict = fulltiffs_by_t_and_z[timeidx]
         if len(zdict) != zsize:
