@@ -2,6 +2,7 @@ import argparse
 import os
 from PIL import Image
 
+from .snakeutils.logger import ConsoleLogger
 from .snakeutils.files import  find_tiffs_in_dir
 from .snakeutils.tifimage import open_tiff_as_np_arr, save_3d_tif
 
@@ -12,9 +13,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    split_stacks(args.source_tiff_dir, args.target_directory)
+    split_stacks(args.source_tiff_dir, args.target_directory,logger=ConsoleLogger())
 
-def split_stacks(source_tiff_dir, target_directory):
+def split_stacks(source_tiff_dir, target_directory,logger):
 
     if not os.path.isdir(source_tiff_dir):
         raise Exception("Bad source directory '{}': should be a directory with TIFF frames inside".format(args.source_tiff_dir))

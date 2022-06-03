@@ -72,7 +72,7 @@ def parse_command_line_args_and_run():
     elif args.subcommand == 'help':
         parser.print_help()
     elif args.subcommand == 'splitstacks':
-        split_stacks(args.source_tiff_dir, args.target_directory)
+        split_stacks(args.source_tiff_dir, args.target_directory,logger=ConsoleLogger())
 
     exit(0)
 
