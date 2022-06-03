@@ -2,9 +2,6 @@ import os
 import numpy as np
 import math
 import json
-# from skimage import io
-# io.use_plugin('pil')
-
 
 def round_to_odd(num):
     return round( (num - 1)/2 ) * 2 + 1
@@ -12,6 +9,7 @@ def round_to_odd(num):
 def bead_piv(
     source_tiff_dir,
     tiff_fn_letter_before_frame_num,
+    tiff_fn_letter_before_z_num,
     target_piv_data_dir,
     x_pixel_spacing_um,
     y_pixel_spacing_um,
@@ -26,7 +24,7 @@ def bead_piv(
     import trackpy as tp
 
     logger.log("Letter before frame num: {}".format(tiff_fn_letter_before_frame_num))
-    frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num])
+    frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num,tiff_fn_letter_before_z_num])
     logger.log("Frames:")
     logger.log(str(frames))
     logger.log("Sizes:")
@@ -38,7 +36,7 @@ def bead_piv(
     #     logger.log("No axes")
     # Inside a frame axes are labelled x,y,c
     # frames.bundle_axes = ['c','y','x']
-    frames.bundle_axes = ['c','y','x']
+    frames.bundle_axes = [tiff_fn_letter_before_z_num,'y','x']
     # PIMS gives the time axis the name of identifier letter
     frames.iter_axes = [tiff_fn_letter_before_frame_num]
 

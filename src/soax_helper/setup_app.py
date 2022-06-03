@@ -940,6 +940,10 @@ class BeadPIVSetupForm(SetupForm):
             ],
         },
         {
+            "id": "tiff_fn_letter_before_z_num",
+            "type": "letter",
+        },
+        {
             "id":"target_piv_data_dir",
             "type": "dir",
         },
@@ -1132,6 +1136,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "z_stack_spacing_um": "",
                 "source_tiff_dir": "",
                 "tiff_fn_letter_before_frame_num": "",
+                "tiff_fn_letter_before_z_num": "",
                 "target_piv_data_dir": "./BeadPIVsData",
                 "bead_diameter_um": "",
                 "linking_search_range_um": "3",

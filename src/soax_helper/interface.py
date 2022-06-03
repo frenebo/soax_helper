@@ -291,6 +291,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         bead_piv(
             parsed_bead_PIV_settings["source_tiff_dir"],
             parsed_bead_PIV_settings["tiff_fn_letter_before_frame_num"],
+            parsed_bead_PIV_settings["tiff_fn_letter_before_z_num"],
             parsed_bead_PIV_settings["target_piv_data_dir"],
             parsed_bead_PIV_settings["x_pixel_size_um"],
             parsed_bead_PIV_settings["y_pixel_size_um"],
