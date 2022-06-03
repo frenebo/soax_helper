@@ -20,7 +20,7 @@ def pad_tiff_numbers(
     tiff_dir,
     tiff_name_prefix,
     replace_prefix=None,
-    logger,
+    logger=ConsoleLogger,
 ):
     source_tiffs = find_tiffs_in_dir(tiff_dir)
 
