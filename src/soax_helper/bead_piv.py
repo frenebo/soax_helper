@@ -33,7 +33,7 @@ def bead_piv(
     # except:
     #     logger.log("No axes")
     # Inside a frame axes are labelled x,y,c
-    frames.bundle_axes = ['c','y','x']
+    frames.bundle_axes = [tiff_fn_letter_before_frame_num,'y','x']
     # PIMS gives the time axis the name of identifier letter
     frames.iter_axes = [tiff_fn_letter_before_frame_num]
 
