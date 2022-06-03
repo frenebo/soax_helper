@@ -28,7 +28,7 @@ def bead_piv(
     logger.log("Frames:")
     logger.log(str(frames))
     logger.log("Sizes:")
-    logger.log(frames.sizes)
+    logger.log(str(frames.sizes))
     # try:
     #     logger.log("Axes:")
     #     logger.log(str(frames.axes))

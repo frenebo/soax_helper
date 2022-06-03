@@ -6,24 +6,24 @@ class FileLogger:
         self.child_logger = child_logger
 
     def log(self, text):
-        self.log_filehandle.write('LOG: ' + text + '\n')
-        self.child_logger.log(text)
+        self.log_filehandle.write('LOG: ' + str(text) + '\n')
+        self.child_logger.log(str(text))
 
     def warn(self, text):
-        self.log_filehandle.write('WARN: ' + text + '\n')
-        self.child_logger.warn(text)
+        self.log_filehandle.write('WARN: ' + str(text) + '\n')
+        self.child_logger.warn(str(text))
 
     def success(self, text):
-        self.log_filehandle.write('SUCCESS: ' + text + '\n')
-        self.child_logger.success(text)
+        self.log_filehandle.write('SUCCESS: ' + str(text) + '\n')
+        self.child_logger.success(str(text))
 
     def error(self, text):
-        self.log_filehandle.write('ERROR: ' + text + '\n')
-        self.child_logger.error(text)
+        self.log_filehandle.write('ERROR: ' + str(text) + '\n')
+        self.child_logger.error(str(text))
 
     def FAIL(self, text):
-        self.log_filehandle.write('FAIL: ' + text + '\n')
-        self.child_logger.FAIL(text)
+        self.log_filehandle.write('FAIL: ' + str(text) + '\n')
+        self.child_logger.FAIL(str(text))
 
 class RecordingLogger:
     def __init__(self, child_logger):
