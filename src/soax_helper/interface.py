@@ -44,6 +44,7 @@ def parse_command_line_args_and_run():
     pad_tiff_nums_parser = subparsers.add_parser("padtiffnums", help="In a directory, pad numbers in numbered tiff filenames. E.x. im1.tif, im10.tif, im300.tif become im001.tif, im010.tif, im300.tif")
     pad_tiff_nums_parser.add_argument("tiff_dir")
     pad_tiff_nums_parser.add_argument("tiff_name_prefix")
+    pad_tiff_nums_parser.add_argument('--replaceprefix', default=None)
 
     help_parser = subparsers.add_parser("help", help="Help menu")
 
@@ -60,7 +61,7 @@ def parse_command_line_args_and_run():
     elif args.subcommand == 'tiffinfo':
         tiff_info(args.target, logger=ConsoleLogger())
     elif args.subcommand == 'padtiffnums':
-        pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, logger=ConsoleLogger())
+        pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, replace_prefix=args.replaceprefix, logger=ConsoleLogger())
     elif args.subcommand == 'help':
         parser.print_help()
 
