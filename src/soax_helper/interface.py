@@ -62,7 +62,7 @@ def parse_command_line_args_and_run():
     elif args.subcommand == 'tiffinfo':
         tiff_info(args.target, logger=ConsoleLogger())
     elif args.subcommand == 'padtiffnums':
-        pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, replace_prefix=args.replaceprefix, postfix_length=args.postfix_length, logger=ConsoleLogger())
+        pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, replace_prefix=args.replaceprefix, postfix_length=args.postfixlength, logger=ConsoleLogger())
     elif args.subcommand == 'help':
         parser.print_help()
 
