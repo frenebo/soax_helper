@@ -33,18 +33,18 @@ def split_stacks(source_tiff_dir, target_directory):
         # tiff_path =
         np_arr = open_tiff_as_np_arr(tiff_path)
 
-        print("shape: {}".format(np_arr.shape))
+        logger.log("shape: {}".format(np_arr.shape))
 
         # tiff_name = os.path.split(tiff_path)[-1]
         tiff_name = os.path.splitext(tiff_fn)[0]
 
         stack_num = np_arr.shape[2]
         # "_{filename_tag}{{{name}:0{str_length}.{decimals}f}}"
-        prefix_template = "_z{{idx:0{str_length}.0f}}".format(str_length=len(str(stack_num - 1)))
+        suffix_template = "_z{{idx:0{str_length}.0f}}".format(str_length=len(str(stack_num - 1)))
         for i in range(stack_num):
             slice_tiff_fn = tiff_name + suffix_template.format(idx=i) + ".tif"
             slice_fp = os.path.join(target_directory, slice_tiff_fn)
 
             # fp = os.path.join(target_directory, prefix_template.format(idx=i) + tiff_name)
             save_3d_tif(slice_fp, np_arr[:,:,i:i+1])
-            print("Saved {}".format(slice_fp))
+            logger.log("Saved {}".format(slice_fp))
