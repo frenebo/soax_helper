@@ -27,6 +27,8 @@ def bead_piv(
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num])
     logger.log("Frames:")
     logger.log(str(frames))
+    logger.log("Sizes:")
+    logger.log(frames.sizes)
     # try:
     #     logger.log("Axes:")
     #     logger.log(str(frames.axes))
