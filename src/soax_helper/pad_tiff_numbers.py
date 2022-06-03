@@ -61,4 +61,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, replace_prefix=args.replace_prefix, logger=ConsoleLogger())
+    pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, replace_prefix=args.replaceprefix, logger=ConsoleLogger())
