@@ -2,8 +2,8 @@ import os
 import numpy as np
 import math
 import json
-from skimage import io
-io.use_plugin('pil')
+# from skimage import io
+# io.use_plugin('pil')
 
 
 def round_to_odd(num):

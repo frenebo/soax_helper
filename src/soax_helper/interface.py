@@ -22,6 +22,7 @@ from .setup_app import (
 )
 from .tiff_info import tiff_info, tiff_file_or_dir_argparse_type
 from .pad_tiff_numbers import pad_tiff_numbers
+from .split_stacks import split_stacks
 
 def parse_command_line_args_and_run():
     parser = argparse.ArgumentParser(description='Soax Helper')
@@ -47,6 +48,11 @@ def parse_command_line_args_and_run():
     pad_tiff_nums_parser.add_argument('--replaceprefix', default=None)
     pad_tiff_nums_parser.add_argument('--postfixlength',type=int, default=0)
 
+
+    split_stacks_parser = subparsers.add_parser('splitstacks', help='Split 3D Tiffs into it 2D frames')
+    split_stacks_parser.add_argument('source_tiff_dir')
+    split_stacks_parser.add_argument('target_directory')
+
     help_parser = subparsers.add_parser("help", help="Help menu")
 
     args = parser.parse_args()
@@ -65,6 +71,8 @@ def parse_command_line_args_and_run():
         pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, replace_prefix=args.replaceprefix, postfix_length=args.postfixlength, logger=ConsoleLogger())
     elif args.subcommand == 'help':
         parser.print_help()
+    elif args.subcommand == 'splitstacks':
+        split_stacks(args.source_tiff_dir, args.target_directory)
 
     exit(0)
 
