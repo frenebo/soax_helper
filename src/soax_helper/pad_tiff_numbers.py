@@ -19,9 +19,15 @@ def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger):
 def pad_tiff_numbers(
     tiff_dir,
     tiff_name_prefix,
+    replace_prefix=None,
     logger,
 ):
     source_tiffs = find_tiffs_in_dir(tiff_dir)
+
+    if replace_prefix is not None:
+        save_prefix = replace_prefix
+    else:
+        save_prefix = tiff_name_prefix
 
     most_digits = 0
     for tiff_fn in source_tiffs:
@@ -38,7 +44,9 @@ def pad_tiff_numbers(
         if tiff_fn_num is None:
             continue
 
-        new_tiff_fn = tiff_name_prefix + str(tiff_fn_num).zfill(most_digits) + ".tif"
+
+
+        new_tiff_fn = save_prefix + str(tiff_fn_num).zfill(most_digits) + ".tif"
         old_fp = os.path.join(tiff_dir, tiff_fn)
         new_fp = os.path.join(tiff_dir, new_tiff_fn)
         logger.log("Renaming {} to {}".format(tiff_fn, new_tiff_fn))
@@ -49,7 +57,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Pad numbers of of TIFF filenames in directory')
     parser.add_argument("tiff_dir")
     parser.add_argument("tiff_name_prefix")
+    parser.add_argument('--replaceprefix', default=None)
 
     args = parser.parse_args()
 
-    pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, logger=ConsoleLogger())
+    pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, replace_prefix=args.replace_prefix, logger=ConsoleLogger())
