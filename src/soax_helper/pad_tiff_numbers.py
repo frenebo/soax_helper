@@ -4,12 +4,12 @@ import os
 from .snakeutils.logger import ConsoleLogger
 from .snakeutils.files import find_tiffs_in_dir
 
-def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger):
+def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, postfix_length=0, logger=ConsoleLogger):
     fn_without_extension = os.path.splitext(tiff_fn)[0]
     if not fn_without_extension.startswith(tiff_name_prefix):
         logger.error("TIFF '{}' does not start with '{}', skipping".format(tiff_fn, tiff_name_prefix))
         return None
-    tiff_num_str = fn_without_extension[len(tiff_name_prefix):]
+    tiff_num_str = fn_without_extension[len(tiff_name_prefix):-postfix_length]
     try:
         tiff_num = int(tiff_num_str)
     except ValueError as e:
@@ -20,6 +20,7 @@ def pad_tiff_numbers(
     tiff_dir,
     tiff_name_prefix,
     replace_prefix=None,
+    postfix_length=0,
     logger=ConsoleLogger,
 ):
     source_tiffs = find_tiffs_in_dir(tiff_dir)
@@ -31,7 +32,7 @@ def pad_tiff_numbers(
 
     most_digits = 0
     for tiff_fn in source_tiffs:
-        tiff_fn_num = get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger)
+        tiff_fn_num = get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, postfix_length=postfix_length, logger=logger)
         if tiff_fn_num is None:
             continue
         num_digits = len(str(tiff_fn_num))
@@ -40,7 +41,7 @@ def pad_tiff_numbers(
 
     # Rename files
     for tiff_fn in source_tiffs:
-        tiff_fn_num = get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, logger)
+        tiff_fn_num = get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, postfix_length=postfix_length, logger=logger)
         if tiff_fn_num is None:
             continue
 
@@ -61,4 +62,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, replace_prefix=args.replaceprefix, logger=ConsoleLogger())
+    pad_tiff_numbers(
+        args.tiff_dir,
+        args.tiff_name_prefix,
+        replace_prefix=args.replaceprefix,
+        logger=ConsoleLogger())
