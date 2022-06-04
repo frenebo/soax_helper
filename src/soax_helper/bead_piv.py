@@ -115,8 +115,9 @@ def bead_piv(
     ))
 
     # Linking is faster if using a predictor for where the particles will go
-    pred = tp.predict.NearestVelocityPredict()
-    linked = pred.link_df(f, linking_search_range_um, pos_columns=['xum','yum','zum'])
+    # pred = tp.predict.NearestVelocityPredict()
+    pred = tp
+    linked = pred.link_df(f, linking_search_range_um, adaptive_stop= pos_columns=['xum','yum','zum'])
 
     # frame_count = max(linked.frame)
     linked.to_csv("linked_df.csv")
