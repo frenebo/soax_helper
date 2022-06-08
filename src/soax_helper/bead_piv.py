@@ -114,6 +114,8 @@ def bead_piv(
         str(f.size_z.max()),
     ))
 
+    f.to_csv("batch_beads.csv")
+
     # Linking is faster if using a predictor for where the particles will go
     # pred = tp.predict.NearestVelocityPredict()
     pred = tp
