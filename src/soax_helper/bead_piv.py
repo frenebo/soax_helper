@@ -17,7 +17,7 @@ def bead_piv(
     x_pixel_spacing_um,
     y_pixel_spacing_um,
     z_stack_spacing_um,
-    bead_pixelsize_xyz,
+    bead_pixel_searchsize_xyz,
     linking_search_range_um,
     processes,
 
@@ -26,9 +26,9 @@ def bead_piv(
     import pims
     import trackpy as tp
 
-    for beadpixdim in bead_pixelsize_xyz:
+    for beadpixdim in bead_pixel_searchsize_xyz:
         if beadpixdim < 0:
-            raise Exception("Bead pixel dimensions cannot be negative: ", str(bead_pixelsize_xyz))
+            raise Exception("Bead pixel dimensions cannot be negative: ", str(bead_pixel_searchsize_xyz))
 
     logger.log("Letter before frame num: {}".format(tiff_fn_letter_before_frame_num))
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num,tiff_fn_letter_before_z_num])
@@ -55,12 +55,11 @@ def bead_piv(
         x_size = x_pixel_spacing_um,
         y_size = y_pixel_spacing_um,
         z_size = z_stack_spacing_um,
-        # bead_diameter_um = bead_diameter_um,
         ))
 
     # search_diameter
     # search_diameter_x
-    search_size_xyz = [up_to_nearest_odd(size) for size in bead_pixelsize_xyz]
+    search_size_xyz = [up_to_nearest_odd(size) for size in bead_pixel_searchsize_xyz]
 
     search_diameter_x, search_diameter_y, search_diameter_z = search_size_xyz
 
@@ -69,9 +68,6 @@ def bead_piv(
     logger.log("In y dimension we search for beads {} pixels large".format(search_diameter_y))
     logger.log("In z dimension we search for beads {} stacks large".format(search_diameter_z))
 
-    # search_diameter_x = round_to_odd(bead_pixelsize_xyz[0])
-    # search_diameter_y = round_to_odd(bead_pixelsize_xyz[1])
-    # search_diameter_z = round_to_odd(bead_pixelsize_xyz[2])
 
     # if search_diameter_x < 1:
     #     search_diameter_x = 1

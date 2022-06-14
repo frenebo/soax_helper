@@ -928,7 +928,7 @@ class BeadPIVSetupForm(SetupForm):
             "type": "dir",
         },
         {
-            "id": "bead_pixelsize_xyz",
+            "id": "bead_pixel_searchsize_xyz",
             "help": [
                 "The size of the bead in x,y,z pixels. Must be integers.",
                 "e.x: 9,9,3 for beads that are 9 pixels wide in x, 9 pixels in y, 3 pixels in z",
@@ -1122,7 +1122,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "tiff_fn_letter_before_frame_num": "",
                 "tiff_fn_letter_before_z_num": "",
                 "target_piv_data_dir": "./BeadPIVsData",
-                "bead_pixelsize_xyz": "",
+                "bead_pixel_searchsize_xyz": "",
                 "linking_search_range_um": "3",
                 "processes": "1",
             },

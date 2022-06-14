@@ -296,7 +296,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             x_pixel_spacing_um=parsed_bead_PIV_settings["x_pixel_size_um"],
             y_pixel_spacing_um=parsed_bead_PIV_settings["y_pixel_size_um"],
             z_stack_spacing_um=parsed_bead_PIV_settings["z_stack_spacing_um"],
-            bead_pixelsize_xyz=parsed_bead_PIV_settings["bead_pixelsize_xyz"],
+            bead_pixel_searchsize_xyz=parsed_bead_PIV_settings["bead_pixel_searchsize_xyz"],
             linking_search_range_um=parsed_bead_PIV_settings["linking_search_range_um"],
             processes=parsed_bead_PIV_settings["processes"],
             logger=logger,
