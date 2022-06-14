@@ -3,8 +3,11 @@ import numpy as np
 import math
 import json
 
-def round_to_odd(num):
-    return round( (num - 1)/2 ) * 2 + 1
+# def round_to_odd(num):
+#     return round( (num - 1)/2 ) * 2 + 1
+
+def up_to_nearest_odd(num):
+    return math.ceil((num - 1)/2)*2 + 1
 
 def bead_piv(
     source_tiff_dir,
@@ -54,24 +57,32 @@ def bead_piv(
         z_size = z_stack_spacing_um,
         # bead_diameter_um = bead_diameter_um,
         ))
-    logger.log("In x dimension we expect beads to be {} pixels large".format(float_search_diameter_x))
-    logger.log("In y dimension we expect beads to be {} pixels large".format(float_search_diameter_y))
-    logger.log("In z dimension we expect beads to be {} stacks large".format(float_search_diameter_z))
 
-    search_diameter_x = round_to_odd(bead_pixelsize_xyz[0])
-    search_diameter_y = round_to_odd(bead_pixelsize_xyz[1])
-    search_diameter_z = round_to_odd(bead_pixelsize_xyz[2])
+    # search_diameter
+    # search_diameter_x
+    search_size_xyz = [up_to_nearest_odd(size) for size in bead_pixelsize_xyz]
 
-    if search_diameter_x < 1:
-        search_diameter_x = 1
-    if search_diameter_y < 1:
-        search_diameter_y = 1
-    if search_diameter_z < 1:
-        search_diameter_z = 1
+    search_diameter_x, search_diameter_y, search_diameter_z = search_size_xyz
 
-    logger.log("Rounding up x bead pixel diameter to nearest odd int, {} -> {}".format(float_search_diameter_x, search_diameter_x))
-    logger.log("Rounding up y bead pixel diameter to nearest odd int, {} -> {}".format(float_search_diameter_y, search_diameter_y))
-    logger.log("Rounding up z bead stack diameter to nearest odd int, {} -> {}".format(float_search_diameter_z, search_diameter_z))
+    # logger.log("I")
+    logger.log("In x dimension we search for beads {} pixels large".format(search_diameter_x))
+    logger.log("In y dimension we search for beads {} pixels large".format(search_diameter_y))
+    logger.log("In z dimension we search for beads {} stacks large".format(search_diameter_z))
+
+    # search_diameter_x = round_to_odd(bead_pixelsize_xyz[0])
+    # search_diameter_y = round_to_odd(bead_pixelsize_xyz[1])
+    # search_diameter_z = round_to_odd(bead_pixelsize_xyz[2])
+
+    # if search_diameter_x < 1:
+    #     search_diameter_x = 1
+    # if search_diameter_y < 1:
+    #     search_diameter_y = 1
+    # if search_diameter_z < 1:
+    #     search_diameter_z = 1
+
+    # logger.log("Rounding up x bead pixel diameter to nearest odd int, {} -> {}".format(float_search_diameter_x, search_diameter_x))
+    # logger.log("Rounding up y bead pixel diameter to nearest odd int, {} -> {}".format(float_search_diameter_y, search_diameter_y))
+    # logger.log("Rounding up z bead stack diameter to nearest odd int, {} -> {}".format(float_search_diameter_z, search_diameter_z))
     diameter = (search_diameter_z, search_diameter_x, search_diameter_y)
     logger.log("Finding features with diameter {}".format(diameter))
     logger.log("After finding features, cross-time-frame linking will be done with linking search range {} um".format(linking_search_range_um))
