@@ -598,26 +598,6 @@ class SectioningSetupForm(SetupForm):
 
     app_done_func_name = "sectioningSetupDone"
 
-# class SoaxParamsFirstPageForm(SetupForm):
-#     field_infos = [
-#         {
-#             "id": "params_save_dir",
-#             "type": "dir",
-#         },
-#         {
-#             "id": "make_params_for_individual_images",
-#             "type": "true_false",
-#         },
-#     ]
-
-#     app_done_func_name = "soaxParamsSetupFirstPageDone"
-
-        # self.create_normal_soax_params_config = {
-        #     "fields": {
-        #         "params_save_dir": "./Params",
-        #     },
-        #     "notes": {},
-        # }
 
 class CreateNormalSoaxParamsSetupForm(SetupForm):
     field_infos = [
@@ -948,8 +928,12 @@ class BeadPIVSetupForm(SetupForm):
             "type": "dir",
         },
         {
-            "id": "bead_diameter_um",
-            "type": "pos_float",
+            "id": "bead_pixelsize_xyz",
+            "help": [
+                "The size of the bead in x,y,z pixels. Must be integers.",
+                "e.x: 9,9,3 for beads that are 9 pixels wide in x, 9 pixels in y, 3 pixels in z",
+            ],
+            "type": "int_coords",
         },
         {
             "id": "x_pixel_size_um",
@@ -1138,7 +1122,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "tiff_fn_letter_before_frame_num": "",
                 "tiff_fn_letter_before_z_num": "",
                 "target_piv_data_dir": "./BeadPIVsData",
-                "bead_diameter_um": "",
+                "bead_pixelsize_xyz": "",
                 "linking_search_range_um": "3",
                 "processes": "1",
             },

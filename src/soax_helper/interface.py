@@ -289,16 +289,16 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         parsed_bead_PIV_settings = BeadPIVSetupForm.parseSettings(setting_strings, make_dirs)
 
         bead_piv(
-            parsed_bead_PIV_settings["source_tiff_dir"],
-            parsed_bead_PIV_settings["tiff_fn_letter_before_frame_num"],
-            parsed_bead_PIV_settings["tiff_fn_letter_before_z_num"],
-            parsed_bead_PIV_settings["target_piv_data_dir"],
-            parsed_bead_PIV_settings["x_pixel_size_um"],
-            parsed_bead_PIV_settings["y_pixel_size_um"],
-            parsed_bead_PIV_settings["z_stack_spacing_um"],
-            parsed_bead_PIV_settings["bead_diameter_um"],
-            parsed_bead_PIV_settings["linking_search_range_um"],
-            parsed_bead_PIV_settings["processes"],
+            source_tiff_dir=parsed_bead_PIV_settings["source_tiff_dir"],
+            tiff_fn_letter_before_frame_num=parsed_bead_PIV_settings["tiff_fn_letter_before_frame_num"],
+            tiff_fn_letter_before_z_num=parsed_bead_PIV_settings["tiff_fn_letter_before_z_num"],
+            target_piv_data_dir=parsed_bead_PIV_settings["target_piv_data_dir"],
+            x_pixel_spacing_um=parsed_bead_PIV_settings["x_pixel_size_um"],
+            y_pixel_spacing_um=parsed_bead_PIV_settings["y_pixel_size_um"],
+            z_stack_spacing_um=parsed_bead_PIV_settings["z_stack_spacing_um"],
+            bead_pixelsize_xyz=parsed_bead_PIV_settings["bead_pixelsize_xyz"],
+            linking_search_range_um=parsed_bead_PIV_settings["linking_search_range_um"],
+            processes=parsed_bead_PIV_settings["processes"],
             logger=logger,
         )
     else:

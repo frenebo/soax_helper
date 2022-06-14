@@ -14,14 +14,18 @@ def bead_piv(
     x_pixel_spacing_um,
     y_pixel_spacing_um,
     z_stack_spacing_um,
-    bead_diameter_um,
+    bead_pixelsize_xyz,
     linking_search_range_um,
-
     processes,
+
     logger,
     ):
     import pims
     import trackpy as tp
+
+    for beadpixdim in bead_pixelsize_xyz:
+        if beadpixdim < 0:
+            raise Exception("Bead pixel dimensions cannot be negative: ", str(bead_pixelsize_xyz))
 
     logger.log("Letter before frame num: {}".format(tiff_fn_letter_before_frame_num))
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num,tiff_fn_letter_before_z_num])
@@ -40,23 +44,23 @@ def bead_piv(
     # PIMS gives the time axis the name of identifier letter
     frames.iter_axes = [tiff_fn_letter_before_frame_num]
 
-    float_search_diameter_x = bead_diameter_um / x_pixel_spacing_um
-    float_search_diameter_y = bead_diameter_um / y_pixel_spacing_um
-    float_search_diameter_z = bead_diameter_um / z_stack_spacing_um
+    # float_search_diameter_x = bead_diameter_um / x_pixel_spacing_um
+    # float_search_diameter_y = bead_diameter_um / y_pixel_spacing_um
+    # float_search_diameter_z = bead_diameter_um / z_stack_spacing_um
 
-    logger.log("Using x pixel size {x_size} um, y pixel size {y_size} um, z_spacing {z_size} um, bead size {bead_diameter_um} um".format(
+    logger.log("Using x pixel size {x_size} um, y pixel size {y_size} um, z_spacing {z_size} um".format(
         x_size = x_pixel_spacing_um,
         y_size = y_pixel_spacing_um,
         z_size = z_stack_spacing_um,
-        bead_diameter_um = bead_diameter_um,
+        # bead_diameter_um = bead_diameter_um,
         ))
     logger.log("In x dimension we expect beads to be {} pixels large".format(float_search_diameter_x))
     logger.log("In y dimension we expect beads to be {} pixels large".format(float_search_diameter_y))
     logger.log("In z dimension we expect beads to be {} stacks large".format(float_search_diameter_z))
 
-    search_diameter_x = round_to_odd(float_search_diameter_x)
-    search_diameter_y = round_to_odd(float_search_diameter_y)
-    search_diameter_z = round_to_odd(float_search_diameter_z)
+    search_diameter_x = round_to_odd(bead_pixelsize_xyz[0])
+    search_diameter_y = round_to_odd(bead_pixelsize_xyz[1])
+    search_diameter_z = round_to_odd(bead_pixelsize_xyz[2])
 
     if search_diameter_x < 1:
         search_diameter_x = 1
@@ -73,9 +77,6 @@ def bead_piv(
     logger.log("After finding features, cross-time-frame linking will be done with linking search range {} um".format(linking_search_range_um))
 
     f = tp.batch(frames, diameter=diameter, processes=processes)
-    f['xum'] = f['x'] * x_pixel_spacing_um
-    f['yum'] = f['y'] * y_pixel_spacing_um
-    f['zum'] = f['z'] * z_stack_spacing_um
 
     logger.log("Columns:")
     for col in f.columns:
@@ -95,15 +96,15 @@ def bead_piv(
         str(f.y.max()),
         str(f.z.max()),
     ))
-    logger.log("XYZ um min and max:")
-    logger.log("min {} {} {}, max {} {} {}".format(
-        str(f.xum.min()),
-        str(f.yum.min()),
-        str(f.zum.min()),
-        str(f.xum.max()),
-        str(f.yum.max()),
-        str(f.zum.max()),
-    ))
+    # logger.log("XYZ um min and max:")
+    # logger.log("min {} {} {}, max {} {} {}".format(
+    #     str(f.xum.min()),
+    #     str(f.yum.min()),
+    #     str(f.zum.min()),
+    #     str(f.xum.max()),
+    #     str(f.yum.max()),
+    #     str(f.zum.max()),
+    # ))
     logger.log("size min and max:")
     logger.log("min {} {} {}, max {} {} {}".format(
         str(f.size_x.min()),
@@ -115,7 +116,11 @@ def bead_piv(
     ))
 
     f.to_csv("./batch_beads.csv")
-    print("Saved to csv file")
+    logger.log("Saved to csv file")
+
+    f['xum'] = f['x'] * x_pixel_spacing_um
+    f['yum'] = f['y'] * y_pixel_spacing_um
+    f['zum'] = f['z'] * z_stack_spacing_um
 
     # Linking is faster if using a predictor for where the particles will go
     # pred = tp.predict.NearestVelocityPredict()
