@@ -1134,7 +1134,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "notes": {},
         }
 
-        sellf.raise_black_point_config = {
+        self.raise_black_point_config = {
             "fields":  {
                 "source_tiff_dir": "",
                 "target_tiff_dir": "./RaisedBlackPoint",
@@ -1226,6 +1226,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             action_configs.append({
                 "action": "join_sectioned_snakes",
                 "settings": self.join_sectioned_snakes_config["fields"],
+            })
+        if self.do_raise_black_point:
+            action_configs.append({
+                "action": "raise_black_point",
+                "settings": self.raise_black_point_config["fields"],
             })
         if self.do_bead_PIV:
             action_configs.append({
