@@ -270,6 +270,7 @@ class SINDyStepsSelectForm(npyscreen.Form):
         do_make_sindy_fields = 2 in self.select_steps.value
 
         self.parentApp.SINDyStepsSelectDone(
+            do_raise_black_point,
             do_bead_PIV,
             do_make_sindy_fields,
         )
