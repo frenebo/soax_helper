@@ -5,7 +5,7 @@ from multiprocessing.pool import ThreadPool
 from .snakeutils.files import find_tiffs_in_dir
 from .snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
 
-def raise_black_point(source_tiff_dir, target_dir, black_pix_level, logger):
+def raise_black_point(source_tiff_dir, target_tiff_dir, black_pix_level, logger):
     source_tiffs = find_tiffs_in_dir(source_tiff_dir)
 
     if len(source_tiffs) == 0:
@@ -28,6 +28,6 @@ def raise_black_point(source_tiff_dir, target_dir, black_pix_level, logger):
         # divided_arr = np.multiply(np_arr.astype(np.double), image_mult_factor)
         # divided_arr = divided_arr.astype(np_arr.dtype)
 
-        # save_tiff_path = os.path.join(target_dir, tiff_name)
+        # save_tiff_path = os.path.join(target_tiff_dir, tiff_name)
         # logger.success("    Saving divided image {}".format(save_tiff_path))
         # save_3d_tif(save_tiff_path, np_arr)
