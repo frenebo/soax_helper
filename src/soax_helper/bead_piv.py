@@ -83,7 +83,7 @@ def bead_piv(
     logger.log("Finding features with diameter {}".format(diameter))
     logger.log("After finding features, cross-time-frame linking will be done with linking search range {} um".format(linking_search_range_um))
 
-    f = tp.batch(frames, diameter=diameter, processes=processes, threshold=3500)
+    f = tp.batch(frames, diameter=diameter, processes=processes)
 
     logger.log("Columns:")
     for col in f.columns:
