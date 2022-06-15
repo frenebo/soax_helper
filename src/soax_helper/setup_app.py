@@ -1134,6 +1134,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             "notes": {},
         }
 
+        sellf.raise_black_point_config = {
+            "fields":  {
+                "source_tiff_dir": "",
+                "target_tiff_dir": "./RaisedBlackPoint",
+                "black_pix_level": "",
+            },
+            "notes":  {},
+        }
+
         self.bead_PIV_config = {
             "fields": {
                 "x_pixel_size_um": "",
