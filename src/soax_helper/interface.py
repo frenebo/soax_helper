@@ -6,6 +6,7 @@ import time
 from .snakeutils.logger import FileLogger, RecordingLogger, ConsoleLogger
 from .setup_app import (
     DivideAverageImageSetupForm,
+    RaiseBlackPointSetupForm,
     SoaxSetupApp,
     RescaleSetupForm,
     SectioningSetupForm,
@@ -182,12 +183,21 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     from .create_regular_soax_param_files import create_regular_soax_param_files
     from .create_image_specific_soax_param_files import create_image_specific_soax_param_files
     from .divide_average_image import divide_average_image
+    from .raise_black_point import raise_black_point
 
     if action_name == "divide_average_image":
         parsed_divide_average_image_settings = DivideAverageImageSetupForm.parseSettings(setting_strings, make_dirs)
         divide_average_image(
             parsed_divide_average_image_settings["source_tiff_dir"],
             parsed_divide_average_image_settings["target_tiff_dir"],
+            logger=logger,
+        )
+    elif action_name == "raise_black_point":
+        parsed_raise_black_point_settings = RaiseBlackPointSetupForm.parseSettings(setting_strings, make_dirs)
+        raise_black_point(
+            source_tiff_dir=parsed_raise_black_point_settings["source_tiff_dir"],
+            target_tiff_dir=parsed_raise_black_point_settings["target_tiff_dir"],
+            black_pix_level=parsed_raise_black_point_settings["black_pix_level"],
             logger=logger,
         )
     elif action_name == "rescale_tiffs":

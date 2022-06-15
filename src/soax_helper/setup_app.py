@@ -250,15 +250,14 @@ class SoaxStepsSelectForm(npyscreen.Form):
         )
 
 class SINDyStepsSelectForm(npyscreen.Form):
-    # self.
-    #     {"name": "make_sindy_fields", "show": "Make Sindy Fields"},
     def configure(self):
         self.select_steps = self.add(
             npyscreen.TitleMultiSelect,
-            max_height =-2,
+            max_height =-3,
             value = [],
             name="Pick SINDy Steps (spacebar to toggle)",
             values = [
+                "Raise Black Point (for bead PIV)",
                 "Bead PIV",
                 "Make SINDy Fields",
             ],
@@ -266,8 +265,9 @@ class SINDyStepsSelectForm(npyscreen.Form):
         )
 
     def afterEditing(self):
-        do_bead_PIV =          0 in self.select_steps.value
-        do_make_sindy_fields = 1 in self.select_steps.value
+        do_raise_black_point = 0 in self.select_steps.value
+        do_bead_PIV =          1 in self.select_steps.value
+        do_make_sindy_fields = 2 in self.select_steps.value
 
         self.parentApp.SINDyStepsSelectDone(
             do_bead_PIV,
@@ -542,6 +542,26 @@ class DivideAverageImageSetupForm(SetupForm):
     ]
 
     app_done_func_name = "divideAverageImageSetupDone"
+
+class RaiseBlackPointSetupForm(SetupForm):
+    field_infos = [
+        {
+            "id": "source_tiff_dir",
+            "type": "dir",
+            "help": "Remove an integer amount from the pixel brightnesses of all the tiffs in the source directory",
+        },
+        {
+            "id": "target_tiff_dir",
+            "type": "dir",
+            "help": "Save images with the subtracted brightness (raised black point) in target directory"
+        },
+        {
+            "id": "black_pix_level",
+            "type": "pos_int",
+        },
+    ]
+
+    app_done_func_name = "raiseBlackPointSetupDone"
 
 class RescaleSetupForm(SetupForm):
     field_infos = [
@@ -1336,12 +1356,16 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         self.setNextForm('SINDY_STEPS_SELECT')
 
     def SINDyStepsSelectDone(self,
+        do_raise_black_point,
         do_bead_PIV,
         do_make_sindy_fields,
         ):
+        self.do_raise_black_point = do_raise_black_point
         self.do_bead_PIV = do_bead_PIV
         self.do_make_sindy_fields = do_make_sindy_fields
 
+        if self.do_raise_black_point:
+            self.menu_functions.append(self.startRaiseBlackPointSetup)
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIVSetup)
         if self.do_make_sindy_fields:
@@ -1548,6 +1572,15 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def makeSindyFieldsSetupDone(self, fields):
         self.make_sindy_fields_config["fields"] = fields
+        self.goToNextMenu()
+
+    def startRaiseBlackPointSetup(self):
+        self.addForm('RAISE_BLACK_POINT_SETUP', RaiseBlackPointSetupForm, name='Raise Black Point Setup')
+        self.getForm('RAISE_BLACK_POINT_SETUP').configure(self.raise_black_point_config, self.make_dirs)
+        self.setNextForm('RAISE_BLACK_POINT_SETUP')
+
+    def raiseBlackPointSetupDone(self, fields):
+        self.raise_black_point_config["fields"] = fields
         self.goToNextMenu()
 
     def startBeadPIVSetup(self):
