@@ -957,6 +957,13 @@ class BeadPIVSetupForm(SetupForm):
             ],
         },
         {
+            "id": "noise_size_xyz",
+            "type": "float_coords",
+            "help": [
+                "The size of gaussian blurring kernel in x,y,z",
+            ],
+        },
+        {
             "id": "bead_pixel_searchsize_xyz",
             "help": [
                 "The size of the bead in x,y,z pixels. Must be integers.",
@@ -1155,6 +1162,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 # "z_stack_spacing_um": "",
                 "source_tiff_dir": "",
                 "brightness_threshold": "1",
+                "noise_size_xyz": "1,1,1",
                 "tiff_fn_letter_before_frame_num": "",
                 "tiff_fn_letter_before_z_num": "",
                 "target_piv_data_dir": "./BeadPIVsData",

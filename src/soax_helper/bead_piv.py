@@ -13,6 +13,7 @@ def bead_piv(
     tiff_fn_letter_before_z_num,
     target_piv_data_dir,
     brightness_threshold,
+    noise_size_xyz,
     pixel_spacing_um_xyz,
     bead_pixel_searchsize_xyz,
     linking_search_range_um,
@@ -27,6 +28,7 @@ def bead_piv(
         if beadpixdim < 0:
             raise Exception("Bead pixel dimensions cannot be negative: ", str(bead_pixel_searchsize_xyz))
 
+    x_noise_size, y_noise_size, z_noise_size = noise_size_xyz
     x_pixel_spacing_um, y_pixel_spacing_um, z_stack_spacing_um = pixel_spacing_um_xyz
 
     logger.log("Letter before frame num: {}".format(tiff_fn_letter_before_frame_num))
@@ -45,6 +47,7 @@ def bead_piv(
         y_size = y_pixel_spacing_um,
         z_size = z_stack_spacing_um,
     ))
+    logger.log("Using noise size in x,y,z: {},{},{}".format(x_noise_size, y_noise_size, z_noise_size))
 
     search_size_xyz = [up_to_nearest_odd(size) for size in bead_pixel_searchsize_xyz]
 
@@ -58,7 +61,9 @@ def bead_piv(
     logger.log("Finding features with diameter {}".format(diameter))
     logger.log("After finding features, cross-time-frame linking will be done with linking search range {} um".format(linking_search_range_um))
 
-    f = tp.batch(frames, diameter=diameter, processes=processes, threshold=brightness_threshold)
+
+    noise_size_zxy = (z_noise_size, x_noise_size, y_noise_size)
+    f = tp.batch(frames, diameter=diameter, processes=processes, threshold=brightness_threshold, noise_size=noise_size_zxy)
 
     logger.log("Columns:")
     for col in f.columns:

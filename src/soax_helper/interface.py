@@ -304,6 +304,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             tiff_fn_letter_before_z_num=parsed_bead_PIV_settings["tiff_fn_letter_before_z_num"],
             target_piv_data_dir=parsed_bead_PIV_settings["target_piv_data_dir"],
             brightness_threshold=parsed_bead_PIV_settings["brightness_threshold"],
+            noise_size_xyz=parsed_bead_PIV_settings["noise_size_xyz"],
             pixel_spacing_um_xyz=parsed_bead_PIV_settings["pixel_spacing_um_xyz"],
             bead_pixel_searchsize_xyz=parsed_bead_PIV_settings["bead_pixel_searchsize_xyz"],
             linking_search_range_um=parsed_bead_PIV_settings["linking_search_range_um"],
