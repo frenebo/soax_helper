@@ -949,7 +949,7 @@ class BeadPIVSetupForm(SetupForm):
             "type": "dir",
         },
         {
-            "id": "brightness_threshsold",
+            "id": "brightness_threshold",
             "type": "pos_float",
             "help": [
                 "From trackpy docs: Clip bandpass result below this value. Thresholding is done on the ",
