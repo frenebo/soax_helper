@@ -93,7 +93,7 @@ def bead_piv(
         str(f.size_z.max()),
     ))
 
-    f.to_csv("./unlinked_beads.csv")
+    f.to_csv(os.path.join(target_piv_data_dir, "unlinked_beads.csv"))
     logger.log("Saved to csv file")
 
     f['xum'] = f['x'] * x_pixel_spacing_um
@@ -106,7 +106,7 @@ def bead_piv(
     linked = pred.link_df(f, linking_search_range_um,  pos_columns=['xum','yum','zum'])
 
     # frame_count = max(linked.frame)
-    linked.to_csv("linked_df.csv")
+    linked.to_csv(os.path.join(target_piv_data_dir, "linked_df.csv"))
 
     # data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.json".format(str_length=len(str(frame_count - 1)))
     # data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.csv".format(str_length=len(str(frame_count - 1)))
