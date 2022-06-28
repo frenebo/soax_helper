@@ -953,8 +953,8 @@ class BeadPIVSetupForm(SetupForm):
             "type": "pos_float",
             "help": [
                 "From trackpy docs: Clip bandpass result below this value. Thresholding is done on the ",
-                "already background-subtracted image. By default, 1 for integer images and 1/255 for float images.
-            ]
+                "already background-subtracted image. By default, 1 for integer images and 1/255 for float images.",
+            ],
         },
         {
             "id": "bead_pixel_searchsize_xyz",
