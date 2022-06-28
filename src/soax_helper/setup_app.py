@@ -949,6 +949,14 @@ class BeadPIVSetupForm(SetupForm):
             "type": "dir",
         },
         {
+            "id": "brightness_threshsold",
+            "type": "pos_float",
+            "help": [
+                "From trackpy docs: Clip bandpass result below this value. Thresholding is done on the ",
+                "already background-subtracted image. By default, 1 for integer images and 1/255 for float images.
+            ]
+        },
+        {
             "id": "bead_pixel_searchsize_xyz",
             "help": [
                 "The size of the bead in x,y,z pixels. Must be integers.",
@@ -957,16 +965,12 @@ class BeadPIVSetupForm(SetupForm):
             "type": "int_coords",
         },
         {
-            "id": "x_pixel_size_um",
-            "type": "pos_float",
-        },
-        {
-            "id": "y_pixel_size_um",
-            "type": "pos_float",
-        },
-        {
-            "id": "z_stack_spacing_um",
-            "type": "pos_float",
+            "id": "pixel_spacing_um_xyz",
+            "type": "float_coords",
+            "help": [
+                "The micron sizes of pixels in x,y,z: how long a pixel is along the x direction, y direction, and z direction.",
+                "Ex: '0.25,0.25,1' means that pixel resolution is 4 pixels per micron in x and y, and z-stacks are separated by 1 micron."
+            ]
         },
         {
             "help": "Number of processes for trackpy to run in parallel",
@@ -1145,10 +1149,12 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.bead_PIV_config = {
             "fields": {
-                "x_pixel_size_um": "",
-                "y_pixel_size_um": "",
-                "z_stack_spacing_um": "",
+                "pixel_spacing_um_xyz": "",
+                # "x_pixel_size_um": "",
+                # "y_pixel_size_um": "",
+                # "z_stack_spacing_um": "",
                 "source_tiff_dir": "",
+                "brightness_threshold": "1",
                 "tiff_fn_letter_before_frame_num": "",
                 "tiff_fn_letter_before_z_num": "",
                 "target_piv_data_dir": "./BeadPIVsData",
