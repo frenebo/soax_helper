@@ -996,9 +996,9 @@ class BeadPIVSetupForm(SetupForm):
             "type": "pos_float",
         },
         {
-            "help": "Values 0.0-100.0 - See trackpy documentation, determines minimum peak brightness for a features",
+            "help": "Values between 0 and 100 - See trackpy documentation, determines minimum peak brightness for a features",
             "id": "percentile",
-            "type": "float",
+            "type": "pos_float",
         },
     ]
 
