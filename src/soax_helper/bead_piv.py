@@ -17,6 +17,7 @@ def bead_piv(
     pixel_spacing_um_xyz,
     bead_pixel_searchsize_xyz,
     linking_search_range_um,
+    percentile,
     processes,
 
     logger,
@@ -63,7 +64,7 @@ def bead_piv(
 
 
     noise_size_zxy = (z_noise_size, x_noise_size, y_noise_size)
-    f = tp.batch(frames, diameter=diameter, processes=processes, threshold=brightness_threshold, noise_size=noise_size_zxy)
+    f = tp.batch(frames, percentile=percentile, diameter=diameter, processes=processes, threshold=brightness_threshold, noise_size=noise_size_zxy)
 
     logger.log("Columns:")
     for col in f.columns:

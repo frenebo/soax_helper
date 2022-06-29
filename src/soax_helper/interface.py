@@ -308,6 +308,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             pixel_spacing_um_xyz=parsed_bead_PIV_settings["pixel_spacing_um_xyz"],
             bead_pixel_searchsize_xyz=parsed_bead_PIV_settings["bead_pixel_searchsize_xyz"],
             linking_search_range_um=parsed_bead_PIV_settings["linking_search_range_um"],
+            percentile=parsed_bead_PIV_settings["percentile"],
             processes=parsed_bead_PIV_settings["processes"],
             logger=logger,
         )

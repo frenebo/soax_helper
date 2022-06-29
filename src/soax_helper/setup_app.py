@@ -994,7 +994,12 @@ class BeadPIVSetupForm(SetupForm):
             ],
             "id": "linking_search_range_um",
             "type": "pos_float",
-        }
+        },
+        {
+            "help": "Values 0.0-100.0 - See trackpy documentation, determines minimum peak brightness for a features",
+            "id": "percentile",
+            "type": "float",
+        },
     ]
 
     app_done_func_name = "beadPIVSetupDone"
@@ -1168,6 +1173,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "target_piv_data_dir": "./BeadPIVsData",
                 "bead_pixel_searchsize_xyz": "",
                 "linking_search_range_um": "3",
+                "percentile": "64",
                 "processes": "1",
             },
             "notes": {},
