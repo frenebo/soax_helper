@@ -24,7 +24,7 @@ def save_3d_tif(fp,numpy_arr):
     numpy_arr = np.swapaxes(numpy_arr,2,1)
     numpy_arr = np.swapaxes(numpy_arr,1,0)
 
-    tifffile.imsave(fp,numpy_arr)
+    tifffile.imwrite(fp,numpy_arr)
 
 def open_tiff_as_np_arr(img_path):
     try:
