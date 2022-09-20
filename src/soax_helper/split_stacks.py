@@ -18,14 +18,14 @@ if __name__ == "__main__":
 def split_stacks(source_tiff_dir, target_directory,logger):
 
     if not os.path.isdir(source_tiff_dir):
-        raise Exception("Bad source directory '{}': should be a directory with TIFF frames inside".format(args.source_tiff_dir))
+        raise Exception("Bad source directory '{}': should be a directory with TIFF frames inside".format(source_tiff_dir))
 
 
     if not os.path.exists(target_directory):
-        os.makedirs(args.target_directory)
+        os.makedirs(target_directory)
     else:
         if not os.path.isdir(target_directory):
-            raise Exception("Bad target directory '{}': should be a directory to put the TIFF frames into".format(args.target_directory))
+            raise Exception("Bad target directory '{}': should be a directory to put the TIFF frames into".format(target_directory))
 
     source_tiffs = find_tiffs_in_dir(source_tiff_dir)
     for tiff_fn in source_tiffs:
