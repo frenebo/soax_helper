@@ -40,8 +40,8 @@ def pad_tiff_numbers(
         if tiff_fn_num is None:
             continue
 
+        save_prefix = tiff_name_prefix
         save_postfix = os.path.splitext(tiff_fn)[0][-postfix_length:]
-
 
 
         new_tiff_fn = save_prefix + str(tiff_fn_num).zfill(most_digits) + save_postfix + ".tif"
