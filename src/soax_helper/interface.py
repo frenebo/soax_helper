@@ -147,6 +147,7 @@ def run_actions(action_configs, make_dirs_if_not_present, logger):
             end_time = time.time()
             elapsed = end_time - start_time
             logger.error("Step #{}, '{}' failed after {} seconds. Ending program".format(i + 1, action_name, elapsed))
+            logger.error(message)
 
             raise
 
