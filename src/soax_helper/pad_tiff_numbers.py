@@ -9,7 +9,12 @@ def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, postfix_length=0, logger=Conso
     if not fn_without_extension.startswith(tiff_name_prefix):
         logger.error("TIFF '{}' does not start with '{}', skipping".format(tiff_fn, tiff_name_prefix))
         return None
-    tiff_num_str = fn_without_extension[len(tiff_name_prefix):-postfix_length]
+
+    if postfix_length != 0:
+        tiff_num_str = fn_without_extension[len(tiff_name_prefix):-postfix_length]
+    else:
+        tiff_num_str = fn_without_extension[len(tiff_name_prefix):]
+
     try:
         tiff_num = int(tiff_num_str)
     except ValueError as e:
@@ -41,7 +46,10 @@ def pad_tiff_numbers(
             continue
 
         save_prefix = tiff_name_prefix
-        save_postfix = os.path.splitext(tiff_fn)[0][-postfix_length:]
+        if postfix_length != 0:
+            save_postfix = os.path.splitext(tiff_fn)[0][-postfix_length:]
+        else:
+            save_postfix = ""
 
 
         new_tiff_fn = save_prefix + str(tiff_fn_num).zfill(most_digits) + save_postfix + ".tif"
