@@ -1348,7 +1348,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIVSetup)
         if self.do_bead_linking:
-            self.menu_functions.apppend(self.startBeadLinkingSetup)
+            self.menu_functions.append(self.startBeadLinkingSetup)
 
         self.goToNextMenu()
 
