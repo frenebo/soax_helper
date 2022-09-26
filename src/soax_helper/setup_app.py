@@ -1154,7 +1154,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.menu_functions = [
             self.startSoaxStepsSelect,
-            # self.startSINDyStepsSelect,
+            self.startSINDyStepsSelect,
         ]
         self.form_index = -1
 
