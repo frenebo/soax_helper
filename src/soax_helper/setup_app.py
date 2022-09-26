@@ -257,19 +257,20 @@ class SINDyStepsSelectForm(npyscreen.Form):
             value = [],
             name="Pick SINDy Steps (spacebar to toggle)",
             values = [
-                "Bead PIV",
+                "Find Beads (PIV)",
+                "Link Beads (time tracking)"
                 # "Make SINDy Fields",
             ],
             scroll_exit=True,
         )
 
     def afterEditing(self):
-        do_bead_PIV =          0 in self.select_steps.value
-        # do_make_sindy_fields = 1 in self.select_steps.value
+        do_bead_PIV =     0 in self.select_steps.value
+        do_bead_linking = 1 in self.select_steps.value
 
         self.parentApp.SINDyStepsSelectDone(
             do_bead_PIV,
-            # do_make_sindy_fields,
+            do_bead_linking,
         )
 
 class SetupForm(npyscreen.Form):
@@ -877,32 +878,6 @@ class JoinSectionedSnakesSetupForm(SetupForm):
 
     app_done_func_name = "joinSectionedSnakesSetupDone"
 
-# class MakeSindyFieldsSetupForm(SetupForm):
-#     field_infos = [
-#         {
-#             "id": "source_json_dir",
-#             "type": "dir",
-#         },
-#         {
-#             "id": "source_jsons_depth",
-#             "type": "non_neg_int",
-#         },
-#         {
-#             "id": "source_images_dir",
-#             "type": "dir",
-#         },
-#         {
-#             "id": "save_intensities_dir",
-#             "type": "dir",
-#         },
-#         {
-#             "id": "save_orientations_dir",
-#             "type": "dir",
-#         },
-#     ]
-
-#     app_done_func_name = "makeSindyFieldsSetupDone"
-
 class BeadPIVSetupForm(SetupForm):
     field_infos = [
         {
@@ -949,17 +924,30 @@ class BeadPIVSetupForm(SetupForm):
             "type": "int_coords",
         },
         {
-            "id": "pixel_spacing_um_xyz",
-            "type": "float_coords",
-            "help": [
-                "The micron sizes of pixels in x,y,z: how long a pixel is along the x direction, y direction, and z direction.",
-                "Ex: '0.25,0.25,1' means that pixel resolution is 4 pixels per micron in x and y, and z-stacks are separated by 1 micron."
-            ]
-        },
-        {
             "help": "Number of processes for trackpy to run in parallel",
             "id": "processes",
             "type": "pos_int",
+        },
+        {
+            "help": "Values between 0 and 100 - See trackpy documentation, determines minimum peak brightness for a features",
+            "id": "percentile",
+            "type": "pos_float",
+        },
+    ]
+
+    app_done_func_name = "beadPIVSetupDone"
+
+class BeadLinkingSetupForm(SetupForm):
+    field_infos = [
+        {
+            "id": "source_piv_data_dir",
+            "type": "dir",
+            "help": "Directory where bead PIV step saved the data for where beads are in each timestep (not tracked across frames)"
+        },
+        {
+            "id": "target_linked_bead_data_dir",
+            "type": "dir",
+            "help": "Directory to save bead data after matching beads to one another across timeframes"
         },
         {
             "help": [
@@ -973,13 +961,15 @@ class BeadPIVSetupForm(SetupForm):
             "type": "pos_float",
         },
         {
-            "help": "Values between 0 and 100 - See trackpy documentation, determines minimum peak brightness for a features",
-            "id": "percentile",
-            "type": "pos_float",
+            "id": "pixel_spacing_um_xyz",
+            "type": "float_coords",
+            "help": [
+                "The micron sizes of pixels in x,y,z: how long a pixel is along the x direction, y direction, and z direction.",
+                "Ex: '0.25,0.25,1' means that pixel resolution is 4 pixels per micron in x and y, and z-stacks are separated by 1 micron."
+            ]
         },
     ]
-
-    app_done_func_name = "beadPIVSetupDone"
+    app_done_func_name = "beadLinkingSetupDone"
 
 class SoaxSetupApp(npyscreen.NPSAppManaged):
     def __init__(self, make_dirs=False, batch_soax_path=None, **kwargs):
@@ -1116,34 +1106,28 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             },
             "notes": {},
         }
-        # self.make_sindy_fields_config = {
-        #     "fields": {
-        #         "source_json_dir": "",
-        #         "source_jsons_depth": "",
-        #         "source_images_dir": "",
-        #         "save_intensities_dir": "./IntensityFields",
-        #         "save_orientations_dir": "./OrientationFields",
-        #     },
-        #     "notes": {},
-        # }
 
 
         self.bead_PIV_config = {
             "fields": {
-                "pixel_spacing_um_xyz": "",
-                # "x_pixel_size_um": "",
-                # "y_pixel_size_um": "",
-                # "z_stack_spacing_um": "",
                 "source_tiff_dir": "",
                 "brightness_threshold": "1",
                 "noise_size_xyz": "1,1,1",
                 "tiff_fn_letter_before_frame_num": "",
                 "tiff_fn_letter_before_z_num": "",
-                "target_piv_data_dir": "./BeadPIVsData",
+                "target_piv_data_dir": "./BeadPIVData",
                 "bead_pixel_searchsize_xyz": "",
-                "linking_search_range_um": "3",
                 "percentile": "64",
                 "processes": "1",
+            },
+            "notes": {},
+        }
+        self.bead_linking_config =  {
+            "fields": {
+                "source_piv_data_dir": "",
+                "target_linked_bead_data_dir": "./LinkedBeadData",
+                "pixel_spacing_um_xyz": "",
+                "linking_search_range_um": "3",
             },
             "notes": {},
         }
@@ -1221,11 +1205,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "do_bead_PIV",
                 "settings": self.bead_PIV_config["fields"],
             })
-        # if self.do_make_sindy_fields:
-        #     action_configs.append({
-        #         "action": "make_sindy_fields",
-        #         "settings": self.make_sindy_fields_config["fields"],
-        #     })
+        if sef.do_bead_linking:
+            action_configs.append({
+                "action": "do_bead_linking",
+                "settings": self.bead_linking_config["fields"],
+            })
         return action_configs
 
     def try_find_dir_first_tif_metadata(self, tiff_dir, img_depth):
@@ -1349,22 +1333,22 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # Move onto next index
         self.goToNextMenu()
 
-    # def startSINDyStepsSelect(self):
-    #     self.addForm('SINDY_STEPS_SELECT', SINDyStepsSelectForm, name='Select SINDy Steps')
-    #     self.getForm('SINDY_STEPS_SELECT').configure()
-    #     self.setNextForm('SINDY_STEPS_SELECT')
+    def startSINDyStepsSelect(self):
+        self.addForm('SINDY_STEPS_SELECT', SINDyStepsSelectForm, name='Select SINDy Steps')
+        self.getForm('SINDY_STEPS_SELECT').configure()
+        self.setNextForm('SINDY_STEPS_SELECT')
 
     def SINDyStepsSelectDone(self,
-        do_bead_PIV,
-        # do_make_sindy_fields,
+            do_bead_PIV,
+            do_bead_linking,
         ):
         self.do_bead_PIV = do_bead_PIV
-        # self.do_make_sindy_fields = do_make_sindy_fields
+        self.do_bead_linking = do_bead_linking
 
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIVSetup)
-        # if self.do_make_sindy_fields:
-        #     self.menu_functions.append(self.startMakeSindyFieldsSetup)
+        if self.do_bead_linking:
+            self.menu_functions.apppend(self.startBeadLinkingSetup)
 
         self.goToNextMenu()
 
@@ -1551,23 +1535,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def joinSectionedSnakesSetupDone(self, fields):
         self.join_sectioned_snakes_config["fields"] = fields
 
-        # target_json_dir = fields["target_json_dir"]
-        # self.make_sindy_fields_config["fields"]["source_json_dir"] = target_json_dir
-
-        # Output jsons are one directory less deep since they've been joined
-        # output_jsons_depth = str(int(fields["source_jsons_depth"]) - 1)
-        # self.make_sindy_fields_config["fields"]["source_json_dir"] = output_jsons_depth
-
         self.goToNextMenu()
-
-    # def startMakeSindyFieldsSetup(self):
-    #     self.addForm('MAKE_SINDY_FIELDS', MakeSindyFieldsSetupForm, name="Make Sindy Fields Setup")
-    #     self.getForm('MAKE_SINDY_FIELDS').configure(self.make_sindy_fields_config, self.make_dirs)
-    #     self.setNextForm('MAKE_SINDY_FIELDS')
-
-    # def makeSindyFieldsSetupDone(self, fields):
-    #     self.make_sindy_fields_config["fields"] = fields
-    #     self.goToNextMenu()
 
     def startBeadPIVSetup(self):
         self.addForm('BEAD_PIV_SETUP', BeadPIVSetupForm, name="Bead PIV Setup")
@@ -1576,4 +1544,18 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
     def beadPIVSetupDone(self, fields):
         self.bead_PIV_config["fields"] = fields
+
+        target_piv_dir = fields["target_piv_data_dir"]
+        self.bead_linking_config["fields"]["source_piv_data_dir"] = target_piv_dir
+
         self.goToNextMenu()
+
+    def startBeadLinkingSetup(self):
+        self.addForm('BEAD_LINKING_SETUP', BeadLinkingSetupForm, name="Bead Linking Setup")
+        self.getForm('BEAD_LINKING_SETUP').configure(self.bead_linking_config, self.make_dirs)
+        self.setNextForm('BEAD_LINKING_SETUP')
+
+    def beadLinkingSetupDone(self, fields):
+        self.bead_linking_config["fields"] = fields
+        self.goToNextMenu()
+

@@ -17,8 +17,9 @@ from .setup_app import (
     SoaxRunSetupForm,
     SnakesToJsonSetupForm,
     JoinSectionedSnakesSetupForm,
-    MakeSindyFieldsSetupForm,
+    # MakeSindyFieldsSetupForm,
     BeadPIVSetupForm,
+    BeadLinkingSetupForm
 )
 from .tiff_info import tiff_info, tiff_file_or_dir_argparse_type
 from .pad_tiff_numbers import pad_tiff_numbers
@@ -182,6 +183,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
     from .create_regular_soax_param_files import create_regular_soax_param_files
     from .create_image_specific_soax_param_files import create_image_specific_soax_param_files
     from .divide_average_image import divide_average_image
+    from .bead_linking import link_beads
 
     if action_name == "divide_average_image":
         parsed_divide_average_image_settings = DivideAverageImageSetupForm.parseSettings(setting_strings, make_dirs)
@@ -274,17 +276,17 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_join_sectioned_snakes_settings["workers"],
             logger=logger,
         )
-    elif action_name == "make_sindy_fields":
-        parsed_make_sindy_fields_settings = MakeSindyFieldsSetupForm.parseSettings(setting_strings, make_dirs)
+    # elif action_name == "make_sindy_fields":
+    #     parsed_make_sindy_fields_settings = MakeSindyFieldsSetupForm.parseSettings(setting_strings, make_dirs)
 
-        make_sindy_fields(
-            parsed_make_sindy_fields_settings["source_images_dir"],
-            parsed_make_sindy_fields_settings["source_json_dir"],
-            parsed_make_sindy_fields_settings["save_orientations_dir"],
-            parsed_make_sindy_fields_settings["save_intensities_dir"],
-            parsed_make_sindy_fields_settings["source_jsons_depth"],
-            logger=logger,
-        )
+    #     make_sindy_fields(
+    #         parsed_make_sindy_fields_settings["source_images_dir"],
+    #         parsed_make_sindy_fields_settings["source_json_dir"],
+    #         parsed_make_sindy_fields_settings["save_orientations_dir"],
+    #         parsed_make_sindy_fields_settings["save_intensities_dir"],
+    #         parsed_make_sindy_fields_settings["source_jsons_depth"],
+    #         logger=logger,
+    #     )
     elif action_name == "do_bead_PIV":
         parsed_bead_PIV_settings = BeadPIVSetupForm.parseSettings(setting_strings, make_dirs)
 
@@ -295,13 +297,22 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             target_piv_data_dir=parsed_bead_PIV_settings["target_piv_data_dir"],
             brightness_threshold=parsed_bead_PIV_settings["brightness_threshold"],
             noise_size_xyz=parsed_bead_PIV_settings["noise_size_xyz"],
-            pixel_spacing_um_xyz=parsed_bead_PIV_settings["pixel_spacing_um_xyz"],
             bead_pixel_searchsize_xyz=parsed_bead_PIV_settings["bead_pixel_searchsize_xyz"],
-            linking_search_range_um=parsed_bead_PIV_settings["linking_search_range_um"],
             percentile=parsed_bead_PIV_settings["percentile"],
             processes=parsed_bead_PIV_settings["processes"],
             logger=logger,
         )
+    elif action_name == "do_bead_linking":
+        parsed_bead_linking_settings = BeadLinkingSetupForm.parseSettings(setting_strings, make_dirs)
+
+        link_beads(
+            pixel_spacing_um_xyz=parsed_bead_PIV_settings["pixel_spacing_um_xyz"],
+            linking_search_range_um=parsed_bead_linking_settings["linking_search_range_um"],
+            source_piv_data_dir=parsed_bead_linking_settings["source_piv_data_dir"],
+            target_linked_bead_data_dir=parsed_bead_linking_settings["target_linked_bead_data_dir"],
+            logger=logger,
+        )
+
     else:
         raise Exception("Unknown action name '{}'".format(action_name))
 

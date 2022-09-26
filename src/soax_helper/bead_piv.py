@@ -14,9 +14,7 @@ def bead_piv(
     target_piv_data_dir,
     brightness_threshold,
     noise_size_xyz,
-    pixel_spacing_um_xyz,
     bead_pixel_searchsize_xyz,
-    linking_search_range_um,
     percentile,
     processes,
 
@@ -30,7 +28,6 @@ def bead_piv(
             raise Exception("Bead pixel dimensions cannot be negative: ", str(bead_pixel_searchsize_xyz))
 
     x_noise_size, y_noise_size, z_noise_size = noise_size_xyz
-    x_pixel_spacing_um, y_pixel_spacing_um, z_stack_spacing_um = pixel_spacing_um_xyz
 
     logger.log("Letter before frame num: {}".format(tiff_fn_letter_before_frame_num))
     frames = pims.ImageSequenceND(source_tiff_dir, axes_identifiers=[tiff_fn_letter_before_frame_num,tiff_fn_letter_before_z_num])
@@ -43,11 +40,6 @@ def bead_piv(
     # PIMS gives the time axis the name of identifier letter
     frames.iter_axes = [tiff_fn_letter_before_frame_num]
 
-    logger.log("Using x pixel size {x_size} um, y pixel size {y_size} um, z_spacing {z_size} um".format(
-        x_size = x_pixel_spacing_um,
-        y_size = y_pixel_spacing_um,
-        z_size = z_stack_spacing_um,
-    ))
     logger.log("Using noise size in x,y,z: {},{},{}".format(x_noise_size, y_noise_size, z_noise_size))
 
     search_size_xyz = [up_to_nearest_odd(size) for size in bead_pixel_searchsize_xyz]
@@ -60,7 +52,6 @@ def bead_piv(
 
     diameter = (search_diameter_z, search_diameter_x, search_diameter_y)
     logger.log("Finding features with diameter {}".format(diameter))
-    logger.log("After finding features, cross-time-frame linking will be done with linking search range {} um".format(linking_search_range_um))
 
 
     noise_size_zxy = (z_noise_size, x_noise_size, y_noise_size)
@@ -97,17 +88,7 @@ def bead_piv(
     f.to_csv(os.path.join(target_piv_data_dir, "unlinked_beads.csv"))
     logger.log("Saved to csv file")
 
-    f['xum'] = f['x'] * x_pixel_spacing_um
-    f['yum'] = f['y'] * y_pixel_spacing_um
-    f['zum'] = f['z'] * z_stack_spacing_um
 
-    # Linking is faster if using a predictor for where the particles will go
-    # pred = tp.predict.NearestVelocityPredict()
-    pred = tp
-    linked = pred.link_df(f, linking_search_range_um,  pos_columns=['xum','yum','zum'])
-
-    # frame_count = max(linked.frame)
-    linked.to_csv(os.path.join(target_piv_data_dir, "linked_df.csv"))
 
     # data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.json".format(str_length=len(str(frame_count - 1)))
     # data_filename_template = "motion_start_frame{{idx:0{str_length}.0f}}.csv".format(str_length=len(str(frame_count - 1)))
