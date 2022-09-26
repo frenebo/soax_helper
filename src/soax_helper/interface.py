@@ -306,7 +306,7 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
         parsed_bead_linking_settings = BeadLinkingSetupForm.parseSettings(setting_strings, make_dirs)
 
         link_beads(
-            pixel_spacing_um_xyz=parsed_bead_PIV_settings["pixel_spacing_um_xyz"],
+            pixel_spacing_um_xyz=parsed_bead_linking_settings["pixel_spacing_um_xyz"],
             linking_search_range_um=parsed_bead_linking_settings["linking_search_range_um"],
             source_piv_data_dir=parsed_bead_linking_settings["source_piv_data_dir"],
             target_linked_bead_data_dir=parsed_bead_linking_settings["target_linked_bead_data_dir"],

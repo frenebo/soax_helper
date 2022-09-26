@@ -19,7 +19,6 @@ def link_beads(
 
     f = pd.read_csv(unlinked_fp)
 
-
     x_pixel_spacing_um, y_pixel_spacing_um, z_stack_spacing_um = pixel_spacing_um_xyz
 
     logger.log("Using x pixel size {x_size} um, y pixel size {y_size} um, z_spacing {z_size} um".format(
