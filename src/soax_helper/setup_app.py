@@ -1205,7 +1205,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "do_bead_PIV",
                 "settings": self.bead_PIV_config["fields"],
             })
-        if sef.do_bead_linking:
+        if self.do_bead_linking:
             action_configs.append({
                 "action": "do_bead_linking",
                 "settings": self.bead_linking_config["fields"],
