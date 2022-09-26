@@ -258,18 +258,18 @@ class SINDyStepsSelectForm(npyscreen.Form):
             name="Pick SINDy Steps (spacebar to toggle)",
             values = [
                 "Bead PIV",
-                "Make SINDy Fields",
+                # "Make SINDy Fields",
             ],
             scroll_exit=True,
         )
 
     def afterEditing(self):
         do_bead_PIV =          0 in self.select_steps.value
-        do_make_sindy_fields = 1 in self.select_steps.value
+        # do_make_sindy_fields = 1 in self.select_steps.value
 
         self.parentApp.SINDyStepsSelectDone(
             do_bead_PIV,
-            do_make_sindy_fields,
+            # do_make_sindy_fields,
         )
 
 class SetupForm(npyscreen.Form):
@@ -877,31 +877,31 @@ class JoinSectionedSnakesSetupForm(SetupForm):
 
     app_done_func_name = "joinSectionedSnakesSetupDone"
 
-class MakeSindyFieldsSetupForm(SetupForm):
-    field_infos = [
-        {
-            "id": "source_json_dir",
-            "type": "dir",
-        },
-        {
-            "id": "source_jsons_depth",
-            "type": "non_neg_int",
-        },
-        {
-            "id": "source_images_dir",
-            "type": "dir",
-        },
-        {
-            "id": "save_intensities_dir",
-            "type": "dir",
-        },
-        {
-            "id": "save_orientations_dir",
-            "type": "dir",
-        },
-    ]
+# class MakeSindyFieldsSetupForm(SetupForm):
+#     field_infos = [
+#         {
+#             "id": "source_json_dir",
+#             "type": "dir",
+#         },
+#         {
+#             "id": "source_jsons_depth",
+#             "type": "non_neg_int",
+#         },
+#         {
+#             "id": "source_images_dir",
+#             "type": "dir",
+#         },
+#         {
+#             "id": "save_intensities_dir",
+#             "type": "dir",
+#         },
+#         {
+#             "id": "save_orientations_dir",
+#             "type": "dir",
+#         },
+#     ]
 
-    app_done_func_name = "makeSindyFieldsSetupDone"
+#     app_done_func_name = "makeSindyFieldsSetupDone"
 
 class BeadPIVSetupForm(SetupForm):
     field_infos = [
@@ -1116,16 +1116,16 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
             },
             "notes": {},
         }
-        self.make_sindy_fields_config = {
-            "fields": {
-                "source_json_dir": "",
-                "source_jsons_depth": "",
-                "source_images_dir": "",
-                "save_intensities_dir": "./IntensityFields",
-                "save_orientations_dir": "./OrientationFields",
-            },
-            "notes": {},
-        }
+        # self.make_sindy_fields_config = {
+        #     "fields": {
+        #         "source_json_dir": "",
+        #         "source_jsons_depth": "",
+        #         "source_images_dir": "",
+        #         "save_intensities_dir": "./IntensityFields",
+        #         "save_orientations_dir": "./OrientationFields",
+        #     },
+        #     "notes": {},
+        # }
 
 
         self.bead_PIV_config = {
@@ -1154,7 +1154,7 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         self.menu_functions = [
             self.startSoaxStepsSelect,
-            self.startSINDyStepsSelect,
+            # self.startSINDyStepsSelect,
         ]
         self.form_index = -1
 
@@ -1221,11 +1221,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
                 "action": "do_bead_PIV",
                 "settings": self.bead_PIV_config["fields"],
             })
-        if self.do_make_sindy_fields:
-            action_configs.append({
-                "action": "make_sindy_fields",
-                "settings": self.make_sindy_fields_config["fields"],
-            })
+        # if self.do_make_sindy_fields:
+        #     action_configs.append({
+        #         "action": "make_sindy_fields",
+        #         "settings": self.make_sindy_fields_config["fields"],
+        #     })
         return action_configs
 
     def try_find_dir_first_tif_metadata(self, tiff_dir, img_depth):
@@ -1349,22 +1349,22 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
         # Move onto next index
         self.goToNextMenu()
 
-    def startSINDyStepsSelect(self):
-        self.addForm('SINDY_STEPS_SELECT', SINDyStepsSelectForm, name='Select SINDy Steps')
-        self.getForm('SINDY_STEPS_SELECT').configure()
-        self.setNextForm('SINDY_STEPS_SELECT')
+    # def startSINDyStepsSelect(self):
+    #     self.addForm('SINDY_STEPS_SELECT', SINDyStepsSelectForm, name='Select SINDy Steps')
+    #     self.getForm('SINDY_STEPS_SELECT').configure()
+    #     self.setNextForm('SINDY_STEPS_SELECT')
 
     def SINDyStepsSelectDone(self,
         do_bead_PIV,
-        do_make_sindy_fields,
+        # do_make_sindy_fields,
         ):
         self.do_bead_PIV = do_bead_PIV
-        self.do_make_sindy_fields = do_make_sindy_fields
+        # self.do_make_sindy_fields = do_make_sindy_fields
 
         if self.do_bead_PIV:
             self.menu_functions.append(self.startBeadPIVSetup)
-        if self.do_make_sindy_fields:
-            self.menu_functions.append(self.startMakeSindyFieldsSetup)
+        # if self.do_make_sindy_fields:
+        #     self.menu_functions.append(self.startMakeSindyFieldsSetup)
 
         self.goToNextMenu()
 
@@ -1535,11 +1535,11 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
 
         target_json_dir = config["target_json_dir"]
         self.join_sectioned_snakes_config["fields"]["source_json_dir"] = target_json_dir
-        self.make_sindy_fields_config["fields"]["source_json_dir"] = target_json_dir
+        # self.make_sindy_fields_config["fields"]["source_json_dir"] = target_json_dir
 
         output_jsons_depth = config["source_snakes_depth"]
         self.join_sectioned_snakes_config["fields"]["source_jsons_depth"] = output_jsons_depth
-        self.make_sindy_fields_config["fields"]["source_json_dir"] = output_jsons_depth
+        # self.make_sindy_fields_config["fields"]["source_json_dir"] = output_jsons_depth
 
         self.goToNextMenu()
 
@@ -1551,23 +1551,23 @@ class SoaxSetupApp(npyscreen.NPSAppManaged):
     def joinSectionedSnakesSetupDone(self, fields):
         self.join_sectioned_snakes_config["fields"] = fields
 
-        target_json_dir = fields["target_json_dir"]
-        self.make_sindy_fields_config["fields"]["source_json_dir"] = target_json_dir
+        # target_json_dir = fields["target_json_dir"]
+        # self.make_sindy_fields_config["fields"]["source_json_dir"] = target_json_dir
 
         # Output jsons are one directory less deep since they've been joined
-        output_jsons_depth = str(int(fields["source_jsons_depth"]) - 1)
-        self.make_sindy_fields_config["fields"]["source_json_dir"] = output_jsons_depth
+        # output_jsons_depth = str(int(fields["source_jsons_depth"]) - 1)
+        # self.make_sindy_fields_config["fields"]["source_json_dir"] = output_jsons_depth
 
         self.goToNextMenu()
 
-    def startMakeSindyFieldsSetup(self):
-        self.addForm('MAKE_SINDY_FIELDS', MakeSindyFieldsSetupForm, name="Make Sindy Fields Setup")
-        self.getForm('MAKE_SINDY_FIELDS').configure(self.make_sindy_fields_config, self.make_dirs)
-        self.setNextForm('MAKE_SINDY_FIELDS')
+    # def startMakeSindyFieldsSetup(self):
+    #     self.addForm('MAKE_SINDY_FIELDS', MakeSindyFieldsSetupForm, name="Make Sindy Fields Setup")
+    #     self.getForm('MAKE_SINDY_FIELDS').configure(self.make_sindy_fields_config, self.make_dirs)
+    #     self.setNextForm('MAKE_SINDY_FIELDS')
 
-    def makeSindyFieldsSetupDone(self, fields):
-        self.make_sindy_fields_config["fields"] = fields
-        self.goToNextMenu()
+    # def makeSindyFieldsSetupDone(self, fields):
+    #     self.make_sindy_fields_config["fields"] = fields
+    #     self.goToNextMenu()
 
     def startBeadPIVSetup(self):
         self.addForm('BEAD_PIV_SETUP', BeadPIVSetupForm, name="Bead PIV Setup")
