@@ -1,4 +1,6 @@
 # Compiling SOAX on macOS Big Sur
+
+## Haven't gotten this working --- problems:
 vtk:
 Example:
 cmake -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/qt@4/4.8.7_6/bin/qmake
