@@ -30,7 +30,7 @@ Tried Product > Clean Build Folder and run again
 Try again START OVER
 ccmake -DCMAKE_BUILD_TYPE=Release -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/qt@4/4.8.7_6/bin/qmake -G Xcode ../path/to/vtk-6.3.0
 
-# Compiling TSOAX on Ubuntu 20.04:
+# Compiling SOAX and TSOAX on Ubuntu 20.04:
 ##  1. Install dependencies and required tools
    ``` bash
    $ sudo apt update && sudo apt upgrade
@@ -127,7 +127,7 @@ ccmake -DCMAKE_BUILD_TYPE=Release -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/q
    ``` bash
    $ make
    ```
-## 3. Download and compile TSOAX
+## 5. Download and compile TSOAX
    Download source code
    ``` bash
    $ git clone --recursive https://github.com/tix209/TSOAX.git
