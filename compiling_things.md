@@ -14,7 +14,7 @@ Haven't gotten it working on macOS yet...
 ## 2. Download and compile VTK 7.1.0
    Download source code
    ``` bash
-   $ curl -O -L [https://github.com/Kitware/VTK/archive/refs/tags/v9.1.0.tar.gz](https://github.com/Kitware/VTK/archive/refs/tags/v7.1.0.tar.gz
+   $ curl -O -L https://github.com/Kitware/VTK/archive/refs/tags/v7.1.0.tar.gz
    $ tar -xvf v7.1.0.tar.gz
    ```
    Tell CMake to use gcc and g++ version 7
