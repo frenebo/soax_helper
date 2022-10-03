@@ -41,11 +41,11 @@ ccmake -DCMAKE_BUILD_TYPE=Release -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/q
      qtbase5-doc-html qtbase5-examples qtdeclarative5-dev libboost-all-dev \
      libegl1-mesa-dev libxcursor-dev libeigen3-dev
    ```
-## 2. Download and compile VTK 9.1.0
+## 2. Download and compile VTK 7.1.0
    Download source code
    ``` bash
-   $ curl -O -L https://github.com/Kitware/VTK/archive/refs/tags/v9.1.0.tar.gz
-   $ tar -xvf v9.1.0.tar.gz
+   $ curl -O -L [https://github.com/Kitware/VTK/archive/refs/tags/v9.1.0.tar.gz](https://github.com/Kitware/VTK/archive/refs/tags/v7.1.0.tar.gz
+   $ tar -xvf v7.1.0.tar.gz
    ```
    Tell CMake to use gcc and g++ version 7
    ``` bash
@@ -55,13 +55,11 @@ ccmake -DCMAKE_BUILD_TYPE=Release -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/q
    Use ccmake to configure VTK build and compile
    ``` bash
    $ mkdir build_vtk && cd build_vtk
-   $ ccmake ../VTK-9.1.0
+   $ ccmake ../VTK-7.1.0
    ```
    Configure VTK build with ccmake:
    - Set `CMAKE_BUILD_TYPE` to `Release`
-   - Set `VTK_GROUP_ENABLE_Qt` to `Yes`
-   - Press `t` to show advanced mode settings
-   - Set `VTK_LEGACY_SILENT` to `ON`
+   - Set `VTK_GROUP_Qt` to `ON`
    - Press `c` to configure until option to generate with `g` appears, then press `g` to generate and exit.
 
    Build with make:
@@ -75,24 +73,30 @@ ccmake -DCMAKE_BUILD_TYPE=Release -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/q
 ## 3. Download and compile ITK (not necessary for compiling just TSOAX)
    Download source code
    ``` bash
-   $ curl -O -L https://github.com/InsightSoftwareConsortium/ITK/archive/refs/tags/v5.2.1.tar.gz
-   $ tar -xvf v5.2.1.tar.gz
+   $ curl -O -L curl -O -L  https://sourceforge.net/projects/itk/files/itk/4.7/InsightToolkit-4.7.2.tar.gz/download
+   $ tar -xvf ./download
    ```
    Tell CMake to use gcc and g++ version 7
    ``` bash
    $ export CC=/usr/bin/gcc-7
    $ export CXX=/usr/bin/g++-7
    ```
+   
+   Tell CMake where to find VTK
+   ``` bash
+   $ export VTK_DIR=/{pathto}/build_vtk
+   ```
+   
    ``` bash
    $ mkdir build_itk && cd build_itk
-   $ ccmake ../ITK-5.2.1/
+   $ ccmake ../InsightToolkit-4.7.2/
    ```
    Configure ITK build with ccmake:
    - Set `BUILD_EXAMPLES` to `OFF`
    - Set `BUILD_TESTING` to `OFF`
    - Press `t` to show advanced mode settings
-   - Press `c` to generate a few times until `Module_ITKVtkGlue` option appears on one of the pages
    - Set `Module_ITKVtkGlue` to `ON`
+   Use ccmake to configure - press `c` to configure until generate option `g` appears, then generate.
 
    Build with make:
    ``` bash
@@ -109,9 +113,8 @@ ccmake -DCMAKE_BUILD_TYPE=Release -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/q
    $ git clone https://github.com/tix209/SOAX
    ```
 
-   Tell CMake where to find VTK and ITK
+   Tell CMake where to find ITK
    ``` bash
-   $ export VTK_DIR=/{pathto}/build_vtk
    $ export ITK_DIR=/{pathto}/build_itk
    ```
 
@@ -121,9 +124,6 @@ ccmake -DCMAKE_BUILD_TYPE=Release -DQT_QMAKE_EXECUTABLE:PATH=/usr/local/Cellar/q
    $ ccmake ../SOAX
    ```
    Use ccmake to configure - press `c` to configure until generate option `g` appears, then generate.
-
-
-   ERROR: conversion ambiguous
 
    Build with make:
    ``` bash
