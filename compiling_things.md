@@ -1,5 +1,7 @@
 # Compiling SOAX on macOS Big Sur
 
+Haven't gotten it working on macOS yet...
+
 # Compiling SOAX and TSOAX on Ubuntu 20.04:
 ##  1. Install dependencies and required tools
    ``` bash
