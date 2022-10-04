@@ -46,6 +46,22 @@ Haven't gotten it working on macOS yet...
    $ curl -O -L curl -O -L  https://sourceforge.net/projects/itk/files/itk/4.7/InsightToolkit-4.7.2.tar.gz/download
    $ tar -xvf ./download
    ```
+   
+   Modify source code to make it compile ok:
+   Add the following to vcl_compiler.h (for gcc 7.5.0) (\InsightToolkit-4.7.2\Modules\ThirdParty\VNL\src\vxl\vcl\vcl_compiler.h) at line 129
+   ```
+   # elif (__GNUC__==7)
+   # define VCL_GCC_7
+   # if (__GNUC_MINOR__ > 4 )
+   # define VCL_GCC_75
+   # else
+   # define VCL_GCC_70
+   # endif
+   ```
+   
+   Change vcl_new.h (\InsightToolkit-4.7.2\Modules\ThirdParty\VNL\src\vxl\vcl\vcl_new.h)
+   Line 19 to `# include <new>` from `# include <new.h>`
+   
    Tell CMake to use gcc and g++ version 7
    ``` bash
    $ export CC=/usr/bin/gcc-7
