@@ -33,22 +33,28 @@ from .actions.divide_average_image import divide_average_image
 from .actions.join_sectioned_snakes import join_sectioned_snakes
 from .actions.rescale_tiffs import rescale_tiffs
 from .actions.run_soax import run_soax
-from .actions.sections_tiffs import section_tiffs
+from .actions.section_tiffs import section_tiffs
 
 def parse_command_line_args_and_run():
     parser = argparse.ArgumentParser(description='Soax Helper')
 
     subparsers = parser.add_subparsers()
     subparsers.dest = 'subcommand'
-    subparsers.required = True
+    subparsers.required = False
 
-    run_parser = subparsers.add_parser("run", help="Set up SOAX helper to run")
-    run_parser.add_argument('--load-settings',default=None, help="Skip GUI, Run from settings loaded from JSON file")
-    run_parser.add_argument('--save-settings',default=None, help="Save settings from GUI menu to JSON file")
-    run_parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
-    run_parser.add_argument('--make-dirs',default=False,action='store_true', help='Whether helper should automatically create the configured directories if the directories don\'t exist already.')
-    run_parser.add_argument('--save-logs', default=None, help='Specify text file to write soax helper output to')
-
+    config_parser = subparsers.add_parser("configure", help="Configure data processing settings, and save config as JSON file.")
+    # run_parser.add_argument('--load-settings',default=None, help="Skip GUI, Run from settings loaded from JSON file")
+    # run_parser.add_argument('--save-settings',default=None, help="Save settings from GUI menu to JSON file")
+    # run_parser.add_argument('--do-not-run', default=False, action='store_true', help='Will load or save settings but will not run. Use if you want to just create settings but not run them')
+    config_parser.add_argument("config_file", help="Name of JSON file to store configuration in")
+    config_parser.add_argument('--auto-make-dirs',default=False, action='store_true', help='Use this if helper should automatically create the configured directories if the directories don\'t exist already.')
+    # run_parser.add_argument('--save-logs', default=None, help='Specify text file to write soax helper output to')
+    
+    run_parser = subparsers.add_parser("run", help="Run data processing steps, as specified by a JSON config file (generated with soaxhelper configure)")
+    run_parser.add_argument("config_file", help="Name of JSON file to load configuration from")
+    run_parser.add_argument("--logfile", default=None, help="Log file to record the progress of data processing steps")
+    # run_parser.add_argument('--auto-make-dirs',default=True, action='store_true', help='Automatically create directories if they don\'t exist already. ')
+    
 
     tiff_info_parser = subparsers.add_parser("tiffinfo", help="Get info from tiff file or directory of tiff files")
     tiff_info_parser.add_argument('target',type=tiff_file_or_dir_argparse_type,help="TIFF file or directory of tiff files")
@@ -62,79 +68,78 @@ def parse_command_line_args_and_run():
     split_stacks_parser = subparsers.add_parser('splitstacks', help='Split 3D Tiffs into it 2D frames')
     split_stacks_parser.add_argument('source_tiff_dir')
     split_stacks_parser.add_argument('target_directory')
-
-    help_parser = subparsers.add_parser("help", help="Help menu")
-
+    
     args = parser.parse_args()
-
-    if args.subcommand == 'run':
+    
+    if args.subcommand is None:
+        parser.print_help()
+    elif args.subcommand == 'configure':
+        configure_soax_helper(
+            config_filepath=args.config_file,
+            create_missing_dirs_by_default=args.auto_make_dirs,
+        )
+    elif args.subcommand == "run":
         run_soax_helper(
-            save_settings=args.save_settings,
-            load_settings=args.load_settings,
-            make_dirs=args.make_dirs,
-            do_not_run=args.do_not_run,
-            save_logs_to_file=args.save_logs,
+            config_filepath=args.config_file,
+            logfile=args.logfile,
         )
     elif args.subcommand == 'tiffinfo':
         tiff_info(args.target, logger=ConsoleLogger())
     elif args.subcommand == 'padtiffnums':
         pad_tiff_numbers(args.tiff_dir, args.tiff_name_prefix, postfix_length=args.postfixlength, logger=ConsoleLogger())
-    elif args.subcommand == 'help':
-        parser.print_help()
     elif args.subcommand == 'splitstacks':
         split_stacks(args.source_tiff_dir, args.target_directory,logger=ConsoleLogger())
 
     exit(0)
+    
 
-def run_soax_helper(save_settings, load_settings, make_dirs, do_not_run, save_logs_to_file):
+# @TODO - make sure to check before running whether ALL directories exist
+# @TODO - move do_not_run functionality outside of this function!
 
+def run_soax_helper(config_filepath, logfile=None):
+    if not config_filepath.endswith(".json"):
+        raise Exception("Invalid settings load file '{}': must be json file".format(config_filepath))
+
+    if not os.path.exists(config_filepath):
+        raise Exception("File '{}' does not exist".format(config_filepath))
+        
+    if logfile is not None:
+        if os.path.exists(logfile):
+            raise Exception("Cannot create logfile {}, already exists".format(logfile))
+        
+
+    with open(config_filepath, "r") as f:
+        action_configs = json.load(f)
+    
+
+    if logfile is not None:
+        with open(save_logs_to_file, 'w') as log_file:
+            file_logger = FileLogger(log_filehandle=log_file, child_logger=console_logger)
+            execute_data_actions(action_configs, True, logger=file_logger)
+    else:
+        execute_data_actions(action_configs, True, logger=console_logger)
+
+def configure_soax_helper(config_filepath, create_missing_dirs_by_default=False):
     # Check if environment variable BATCH_SOAX_PATH is set for the path to the compiled
-    # batch_soax executable, if not found use default value None
+    # batch_soax executable, if not found use None, so SoaxSetupApp will ask user.
     batch_soax_path = os.getenv('BATCH_SOAX_PATH', None)
 
-    if load_settings is not None and save_settings is not None:
-        raise Exception("Loading settings and saving settings is not supported"
-            "(loading tells program to skip GUI, but saving is meant to store "
-            "settings configured in GUI)")
-    if load_settings is not None:
-        if not load_settings.endswith(".json"):
-            raise Exception("Invalid settings load file '{}': must be json file".format(load_settings))
-
-        if not os.path.exists(load_settings):
-            raise Exception("File '{}' does not exist".format(load_settings))
-
-        with open(load_settings, "r") as f:
-            action_configs = json.load(f)
-    else:
-        if save_settings is not None:
-            if not save_settings.endswith(".json"):
-                raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(save_settings))
-            if os.path.exists(save_settings):
-                raise Exception("Cannot save settings as '{}', already exists".format(save_settings))
-        app = SoaxSetupApp(make_dirs=make_dirs, batch_soax_path=batch_soax_path)
+    if not config_filepath.endswith(".json"):
+        raise Exception("Cannot save settings as '{}', file must have '.json' extension".format(config_filepath))
+    if os.path.exists(config_filepath):
+        raise Exception("Cannot save settings as '{}', already exists".format(config_filepath))
+    
+    with open(config_filepath, "w") as f:
+        app = SoaxSetupApp(make_dirs=create_missing_dirs_by_default, batch_soax_path=batch_soax_path)
         app.run()
 
         action_configs = app.getActionConfigs()
+    
+        json.dump(action_configs, f, indent=4)
+    
+    print("Saved configuration in {}".format(config_filepath))
 
-        if save_settings is not None:
-            with open(save_settings, "w") as f:
-                json.dump(action_configs, f, indent=4)
-
-    console_logger = ConsoleLogger()
-
-    if do_not_run:
-        console_logger.log("Program was run with do not run option, exiting before performing any actions")
-        exit()
-
-
-    if save_logs_to_file is not None:
-        with open(save_logs_to_file, 'w') as log_file:
-            file_logger = FileLogger(log_filehandle=log_file, child_logger=console_logger)
-            run_actions(action_configs, make_dirs, logger=file_logger)
-    else:
-        run_actions(action_configs, make_dirs, logger=console_logger)
-
-def run_actions(action_configs, make_dirs_if_not_present, logger):
+def execute_data_actions(action_configs, make_dirs_if_not_present, logger):
     all_loggers = []
     all_times = []
     all_warnings = []

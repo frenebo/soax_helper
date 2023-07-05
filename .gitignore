@@ -1,3 +1,4 @@
 *.pyc
 src/*.egg-info
 build/
+scratch/
