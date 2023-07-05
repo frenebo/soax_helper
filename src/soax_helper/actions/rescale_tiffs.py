@@ -7,8 +7,8 @@ import cv2
 from PIL import Image
 from scipy.ndimage import zoom
 
-from .snakeutils.files import find_files_or_folders_at_depth
-from .snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
+from ..snakeutils.files import find_files_or_folders_at_depth
+from ..snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
 
 def resize_frame(frame_arr, new_dims):
     data_type_max =  np.iinfo(frame_arr.dtype).max

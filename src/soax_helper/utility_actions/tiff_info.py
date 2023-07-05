@@ -3,8 +3,8 @@ import os
 from PIL import Image
 import numpy as np
 
-from .snakeutils.logger import ConsoleLogger
-from .snakeutils.tifimage import get_single_tiff_info
+from ..snakeutils.logger import ConsoleLogger
+from ..snakeutils.tifimage import get_single_tiff_info
 
 def readable_dir(dirpath):
     if not os.path.isdir(dirpath):

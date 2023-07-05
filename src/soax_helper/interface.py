@@ -17,13 +17,23 @@ from .setup_app import (
     SoaxRunSetupForm,
     SnakesToJsonSetupForm,
     JoinSectionedSnakesSetupForm,
-    # MakeSindyFieldsSetupForm,
     BeadPIVSetupForm,
     BeadLinkingSetupForm
 )
-from .tiff_info import tiff_info, tiff_file_or_dir_argparse_type
-from .pad_tiff_numbers import pad_tiff_numbers
-from .split_stacks import split_stacks
+from .utility_actions.tiff_info import tiff_info, tiff_file_or_dir_argparse_type
+from .utility_actions.pad_tiff_numbers import pad_tiff_numbers
+from .utility_actions.split_stacks import split_stacks
+
+from .actions.bead_linking import link_beads
+from .actions.bead_piv import bead_piv
+from .actions.convert_snakes_to_json import convert_snakes_to_json
+from .actions.create_regular_soax_param_files import create_regular_soax_param_files
+from .actions.create_image_specific_soax_param_files import create_image_specific_soax_param_files
+from .actions.divide_average_image import divide_average_image
+from .actions.join_sectioned_snakes import join_sectioned_snakes
+from .actions.rescale_tiffs import rescale_tiffs
+from .actions.run_soax import run_soax
+from .actions.sections_tiffs import section_tiffs
 
 def parse_command_line_args_and_run():
     parser = argparse.ArgumentParser(description='Soax Helper')
@@ -173,17 +183,6 @@ def run_actions(action_configs, make_dirs_if_not_present, logger):
                 logger.warn("        " + warning_text)
 
 def perform_action(action_name, setting_strings, make_dirs, logger):
-    from .rescale_tiffs import rescale_tiffs
-    from .section_tiffs import section_tiffs
-    from .run_soax import run_soax
-    from .convert_snakes_to_json import convert_snakes_to_json
-    from .join_sectioned_snakes import join_sectioned_snakes
-    from .make_sindy_fields import make_sindy_fields
-    from .bead_piv import bead_piv
-    from .create_regular_soax_param_files import create_regular_soax_param_files
-    from .create_image_specific_soax_param_files import create_image_specific_soax_param_files
-    from .divide_average_image import divide_average_image
-    from .bead_linking import link_beads
 
     if action_name == "divide_average_image":
         parsed_divide_average_image_settings = DivideAverageImageSetupForm.parseSettings(setting_strings, make_dirs)
@@ -276,17 +275,6 @@ def perform_action(action_name, setting_strings, make_dirs, logger):
             parsed_join_sectioned_snakes_settings["workers"],
             logger=logger,
         )
-    # elif action_name == "make_sindy_fields":
-    #     parsed_make_sindy_fields_settings = MakeSindyFieldsSetupForm.parseSettings(setting_strings, make_dirs)
-
-    #     make_sindy_fields(
-    #         parsed_make_sindy_fields_settings["source_images_dir"],
-    #         parsed_make_sindy_fields_settings["source_json_dir"],
-    #         parsed_make_sindy_fields_settings["save_orientations_dir"],
-    #         parsed_make_sindy_fields_settings["save_intensities_dir"],
-    #         parsed_make_sindy_fields_settings["source_jsons_depth"],
-    #         logger=logger,
-    #     )
     elif action_name == "do_bead_PIV":
         parsed_bead_PIV_settings = BeadPIVSetupForm.parseSettings(setting_strings, make_dirs)
 

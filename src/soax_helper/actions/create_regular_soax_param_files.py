@@ -2,7 +2,7 @@ import os
 import itertools
 import decimal
 
-from .snakeutils.params import create_params, param_filename_tags
+from ..snakeutils.params import create_params, param_filename_tags
 
 def create_range(start,stop,step):
     start = decimal.Decimal(start)

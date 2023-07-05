@@ -5,7 +5,7 @@ import tqdm
 from ctypes import c_int32
 import time
 
-from .snakeutils.files import find_files_or_folders_at_depth, find_tiffs_in_dir, has_one_of_extensions
+from ..snakeutils.files import find_files_or_folders_at_depth, find_tiffs_in_dir, has_one_of_extensions
 
 def soax_instance(soax_instance_args):
     batch_soax_path = soax_instance_args["batch_soax_path"]

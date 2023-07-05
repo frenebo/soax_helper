@@ -2,8 +2,8 @@ import os
 import numpy as np
 from PIL import Image
 from multiprocessing.pool import ThreadPool
-from .snakeutils.files import find_tiffs_in_dir
-from .snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
+from ..snakeutils.files import find_tiffs_in_dir
+from ..snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
 
 def divide_average_image(source_dir, target_dir, logger):
     source_tiffs = find_tiffs_in_dir(source_dir)

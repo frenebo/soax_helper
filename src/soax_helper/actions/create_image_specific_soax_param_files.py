@@ -4,9 +4,9 @@ from PIL import Image
 import numpy as np
 import decimal
 
-from .snakeutils.files import find_tiffs_in_dir
+from ..snakeutils.files import find_tiffs_in_dir
+from ..snakeutils.tifimage import open_tiff_as_np_arr
 from .create_regular_soax_param_files import create_regular_soax_param_files
-from .snakeutils.tifimage import open_tiff_as_np_arr
 
 def get_image_intensity_scaling(img_arr, logger):
     original_max_intensity = img_arr.max()

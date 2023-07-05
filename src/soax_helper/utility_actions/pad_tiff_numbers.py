@@ -1,8 +1,8 @@
 import argparse
 import os
 
-from .snakeutils.logger import ConsoleLogger
-from .snakeutils.files import find_tiffs_in_dir
+from ..snakeutils.logger import ConsoleLogger
+from ..snakeutils.files import find_tiffs_in_dir
 
 def get_num_of_tiff_fn(tiff_fn, tiff_name_prefix, postfix_length=0, logger=ConsoleLogger):
     fn_without_extension = os.path.splitext(tiff_fn)[0]

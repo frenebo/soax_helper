@@ -2,9 +2,9 @@ import argparse
 import os
 from PIL import Image
 
-from .snakeutils.logger import ConsoleLogger
-from .snakeutils.files import  find_tiffs_in_dir
-from .snakeutils.tifimage import open_tiff_as_np_arr, save_3d_tif
+from ..snakeutils.logger import ConsoleLogger
+from ..snakeutils.files import  find_tiffs_in_dir
+from ..snakeutils.tifimage import open_tiff_as_np_arr, save_3d_tif
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Split 3D Tiffs into it 2D frames')

@@ -5,7 +5,7 @@ import numpy as np
 from PIL import Image
 import tifffile
 
-from .snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
+from ..snakeutils.tifimage import save_3d_tif, open_tiff_as_np_arr
 
 def section_tiff(arg_dict):
     tiff_filepath = arg_dict["tiff_filepath"]
